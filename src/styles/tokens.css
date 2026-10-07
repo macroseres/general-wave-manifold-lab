@@ -1,0 +1,10 @@
+:root {
+  /* Scientific UI tokens. Adoption is incremental to avoid a visual regression. */
+  --gwml-bg-app: #0b0d10;
+  --gwml-bg-panel: #12151a;
+  --gwml-bg-elevated: #191d23;
+  --gwml-border-subtle: rgba(255, 255, 255, 0.10);
+  --gwml-text-primary: rgba(255, 255, 255, 0.94);
+  --gwml-text-secondary: rgba(255, 255, 255, 0.62);
+  --gwml-accent: #30d158;
+}
