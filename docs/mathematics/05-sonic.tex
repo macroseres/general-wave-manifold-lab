@@ -1,0 +1,111 @@
+\section{Sonic loci}
+
+For a regular point of the wave manifold, write
+\[
+U_- = \bar U-\frac{Y}{2}r(z),
+\qquad
+U_+ = \bar U+\frac{Y}{2}r(z),
+\qquad
+r(z)=\binom{z}{1},
+\]
+and let $s$ be the Rankine--Hugoniot speed.  The left and right sonic
+conditions are defined intrinsically by
+\[
+\boxed{\det\!\left(DF(U_-)-sI\right)=0},
+\qquad
+\boxed{\det\!\left(DF(U_+)-sI\right)=0}.
+\]
+Because the flux is quadratic, its Jacobian is affine.  Define
+\[
+A=DF(\bar U)-sI
+\]
+and
+\[
+M(z)=D\!\left(DF(U)r(z)\right)
+ =
+\begin{pmatrix}
+2a_{20}z+a_{11} & a_{11}z+2a_{02}\\
+2b_{20}z+b_{11} & b_{11}z+2b_{02}
+\end{pmatrix}.
+\]
+Then
+\[
+DF(U_-)-sI=A-\frac{Y}{2}M,
+\qquad
+DF(U_+)-sI=A+\frac{Y}{2}M.
+\]
+By construction of the wave-manifold fiber, $r(z)$ is an eigenvector of
+$DF(\bar U)$ associated with $s$, hence
+\[
+\det A=0.
+\]
+For
+\[
+K=A_{11}M_{22}+M_{11}A_{22}-A_{12}M_{21}-M_{12}A_{21},
+\qquad D_M=\det M,
+\]
+the two endpoint determinants factor exactly as
+\[
+\boxed{
+\det(DF(U_-)-sI)=\frac{Y}{4}\bigl(YD_M-2K\bigr)
+},
+\]
+\[
+\boxed{
+\det(DF(U_+)-sI)=\frac{Y}{4}\bigl(YD_M+2K\bigr)
+}.
+\]
+
+Therefore the characteristic surface
+\[
+\mathcal C=\{Y=0\}
+\]
+is the common zero-jump factor in both endpoint determinant equations.
+The sonic surfaces $\mathcal S^-$ and $\mathcal S^+$ used by the application
+are the nontrivial factors:
+\[
+\boxed{\mathcal S^-:\;YD_M-2K=0},
+\qquad
+\boxed{\mathcal S^+:\;YD_M+2K=0}.
+\]
+Whenever $D_M\neq0$ they are graphs over $(\tau,z)$,
+\[
+Y_-=\frac{2K}{D_M},
+\qquad
+Y_+=-\frac{2K}{D_M},
+\]
+so that $Y_++Y_-=0$.
+
+If $D_M=0$, division by $D_M$ is not valid.  The implementation therefore
+keeps the implicit equations as the authoritative definition.  In this
+case, if $K\neq0$ there is no finite point of the corresponding nontrivial
+sheet at that $(\tau,z)$; if $K=0$ the factor is degenerate and requires
+separate local analysis.
+
+The coincidence locus $\mathcal E$ remains a subset of $\mathcal C$; no
+additional inclusion between $\mathcal E$ and the nontrivial sheets
+$\mathcal S^\pm$ is assumed here.
+
+\subsection{Implicit geometry, inflection and double sonic locus}
+The nontrivial sonic sheets are retained in implicit form
+\[
+ \Phi_-(\tau,Y,z)=Y\det M-2K=0,\qquad
+ \Phi_+(\tau,Y,z)=Y\det M+2K=0.
+\]
+The formulas $Y_-=2K/\det M$ and $Y_+=-2K/\det M$ are valid only when
+$\det M\neq0$ and are not used to define or render the global sonic geometry.
+Indeed, simultaneous membership in both nontrivial sonic sheets gives
+\[
+ K=0,\qquad Y\det M=0.
+\]
+On the characteristic surface $Y=0$, the common locus is the inflection locus
+\[
+ \mathcal J=\{Y=0,\ K=0\}.
+\]
+Away from the characteristic surface, $Y\neq0$, the common locus is the double
+sonic set
+\[
+ \mathcal{DS}=\{K=0,\ \det M=0,\ Y\neq0\}.
+\]
+At $\mathcal{DS}$ the explicit quotient is the indeterminate form $0/0$; this
+is a degeneracy of that parametrization, not a disappearance of the sonic set.

@@ -1,0 +1,31 @@
+/* Single source of truth for graphical toolbar geometry and controls. */
+.workspaceToolbar {
+  position:absolute;z-index:20;top:12px;right:12px;
+  display:flex;align-items:center;gap:5px;padding:5px;
+  max-width:calc(100% - 24px);
+  border:1px solid #35414d;border-radius:8px;
+  background:rgba(17,21,27,.96);box-shadow:0 4px 16px #0003;
+}
+.workspaceToolbarContents {min-width:0;max-width:100%;overflow-x:auto;scrollbar-width:thin}
+.workspaceToolbarActions {
+  display:flex;align-items:center;gap:5px;width:max-content;
+  min-height:30px;white-space:nowrap;
+}
+.workspaceToolbar button {
+  box-sizing:border-box;display:inline-flex;align-items:center;justify-content:center;
+  flex:0 0 auto;min-width:30px;height:30px;min-height:30px;
+  margin:0;padding:4px 8px;border:1px solid #35414d;border-radius:5px;
+  background:#202832;color:#e7edf4;font-size:12px;font-weight:600;line-height:1.2;cursor:pointer;
+}
+.workspaceToolbar button:hover {background:#2b3d4c;border-color:#607589}
+.workspaceToolbar button.active,.workspaceToolbar button[aria-pressed="true"] {background:#183747;border-color:#4e9cb8}
+.workspaceToolbar button:disabled {opacity:.4;cursor:not-allowed}
+.workspaceToolbar button:focus-visible {outline:2px solid #65caff;outline-offset:1px}
+.workspaceToolbar .workspaceToolbarToggle {font-size:17px;border-color:#2eac73}
+.workspaceToolbarDivider {flex:0 0 1px;width:1px;height:22px;background:#35414d;margin:0 4px}
+.workspaceToolbarHint {font-size:11px;color:#b8c4d1}
+.workspaceToolbar .cameraMoreViews {position:relative;flex:0 0 auto}
+.workspaceToolbar .cameraMoreViews summary {cursor:pointer;font-size:11px}
+.workspaceToolbar .surfaceIsolationControl,.workspaceToolbar .surfaceOpacityControl {flex:0 0 auto;font-size:11px}
+.workspaceToolbar select {max-width:145px}
+@media(max-width:760px){.workspaceToolbar{top:8px;right:8px;max-width:calc(100% - 16px)}}

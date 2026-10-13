@@ -1,3 +1,5 @@
+import { NUMERICAL_POLICY } from '../numerics/policy.js'
+
 /**
  * Complementary projective chart Z=1/z for the characteristic direction.
  *
@@ -13,7 +15,7 @@ export function ZChartCoefficients(Z, p) {
   }
 }
 
-export function fiberZ(Z, eta, p, eps = 1e-10) {
+export function fiberZ(Z, eta, p, eps = NUMERICAL_POLICY.charts.reciprocalFiberTolerance) {
   const { P, Q, R } = ZChartCoefficients(Z, p)
   const D = P * P + Q * Q
   if (D <= eps * eps) return { kind: Math.abs(R) > eps ? 'absent' : 'degenerate', P, Q, R, D }

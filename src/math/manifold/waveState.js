@@ -20,12 +20,6 @@ export function waveState(tau, Y, z, p) {
   return { ...f, r, Um, Up, s }
 }
 
-export function discriminant(U, p) {
-  const J = jacobian(U, p)
-  const A = J[0][0], B = J[0][1], C = J[1][0], D = J[1][1]
-  return (A - D) ** 2 + 4 * B * C
-}
-
 export function rhResidual(state, p) {
   if (state.kind !== 'regular') return Infinity
   const Fp = flux(state.Up, p), Fm = flux(state.Um, p)

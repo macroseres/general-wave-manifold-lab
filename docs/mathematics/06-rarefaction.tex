@@ -1,0 +1,269 @@
+\section{Rarefaction field on the characteristic surface}
+
+On the characteristic surface $\mathcal C$ we have $Y=0$ and therefore
+$U_-=U_+=\bar U(\tau,z)$.  The projective direction
+\[
+r(z)=\binom{z}{1}
+\]
+is an eigenvector of $DF(\bar U)$ associated with the characteristic speed
+$s$:
+\[
+DF(\bar U)r=s r.
+\]
+A rarefaction curve $U(\xi)$ in state space is tangent to this selected
+eigendirection, hence
+\[
+\frac{dU}{d\xi}=\alpha(\xi)r
+\]
+for some scalar reparametrization factor $\alpha$.
+
+In the finite chart write
+\[
+\bar U(\tau,z)=U_0(z)+\tau T(z),
+\qquad
+T(z)=\partial_\tau\bar U=\binom{-Q(z)}{P(z)},
+\]
+and set $U_z=\partial_z\bar U$.  The implementation uses the
+desingularized lifted field
+\[
+\boxed{
+\dot\tau=\det(r,U_z),
+\qquad
+\dot z=\det(T,r)=-(Q+zP).
+}
+\]
+Indeed, the two-dimensional determinant identity gives
+\[
+T\det(r,U_z)+U_z\det(T,r)=\det(T,U_z)r,
+\]
+so that
+\[
+\boxed{
+D\bar U(\dot\tau,\dot z)=\det(T,U_z)r.
+}
+\]
+Thus every regular integral curve of the lifted field projects to a
+rarefaction curve in state space, up to reparametrization.  The factor
+$\det(T,U_z)$ also makes explicit where the coordinate map itself becomes
+singular; no division by this factor is used in the implementation.
+
+For visualization only, the finite projective coordinate is compactified by
+\[
+\hat z=\frac{2}{\pi}\arctan z,
+\qquad
+\boxed{
+\dot{\hat z}=\frac{2}{\pi(1+z^2)}\dot z.
+}
+\]
+The compactification does not define the rarefaction field; it only changes
+its displayed coordinate.
+
+\subsection{Slow and fast characteristic sheets}
+
+At a regular point of $\mathcal C$, the direction $r(z)$ selects the
+eigenvalue $s$.  Since the system is $2\times2$, the other eigenvalue is
+\[
+\lambda_{\mathrm{other}}=\operatorname{tr}DF(\bar U)-s.
+\]
+Away from the coincidence locus $\mathcal E$, this orders the two sheets of
+the characteristic surface:
+\[
+\boxed{
+\mathcal C_s:\ s<\lambda_{\mathrm{other}},
+\qquad
+\mathcal C_f:\ s>\lambda_{\mathrm{other}}.
+}
+\]
+On $\mathcal E$ the two speeds coincide and the slow/fast distinction
+vanishes.  The function \texttt{characteristicSpectrum} implements exactly
+this comparison; it does not infer the branch from the sign or magnitude of
+$z$.
+
+\subsection{Finite singularities}
+
+A finite singularity of the lifted rarefaction field satisfies
+\[
+\boxed{\dot\tau=0,\qquad \dot z=0.}
+\]
+Because
+\[
+\dot z=-(Q+zP)
+\]
+depends only on $z$, the implementation first solves
+\[
+Q(z)+zP(z)=0.
+\]
+For the general quadratic flux this is the cubic equation
+\[
+\boxed{
+b_{20}z^3+(b_{11}-a_{20})z^2+(b_{02}-a_{11})z-a_{02}=0.
+}
+\]
+For every regular real root, $\dot\tau$ is affine in $\tau$, so the remaining
+scalar equation is solved directly.  Classification is performed only after
+the singular point has been found, using the Jacobian of
+$(\dot\tau,\dot{\hat z})$ in the displayed finite chart.
+
+The complementary chart $Z=1/z$ is required for singularities at projective
+infinity.  Their local analysis and separatrices are implemented in the reciprocal chart below. They remain logically downstream of the definition of the rarefaction field: the chart analysis does not alter that definition.
+
+\subsection{Singularities in the reciprocal chart}
+
+The complementary chart is
+\[
+Z=\frac1z,
+\qquad
+\eta=\frac{\tau}{Z^2},
+\]
+and the lifted field used by the implementation is
+\[
+\dot\eta=U_Z^{(2)}-Z U_Z^{(1)},
+\qquad
+\dot Z=-Q(Z)Z-P(Z),
+\]
+where $P,Q$ are the reciprocal-chart coefficients and
+$U_Z=\partial_Z\bar U(\eta,Z)$.
+At projective infinity, $Z=0$, one obtains
+\[
+\boxed{\dot Z\big|_{Z=0}=-2b_{20}.}
+\]
+Consequently, a regular singularity of this chart can lie at projective
+infinity only if $b_{20}=0$.  When $b_{20}=0$ and $b_{11}\neq0$, the chart
+is regular at $Z=0$ and
+\[
+\dot\eta\big|_{Z=0}
+=
+(b_{11}-2a_{20})\eta
++
+\frac{a_{10}b_{11}-a_{11}b_{10}-b_{01}b_{11}+2b_{02}b_{10}}
+     {b_{11}^2}.
+\]
+If $2a_{20}\neq b_{11}$, the isolated singularity is therefore
+\[
+\boxed{
+\eta_\infty=
+\frac{a_{10}b_{11}-a_{11}b_{10}-b_{01}b_{11}+2b_{02}b_{10}}
+     {b_{11}^2(2a_{20}-b_{11})},
+\qquad Z=0.
+}
+\]
+The Jacobian there is upper triangular.  Its diagonal entries, hence its
+eigenvalues, are
+\[
+\boxed{
+\lambda_1=b_{11}-2a_{20},
+\qquad
+\lambda_2=2(a_{20}-b_{11}).
+}
+\]
+Thus the local type at infinity must be determined from this reciprocal
+chart, not from the apparent behavior at the two ends of a compactified
+finite-$z$ drawing.
+
+For the legacy-wave preset used for regression tests,
+\[
+a_{20}=\frac92,\quad b_{11}=1,\quad b_{20}=0,\quad
+b_{02}=-\frac1{10},\quad b_{10}=1,
+\]
+with the remaining relevant linear coefficients zero.  Hence
+\[
+\boxed{(\eta_\infty,Z)=\left(-\frac1{40},0\right)},
+\qquad
+\boxed{(\lambda_1,\lambda_2)=(-8,7)}.
+\]
+The projective singularity is therefore a \emph{saddle}.  A visualization
+that makes this point look like a source or sink is not evidence of a
+change of dynamical type; it indicates that the chart identification,
+rendering, or separatrix continuation must be inspected.
+
+\subsection{Local separatrices of the saddle at projective infinity}
+
+Let $q_\infty=(\eta_\infty,0)$ be a hyperbolic saddle of the reciprocal-chart
+field, with eigenvalues $\lambda_s<0<\lambda_u$ and corresponding eigenvectors
+$v_s,v_u$.  The four local half-separatrices are initialized at
+\[
+q_\infty\pm\varepsilon v_s,
+\qquad
+q_\infty\pm\varepsilon v_u.
+\]
+To trace all four branches \emph{away} from the saddle, the unstable pair is
+integrated in forward time and the stable pair in backward time.  Multiplying
+the vector field by a positive normalization factor changes only its time
+parametrization, not these integral curves.
+
+For the regression preset, the stable eigendirection is tangent to the
+projective boundary $Z=0$.  Consequently its two half-separatrices satisfy
+\[
+\boxed{Z\equiv0}
+\]
+locally (and, for this field, along their computed continuation).  They have
+no representation in the finite $z$ chart because $z=1/Z$ is undefined on
+that boundary.  In particular, mapping all points with $Z=0$ to
+$\hat z=\pm1$ collapses the $\eta$ direction and creates the false visual
+impression that a saddle separatrix is missing.
+
+The unstable pair has $Z\neq0$ immediately away from the saddle, one branch
+on each side of $Z=0$.  Wherever $Z\neq0$, its finite-chart coordinates are
+recovered exactly by
+\[
+z=\frac1Z,
+\qquad
+\tau=\eta Z^2.
+\]
+Thus the reciprocal chart is not merely a numerical convenience: it is
+necessary to display the complete local saddle geometry at projective
+infinity.  The main finite-$z$ rendering must not invent a finite projection
+for a branch contained in $Z=0$; a reciprocal/local chart is required to
+visualize that branch.
+
+\subsection{Projection of rarefaction curves to state space}
+
+Let $\gamma(\sigma)=(\tau(\sigma),z(\sigma))\subset\mathcal C$ be an
+integral curve of the lifted rarefaction field.  Since $Y=0$ on
+$\mathcal C$, the canonical projections agree:
+\[
+ \pi_-(\gamma(\sigma))=\pi_+(\gamma(\sigma))
+ =\bar U(\tau(\sigma),z(\sigma)).
+\]
+We therefore define the state-space rarefaction as the projection
+\[
+\boxed{\mathcal R(\sigma)=\bar U(\tau(\sigma),z(\sigma)).}
+\]
+No second differential equation is integrated in $(u,v)$.  From the lifted
+field identity already established above,
+\[
+ \frac{d\mathcal R}{d\sigma}
+ =\det(T,U_z)\,r(z),
+\]
+so the tangent of the projected curve is parallel to the selected
+characteristic eigenvector.  Spectral classification is inherited pointwise:
+segments in $\mathcal C_s$ project to $\mathcal R_s$ and segments in
+$\mathcal C_f$ project to $\mathcal R_f$.  At $\mathcal E$ the two
+eigenvalues coincide, so the slow/fast label is not assigned across that
+point.
+
+\subsection{A mesma órbita através da coincidência}
+
+A classificação lenta ou rápida pertence aos \emph{trechos} da curva integral,
+não necessariamente à órbita inteira.  Se uma órbita regular $\gamma$ cruza
+transversalmente o locus de coincidência $\mathcal E$, existe um parâmetro
+$\sigma_E$ tal que
+\[
+ p_E=\gamma(\sigma_E)\in\mathcal E,
+\]
+e, localmente, a mesma órbita pode ser escrita como
+\[
+\boxed{
+\gamma=\gamma_s\cup\{p_E\}\cup\gamma_f
+}
+\]
+(ou com a ordem $f,s$ invertida).  Assim, $\mathcal E$ não é uma condição de
+parada do campo de rarefação: é o lugar onde a ordenação espectral que nomeia
+$\mathcal C_s$ e $\mathcal C_f$ deixa de ser definida.
+
+Numericamente, a órbita é integrada uma única vez. Quando o gap espectral
+$s-\lambda_{\mathrm{other}}$ muda de sinal entre duas amostras consecutivas,
+o evento é refinado por bisseção no segmento da órbita em coordenadas da
+carta. O mesmo ponto refinado $p_E$ é colocado como extremidade dos dois
+segmentos de visualização. Dessa forma não se introduz uma segunda órbita nem
+uma descontinuidade artificial no espaço de estados.

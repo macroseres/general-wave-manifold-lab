@@ -1,3 +1,4 @@
+import { NUMERICAL_POLICY } from '../numerics/policy.js'
 import { jacobian } from '../flux/quadraticFlux.js'
 import { waveState } from '../manifold/waveState.js'
 
@@ -12,7 +13,7 @@ export function directionalJacobian(z, p) {
   ]
 }
 
-export function sonicData(tau, z, p, eps = 1e-10) {
+export function sonicData(tau, z, p, eps = NUMERICAL_POLICY.sonic.determinantTolerance) {
   const state = waveState(tau, 0, z, p)
   if (state.kind !== 'regular') return { ...state, kind: state.kind }
 
@@ -27,26 +28,12 @@ export function sonicData(tau, z, p, eps = 1e-10) {
     - A[0][1] * M[1][0] - M[0][1] * A[1][0]
   const detM = det2(M)
 
-  if (Math.abs(detM) > eps) {
-    return {
-      ...state,
-      kind: 'regular',
-      K,
-      detM,
-      yMinus: 2 * K / detM,
-      yPlus: -2 * K / detM,
-      exceptional: false,
-    }
-  }
-
   return {
     ...state,
     kind: 'regular',
     K,
     detM,
-    yMinus: null,
-    yPlus: null,
-    exceptional: Math.abs(K) <= eps,
+    exceptional: Math.abs(detM) <= eps && Math.abs(K) <= eps,
   }
 }
 
@@ -56,11 +43,26 @@ export function sonicImplicit(tau, Y, z, p, side) {
   return side === 'minus' ? Y * d.detM - 2 * d.K : Y * d.detM + 2 * d.K
 }
 
-export function sonicResidual(tau, Y, z, p, side) {
+
+export function sonicDeterminant(tau, Y, z, p, side) {
   const state = waveState(tau, Y, z, p)
-  if (state.kind !== 'regular') return Infinity
+  if (state.kind !== 'regular') return NaN
   const U = side === 'minus' ? state.Um : state.Up
   const J = jacobian(U, p)
   const s = state.s
-  return Math.abs((J[0][0] - s) * (J[1][1] - s) - J[0][1] * J[1][0])
+  return (J[0][0] - s) * (J[1][1] - s) - J[0][1] * J[1][0]
+}
+
+export function sonicFullImplicit(tau, Y, z, p, side) {
+  const d = sonicData(tau, z, p)
+  if (d.kind !== 'regular') return NaN
+  const sheetFactor = side === 'minus'
+    ? Y * d.detM - 2 * d.K
+    : Y * d.detM + 2 * d.K
+  return Y * sheetFactor / 4
+}
+
+export function sonicResidual(tau, Y, z, p, side) {
+  const value = sonicDeterminant(tau, Y, z, p, side)
+  return Number.isFinite(value) ? Math.abs(value) : Infinity
 }

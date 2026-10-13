@@ -1,0 +1,67 @@
+\section{State space and physical space}
+
+The geometric objects used by the application live in distinct spaces and these spaces must not be conflated.
+
+\subsection{State space}
+The state variable is
+\[
+U=(u,v)^T\in\mathcal U,\qquad \mathcal U\simeq\mathbb R^2.
+\]
+For a point $P\in\mathcal W$, the wave manifold carries left and right states.  The canonical projections are
+\[
+\pi_-:\mathcal W\to\mathcal U,\qquad \pi_-(P)=U_-,
+\]
+\[
+\pi_+:\mathcal W\to\mathcal U,\qquad \pi_+(P)=U_+.
+\]
+For the finite chart currently used by the application,
+\[
+U_-=\bar U-\frac{Y}{2}r(z),\qquad
+U_+=\bar U+\frac{Y}{2}r(z),\qquad r(z)=(z,1)^T.
+\]
+Thus $P$ can be inspected through either endpoint in the state plane $(u,v)$.
+
+\subsection{Physical space}
+The physical independent variables are
+\[
+(x,t)\in\mathcal X,
+\]
+and a solution of the conservation law is a map
+\[
+U:\mathcal X\longrightarrow\mathcal U,\qquad
+(x,t)\longmapsto U(x,t)=\begin{pmatrix}u(x,t)\\v(x,t)\end{pmatrix},
+\]
+satisfying
+\[
+U_t+F(U)_x=0.
+\]
+The physical plane $(x,t)$ is therefore not the state plane $(u,v)$ and neither is the wave manifold $\mathcal W$.
+
+\subsection{Connection with wave constructions}
+A Rankine--Hugoniot state $W=(U_-,U_+,s)$ determines a shock trajectory, for an initial discontinuity at $x=x_0$,
+\[
+x=x_0+st.
+\]
+For a self-similar Riemann solution one introduces
+\[
+\xi=\frac{x-x_0}{t},\qquad t>0,
+\]
+so that $U(x,t)=V(\xi)$.  In a rarefaction of family $i$, the regular interior relation is
+\[
+\lambda_i(V(\xi))=\xi.
+\]
+These formulas document the intended bridge from wave geometry to physical solutions.  They do not assert that a Riemann solver is already implemented.
+
+\subsection{Architectural status}
+The current v0.7 development line establishes the mathematical vocabulary and interfaces.  Future modules will represent state-space geometry and, only after the relevant wave constructions are validated, assemble Riemann solutions in physical space.  Mathematical wave objects must remain available independently of whether a particular physical-space visualization has been implemented.
+
+\subsection{Implemented state-space projection interface (v0.7.0-dev.9)}
+The first state-space view implements only the canonical maps already defined above.  For a regular wave-manifold state $W$ it displays
+\[
+  \pi_-(P)=U_-,\qquad \pi_+(P)=U_+,
+\]
+together with the midpoint $\bar U$.  No wave curve is recomputed in the state-space renderer.  In particular, on the characteristic surface $\Ccal$, where $Y=0$,
+\[
+  U_-=U_+=\bar U,
+\]
+so the three displayed markers coincide.  Future Hugoniot, rarefaction and composite curves in $(u,v)$ must be obtained by projecting the corresponding validated mathematical objects, not by introducing independent equations in the visualization layer.

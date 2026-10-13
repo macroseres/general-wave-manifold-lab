@@ -1,5 +1,6 @@
 # v0.6.0 Foundation audit
 
+> Historical snapshot. For the current pre-Hugoniot status, see `FOUNDATION_VERIFICATION.md`.
 Date: 2026-10-07
 
 ## Result

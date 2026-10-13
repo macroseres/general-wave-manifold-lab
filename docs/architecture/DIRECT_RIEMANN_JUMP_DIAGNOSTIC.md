@@ -1,0 +1,3 @@
+# Diagnóstico preliminar de choque direto
+
+Para estados U_L e U_R distintos, calcula-se ΔU=U_R-U_L e ΔF=F(U_R)-F(U_L). A velocidade de mínimos quadrados é s=(ΔU·ΔF)/|ΔU|²; a condição RH é avaliada por |ΔF-sΔU|/(1+|ΔF|+|s||ΔU|). O teste com tolerância 1e-8 é apenas algébrico e não constitui uma seleção entrópica. A existência de dois autovalores reais nos extremos não garante hiperbolicidade ao longo de uma curva de onda. O módulo não identifica estados intermediários, ondas compostas nem admissibilidade de Lax/Liu. U* permanece independente; a fibra forward de U_L e a backward de U_R não foram alteradas.

@@ -1,8 +1,9 @@
-import { zFromZHat, zHatFromZ } from '../charts/zChart.js'
+import { NUMERICAL_POLICY } from '../numerics/policy.js'
+import { zFromZc, zcFromZ } from '../charts/zChart.js'
 import { cubicRealRoots } from '../numerics/polynomialRoots.js'
 import { rarefactionField, rarefactionFieldZ } from './field.js'
 
-function classify2x2(J, eps = 1e-7) {
+function classify2x2(J, eps = NUMERICAL_POLICY.rarefaction.singularityClassificationTolerance) {
   const tr = J[0][0] + J[1][1], det = J[0][0] * J[1][1] - J[0][1] * J[1][0], disc = tr * tr - 4 * det
   let type = 'degenerada'
   if (det < -eps) type = 'sela'
@@ -18,15 +19,15 @@ function eigvec2(J, lambda) {
   const a = J[0][0] - lambda, b = J[0][1], c = J[1][0], d = J[1][1] - lambda
   let v = Math.abs(b) + Math.abs(a) > Math.abs(c) + Math.abs(d) ? [-b, a] : [-d, c]
   let n = Math.hypot(...v)
-  if (n < 1e-12) { v = [1, 0]; n = 1 }
+  if (n < NUMERICAL_POLICY.rarefaction.eigenvectorNormFloor) { v = [1, 0]; n = 1 }
   return v.map(x => x / n)
 }
 
 export function rarefactionJacobian(tau, z, p) {
-  const zh = zHatFromZ(z), ht = Math.max(1e-5, 1e-5 * (1 + Math.abs(tau))), hh = 1e-5
+  const zh = zcFromZ(z), h = NUMERICAL_POLICY.rarefaction.jacobianRelativeStep, ht = Math.max(h, h * (1 + Math.abs(tau))), hh = NUMERICAL_POLICY.rarefaction.jacobianChartStep
   const evalAt = (t, h) => {
-    const zz = zFromZHat(Math.max(-.999999, Math.min(.999999, h))), d = rarefactionField(t, zz, p)
-    return [d.tauDot, d.zHatDot]
+    const zz = zFromZc(Math.max(-.999999, Math.min(.999999, h))), d = rarefactionField(t, zz, p)
+    return [d.tauDot, d.zcDot]
   }
   const ap = evalAt(tau + ht, zh), am = evalAt(tau - ht, zh), bp = evalAt(tau, zh + hh), bm = evalAt(tau, zh - hh)
   return [[(ap[0] - am[0]) / (2 * ht), (bp[0] - bm[0]) / (2 * hh)], [(ap[1] - am[1]) / (2 * ht), (bp[1] - bm[1]) / (2 * hh)]]
@@ -40,27 +41,37 @@ export function rarefactionSingularities(p, tauMin = -2, tauMax = 2) {
     const d0 = rarefactionField(0, z, p), d1 = rarefactionField(1, z, p)
     if (d0.kind !== 'regular' || d1.kind !== 'regular') continue
     const slope = d1.tauDot - d0.tauDot
-    if (Math.abs(slope) < 1e-10) continue
+    if (Math.abs(slope) < NUMERICAL_POLICY.rarefaction.finiteDirectionSlopeTolerance) continue
     const tau = -d0.tauDot / slope
-    if (!Number.isFinite(tau) || tau < tauMin - 1e-7 || tau > tauMax + 1e-7) continue
+    if (!Number.isFinite(tau) || tau < tauMin - NUMERICAL_POLICY.rarefaction.finiteDomainTolerance || tau > tauMax + NUMERICAL_POLICY.rarefaction.finiteDomainTolerance) continue
     const d = rarefactionField(tau, z, p)
-    if (Math.hypot(d.tauDot, d.zHatDot) > 1e-6) continue
+    if (Math.hypot(d.tauDot, d.zcDot) > NUMERICAL_POLICY.rarefaction.finiteEquilibriumResidualTolerance) continue
     const J = rarefactionJacobian(tau, z, p), cls = classify2x2(J)
     const eigenvectors = cls.eigenvalues ? cls.eigenvalues.map(l => eigvec2(J, l)) : null
-    out.push({ tau, z, zHat: zHatFromZ(z), J, ...cls, eigenvectors, atInfinity: false })
+    out.push({ tau, z, zc: zcFromZ(z), J, ...cls, eigenvectors, atInfinity: false })
   }
   return out
 }
 
-export function infinityRarefactionSingularities(p, etaMin = -100, etaMax = 100, eps = 1e-9) {
-  if (Math.abs(2 * p.b20) > eps) return []
-  const d0 = rarefactionFieldZ(0, 0, p), d1 = rarefactionFieldZ(1, 0, p)
-  if (d0.kind !== 'regular' || d1.kind !== 'regular') return []
-  const slope = d1.etaDot - d0.etaDot
-  if (Math.abs(slope) < eps) return []
-  const eta = -d0.etaDot / slope
+
+export function infinityRarefactionLinearData(p, eps = NUMERICAL_POLICY.rarefaction.infinityExistenceTolerance) {
+  if (Math.abs(p.b20) > eps || Math.abs(p.b11) <= eps) return null
+  const etaSlope = p.b11 - 2 * p.a20
+  const etaConstant = (p.a10 * p.b11 - p.a11 * p.b10 - p.b01 * p.b11 + 2 * p.b02 * p.b10) / (p.b11 * p.b11)
+  if (Math.abs(etaSlope) <= eps) return { kind: Math.abs(etaConstant) <= eps ? 'nonisolated' : 'absent', etaSlope, etaConstant }
+  const eta = -etaConstant / etaSlope
+  const eigenvalues = [etaSlope, 2 * (p.a20 - p.b11)]
+  return { kind: 'isolated', eta, Z: 0, etaSlope, etaConstant, eigenvalues }
+}
+
+export function infinityRarefactionSingularities(p, etaMin = -100, etaMax = 100, eps = NUMERICAL_POLICY.rarefaction.infinitySearchTolerance) {
+  const linear = infinityRarefactionLinearData(p, eps)
+  if (!linear || linear.kind !== 'isolated') return []
+  const eta = linear.eta
+  const d0 = rarefactionFieldZ(eta, 0, p)
+  if (d0.kind !== 'regular') return []
   if (!Number.isFinite(eta) || eta < etaMin || eta > etaMax) return []
-  const hE = 1e-5, hZ = 1e-5
+  const hE = NUMERICAL_POLICY.rarefaction.infinityJacobianStep, hZ = NUMERICAL_POLICY.rarefaction.infinityJacobianStep
   const ev = (e, Z) => { const d = rarefactionFieldZ(e, Z, p); return [d.etaDot, d.ZDot] }
   const ep = ev(eta + hE, 0), em = ev(eta - hE, 0), zp = ev(eta, hZ), zm = ev(eta, -hZ)
   const J = [[(ep[0] - em[0]) / (2 * hE), (zp[0] - zm[0]) / (2 * hZ)], [(ep[1] - em[1]) / (2 * hE), (zp[1] - zm[1]) / (2 * hZ)]]

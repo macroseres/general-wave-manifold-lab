@@ -1,0 +1,21 @@
+\section{Correspondência entre os três espaços}
+A arquitetura distingue a variedade de ondas $\mathcal W$, o espaço de estados
+$\mathcal U\simeq\mathbb R^2_{(u,v)}$ e o espaço físico
+$\mathcal X\simeq\mathbb R^2_{(x,t)}$.  Para uma órbita de rarefação
+$\gamma\subset\mathcal C$, a projeção em estados é
+\[
+  \mathcal R=\bar U\circ\gamma,
+\]
+pois $Y=0$ implica $U_-=U_+=\bar U$.  Quando a velocidade característica
+$s$ é monótona ao longo do trecho considerado, a realização auto-similar usa
+\[
+  \xi=\frac{x}{t},\qquad \xi=s(U),\qquad t>0.
+\]
+Assim, o mesmo objeto é representado sucessivamente em
+\[
+  \mathcal W\longrightarrow\mathcal U\longrightarrow\mathcal X.
+\]
+A implementação desta correspondência não constitui, por si só, um solver do
+problema de Riemann geral. Órbitas com reversão de $s$ são rejeitadas como
+leques físicos regulares até que uma construção matemática apropriada seja
+especificada.

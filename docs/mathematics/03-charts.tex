@@ -1,8 +1,68 @@
-\section{Coordinate charts}
+\section{Projective directional charts}
 
-The current implementation uses a finite directional coordinate $z$ and the complementary chart
+\subsection{Finite $z$ chart}
+
+The finite chart represents the characteristic direction by
 \[
-Z=\frac{1}{z}.
+r(z)=\binom{z}{1}.
 \]
+The fiber is parametrized by $(\tau,z)$ as established in the previous section.
+For visualization only, the current application also uses
+\[
+\widehat z=\frac{2}{\pi}\arctan z,
+\]
+which compactifies finite $z$ into $(-1,1)$. This display coordinate is not a replacement for the projective chart.
 
-The overlap maps and every vector-field rescaling used in the complementary chart must be recorded here and tested independently of the renderer.
+\subsection{Reciprocal chart}
+
+Near the direction $z=\infty$, introduce
+\[
+Z=\frac1z.
+\]
+Multiplying the affine fiber equation by $Z^2$ gives
+\[
+\widetilde P(Z)u+\widetilde Q(Z)v+\widetilde R(Z)=0,
+\]
+with
+\begin{align*}
+\widetilde P(Z)&=2b_{20}+(b_{11}-2a_{20})Z-a_{11}Z^2,\\
+\widetilde Q(Z)&=b_{11}+(2b_{02}-a_{11})Z-2a_{02}Z^2,\\
+\widetilde R(Z)&=b_{10}+(b_{01}-a_{10})Z-a_{01}Z^2.
+\end{align*}
+On the overlap $Z\neq0$,
+\[
+\widetilde P=Z^2P,\qquad
+\widetilde Q=Z^2Q,\qquad
+\widetilde R=Z^2R.
+\]
+The orthogonal foot $U_0$ is therefore unchanged, while the tangent vector scales as
+\[
+(-\widetilde Q,\widetilde P)=Z^2(-Q,P).
+\]
+If $\eta$ denotes the fiber coefficient in the reciprocal chart, equality of the physical midpoint requires
+\[
+U_0+\tau(-Q,P)
+ =U_0+\eta(-\widetilde Q,\widetilde P),
+\]
+and hence
+\[
+\boxed{\eta=\frac{\tau}{Z^2}=\tau z^2},
+\qquad
+\boxed{\tau=\eta Z^2}.
+\]
+This transition follows from the general quadratic model and the chosen fiber parametrization; it is not imported as an assumption from the earlier wave-manifold application.
+
+\paragraph{Full wave-state transition.}
+The preceding derivation concerns the midpoint fiber coordinate.  For a full
+wave state away from $\mathcal C$, the jump coordinate must transform as well.
+Writing the reciprocal direction as $(1,Z)$, one has
+\[
+ (z,1)=Z^{-1}(1,Z),
+\]
+so the reciprocal jump coordinate is
+\[
+ \boxed{\Upsilon=Y/Z}.
+\]
+Thus the full reciprocal coordinates are $(\eta,\Upsilon,Z)$.  On
+$\mathcal C$ both $Y$ and $\Upsilon$ vanish, which is why the distinction did
+not affect the previously validated rarefaction calculations.

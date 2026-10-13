@@ -1,4 +1,6 @@
-export function quadraticRoots(a, b, c, eps = 1e-10) {
+import { NUMERICAL_POLICY } from './policy.js'
+
+export function quadraticRoots(a, b, c, eps = NUMERICAL_POLICY.algebra.regularityTolerance) {
   if (Math.abs(a) < eps) {
     if (Math.abs(b) < eps) return []
     return [-c / b]
@@ -8,10 +10,10 @@ export function quadraticRoots(a, b, c, eps = 1e-10) {
   disc = Math.max(0, disc)
   const r = Math.sqrt(disc)
   return [(-b - r) / (2 * a), (-b + r) / (2 * a)]
-    .filter((x, i, arr) => i === 0 || Math.abs(x - arr[0]) > 1e-8)
+    .filter((x, i, arr) => i === 0 || Math.abs(x - arr[0]) > NUMERICAL_POLICY.algebra.quadraticRootDedupTolerance)
 }
 
-export function cubicRealRoots(a, b, c, d, eps = 1e-12) {
+export function cubicRealRoots(a, b, c, d, eps = NUMERICAL_POLICY.algebra.cubicTolerance) {
   if (Math.abs(a) < eps) return quadraticRoots(b, c, d, eps)
   const A = b / a, B = c / a, C = d / a
   const p = B - A * A / 3
@@ -23,7 +25,7 @@ export function cubicRealRoots(a, b, c, d, eps = 1e-12) {
   }
   if (Math.abs(disc) <= eps) {
     const u = Math.cbrt(-q / 2)
-    return [2 * u - A / 3, -u - A / 3].filter((x, i, arr) => i === 0 || Math.abs(x - arr[0]) > 1e-9)
+    return [2 * u - A / 3, -u - A / 3].filter((x, i, arr) => i === 0 || Math.abs(x - arr[0]) > NUMERICAL_POLICY.algebra.rootDedupTolerance)
   }
   const rho = 2 * Math.sqrt(-p / 3)
   const phi = Math.acos(Math.max(-1, Math.min(1, (-q / 2) / Math.sqrt(-(p * p * p) / 27))))

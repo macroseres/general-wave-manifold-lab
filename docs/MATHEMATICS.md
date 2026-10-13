@@ -64,8 +64,10 @@ A velocidade é calculada por
 s=\frac{r^TDF(\bar U)r}{r^Tr},\qquad r=(z,1).
 \]
 
-## Coincidência
-`Y=0` é apenas salto nulo. A coincidência satisfaz adicionalmente
+## Superfície característica e coincidência
+A superfície característica é `\mathcal C = {Y=0}`. Nela, `U_-=U_+=\bar U`.
+
+O locus de coincidência é `\mathcal E\subset\mathcal C` e satisfaz adicionalmente
 \[
 \Delta(\bar U)=0,
 \qquad
@@ -115,6 +117,18 @@ que é a carta usada no `wave-manifold-app`.
 A seção `U^0` escolhida no app geral é canônica (pé ortogonal). No app particular antigo a origem de `t` era uma seção especial ligada à coincidência. Portanto `tau` e o antigo `t` podem diferir por uma translação dependente de `z`, embora os estados físicos e as sônicas sejam os mesmos.
 
 
+## Ramos lento e rápido da característica
+
+Em cada ponto regular de `\mathcal C`, a direção `r=(z,1)` seleciona a velocidade característica `s`. A segunda velocidade é
+
+\[\lambda_{\mathrm{other}}=\operatorname{tr}DF(\bar U)-s.\]
+
+Fora de `\mathcal E`, adotamos
+
+\[\mathcal C_s:\ s<\lambda_{\mathrm{other}},\qquad \mathcal C_f:\ s>\lambda_{\mathrm{other}}.\]
+
+Em `\mathcal E` as duas velocidades coincidem, portanto a distinção lento/rápido desaparece. Essa classificação é espectral e não depende do sinal de `z`.
+
 ## Campo de rarefação em Y=0
 
 Na superfície característica, escreva
@@ -160,10 +174,10 @@ O campo de rarefação nesta carta é
 `Zdot = det(∂_η Ubar,(1,Z)) = -(P_Z+Z Q_Z)`.
 
 Logo `Z=0` é uma direção singular do campo projetivo somente quando `P_Z(0)=2 b20=0`. Quando a singularidade é isolada, o app resolve também `ηdot=0` e classifica o Jacobiano em `(η,Z)`. Esta classificação é feita na carta regular e não pela aparência da borda compactificada `zhat=±1`.
-\n\n## Separatrizes da sela no infinito\nQuando a singularidade em `Z=0` é uma sela, os autovetores do Jacobiano do campo `(etaDot,ZDot)` definem quatro ramos locais. Cada ramo é iniciado em `(eta_inf,0)+/- eps v_i` e integrado na carta Z, nunca diretamente em `z=+/-infinito`. Para exibição usa-se\n\n`tau = eta Z^2`, `z=1/Z`, `zHat=(2/pi) atan(z)`.\n\nAssim, ramos com `Z>0` chegam ao bordo `zHat=+1` e ramos com `Z<0` ao bordo `zHat=-1`. Esses dois bordos são cópias do mesmo ponto projetivo criado pelo corte da compactificação. A separação visual não cria singularidades adicionais.\n
+\n\n## Separatrizes da sela no infinito\nQuando a singularidade em `Z=0` é uma sela, os autovetores do Jacobiano do campo `(etaDot,ZDot)` definem quatro ramos locais. Cada ramo é iniciado em `(eta_inf,0)+/- eps v_i` e integrado na carta Z, nunca diretamente em `z=+/-infinito`. Para exibição usa-se\n\n`tau = eta Z^2`, `z=1/Z`, `zc=(2/pi) atan(z)`.\n\nAssim, ramos com `Z>0` chegam ao bordo `zc=+1` e ramos com `Z<0` ao bordo `zc=-1`. Esses dois bordos são cópias do mesmo ponto projetivo criado pelo corte da compactificação. A separação visual não cria singularidades adicionais.\n
 
 ## Carta ativa e separatrizes no infinito
-Para `|zHat| >= 0.90`, a interface identifica `Z=1/z` como a carta ativa de inspeção. As separatrizes da sela em `Z=0` são integradas exclusivamente no campo regular `(eta,Z)`, com `eta=tau/Z^2`, e transportadas para `(tau,zHat)` apenas para renderização. Os quatro semirramos `W^s_±, W^u_±` são mantidos separados; setas mostram a orientação. Os dois bordos `zHat=±1` representam o mesmo ponto projetivo.
+Para `|zc| >= 0.90`, a interface identifica `Z=1/z` como a carta ativa de inspeção. As separatrizes da sela em `Z=0` são integradas exclusivamente no campo regular `(eta,Z)`, com `eta=tau/Z^2`, e transportadas para `(tau,zc)` apenas para renderização. Os quatro semirramos `W^s_±, W^u_±` são mantidos separados; setas mostram a orientação. Os dois bordos `zc=±1` representam o mesmo ponto projetivo.
 
 
 ## Organização do retrato de fase (v0.5.5)
@@ -175,3 +189,19 @@ As singularidades são selecionáveis. Ao selecionar uma sela finita, a interfac
 
 ## Conexões heteroclínicas
 Se um ramo instável de uma sela $p$ alcança outra sela $q$ e coincide com seu ramo estável, a órbita é única: $\gamma\subset W^u(p)\cap W^s(q)$. O renderer detecta a chegada a outra sela, fecha a curva exatamente no ponto singular e suprime a cópia obtida pela integração estável inversa.
+
+## Papéis dos estados e saturações (dev.24.15)
+
+Os símbolos de estado têm papéis distintos e não devem ser identificados globalmente.
+
+- `U*` é um estado genérico de exploração em `U`; ele não é intrinsecamente esquerdo nem direito. Portanto possui as duas fibras `pi_-^{-1}(U*)` (forward) e `pi_+^{-1}(U*)` (backward).
+- `(U_L,U_R)` são os dados globais do problema de Riemann. A orientação inicial seleciona `pi_-^{-1}(U_L)` para ondas que saem de `U_L` e `pi_+^{-1}(U_R)` para ondas que chegam a `U_R`.
+- `(U_-(P),U_+(P))=(pi_-(P),pi_+(P))` são estados locais móveis associados a cada ponto `P in W`. Eles podem tornar-se estados intermediários numa sequência de ondas.
+
+Para uma curva `Gamma subset W`, definimos as sementes das saturações por
+
+`Sat_forw(Gamma) = union_{P in Gamma} pi_-^{-1}(U_-(P))`,
+
+`Sat_back(Gamma) = union_{P in Gamma} pi_+^{-1}(U_+(P))`.
+
+O núcleo desta versão formaliza a curva de estados fixos que indexa cada união. A discretização/meshing da superfície saturada não é feita no renderer e será implementada separadamente.

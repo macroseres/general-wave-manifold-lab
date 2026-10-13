@@ -1,3 +1,5 @@
+import { NUMERICAL_POLICY } from '../numerics/policy.js'
+
 /**
  * Finite projective chart z for the characteristic direction r=(z,1).
  *
@@ -12,16 +14,16 @@ export function zChartCoefficients(z, p) {
   }
 }
 
-export function zHatFromZ(z) {
+export function zcFromZ(z) {
   return (2 / Math.PI) * Math.atan(z)
 }
 
-export function zFromZHat(zHat) {
-  const q = Math.max(-1 + 1e-7, Math.min(1 - 1e-7, zHat))
+export function zFromZc(zc) {
+  const q = Math.max(-1 + NUMERICAL_POLICY.charts.zcClampMargin, Math.min(1 - NUMERICAL_POLICY.charts.zcClampMargin, zc))
   return Math.tan((Math.PI / 2) * q)
 }
 
-export function fiber(z, tau, p, eps = 1e-10) {
+export function fiber(z, tau, p, eps = NUMERICAL_POLICY.charts.finiteFiberTolerance) {
   const { P, Q, R } = zChartCoefficients(z, p)
   const D = P * P + Q * Q
   if (D <= eps * eps) return { kind: Math.abs(R) > eps ? 'absent' : 'degenerate', P, Q, R, D }
@@ -37,5 +39,5 @@ export function fiber(z, tau, p, eps = 1e-10) {
 }
 
 export function chartCoordinates(z) {
-  return { z, Z: Math.abs(z) > 1e-10 ? 1 / z : null, zHat: zHatFromZ(z) }
+  return { z, Z: Math.abs(z) > NUMERICAL_POLICY.charts.reciprocalZeroTolerance ? 1 / z : null, zc: zcFromZ(z) }
 }

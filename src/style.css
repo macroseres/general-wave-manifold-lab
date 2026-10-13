@@ -1,4 +1,292 @@
-*{box-sizing:border-box}body{margin:0;font-family:Inter,system-ui,sans-serif;background:#eef2f4;color:#162126}.app{height:100vh;display:flex;flex-direction:column}header{height:74px;background:#0f2e3a;color:white;display:flex;align-items:center;justify-content:space-between;padding:10px 18px}h1{font-size:20px;margin:0}header p{margin:3px 0 0;color:#b8cbd2;font-size:12px}button{padding:9px 12px;border:0;border-radius:8px;font-weight:700}main{flex:1;display:grid;grid-template-columns:250px 1fr 270px;min-height:0}aside{padding:14px;background:white;overflow:auto;border-right:1px solid #ccd5d9}.info{border-right:0;border-left:1px solid #ccd5d9}h2{font-size:14px;margin:10px 0}.coeff{display:grid;grid-template-columns:1fr 1fr;gap:6px}label{font-size:12px;display:flex;flex-direction:column;gap:3px;margin-bottom:8px}input[type=number]{width:100%;padding:6px;border:1px solid #bcc9ce;border-radius:5px}input[type=range]{width:100%}.view{position:relative;min-width:0}.badge{position:absolute;bottom:12px;left:50%;transform:translateX(-50%);background:#ffffffdd;padding:7px 10px;border-radius:8px;font-size:12px;white-space:nowrap}.info p{font-size:12px;overflow-wrap:anywhere}.info small{display:block;padding:8px;background:#fff6d5;border-radius:6px}@media(max-width:900px){main{grid-template-columns:210px 1fr}.info{display:none}}
-.sceneWrap{position:absolute;inset:0}.cameraBar{position:absolute;top:10px;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:6px;background:#ffffffeb;border:1px solid #ccd5d9;border-radius:9px;padding:5px 7px;font-size:11px;box-shadow:0 2px 8px #00000014;z-index:3;white-space:nowrap}.cameraBar button{padding:5px 8px;background:#edf2f4;color:#23343b;border:1px solid #c8d3d7;font-size:11px}.cameraBar button:hover{background:#dfe8eb}.view{background:#e9eef0}
-.headerActions{display:flex;gap:8px}.headerActions button:first-child{background:#dce9ed;color:#17343f}.helpBackdrop{position:fixed;inset:0;background:#07151ccc;z-index:50;display:flex;align-items:center;justify-content:center;padding:24px}.helpDialog{width:min(980px,96vw);height:min(860px,92vh);background:#f8fafb;border-radius:12px;box-shadow:0 20px 70px #0008;display:flex;flex-direction:column;overflow:hidden}.helpHeader{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;background:#0f2e3a;color:#fff}.helpHeader h2{font-size:18px;margin:0}.helpHeader p{font-size:12px;color:#b8cbd2;margin:3px 0 0}.helpHeader button{background:#e8eff2;color:#17343f}.helpBody{overflow:auto;padding:8px 24px 28px}.helpBody section{padding:14px 0;border-bottom:1px solid #d8e0e3}.helpBody section:last-child{border-bottom:0}.helpBody h3{font-size:15px;margin:0 0 8px;color:#103846}.helpBody p{font-size:13px;line-height:1.55;margin:7px 0}.helpEq{font-family:"Cambria Math","STIX Two Math","Times New Roman",serif;font-size:15px;line-height:1.55;background:#edf3f5;border-left:3px solid #39798d;border-radius:4px;padding:7px 10px;margin:7px 0;overflow-x:auto;white-space:nowrap}
+*{box-sizing:border-box}body{margin:0;font-family:Inter,system-ui,sans-serif;background:#eef2f4;color:#162126}.app{height:100vh;display:flex;flex-direction:column}header{height:74px;background:#0f2e3a;color:white;display:flex;align-items:center;justify-content:space-between;padding:10px 18px}h1{font-size:20px;margin:0}header p{margin:3px 0 0;color:#b8cbd2;font-size:12px}button{padding:9px 12px;border:0;border-radius:8px;font-weight:700}main{flex:1;display:grid;grid-template-columns:250px 1fr 270px;min-height:0}aside{padding:14px;overflow:auto;border-right:1px solid #ccd5d9;}.info{border-right:0;border-left:1px solid #ccd5d9}h2{font-size:14px;margin:10px 0}.coeff{display:grid;grid-template-columns:1fr 1fr;gap:6px}label{font-size:12px;display:flex;flex-direction:column;gap:3px;margin-bottom:8px}input[type=number]{width:100%;padding:6px;border:1px solid #bcc9ce;border-radius:5px}input[type=range]{width:100%}.view{position:relative;min-width:0}.badge{position:absolute;bottom:12px;left:50%;transform:translateX(-50%);padding:7px 10px;border-radius:8px;font-size:12px;white-space:nowrap;}.info p{font-size:12px;overflow-wrap:anywhere}.info small{display:block;padding:8px;border-radius:6px;}@media(max-width:900px){main{grid-template-columns:210px 1fr}.info{display:none}}
+.sceneWrap{position:absolute;inset:0}.view{}
+.headerActions{display:flex;gap:8px}.headerActions button:first-child{background:#dce9ed;color:#17343f}.helpBackdrop{position:fixed;inset:0;background:#07151ccc;z-index:50;display:flex;align-items:center;justify-content:center;padding:24px}.helpDialog{width:min(980px,96vw);height:min(860px,92vh);background:#f8fafb;border-radius:12px;box-shadow:0 20px 70px #0008;display:flex;flex-direction:column;overflow:hidden}.helpHeader{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;background:#0f2e3a;color:#fff}.helpHeader h2{font-size:18px;margin:0}.helpHeader p{font-size:12px;color:#b8cbd2;margin:3px 0 0}.helpHeader button{}.helpBody{overflow:auto;padding:8px 24px 28px}.helpBody section{padding:14px 0;border-bottom:1px solid #d8e0e3}.helpBody section:last-child{border-bottom:0}.helpBody h3{font-size:15px;margin:0 0 8px;}.helpBody p{font-size:13px;line-height:1.55;margin:7px 0}.helpEq{font-family:"Cambria Math","STIX Two Math","Times New Roman",serif;font-size:15px;line-height:1.55;background:#edf3f5;border-left:3px solid #39798d;border-radius:4px;padding:7px 10px;margin:7px 0;overflow-x:auto;white-space:nowrap}
 .scaleReset{width:100%;margin:4px 0 6px}.app aside small{display:block;line-height:1.25}
+.localChartBackdrop{position:fixed;inset:0;background:#07151ccc;z-index:60;display:flex;align-items:center;justify-content:center;padding:24px}.localChartDialog{width:min(920px,96vw);background:#f8fafb;border:1px solid #c7d3d8;border-radius:12px;box-shadow:0 24px 80px #0009;overflow:hidden}.localChartDialog>header{height:auto;min-height:72px}.localChartDialog>header h2{font-size:18px;margin:0}.localChartDialog>header p{margin:4px 0 0}.localChartBody{padding:18px 22px 20px}.localChartBody svg{display:block;width:100%;height:auto;border:1px solid #cbd6da;border-radius:8px}.chartBg{}.chartAxis{stroke-width:1;}.chartInfinity{stroke:#263238;stroke-width:2;stroke-dasharray:7 5}.chartStable,.chartUnstable{fill:none;stroke-width:3;stroke-linecap:round}.chartStable{stroke:#5eead4}.chartUnstable{stroke:#f08080}.chartSaddle{fill:#111827;stroke:#f8fafb;stroke-width:2}.localChartBody svg text{font:14px system-ui,sans-serif;}.localChartLegend{display:flex;flex-wrap:wrap;gap:14px;margin-top:12px;font-size:12px;color:#31434a}.localChartLegend span{display:flex;align-items:center;gap:6px}.localChartLegend i{display:inline-block;width:20px;height:3px}.stableSwatch{background:#5eead4}.unstableSwatch{background:#f08080}.localChartNote{font-size:12px;line-height:1.45;margin:10px 0 0;color:#52656d}
+
+.stableArrowHead{fill:#5eead4}.unstableArrowHead{fill:#f08080}.chartBranchLabel{font-weight:700}.chartSaddleLabel{font-weight:800}.chartBoundaryLabel{font-weight:700}.localChartDialog button{cursor:pointer}@media(max-width:700px){.localChartBackdrop{padding:10px}.localChartBody{padding:12px}.localChartLegend{gap:8px}.localChartDialog>header{padding:12px 14px}.localChartBody svg{min-height:300px}}
+
+/* State-space projection view */
+.stateJump{stroke:currentColor;stroke-width:1.5;stroke-dasharray:5 5;opacity:.55}
+.stateMinus{fill:#7dd3fc;stroke:#fff;stroke-width:1.5}
+.statePlus{fill:#86efac;stroke:#fff;stroke-width:1.5}
+.stateMean{fill:#111827;stroke:#fff;stroke-width:1.5}
+.stateLabel{font-size:14px;font-weight:700;fill:currentColor}
+.stateRareSlow,.stateRareFast{stroke-width:2.2;vector-effect:non-scaling-stroke}.stateRareSlow{stroke:#5eead4}.stateRareFast{stroke:#f08080}
+.mathLabel{white-space:nowrap}.mathBlock{font-size:15px;line-height:1.55;background:#edf3f5;border-left:3px solid #39798d;border-radius:4px;padding:8px 11px;margin:8px 0;overflow-x:auto}.mathBlock .katex-display{margin:.2em 0}.mathLabel .katex{font-size:1.02em}.stateRareSlow{stroke-dasharray:none}.stateRareFast{stroke-dasharray:8 4}.stateCoincidence{fill:#fff;stroke:#111827;stroke-width:1.5}.stateSpaceKey{display:flex;gap:14px;flex-wrap:wrap;font-size:12px}.stateSpaceKey .fastSample{border-top:2px dashed #f08080;width:24px}.stateSpaceKey .slowSample{border-top:2px solid #5eead4;width:24px}
+.helpIndex{position:sticky;top:0;z-index:2;display:flex;gap:6px;flex-wrap:wrap;padding:10px 0;backdrop-filter:blur(8px);border-bottom:1px solid #d8e0e3;}.helpIndex a{font-size:11px;text-decoration:none;padding:5px 8px;border-radius:5px;}.helpIndex a:hover{text-decoration:underline}
+
+.stateSpaceKey{margin-top:12px;align-items:center}.localChartDialog:has(#state-space-title){max-height:94vh;display:flex;flex-direction:column}.localChartDialog:has(#state-space-title) .localChartBody{overflow:auto}.localChartDialog:has(#state-space-title) .localChartBody svg{max-height:min(68vh,680px)}
+.experimentFileInput{display:none}.experimentStatus{align-self:center;max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:11px;color:#c7dbe2}.headerActions{align-items:center;flex-wrap:wrap;justify-content:flex-end}
+
+/* dev.17 — semantic scientific UI foundation */
+body{background:var(--gwml-bg-app);color:var(--gwml-text-primary)}
+aside{background:var(--gwml-bg-panel);color:var(--gwml-text-primary);border-color:var(--gwml-border-subtle)}
+.view{background:var(--gwml-bg-view)}
+input[type=number]{background:var(--gwml-bg-elevated);color:var(--gwml-text-primary);border-color:var(--gwml-border-subtle)}
+button{cursor:pointer}
+button:focus-visible,input:focus-visible,a:focus-visible{outline:2px solid var(--gwml-focus);outline-offset:2px}
+.app aside small{color:var(--gwml-text-secondary)}
+.info small{background:var(--gwml-bg-note);color:var(--gwml-text-primary)}
+.badge{background:color-mix(in srgb,var(--gwml-bg-panel) 92%,transparent);color:var(--gwml-text-primary);border-color:var(--gwml-border-subtle)}
+.helpHeader button{background:var(--gwml-bg-control);color:var(--gwml-text-primary);border-color:var(--gwml-border-subtle)}
+.helpDialog,.localChartDialog{background:var(--gwml-bg-elevated);color:var(--gwml-text-primary);border-color:var(--gwml-border-subtle)}
+.helpBody section,.helpIndex{border-color:var(--gwml-border-subtle)}
+.helpBody h3,.helpBody p,.localChartNote,.localChartLegend{color:var(--gwml-text-primary)}
+.helpEq,.mathBlock{background:var(--gwml-bg-control)}
+.helpIndex{background:color-mix(in srgb,var(--gwml-bg-elevated) 92%,transparent)}
+.helpIndex a{color:var(--gwml-text-primary);background:var(--gwml-bg-control)}
+@media(max-width:1100px){header{height:auto;min-height:74px;align-items:flex-start;gap:10px}.headerActions{max-width:58%}main{grid-template-columns:230px 1fr 250px}}
+@media(max-width:760px){header{flex-direction:column}.headerActions{}main{grid-template-columns:1fr}.app>main>aside:not(.info){display:none}.info{display:none}.badge{max-width:90%;overflow:hidden;text-overflow:ellipsis}.view{min-height:calc(100vh - 150px)}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
+
+/* dev.20 — synchronized physical-space solution view */
+.physicalSolutionGrid{display:grid;grid-template-columns:minmax(0,1fr) minmax(260px,.42fr);gap:18px;align-items:start}.physicalSolutionMeta{display:grid;gap:8px}.physicalSolutionMeta p{margin:0}.physicalFan{fill:var(--surface-accent,rgba(88,166,255,.12));stroke:none}.physicalRay{stroke:var(--text-muted,#8b949e);stroke-width:1.2}.physicalSelectedRay{stroke:var(--accent,#58a6ff);stroke-width:3}.physicalAxis{stroke:var(--border,#30363d);stroke-width:1}.physicalLabel{fill:var(--text-primary,#e6edf3);font-size:14px}.solutionLink{font-size:.86rem;color:var(--text-muted,#8b949e)}
+@media(max-width:800px){.physicalSolutionGrid{grid-template-columns:1fr}}
+.fibreButtons{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin:8px 0}.fibreButtons button{padding:7px 5px;font-size:12px}.fixedStateReadout{font-size:12px;margin:8px 0;color:var(--gwml-text-primary)}
+.stateSelectionControls{display:flex;align-items:end;gap:10px;flex-wrap:wrap;margin:0 0 12px}.stateSelectionControls>div{display:grid;gap:3px;margin-right:auto}.stateSelectionControls small{display:block;color:var(--gwml-text-secondary)}.stateSelectionControls label{display:grid;gap:4px;font-size:12px}.stateSelectionControls input{width:118px}.stateSelectablePlot{cursor:crosshair}.stateFixed{fill:none;stroke:currentColor;stroke-width:3;pointer-events:none}.stateFixedLabel{font-weight:700;pointer-events:none}
+.stateViewportControls{display:flex;align-items:end;gap:8px;flex-wrap:wrap;margin:0 0 12px;padding:10px 0;border-top:1px solid var(--gwml-border);border-bottom:1px solid var(--gwml-border)}.stateViewportControls>div{display:grid;gap:3px;margin-right:auto}.stateViewportControls small{color:var(--gwml-text-secondary)}.stateViewportControls label{display:grid;gap:4px;font-size:12px}.stateViewportControls input{width:92px}.stateWindowNotice{margin:8px 0;color:var(--gwml-text-secondary);font-size:12px}.fibreMinusToggle{font-weight:600}.fibrePlusToggle{font-weight:600}
+
+.stateInspectionToggle{display:grid;gap:3px;margin:8px 0 10px;padding:8px 0;border-top:1px solid var(--gwml-border)}.stateInspectionToggle small{color:var(--gwml-text-secondary);font-size:12px}
+
+.scaleActions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:6px 0}.scaleActions .scaleReset{margin:0;min-width:0}
+
+/* dev.24.12 — on-demand spectral-region inspection */
+.spectralRegionsModal{width:min(980px,94vw);max-height:88vh;overflow:hidden;display:flex;flex-direction:column}
+.spectralRegionsScroll{overflow:auto;min-height:0;padding-right:4px}
+.spectralRegionsGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px;margin-top:14px}
+.spectralFamily,.spectralBranch{border:1px solid var(--border);border-radius:10px;padding:12px}
+.spectralBranch{margin-top:10px}
+.spectralBranch h4,.spectralFamily h3{margin:0 0 8px}
+.spectralBranch p{padding:7px 0;margin:0;border-top:1px solid var(--border)}
+.spectralBranch p:first-of-type{border-top:0}
+.spectralBranch span{font-size:.86rem;opacity:.78}
+.spectralEvent{font-size:.9rem}
+@media(max-width:800px){.spectralRegionsGrid{grid-template-columns:1fr}}
+
+.spectralCountSignature{font-size:.92em;opacity:.82}
+/* Classified Hugoniot projections in state space. Lax class comes from W. */
+.stateHugLax1,.stateHugLax2,.stateHugNonLax,.stateHugUndefined{fill:none;stroke-width:3.4;vector-effect:non-scaling-stroke}
+.stateHugLax1{stroke:#22c55e}.stateHugLax2{stroke:#a855f7}.stateHugNonLax{stroke:#94a3b8;stroke-width:2.4}.stateHugUndefined{stroke:#fbbf24;stroke-width:2.4}
+.stateHugBackward{stroke-dasharray:8 6}.stateHugForward{stroke-dasharray:none}
+.hugLax1Sample,.hugLax2Sample,.hugNonLaxSample{display:inline-block;width:28px;height:0;border-top:3px solid;vertical-align:middle}
+.hugLax1Sample{border-color:#22c55e}.hugLax2Sample{border-color:#a855f7}.hugNonLaxSample{border-color:#94a3b8}
+.stateProjectionControls{display:flex;align-items:end;gap:10px;flex-wrap:wrap;margin:0 0 12px;padding:10px 12px;border:1px solid var(--gwml-border);border-radius:8px}.stateProjectionControls>div{display:grid;gap:3px;margin-right:auto}.stateProjectionControls small{color:var(--gwml-text-secondary)}.stateProjectionControls button.active{outline:2px solid currentColor;outline-offset:1px}.stateProjectionControls .projectionReadout{flex-basis:100%;padding-top:3px}
+
+/* Compact scientific continuation audit; geometry remains renderer-independent. */
+.continuationAuditPanel{ margin: 10px 0 14px; padding: 11px 12px; border: 1px solid var(--border, #566071); border-radius: 8px; font-size: 12px; }
+.continuationAuditHeading{ display: flex; justify-content: space-between; align-items: baseline; gap: 8px; margin-bottom: 7px; }
+.continuationAuditHeading span{ opacity: .72; font-size: 11px; }
+.continuationAuditSide{ display: flex; flex-wrap: wrap; gap: 4px 8px; padding: 7px 0; border-top: 1px solid var(--border, #566071); }
+.continuationAuditSide small{ display: block; width: 100%; opacity: .8; }
+.continuationAuditPanel > small{ display: block; margin: 8px 0; opacity: .75; }
+.continuationAuditPanel details{ border-top: 1px solid var(--border, #566071); padding-top: 7px; }
+.continuationAuditPanel summary{ cursor: pointer; }
+.continuationAuditPanel .compositeDiagnostic{ margin-top: 8px; }
+
+/* Etapa 6 (fundação): elementos de inspeção respeitam o tema ativo.
+   As cores científicas das curvas permanecem intocadas. */
+.helpBackdrop,.localChartBackdrop{background:var(--gwml-overlay)}
+.localChartBody svg{background:var(--gwml-chart-background);border-color:var(--gwml-border-subtle)}
+.chartBg{fill:var(--gwml-chart-background)}
+.chartAxis{stroke:var(--gwml-chart-grid)}
+.localChartBody svg text{fill:var(--gwml-chart-text)}
+.localChartLegend,.localChartNote{color:var(--gwml-text-secondary)}
+.helpBody h3{color:var(--gwml-text-primary)}
+.helpEq,.mathBlock{color:var(--gwml-text-primary);border-left-color:var(--gwml-accent)}
+
+
+/* Scientific workspace: primary geometry stays visible; detailed evidence is progressive. */
+.riemannDiagnosticLab{display:grid;gap:10px;margin:18px 0 12px;min-width:0}
+.riemannLabHeader{padding:2px 2px 6px}.riemannLabHeader h3{margin:0 0 4px;font-size:1rem;font-weight:650;color:var(--gwml-text-primary,inherit)}
+.riemannLabHeader p{margin:0;font-size:.83rem;line-height:1.5;color:var(--gwml-text-secondary)}
+.riemannLabSection{border:1px solid var(--gwml-border);border-radius:9px;overflow:hidden;min-width:0}
+.riemannLabSection>summary{cursor:pointer;list-style-position:inside;padding:12px 14px;font-size:.9rem;font-weight:650;line-height:1.5}
+.riemannLabSection>summary span{display:block;margin-left:20px;font-size:.76rem;font-weight:400;color:var(--gwml-text-secondary)}
+.riemannLabSection[open]>summary{border-bottom:1px solid var(--gwml-border)}
+.riemannLabContent{padding:12px;display:grid;gap:8px;min-width:0}
+.riemannLabContent .stateProjectionControls{margin:0;min-width:0}
+.riemannLabContent table{max-width:100%}
+@media(max-width:640px){.riemannLabContent{padding:8px}.riemannLabSection>summary{padding:11px 9px}.riemannLabSection>summary span{margin-left:17px}.riemannLabContent .stateProjectionControls{padding:9px}}
+
+/* Layout etapa 2 — controles e diagnósticos do Espaço físico */
+.localChartDialog:has(#physical-title){width:min(1100px,96vw);max-height:94vh;display:flex;flex-direction:column}
+.localChartDialog:has(#physical-title) .localChartBody{overflow:auto;min-height:0}
+.physicalLayoutBody{display:flex;flex-direction:column;gap:14px}
+.physicalToolbar{display:grid;grid-template-columns:minmax(230px,2fr) minmax(100px,.55fr) minmax(190px,1.4fr);gap:14px;align-items:end}
+.physicalToolbar label{display:flex;flex-direction:column;gap:5px;min-width:0;font-size:.84rem}
+.physicalToolbar select,.physicalToolbar input{max-width:100%;min-width:0}
+.physicalToolbar label:last-child{display:grid;grid-template-columns:1fr auto;align-items:center}
+.physicalToolbar label:last-child input{grid-column:1 / -1;width:100%}
+.physicalDisclosure{border:1px solid var(--gwml-border-subtle);border-radius:8px;overflow:hidden;min-width:0}
+.physicalDisclosureToggle{width:100%;display:flex;justify-content:space-between;align-items:center;text-align:left;padding:10px 12px;background:transparent;color:inherit;border:0;font-weight:600}
+.physicalDisclosureToggle[aria-expanded=true]{border-bottom:1px solid var(--gwml-border-subtle)}
+.physicalDisclosure>.solutionLink,.physicalReference{padding:12px;min-width:0}
+.physicalReference p{margin:4px 0}
+.physicalSolutionMeta{min-width:0}
+@media(max-width:760px){.physicalToolbar{grid-template-columns:1fr 1fr}.physicalToolbar label:first-child{grid-column:1/-1}.localChartDialog:has(#physical-title){width:100%;max-height:96vh}}
+@media(max-width:440px){.physicalToolbar{grid-template-columns:1fr}.physicalToolbar label:first-child{grid-column:auto}}
+
+/* Layout etapa 3 — vocabulário visual compartilhado dos espaços científico e físico. */
+.scientificDisclosure{border:1px solid var(--gwml-border-subtle);border-radius:9px;background:var(--gwml-bg-elevated);min-width:0;overflow:hidden}
+.scientificDisclosure>summary,.scientificDisclosureToggle{min-height:44px;padding:11px 14px;color:var(--gwml-text-primary);font-size:.9rem;font-weight:650;line-height:1.45;transition:background-color .15s ease}
+.scientificDisclosure>summary:hover,.scientificDisclosureToggle:hover{background:var(--gwml-chart-background)}
+.scientificDisclosure>summary:focus-visible,.scientificDisclosureToggle:focus-visible{outline:2px solid var(--gwml-accent);outline-offset:-3px}
+.scientificDisclosure[open]>summary,.scientificDisclosureToggle[aria-expanded=true]{border-bottom:1px solid var(--gwml-border-subtle)}
+.scientificDisclosureBody{padding:12px;min-width:0}
+.scientificControlBar{padding:14px;border:1px solid var(--gwml-border-subtle);border-radius:9px;background:var(--gwml-bg-elevated)}
+.scientificControlBar label{color:var(--gwml-text-secondary);font-weight:550}
+.scientificControlBar select,.scientificControlBar input[type=number]{width:100%;min-height:36px}
+.scientificTableRegion{min-width:0;overflow-x:auto}
+.scientificTableRegion table,.scientificDisclosureBody table{border-collapse:collapse;min-width:0}
+.scientificTableRegion th,.scientificTableRegion td,.scientificDisclosureBody th,.scientificDisclosureBody td{padding:7px 9px;border-bottom:1px solid var(--gwml-border-subtle);vertical-align:top}
+.scientificTableRegion thead th,.scientificDisclosureBody thead th{color:var(--gwml-text-primary);font-weight:650;text-align:left}
+.scientificTableRegion tbody tr:hover,.scientificDisclosureBody tbody tr:hover{background:var(--gwml-chart-background)}
+.localChartDialog:has(#physical-title)>header,.localChartDialog:has(#state-space-title)>header{border-bottom:1px solid var(--gwml-border-subtle)}
+@media(max-width:640px){.scientificControlBar{padding:10px;gap:10px}.scientificDisclosure>summary,.scientificDisclosureToggle{padding:10px;min-height:44px}.scientificDisclosureBody{padding:9px}.scientificTableRegion th,.scientificTableRegion td,.scientificDisclosureBody th,.scientificDisclosureBody td{padding:6px}}
+@media(prefers-reduced-motion:reduce){.scientificDisclosure>summary,.scientificDisclosureToggle{transition:none}}
+
+/* Scientific workspaces replace the 3D viewport instead of opening modal windows. */
+.app>main.workspaceMain{display:block;min-height:0;overflow:hidden}
+.workspaceView{height:100%;overflow:hidden;display:flex;flex-direction:column;background:var(--gwml-bg-view)}
+.inlineWorkspaceBackdrop{position:relative;inset:auto;flex:1;min-height:0;display:flex;overflow:hidden;padding:0;background:transparent}
+.inlineWorkspaceDialog{width:100%!important;max-width:none!important;max-height:none!important;height:100%;min-height:0;border:0;border-radius:0;box-shadow:none;display:flex;flex-direction:column}
+.inlineWorkspaceDialog .localChartBody{flex:1;min-height:0;overflow:auto}
+.primaryNavigation button.currentEnvironment{background:var(--gwml-accent,#296b72);color:white}
+@media(max-width:760px){.workspaceView{min-height:0}.inlineWorkspaceDialog .localChartBody svg{min-height:0}}
+
+/* Workspace de documentação: leitura ampla sem sobreposição à visualização científica. */
+.documentationNav{white-space:nowrap}
+.documentationWorkspace{height:100%;min-height:0;overflow-y:auto;color:var(--gwml-text-primary);background:var(--gwml-bg-view);scroll-behavior:smooth}
+.documentationIntro{padding:26px clamp(18px,3vw,48px) 18px;border-bottom:1px solid var(--gwml-border-subtle)}
+.documentationIntro h2{margin:2px 0 8px;font-size:clamp(20px,2vw,28px)}
+.documentationIntro p{margin:0;line-height:1.55;color:var(--gwml-text-secondary)}
+.documentationEyebrow{text-transform:uppercase;letter-spacing:.1em;font-size:11px;font-weight:700}
+.documentationColumns{display:grid;grid-template-columns:minmax(185px,250px) minmax(0,1fr);gap:clamp(18px,3vw,42px);padding:24px clamp(18px,3vw,48px);max-width:1400px;margin:0 auto}
+.documentationArticle{min-width:0;max-width:940px}
+.documentationArticle section{padding:8px 0 25px;margin-bottom:22px;border-bottom:1px solid var(--gwml-border-subtle);scroll-margin-top:16px}
+.documentationArticle h3{font-size:17px;margin:0 0 12px}.documentationArticle p{line-height:1.65;font-size:14px}.documentationArticle .katex-display{overflow-x:auto;overflow-y:hidden;padding:8px 0}
+.documentationCaution{font-size:13px;color:var(--gwml-text-secondary);padding-bottom:24px}
+@media(max-width:760px){.documentationColumns{grid-template-columns:minmax(0,1fr);gap:14px}.documentationIntro{}.documentationColumns{}}
+
+/* Layout phase 7 — controls of the 3D scientific workspace. */
+.scientificSidebar{min-width:0;padding:12px 10px;scrollbar-gutter:stable;overscroll-behavior:contain}
+.sidebarIntro{padding:4px 8px 12px;display:grid;gap:4px;border-bottom:1px solid var(--gwml-border-subtle,#ccd5d9);margin-bottom:10px}
+.sidebarIntro strong{font-size:14px}
+.scientificSidebar .sidebarIntro small{margin:0;padding:0;background:transparent}
+.sidebarSectionBody label{min-width:0}
+.sidebarSectionBody .coeff{grid-template-columns:repeat(2,minmax(0,1fr))}
+.sidebarSectionBody input,.sidebarSectionBody select{max-width:100%;min-width:0}
+@media(max-width:760px){.app>main:not(.workspaceMain)>aside.scientificSidebar{display:block;max-height:42vh;overflow:auto}.app>main:not(.workspaceMain){display:flex;flex-direction:column}.app>main:not(.workspaceMain)>.view{flex:1;min-height:45vh}}
+
+/* Etapa 8 — inspeção contextual da variedade 3D */
+.inspectorPanel{min-width:0}
+.inspectorIntro{display:grid;gap:5px;margin-bottom:12px}
+.inspectorIntro strong{font-size:14px}
+.inspectorIntro small{background:transparent;padding:0;color:var(--gwml-text-secondary,#62727b);font-size:11px}
+.inspectorSection{margin-bottom:8px;border:1px solid var(--gwml-border-subtle,#ccd5d9);border-radius:9px;overflow:hidden;background:var(--gwml-bg-panel,#fff)}
+.inspectorSection>summary{cursor:pointer;list-style:none;position:relative;padding:11px 32px 11px 12px;font-size:12px;font-weight:700;line-height:1.4;user-select:none}
+.inspectorSection>summary::-webkit-details-marker{display:none}
+.inspectorSection>summary::after{content:"+";position:absolute;right:12px;top:50%;transform:translateY(-50%);font-size:17px;font-weight:400}
+.inspectorSection[open]>summary::after{content:"−"}
+.inspectorSection[open]>summary{border-bottom:1px solid var(--gwml-border-subtle,#ccd5d9)}
+.inspectorSection>summary:hover{background:var(--gwml-bg-note,rgba(127,127,127,.1))}
+.inspectorSection>summary:focus-visible{outline:2px solid var(--gwml-accent,#45a584);outline-offset:-3px}
+.inspectorSectionBody{padding:10px 12px;min-width:0}
+.inspectorSectionBody p{margin:5px 0;line-height:1.55}
+.inspectorSectionBody small{margin-top:7px}
+
+/* Layout phase 9: compact 3D panels remain accessible on narrow screens. */
+.mobile3dPanelBar{display:none}
+@media(max-width:760px){
+  .app>main.threeDMain{display:flex;flex-direction:column;min-height:0;overflow:hidden}
+  .threeDMain .mobile3dPanelBar{display:flex;flex:0 0 auto;gap:8px;padding:8px 12px;background:var(--gwml-bg-panel,#fff);border-bottom:1px solid var(--gwml-border-subtle,#ccd5d9)}
+  .mobile3dPanelBar button{flex:1;min-height:44px;background:var(--gwml-bg-control,#eef2f4);color:var(--gwml-text-primary,#162126);border:1px solid var(--gwml-border-subtle,#ccd5d9)}
+  .mobile3dPanelBar button[aria-pressed=true]{border-color:var(--gwml-accent,#296b72);box-shadow:inset 0 0 0 1px var(--gwml-accent,#296b72)}
+  .app>main.threeDMain>aside.scientificSidebar,.app>main.threeDMain>aside.info.inspectorPanel{display:none;flex:0 0 auto;max-height:min(38vh,360px);overflow:auto;border:0;border-bottom:1px solid var(--gwml-border-subtle,#ccd5d9)}
+  .app>main.threeDMain>aside.mobile3dPanelVisible{display:block}
+  .app>main.threeDMain>.view{flex:1;height:auto;}
+  .app>main.workspaceMain .workspaceView{height:100%;min-height:0}
+  .app>main.workspaceMain .inlineWorkspaceDialog{min-width:0}
+}
+@media(max-width:400px){.threeDMain .mobile3dPanelBar{padding:6px 8px}}
+
+/* Layout phase 10 — usable central workspaces at desktop, tablet and phone widths. */
+.app{min-height:0;height:100vh;height:100dvh}
+.app>header{flex:0 0 auto;min-width:0}
+.app>main{min-height:0;min-width:0}
+.workspaceView,.inlineWorkspaceBackdrop,.inlineWorkspaceDialog{min-width:0}
+.inlineWorkspaceDialog .localChartBody{overscroll-behavior:contain;scrollbar-gutter:stable}
+.inlineWorkspaceDialog .localChartBody>*,.documentationArticle>*{min-width:0}
+/* Charts must shrink within the workspace; their aspect ratio remains controlled by the SVG. */
+.workspaceView svg{max-width:100%}
+.workspaceView .physicalSolutionGrid,.workspaceView .physicalProfileGrid{min-width:0}
+.workspaceView .physicalSolutionGrid>*,.workspaceView .physicalProfileGrid>*{min-width:0}
+/* Horizontal scrolling belongs to the table region, never to the entire workspace. */
+.workspaceView .scientificTableRegion{max-width:100%;min-width:0;overflow-x:auto}
+.workspaceView .scientificTableRegion table{max-width:none}
+.documentationWorkspace{overscroll-behavior:contain}
+.documentationArticle{overflow-wrap:break-word}
+.documentationArticle pre{max-width:100%;overflow-x:auto}
+@media(max-width:1100px){
+  .documentationColumns{grid-template-columns:minmax(160px,210px) minmax(0,1fr);gap:18px;padding:18px 20px}
+  .documentationIntro{padding:20px}
+}
+@media(max-width:760px){
+  .app>main.workspaceMain{flex:1 1 auto;min-height:0}
+  .app>main.workspaceMain>.workspaceView{min-height:0;height:100%}
+  .inlineWorkspaceDialog .localChartBody{padding-inline:clamp(8px,2.5vw,16px)}
+  .documentationColumns{display:block;padding:12px}
+  .documentationIntro{padding:14px}
+  .documentationArticle .katex-display{max-width:100%;overflow-x:auto}
+  .workspaceView .scientificTableRegion{scrollbar-gutter:stable}
+}
+@media(max-width:440px){
+  .inlineWorkspaceDialog .localChartBody{padding-inline:8px}
+  .workspaceView .physicalProfileGrid{grid-template-columns:minmax(0,1fr)}
+}
+
+/* Etapa 11 — auditoria de navegação, foco e ocupação responsiva. */
+.app>header{position:relative;z-index:5}
+.headerActions{min-width:0}
+.primaryNavigation{min-width:0}
+.app>main.workspaceMain{min-width:0;overflow:hidden}
+.documentationArticle section:target{scroll-margin-block-start:20px}
+@media(max-width:1100px){
+  .app>header{padding:10px 14px}
+  .app>header>div:first-child{min-width:0}
+  .app>header h1{font-size:clamp(15px,2vw,20px)}
+  .app>header p{overflow-wrap:anywhere}
+}
+@media(max-width:760px){
+  .app>header{gap:8px;max-height:45dvh;overflow-y:auto;overscroll-behavior:contain}
+  .headerActions{width:100%;max-width:100%;gap:6px;align-items:center;justify-content:flex-start}
+  .primaryNavigation{display:flex;flex:1 1 100%;max-width:100%;overflow-x:auto;overscroll-behavior-x:contain;scrollbar-width:thin;padding-bottom:4px}
+  .primaryNavigation button{flex:0 0 auto;white-space:nowrap;min-height:40px}
+  .documentationNav{flex:0 0 auto;min-height:40px}
+  .headerMenu{flex:0 0 auto}
+  .app>main.threeDMain>.view{min-height:180px}
+  .app>main.threeDMain>aside.mobile3dPanelVisible{max-height:min(34dvh,300px)}
+}
+@media(max-width:400px){
+  .app>header{padding:8px}
+  .headerActions{gap:4px}
+  .documentationIntro h2{font-size:19px}
+}
+
+/* Layout phase 13 — keyboard access to the central scientific workspace. */
+.skipToWorkspace{
+  position:fixed;z-index:10000;top:8px;left:8px;
+  transform:translateY(-160%);padding:11px 15px;
+  background:var(--gwml-bg-panel,#fff);color:var(--gwml-text-primary,#162126);
+  border:2px solid var(--gwml-focus,#277a9a);border-radius:8px;
+  text-decoration:none;font-weight:700;
+}
+.skipToWorkspace:focus-visible{transform:translateY(0)}
+#scientific-workspace:focus{outline:none}
+#scientific-workspace:focus-visible{outline:2px solid var(--gwml-focus,#277a9a);outline-offset:-2px}
+
+/* Characteristic visibility controls: one compact horizontal row per locus. */
+.sidebarSectionBody label.characteristicToggle{display:flex;align-items:center;justify-content:flex-start;gap:8px;min-height:30px;flex-wrap:nowrap}
+.sidebarSectionBody label.characteristicToggle input[type="checkbox"]{flex:0 0 auto;width:15px;height:15px;margin:0}
+.sidebarSectionBody label.characteristicToggle span{margin-left:auto}

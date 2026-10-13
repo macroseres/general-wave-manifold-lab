@@ -4,5 +4,49 @@ The wave manifold is defined from the Rankine--Hugoniot relation
 \[
 F(U_+)-F(U_-)=s(U_+-U_-).
 \]
+For the finite directional chart used by the application, write
+\[
+r(z)=\binom{z}{1},
+\qquad
+U_+-U_-=Y\,r(z).
+\]
+The midpoint is
+\[
+\bar U=\frac{U_-+U_+}{2},
+\]
+so that
+\[
+U_-=\bar U-\frac{Y}{2}r(z),
+\qquad
+U_+=\bar U+\frac{Y}{2}r(z).
+\]
 
-Coordinate choices, projections and derived subsets must be stated explicitly before their computational implementation is treated as canonical.
+Because the flux is quadratic, the Rankine--Hugoniot relation reduces to the characteristic condition at the midpoint,
+\[
+DF(\bar U)r=s r.
+\]
+Eliminating $s$ gives one affine equation for $\bar U=(u,v)$,
+\[
+P(z)u+Q(z)v+R(z)=0,
+\]
+where
+\begin{align*}
+P(z)&=2b_{20}z^2+(b_{11}-2a_{20})z-a_{11},\\
+Q(z)&=b_{11}z^2+(2b_{02}-a_{11})z-2a_{02},\\
+R(z)&=b_{10}z^2+(b_{01}-a_{10})z-a_{01}.
+\end{align*}
+
+When $D=P^2+Q^2>0$, the application chooses the canonical section given by the orthogonal foot of this affine line,
+\[
+U_0(z)=-\frac{R(z)}{D(z)}\binom{P(z)}{Q(z)},
+\]
+and parametrizes the fiber by
+\[
+\boxed{\bar U(\tau,z)=U_0(z)+\tau\binom{-Q(z)}{P(z)}}.
+\]
+Hence $\tau$ is the coefficient of the non-normalized tangent vector $(-Q,P)$. In particular, $\tau$ is not arc length and is not one of the normalized coordinates used in earlier applications.
+
+Finally, the speed stored by the implementation is the eigenvalue associated with $r$,
+\[
+s=\frac{r^{T}DF(\bar U)r}{r^{T}r}.
+\]

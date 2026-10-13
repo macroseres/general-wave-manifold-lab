@@ -1,0 +1,97 @@
+\section{Canonical status of the pre-Hugoniot core}
+\label{sec:canonical-status}
+
+This section closes the mathematical reference for the objects implemented before the
+Hugoniot-family development.  It does not introduce a new wave object.  Its purpose is
+to state explicitly which formulas are authoritative and which constructions are only
+numerical or visual realizations of those formulas.
+
+\subsection{Canonical chain}
+
+For the general quadratic flux of Section~1, the finite chart of the wave manifold is
+built from
+\[
+ r(z)=\binom z1,\qquad
+ \bar U(\tau,z)=U_0(z)+\tau(-Q(z),P(z)),
+\]
+and
+\[
+ U_-=\bar U-\frac Y2r(z),\qquad
+ U_+=\bar U+\frac Y2r(z).
+\]
+The Rankine--Hugoniot speed is the eigenvalue selected by $r(z)$.  Thus the
+pre-Hugoniot core uses the following dependency chain:
+\[
+ \boxed{
+ F\longrightarrow\mathcal W\longrightarrow
+ \{\mathcal C,\mathcal E,\mathcal S^-,\mathcal S^+\}
+ \longrightarrow\text{rarefaction field and its integral curves}.
+ }
+\]
+Here $\mathcal C=\{Y=0\}$ is the characteristic surface and
+$\mathcal E\subset\mathcal C$ is the coincidence locus.  The notation $\mathcal C$
+and $\mathcal E$ is fixed throughout the project and must not be interchanged.
+
+\subsection{Chart conventions}
+
+The finite projective chart uses $(\tau,Y,z)$.  Near $z=\infty$ the reciprocal chart
+uses $(\eta,\Upsilon,Z)$ with
+\[
+ Z=\frac1z,\qquad \eta=\frac{\tau}{Z^2},\qquad \tau=\eta Z^2.
+\]
+The compactified quantity
+\[
+ \widehat z=\frac2\pi\arctan z
+\]
+is a display coordinate only.  In particular, $Z=0$ is a genuine projective boundary
+of the reciprocal chart and must not be identified with a fabricated finite point at
+$\widehat z=\pm1$.
+
+\subsection{Rarefaction geometry already established}
+
+On $\mathcal C$, the lifted rarefaction field is
+\[
+ \dot\tau=\det(r,U_z),\qquad
+ \dot z=\det(T,r),\qquad T=(-Q,P)^T,
+\]
+and its projection satisfies
+\[
+ \frac{d\mathcal R}{d\sigma}=\det(T,U_z)r(z).
+\]
+Consequently the state-space curve is obtained by projection of the same mathematical
+orbit; no independent state-space ODE is part of the model.  Slow and fast labels are
+spectral labels of orbit segments.  A regular orbit may cross $\mathcal E$ and continue
+as the same orbit with the opposite slow/fast classification.
+
+The reciprocal-chart analysis also establishes the possibility of a hyperbolic saddle
+at projective infinity.  Its four local half-separatrices are represented in that chart.
+Branches contained in $Z=0$ have no finite-$z$ representative.
+
+\subsection{Three spaces}
+
+The project distinguishes
+\[
+ \mathcal W\quad\text{(wave manifold)},\qquad
+ \mathcal U\simeq\mathbb R^2_{(u,v)}\quad\text{(state space)},\qquad
+ \mathcal X\simeq\mathbb R^2_{(x,t)}\quad\text{(physical space)}.
+\]
+For a point $P\in\mathcal W$, the canonical endpoint projections are
+\[
+ \pi_-(P)=U_-,\qquad \pi_+(P)=U_+.
+\]
+A physical solution is instead a map $U:\mathcal X\to\mathcal U$.  The formulas for
+shock trajectories and self-similar rarefactions documented in Section~7 specify the
+future bridge to physical space; they do not claim that a complete Riemann solver is
+already implemented.
+
+\subsection{Scope boundary}
+
+The equations above are the canonical mathematical baseline for the next numerical and
+three-space infrastructure increments.  Hugoniot families $\mathcal H_\pm$, composite
+waves $\mathcal K_\pm$, viscous profiles, hysteresis and bifurcation objects are
+\emph{not} silently defined by this closure.  Each must enter through the project
+pipeline
+\[
+ \boxed{\text{definition}\to\text{pure implementation}\to\text{test}
+ \to\text{numerics}\to\text{geometry}\to\text{visualization}.}
+\]

@@ -1,0 +1,992 @@
+/* Apple Pro Scientific — shared interaction and responsive behavior.
+   Deliberately excludes scientific geometry, SVG trajectory colors and Three.js. */
+:root{
+  --gwml-control-radius: 7px;
+  --gwml-panel-radius: 10px;
+  --gwml-control-height: 34px;
+  --gwml-motion-fast: 140ms;
+}
+.app button,.helpDialog button,.localChartDialog button,.stateSpaceDialog button,.physicalSpaceDialog button,.spectralRegionsDialog button{
+  min-height: var(--gwml-control-height);
+  border-radius: var(--gwml-control-radius);
+  transition: background-color var(--gwml-motion-fast) ease, border-color var(--gwml-motion-fast) ease;
+}
+.app button:disabled{ opacity: .5; cursor: not-allowed; }
+.app input[type="number"],.app select{
+  min-height: var(--gwml-control-height);
+  border-radius: var(--gwml-control-radius);
+  font: inherit;
+  background: var(--gwml-bg-elevated);
+  color: var(--gwml-text-primary);
+  border: 1px solid var(--gwml-border-subtle);
+}
+.app input[type="checkbox"],.app input[type="range"]{ accent-color: var(--gwml-accent); }
+.app button:focus-visible,.app input:focus-visible,.app select:focus-visible,.helpDialog button:focus-visible,.localChartDialog button:focus-visible,.app summary:focus-visible{
+  outline: 2px solid var(--gwml-focus);
+  outline-offset: 2px;
+}
+.app aside{ scrollbar-gutter: stable; }
+.app aside h2{ line-height: 1.35; }
+.app aside label{ line-height: 1.4; }
+.app .continuationAuditPanel{
+  background: var(--gwml-bg-elevated);
+  border-color: var(--gwml-border-subtle);
+  border-radius: var(--gwml-panel-radius);
+  color: var(--gwml-text-primary);
+}
+.app .continuationAuditPanel summary{ padding: 4px 0; }
+.helpDialog,.localChartDialog{ max-height: calc(100dvh - 24px); }
+.helpBody,.localChartBody{ overscroll-behavior: contain; }
+@media (max-width: 700px) {
+  .app{ min-height: 100dvh; height: 100dvh; }
+  .app header{ height: auto; min-height: 64px; gap: 10px; flex-wrap: wrap; }
+  .app header h1{ font-size: 17px; }
+  .app .headerActions{ width: 100%; justify-content: flex-start; }
+  .app main{ grid-template-columns: minmax(0, 1fr); grid-template-rows: auto minmax(320px, 55dvh); overflow-y: auto; }
+  .app aside:not(.info){ overflow: visible; border-right: 0; border-bottom: 1px solid var(--gwml-border-subtle); }
+  .app .view{ min-height: 320px; }
+  
+  .app .badge{ max-width: calc(100% - 16px); white-space: normal; text-align: center; }
+  .helpBackdrop,.localChartBackdrop{ padding: 8px; }
+  .helpDialog,.localChartDialog{ width: 100%; max-height: calc(100dvh - 16px); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .app button,.helpDialog button,.localChartDialog button{ transition: none; }
+}
+
+/* Etapa 6 — janelas científicas: uma linguagem visual, sem alterar os gráficos. */
+.helpDialog,.localChartDialog,.spectralRegionsModal{
+  background: var(--gwml-bg-panel);
+  color: var(--gwml-text-primary);
+  border: 1px solid var(--gwml-border-subtle);
+  border-radius: var(--gwml-panel-radius);
+  box-shadow: 0 22px 70px var(--gwml-shadow);
+  max-width: calc(100vw - 24px);
+}
+.helpHeader,.localChartDialog > header,.spectralRegionsModal .modalHeader{
+  background: var(--gwml-bg-elevated);
+  color: var(--gwml-text-primary);
+  border-bottom: 1px solid var(--gwml-border-subtle);
+  padding: 14px 18px;
+}
+.helpHeader p,.localChartDialog > header p,.spectralRegionsModal .modalHeader small{
+  color: var(--gwml-text-secondary);
+}
+.helpBody,.localChartBody,.spectralRegionsScroll{
+  color: var(--gwml-text-primary);
+  min-width: 0;
+}
+.helpBody section{ border-bottom-color: var(--gwml-border-subtle); }
+.helpEq,.mathBlock{ background: var(--gwml-bg-elevated); }
+.helpDialog button,.localChartDialog button,.spectralRegionsModal button{
+  background: var(--gwml-bg-control);
+  color: var(--gwml-text-primary);
+  border: 1px solid var(--gwml-border-subtle);
+  min-height: var(--gwml-control-height);
+  border-radius: var(--gwml-control-radius);
+}
+.helpDialog button:focus-visible,.localChartDialog button:focus-visible,.spectralRegionsModal button:focus-visible,.helpIndex a:focus-visible{
+  outline: 2px solid var(--gwml-focus); outline-offset: 2px;
+}
+.spectralRegionsModal{ max-height: calc(100dvh - 24px); }
+.spectralRegionsScroll{ overflow-y: auto; overscroll-behavior: contain; }
+@media (max-width: 700px) {
+  .helpHeader,.localChartDialog > header,.spectralRegionsModal .modalHeader{
+    padding: 12px 14px; gap: 8px; flex-wrap: wrap;
+  }
+  .helpBody{ padding: 8px 14px 18px; }
+  .localChartBody{ padding: 12px 14px; }
+  .spectralRegionsModal{ width: 100%; max-height: calc(100dvh - 16px); }
+  .modalBackdrop{ padding: 8px; }
+}
+
+/* Etapa 6 — legibilidade matemática e estados dos controles (sem alterar SVG/Three.js). */
+:root{
+  --gwml-math-leading: 1.6;
+  --gwml-tooltip-max-width: 34ch;
+}
+.app aside h2,.helpBody h3,.spectralRegionsModal h3{
+  letter-spacing: .005em;
+  overflow-wrap: anywhere;
+}
+.mathLabel,.mathBlock,.helpEq{
+  font-variant-numeric: lining-nums tabular-nums;
+}
+.mathLabel .katex{ line-height: 1.25; }
+.mathBlock,.helpEq{
+  line-height: var(--gwml-math-leading);
+  max-width: 100%;
+  overflow-x: auto;
+  overscroll-behavior-inline: contain;
+}
+.mathBlock .katex-display{ overflow-x: auto; overflow-y: hidden; }
+.app aside .toggle{ flex-direction: row; align-items: flex-start; gap: 8px; }
+.app aside .toggle input[type="checkbox"]{ flex: 0 0 auto; margin-top: .18em; }
+.app button[aria-expanded="true"],.app button[aria-pressed="true"]{
+  border-color: var(--gwml-accent);
+}
+.app [title]{ text-underline-offset: .18em; }
+.app :is(button,input,select):disabled{ opacity: .55; cursor: not-allowed; }
+.app :is(button,input,select)[aria-invalid="true"]{ border-color: var(--gwml-focus); }
+@media (max-width: 700px) {
+  .mathBlock,.helpEq{ font-size: 14px; }
+  .app aside .toggle{ min-height: 34px; }
+}
+
+/* Physical-space profiles: same mathematical candidate as the (x,t) fan. */
+.physicalProfiles{ min-width:0; margin-block:1rem; }
+.physicalProfiles p{ font-size:.82rem; opacity:.78; }
+.physicalProfileGrid{ display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; }
+.physicalProfilePlot{ min-width:0; }
+.physicalProfilePlot svg{ width:100%; height:auto; display:block; }
+@media(max-width:760px){.physicalProfileGrid{grid-template-columns:1fr}}
+
+/* Layout etapa 4 — navegação científica principal, separada das operações auxiliares. */
+.app > header{ height:auto; min-height:74px; gap:16px; flex-wrap:wrap; position:relative; z-index:12; }
+.app > header > div:first-child{ min-width:220px; }
+.app .headerActions{ display:flex; flex:1; align-items:center; justify-content:flex-end;   min-width:0; }
+.app .primaryNavigation{ display:flex; align-items:center;   }
+.app .primaryNavigation .currentEnvironment{ padding:9px 11px; font-size:12px; font-weight:700; border:1px solid var(--gwml-accent); color:var(--gwml-text-primary); background:var(--gwml-bg-elevated); border-radius:var(--gwml-control-radius); white-space:nowrap; }
+.app .headerMenu{ position:relative; flex:0 0 auto; }
+.app .headerMenu > summary{ display:flex; align-items:center; min-height:var(--gwml-control-height); padding:8px 12px; cursor:pointer; border:1px solid var(--gwml-border-subtle); background:var(--gwml-bg-control); color:var(--gwml-text-primary); border-radius:var(--gwml-control-radius); font-size:12px; font-weight:700; list-style:none; }
+.app .headerMenu > summary::-webkit-details-marker{ display:none; }
+.app .headerMenu > summary::after{ content:"⌄"; margin-left:8px; }
+.app .headerMenu[open] > summary{ border-color:var(--gwml-accent); }
+.app .headerMenu > summary:focus-visible{ outline:2px solid var(--gwml-focus); outline-offset:2px; }
+.app .headerMenuItems{ position:absolute; right:0; top:calc(100% + 6px); min-width:200px; display:grid; gap:5px; padding:8px; border:1px solid var(--gwml-border-subtle); border-radius:var(--gwml-panel-radius); background:var(--gwml-bg-panel); box-shadow:0 14px 32px var(--gwml-shadow); z-index:20; }
+.app .headerMenuItems button{ text-align:left; width:100%; background:var(--gwml-bg-control); color:var(--gwml-text-primary); border:1px solid var(--gwml-border-subtle); }
+@media(max-width:700px) { .app > header{ padding:10px 12px; } .app .headerActions{ justify-content:flex-start; } .app .headerMenuItems{ right:auto; left:0; } .app .primaryNavigation{ width:100%; } }
+
+/* Fase 14.5 — layout 3D consolidado: três trilhos estáveis. */
+.desktop3dPanelBar,.edgePanelControls{display:none}
+@media (min-width:761px) {
+ /* The canonical 3D grid lives in workspace-layout.css. */
+ .app>main.threeDMain>aside.scientificSidebar{grid-column:1;grid-row:1;min-width:0;overflow-y:auto}
+ .app>main.threeDMain.controlsCollapsed>aside.scientificSidebar,.app>main.threeDMain.exploration3d>aside.scientificSidebar,.app>main.threeDMain.inspectionCollapsed>aside.info.inspectorPanel,.app>main.threeDMain.exploration3d>aside.info.inspectorPanel{display:none}
+ .app>main.threeDMain .sceneWrap{width:100%;height:100%}
+ .threeDMain .edgePanelControls{display:contents}
+ .threeDMain .edgePanelToggle{
+  position:absolute;z-index:20;top:50%;transform:translateY(-50%);
+  width:22px;height:64px;padding:0;
+  border:1px solid var(--gwml-border-subtle);
+  background:var(--gwml-bg-panel);color:var(--gwml-text-primary);
+  font-size:23px;cursor:pointer;opacity:.78;transition:opacity .15s ease;
+ }
+ .threeDMain .edgePanelToggle:hover,.threeDMain .edgePanelToggle:focus-visible{opacity:1;border-color:var(--gwml-accent)}
+ .threeDMain .edgePanelToggleLeft{left:260px;border-radius:0 7px 7px 0}
+ .threeDMain .edgePanelToggleRight{right:285px;border-radius:7px 0 0 7px}
+ .threeDMain.controlsCollapsed .edgePanelToggleLeft,.threeDMain.exploration3d .edgePanelToggleLeft{left:0}
+ .threeDMain.inspectionCollapsed .edgePanelToggleRight,.threeDMain.exploration3d .edgePanelToggleRight{right:0}
+}
+
+/* Fase 14.3: gráfico do espaço de estados prioritário */
+
+.inlineWorkspaceDialog .stateExplorationBody>svg.stateSelectablePlot{display:block;width:100%;max-width:100%;height:auto;max-height:none;flex:none;touch-action:none}
+.inlineWorkspaceDialog .stateExplorationBody>.riemannDiagnosticLab{flex:none}
+@media(min-width:900px){.inlineWorkspaceDialog .stateExplorationBody>svg.stateSelectablePlot{width:min(100%,1100px);align-self:center}}
+
+/* Fase 14.4: exploração do espaço físico com diagramas em primeiro plano */
+.inlineWorkspaceDialog:has(#physical-title) .physicalToolbar{display:flex;flex-wrap:wrap;align-items:center;gap:12px;flex:none}
+.inlineWorkspaceDialog:has(#physical-title) .physicalToolbar label:first-child{flex:1 1 280px;min-width:0}
+.inlineWorkspaceDialog:has(#physical-title) .physicalToolbar label:first-child select{max-width:100%;width:100%}
+.inlineWorkspaceDialog:has(#physical-title) .physicalToolbar label:last-child{flex:1 1 220px}
+.inlineWorkspaceDialog:has(#physical-title) .physicalVisualization svg,
+.inlineWorkspaceDialog:has(#physical-title) .physicalProfilePlot svg{display:block;width:100%;height:auto;}
+.inlineWorkspaceDialog:has(#physical-title) .physicalLayoutBody .physicalProfileGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.inlineWorkspaceDialog:has(#physical-title) .physicalLayoutBody .physicalProfilePlot{min-width:0}
+.physicalToolsDrawer{flex:none}
+.physicalToolsDrawerContent{display:flex;flex-wrap:wrap;gap:12px}
+@media(max-width:900px){.inlineWorkspaceDialog:has(#physical-title) .physicalLayoutBody .physicalProfileGrid{grid-template-columns:minmax(0,1fr)}}
+
+/* Fase 14.6: superfície gráfica dominante, sem limite artificial de 1100px */
+.inlineWorkspaceDialog:has(#state-space-title) .stateExplorationBody{min-width:0}
+.inlineWorkspaceDialog .stateExplorationBody>.stateGraphStage{width:100%;min-width:0;flex:none;display:grid;place-items:center;overflow:hidden}
+.inlineWorkspaceDialog .stateExplorationBody>.stateGraphStage>svg.stateSelectablePlot{display:block;width:100%;height:auto;max-width:none;touch-action:none}
+@media(min-width:900px){.inlineWorkspaceDialog .stateExplorationBody>.stateGraphStage>svg.stateSelectablePlot{width:100%;align-self:auto}}
+.inlineWorkspaceDialog:has(#physical-title) .physicalLayoutBody>div,.inlineWorkspaceDialog:has(#physical-title) .physicalLayoutBody>section{min-width:0}
+.inlineWorkspaceDialog:has(#physical-title) .physicalVisualization svg,
+.inlineWorkspaceDialog:has(#physical-title) .physicalProfilePlot svg{max-width:none;min-width:0}
+
+/* Phase 14.7 — state-space sidebar: the plot owns the remaining width. */
+.stateWorkspaceGrid{display:grid;gap:8px;min-width:0;align-items:stretch;}
+
+
+
+
+
+
+
+.stateToolsHandle{font-size:17px;line-height:1}
+
+.stateWorkspaceGrid .stateSelectablePlot{display:block;width:100%;height:auto;max-width:100%;}
+
+
+/* Phase 14.8 — physical workspace: collapsible controls, plots remain dominant */
+
+
+.physicalSidebar{min-width:0}
+.physicalMain{position:relative;min-width:0;overflow:auto}
+
+/* Phase 14.9 — consistent compact sidebar affordances across graphical workspaces. */
+
+
+
+
+@media(min-width:761px){.stateWorkspaceGrid{transition:grid-template-columns .16s ease;}}
+@media(min-width:801px){.inlineWorkspaceDialog:has(#physical-title) .physicalLayoutBody.physicalWorkspace{transition:grid-template-columns .16s ease;}}
+@media(prefers-reduced-motion:reduce){.stateWorkspaceGrid,.inlineWorkspaceDialog:has(#physical-title) .physicalLayoutBody.physicalWorkspace{transition:none;}}
+
+/* Fase 14.9.1 — o seletor global `.app main` define uma grade para a aplicação.
+   O <main> interno do Espaço físico não pode herdar essa grade: ela deslocava
+   os diagramas para a última coluna e deixava a região central vazia. */
+.app .physicalWorkspace > main.physicalMain{
+  display: block;
+  grid-template-columns: none;
+  grid-template-rows: none;
+  width: 100%;
+  min-width: 0;
+  max-width: none;
+  min-height: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+.app .physicalWorkspace > main.physicalMain > *{
+  min-width: 0;
+  max-width: 100%;
+}
+.app .physicalWorkspace > main.physicalMain .physicalProfileGrid{
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+@media (max-width: 900px) {
+  .app .physicalWorkspace > main.physicalMain .physicalProfileGrid{
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* Fase 14.9.2: a visualização vem antes dos diagnósticos. */
+.app .physicalWorkspace > main.physicalMain{display:flex;flex-direction:column;gap:10px;align-items:stretch;}
+.app .physicalWorkspace .physicalVisualization{min-width:0;flex:0 0 auto;}
+.app .physicalWorkspace .physicalVisualization > div{display:flex;flex-direction:column;gap:6px;min-width:0;}
+.app .physicalWorkspace .physicalVisualization > div > svg{display:block;width:100%;height:clamp(240px,38vh,390px);max-width:100%;} 
+.app .physicalWorkspace .physicalVisualization .physicalProfiles{margin:4px 0 0;min-width:0;}
+.app .physicalWorkspace .physicalVisualization .physicalProfileGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;}
+.app .physicalWorkspace .physicalVisualization .physicalProfilePlot svg{display:block;width:100%;height:clamp(140px,22vh,230px);max-width:100%;}
+.app .physicalWorkspace .physicalSolutionMeta{min-width:0;flex:0 0 auto;}
+@media(max-width:900px){.app .physicalWorkspace .physicalVisualization .physicalProfileGrid{grid-template-columns:minmax(0,1fr)}.app .physicalWorkspace .physicalVisualization > div > svg{height:clamp(220px,34vh,350px)}}
+
+/* Fase 14.9.3 — dimensão efetiva dos SVGs físicos.
+   O seletor anterior `.physicalLayoutBody svg { height:auto }` tinha
+   especificidade maior e anulava os limites da fase 14.9.2. */
+.inlineWorkspaceDialog:has(#physical-title) .physicalLayoutBody.physicalWorkspace .physicalVisualization > div > svg{
+  
+  
+  
+  
+  
+  object-fit:contain;
+}
+.inlineWorkspaceDialog:has(#physical-title) .physicalLayoutBody.physicalWorkspace .physicalVisualization .physicalProfilePlot > svg{
+  
+  
+  
+  
+  
+  object-fit:contain;
+}
+
+/* Fase 14.10: inspeção contextual, sem capturar a área de rotação do Canvas. */
+.threeDMain .view{position:relative}
+.sceneContextCard{position:absolute;right:18px;bottom:48px;z-index:12;width:min(280px,calc(100% - 40px));padding:12px;display:grid;gap:7px;background:var(--gwml-bg-panel);color:var(--gwml-text-primary);border:1px solid var(--gwml-border-subtle);border-radius:8px;box-shadow:0 8px 24px var(--gwml-shadow);font-size:12px}
+.sceneContextHeader{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.sceneContextHeader button{font-size:18px;min-width:26px;min-height:26px;padding:0}
+.sceneContextDetails{font-size:12px;justify-self:start}
+@media(max-width:760px){.sceneContextCard{right:8px;bottom:35px;width:min(250px,calc(100% - 16px))}}
+
+/* Fase 14.46: controle de transparência sem interferir na navegação 3D */
+.surfaceOpacityControl{display:inline-flex;align-items:center;gap:7px;margin-left:8px;font-size:11px;white-space:nowrap;color:inherit}
+.surfaceOpacityControl input{width:86px;min-width:65px;accent-color:#30d158;cursor:pointer}
+.surfaceOpacityControl output{min-width:29px;font-variant-numeric:tabular-nums}
+@media(max-width:700px){.surfaceOpacityControl{margin-left:0}.surfaceOpacityControl input{width:65px}}
+/* Phase 14.47: surface-family isolation, without affecting camera or curves. */
+.surfaceIsolationControl{display:inline-flex;align-items:center;gap:6px;margin-left:8px;font-size:11px;white-space:nowrap}
+.surfaceIsolationControl select{max-width:165px;padding:5px 7px;border-radius:6px;background:var(--gwml-bg-control);color:var(--gwml-text-primary);border:1px solid var(--gwml-border-subtle);cursor:pointer}
+@media(max-width:700px){.surfaceIsolationControl{margin-left:0}.surfaceIsolationControl select{max-width:135px}}
+
+/* Fase 15.4: navegação explícita entre as duas projeções de um ponto da variedade. */
+.projectionInspectActions{display:flex;flex-wrap:wrap;gap:6px;margin:9px 0}
+.projectionInspectActions button{flex:1 1 120px;min-height:34px;border:1px solid var(--border-color,rgba(150,165,185,.35));border-radius:8px;background:rgba(130,150,175,.12);color:inherit;cursor:pointer;padding:6px 9px;font:inherit}
+.projectionInspectActions button:hover,.projectionInspectActions button:focus-visible{background:rgba(130,150,175,.24);outline-offset:2px}
+
+/* Fase 15.6 — inspeção opt-in sem bloquear o fluxo normal de seleção. */
+.projectedCurveInspector{display:flex;flex-wrap:wrap;align-items:center;gap:9px;margin:8px 0;padding:8px 10px;border:1px solid rgba(140,155,180,.3);border-radius:9px}
+.projectedCurveInspector label{display:flex;align-items:center;gap:6px;font-weight:600;cursor:pointer}
+.projectedCurveInspector small{opacity:.8}
+.projectedCurveInspector [role="status"]{width:100%;font-size:.9em}
+.projectedCurveInspector button{margin-left:8px;cursor:pointer}
+
+/* Fase 15.7: proveniência explícita, sem inventar levantamento pontual. */
+.projectedCurveProvenance{display:flex;flex-direction:column;align-items:flex-start;gap:7px;margin-top:9px;padding:10px;border:1px solid rgba(140,160,180,.24);border-radius:8px}
+.projectedCurveProvenance small{line-height:1.5}
+.projectedCurveProvenance button{min-height:34px;cursor:pointer}
+
+.liftedSampleStatus{position:absolute;left:12px;top:12px;z-index:8;display:flex;align-items:center;gap:8px;flex-wrap:wrap;max-width:calc(100% - 24px);background:rgba(12,22,36,.88);border:1px solid rgba(100,205,245,.48);border-radius:9px;padding:7px 10px;color:#f3f8fc;font-size:12px;pointer-events:auto}
+.liftedSampleStatus button{border:1px solid rgba(100,205,245,.55);border-radius:7px;padding:5px 8px;background:rgba(100,205,245,.16);color:inherit;cursor:pointer}
+
+.projectionSelectedPoint{display:flex;flex-wrap:wrap;align-items:center;gap:7px;padding:7px 10px;margin:6px 0;border:1px solid rgba(100,210,255,.4);border-radius:8px;background:rgba(100,210,255,.08);font-size:12px}
+.projectionSelectedPoint button{color:inherit;background:transparent;border:1px solid currentColor;border-radius:6px;padding:4px 8px;cursor:pointer}
+
+/* Fase 15.12: duas projeções preservadas para o mesmo ponto da variedade. */
+.projectionPairComparison{display:flex;flex-wrap:wrap;align-items:center;gap:8px;padding:9px 11px;border:1px solid rgba(100,205,245,.35);border-radius:9px;margin:8px 0}
+.projectionPairComparison strong{flex-basis:100%}
+.projectionPairComparison button{min-height:36px;padding:7px 10px;border:1px solid rgba(130,150,175,.5);border-radius:7px;background:transparent;color:inherit;cursor:pointer}
+.projectionPairComparison button.active{border-color:#64d2ff;background:rgba(100,210,255,.13)}
+.projectionPairComparison small{flex-basis:100%;opacity:.85}
+
+/* Fase 15.14 — graph-first: painel lateral fechado por padrão, inspeção concisa. */
+
+.projectedCurveInspector{gap:6px;padding:6px 9px;margin:6px 0}
+.projectedCurveInspector>label{min-height:32px}
+.projectedCurveInspector>small{flex:1 1 220px}
+.projectedCurveProvenance{width:100%;border-top:1px solid rgba(140,155,180,.22);padding-top:5px}
+.projectedCurveProvenance>summary{cursor:pointer;font-weight:600;min-height:30px;display:flex;align-items:center}
+.projectedCurveProvenance>summary:focus-visible{outline:2px solid currentColor;outline-offset:2px}
+.projectedCurveProvenance[open]>small,.projectedCurveProvenance[open]>.projectedCurveSample{display:block;margin-top:7px}
+@media(max-width:760px){
+  
+  
+  
+  .projectedCurveInspector{align-items:flex-start}
+}
+
+/* 15.14.1 — correct grid placement: inspection bar must NEVER be a 34px column. */
+.stateWorkspaceGrid{gap:10px;align-items:start;}
+
+
+
+
+.stateWorkspaceGrid>.stateGraphStage{box-sizing:border-box;}
+
+@media(max-width:760px){
+ 
+ 
+ 
+ .stateWorkspaceGrid>.projectedCurveInspector>label{min-width:0;}
+ .stateWorkspaceGrid>.projectedCurveInspector>small{flex-basis:100%;}
+}
+
+/* 15.14.2: two-column layout; the graph ALWAYS owns the primary first row. */
+
+
+
+
+
+
+
+
+
+.stateWorkspaceGrid>.projectedCurveInspector{min-width:0;width:100%;box-sizing:border-box;display:flex;flex-wrap:wrap;align-items:center;gap:10px;padding:10px 12px;margin:0;}
+.stateWorkspaceGrid>.projectedCurveInspector>label{flex:0 0 auto;min-width:0;white-space:normal;}
+.stateWorkspaceGrid>.projectedCurveInspector>small{flex:1 1 260px;min-width:0;}
+.stateWorkspaceGrid>.projectionPairComparison,.stateWorkspaceGrid>.projectionSelectedPoint{min-width:0;}
+
+/* Fase 15.15 — three explicit regions, independent collapsible panels. */
+
+
+
+
+
+
+
+
+
+
+
+.stateRightDrawer{border:1px solid var(--border,#303944);border-radius:8px;min-width:0;overflow:hidden}
+.stateRightDrawer>summary{cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:8px;min-height:38px;padding:8px 10px;font-weight:650;list-style:none}
+.stateRightDrawer>summary::-webkit-details-marker{display:none}
+.stateRightDrawer>summary:focus-visible{outline:2px solid currentColor;outline-offset:-2px}
+.stateRightDrawer:not([open])>summary{font-size:0;justify-content:center;padding:8px 2px}
+.stateRightDrawer:not([open])>summary span{font-size:18px}
+.stateRightContent{display:flex;flex-direction:column;gap:10px;overflow-x:hidden;padding:10px;min-width:0;}
+.stateRightContent>.projectedCurveInspector,.stateRightContent>.projectionPairComparison,.stateRightContent>.projectionSelectedPoint{width:100%;min-width:0;box-sizing:border-box;grid-column:auto;grid-row:auto;margin:0}
+.stateRightContent>.projectedCurveInspector{display:flex;flex-direction:column;align-items:stretch;gap:8px;}
+.stateRightContent>.projectedCurveInspector>label{min-width:0;white-space:normal}
+.stateRightContent>.projectedCurveInspector>small{flex:none;min-width:0;overflow-wrap:anywhere}
+.stateWorkspaceGrid>.riemannDiagnosticLab{min-width:0;}
+.stateWorkspaceGrid>.stateWindowNotice,.stateWorkspaceGrid>.stateSpaceKey,.stateWorkspaceGrid>.stateInspectionToggle,.stateWorkspaceGrid>.localChartLegend,.stateWorkspaceGrid>.localChartNote{min-width:0;}
+@media(max-width:1050px){
+ 
+ 
+ 
+ 
+
+ 
+ 
+ .stateRightContent{max-height:50dvh;}
+}
+
+/* 15.15.1 — gráfico e painéis como única região de trabalho. */
+.inlineWorkspaceDialog>header{display:none}
+
+.stateRightContent{max-height:calc(100dvh - 170px);overflow-y:auto}
+.stateExtraDiagnostics{min-width:0;border-top:1px solid rgba(145,165,190,.25);padding-top:8px}
+.stateExtraDiagnostics>summary{cursor:pointer;font-size:12px;font-weight:600;padding:8px 4px}
+.stateExtraDiagnosticsContent{display:flex;flex-direction:column;gap:10px;padding-top:10px;min-width:0}
+.stateExtraDiagnosticsContent .riemannDiagnosticLab{min-width:0;width:100%}
+.stateExtraDiagnosticsContent .stateWindowNotice,.stateExtraDiagnosticsContent .localChartNote{overflow-wrap:anywhere}
+@media(max-width:1050px){.stateRightContent{max-height:60dvh}}
+
+/* Fase 15.15.2 — compactação sem alterar a geometria.
+   Limitar a altura renderizada do SVG evita cortar curvas abaixo da janela. */
+@media(min-width:1060px){
+ .app>header{height:56px;min-height:56px;padding:5px 14px;gap:10px;flex-wrap:nowrap}
+ .app>header h1{font-size:17px;line-height:1.15}
+ .app>header p{font-size:10px;line-height:1.2;margin-top:2px}
+ .app .headerActions{gap:5px;flex-wrap:nowrap}
+ .app .primaryNavigation{gap:4px;flex-wrap:nowrap}
+ .app .primaryNavigation button,.app .primaryNavigation .currentEnvironment,.app .headerMenu>summary{padding:5px 9px;min-height:30px;font-size:11px}
+ .app .headerMenu>summary{padding:5px 9px}
+ .inlineWorkspaceDialog .stateExplorationBody{padding:8px 10px 8px;overflow:hidden}
+ .stateWorkspaceGrid{gap:8px;}
+
+
+ .stateRightContent{max-height:calc(100dvh - 130px);overflow-y:auto;}
+}
+@media(min-width:761px) and (max-width:1059px){
+ .app>header{min-height:60px;padding:7px 12px;gap:8px}
+ .app>header h1{font-size:17px}
+ .app .headerActions{gap:5px}
+ .app .primaryNavigation{gap:4px}
+ .app .primaryNavigation button,.app .primaryNavigation .currentEnvironment,.app .headerMenu>summary{min-height:30px;padding:5px 8px}
+}
+
+/* Fase 15.15.3: legenda vinculada diretamente à figura 2D. */
+.stateGraphStage>.stateSpaceKey{display:flex;flex-wrap:wrap;gap:6px 14px;align-items:center;justify-content:center;padding:9px 12px;margin:0;border-top:1px solid rgba(140,155,180,.2);font-size:11px;line-height:1.5;background:transparent}
+.stateGraphStage>.stateSpaceKey>span{white-space:normal}
+
+/* 15.15.4: SVG e legenda na mesma coluna, com altura reservada. */
+@media(min-width:1060px){
+ .stateWorkspaceGrid>.stateGraphStage{justify-content:flex-start;}
+ .stateWorkspaceGrid>.stateGraphStage>svg.stateSelectablePlot{object-fit:contain;}
+ .stateWorkspaceGrid>.stateGraphStage>.stateSpaceKey{justify-content:flex-start;}
+}
+@media(max-width:1059px){
+ 
+ .stateWorkspaceGrid>.stateGraphStage>svg.stateSelectablePlot{object-fit:contain;}
+ 
+}
+
+/* Fase 15.15.5 — legenda compacta, sem alterar a geometria.
+   Uma única faixa com rolagem horizontal preserva a altura do SVG. */
+.stateWorkspaceGrid>.stateGraphStage>.stateSpaceKey{
+ justify-content:flex-start;
+ box-sizing:border-box;
+ scrollbar-width:thin;
+ white-space:nowrap;overscroll-behavior-x:contain;
+}
+.stateWorkspaceGrid>.stateGraphStage>.stateSpaceKey>span{
+ white-space:nowrap;overflow-wrap:normal;
+}
+@media(min-width:1060px){
+ .stateWorkspaceGrid>.stateGraphStage>svg.stateSelectablePlot{
+  object-fit:contain;
+ }
+}
+
+/* Fase 15.15.9 — o fundo do gráfico 2D é o retângulo do viewport, como na cena 3D.
+   O SVG fica transparente; a proporção geométrica continua preservada. */
+.stateWorkspaceGrid>.stateGraphStage{
+ background:var(--gwml-chart-background);
+ border:1px solid var(--gwml-border,rgba(150,165,185,.20));
+ border-radius:6px;
+ box-sizing:border-box;
+ 
+}
+.stateWorkspaceGrid>.stateGraphStage>svg.stateSelectablePlot{
+ 
+ 
+ border-radius:0;
+ 
+}
+
+
+/* Fase 15.16 — viewport 2D retangular (1040 × 680), proporcional ao painel central.
+   A mudança de viewBox alonga a escala visual de u sem mudar seus valores. */
+.stateWorkspaceGrid>.stateGraphStage>svg.stateSelectablePlot{
+  
+  object-fit:contain;object-position:center center;
+}
+
+/* Fase 15.17 — toolbar flutuante sobre o viewport 2D */
+
+/* Fase 15.18 — seleção e leitura de coordenadas do plano */
+
+.state2dCoordinates{position:absolute;bottom:54px;left:12px;z-index:5;pointer-events:none;white-space:nowrap;max-width:calc(100% - 24px);overflow:hidden;text-overflow:ellipsis;padding:5px 9px;border-radius:6px;background:rgba(14,20,28,.82);border:1px solid rgba(140,160,180,.28);color:#e7edf4;font-size:12px;font-variant-numeric:tabular-nums}
+@media(max-width:760px){.state2dCoordinates{bottom:48px;font-size:11px}}
+
+/* Fase 15.19.1 — remover a moldura externa do gráfico 2D.
+   O retângulo temporário do zoom por área não é afetado. */
+.stateWorkspaceGrid>.stateGraphStage{
+  border:0;
+  border-radius:0;
+  box-shadow:none;
+}
+
+/* Fase 15.19.2 — retirar o fundo do retângulo central e da legenda.
+   Preserva o SVG transparente e sua superfície de interação. */
+.stateWorkspaceGrid>.stateGraphStage{
+  background:transparent !important;
+  border:0 !important;
+  border-radius:0 !important;
+  box-shadow:none !important;
+}
+.stateWorkspaceGrid>.stateGraphStage>svg.stateSelectablePlot{
+  background:transparent !important;
+  border:0 !important;
+  box-shadow:none !important;
+}
+.stateWorkspaceGrid>.stateGraphStage>svg.stateSelectablePlot>.chartBg{fill:transparent !important;}
+.stateWorkspaceGrid>.stateGraphStage>.stateSpaceKey{
+  
+  border-top:0 !important;
+}
+
+/* Inspection content keeps its own scroll; workspace drawer scrolling is shared. */
+.stateWorkspaceGrid .stateRightContent {
+  flex:1 1 auto;
+  min-height:0;
+  max-height:none;
+  overflow-y:auto;
+  overflow-x:hidden;
+  scrollbar-gutter:stable;
+  overscroll-behavior:contain;
+}
+.stateWorkspaceGrid .stateToolsDrawerContent input,.stateWorkspaceGrid .stateToolsDrawerContent select,.stateWorkspaceGrid .stateRightContent input,.stateWorkspaceGrid .stateRightContent select{
+ max-width:100%;min-width:0;box-sizing:border-box;
+}
+.stateWorkspaceGrid .stateToolsDrawerContent button,.stateWorkspaceGrid .stateRightContent button{max-width:100%;}
+@media (max-width:1050px){
+ 
+ 
+ .stateWorkspaceGrid .stateRightContent{max-height:50dvh;overflow-y:auto;}
+}
+
+/* Fase 15.21 — hierarquia interna dos painéis */
+
+.statePanelSectionBody{display:flex;flex-direction:column;gap:10px;min-width:0}
+.statePanelHint{font-size:11px;color:var(--muted,#aeb5bd);margin:0 2px 4px;line-height:1.4}
+.statePanelSection .stateSelectionControls,.statePanelSection .stateProjectionControls,.statePanelSection .stateViewportControls{min-width:0;max-width:100%;margin:0}
+.statePanelSection .riemannStateEditor input{width:100%;min-width:0}
+.statePanelSection .stateSelectionControls small,.statePanelSection .stateProjectionControls small{font-size:11px;line-height:1.45}
+.statePanelSection .riemannStateEditor button{min-height:28px;padding:4px 5px}
+.statePanelSection button:focus-visible{outline:2px solid var(--gwml-accent,#64d2ff);outline-offset:2px}
+.stateWorkspaceGrid .stateRightContent{gap:10px;}
+.stateSelectedSummary{display:flex;flex-direction:column;gap:8px;padding:10px 9px;border:1px solid var(--border,#303944);border-radius:7px;min-width:0}
+.stateSelectedSummary>strong{font-size:12px}
+.stateSelectedSummary>small{font-size:11px;color:var(--muted,#aeb5bd);line-height:1.45}
+.stateSelectedSummary>div{display:flex;justify-content:space-between;gap:7px;align-items:baseline;font-size:11px;min-width:0}
+.stateSelectedSummary output{font-variant-numeric:tabular-nums;overflow-wrap:anywhere;text-align:right}
+.stateInspectionSummary{display:flex;flex-direction:column;gap:5px;min-width:0}
+.stateInspectionSummary>b{font-size:12px}
+.stateInspectionSummary>small{font-size:11px;line-height:1.45;color:var(--muted,#aeb5bd)}
+.stateRightContent>.projectedCurveInspector{padding:10px 9px}
+
+
+/* Fase 15.22: editores de Riemann compactos, sem empilhar seis botões */
+.statePanelSection .stateSelectionControls[aria-label="Estados iniciais do problema de Riemann"]{
+ display:grid;grid-template-columns:minmax(0,1fr);gap:10px;width:100%;
+}
+.statePanelSection .riemannStateEditor{
+ display:flex;flex-direction:column;gap:7px;min-width:0;
+ padding:10px;border:1px solid rgba(145,165,184,.22);border-radius:8px;
+ background:rgba(145,165,184,.035);
+}
+.statePanelSection .riemannStateHeader{display:flex;justify-content:space-between;align-items:baseline;gap:6px}
+.statePanelSection .riemannStateHeader strong{font-size:13px;line-height:1.3}
+.statePanelSection .riemannStateHeader span{font-size:10px;color:var(--muted,#aeb5bd);text-align:right}
+.statePanelSection .riemannCoordinates{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;min-width:0}
+.statePanelSection .riemannCoordinates label{display:flex;flex-direction:column;gap:4px;min-width:0;font-size:11px}
+.statePanelSection .riemannCoordinates input{width:100%;min-width:0;max-width:100%;height:31px;padding:4px 5px;font-variant-numeric:tabular-nums;box-sizing:border-box}
+.statePanelSection .riemannStateEditor .riemannApply{width:100%;min-height:30px;font-weight:650}
+.statePanelSection .riemannNudgeGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:5px}
+.statePanelSection .riemannNudgeGrid button{min-width:0;min-height:27px;font-size:11px;padding:3px 5px}
+@media(max-width:1050px){.statePanelSection .riemannStateEditor{padding:9px}}
+
+/* Fase 15.23: U* e curvas com controles compactos e sem duplicações. */
+.stateStarEditor,.stateProjectionCompact{display:flex;flex-direction:column;gap:8px;min-width:0}
+.stateStarCoordinates{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;min-width:0}
+.stateStarCoordinates label{display:flex;flex-direction:column;gap:4px;min-width:0;font-size:11px;font-weight:600}
+.stateStarCoordinates input{width:100%;min-width:0;box-sizing:border-box;height:32px;padding:4px 5px;font-variant-numeric:tabular-nums}
+.stateStarEditor>button{width:100%;min-height:31px;box-sizing:border-box}
+.stateStarEditor .stateStarPrimary{font-weight:650}
+.stateStarEditor .stateStarSecondary{display:flex;justify-content:center;align-items:center;gap:8px}
+.stateStarEditor .stateStarClear{font-size:11px}
+.stateProjectionCompact strong{font-size:12px;line-height:1.4}
+.stateProjectionCompact small{font-size:11px;line-height:1.45;color:var(--muted,#aeb5bd)}
+.stateProjectionSegment{display:grid;grid-template-columns:1fr 1fr;gap:5px;min-width:0}
+.stateProjectionSegment button{width:100%;min-width:0;min-height:32px;padding:5px 8px;font-weight:650}
+.stateProjectionSegment button.active{border-color:var(--gwml-accent,#64d2ff)}
+.stateProjectionCaveat{opacity:.85}
+.stateDiscriminantToggle{display:flex;align-items:flex-start;gap:8px;min-width:0;font-size:11px;line-height:1.4;cursor:pointer;padding:8px 0}
+.stateDiscriminantToggle input{flex:none;margin:1px 0 0;accent-color:var(--gwml-accent,#64d2ff)}
+.statePanelSectionBody>.stateProjectionCompact+.stateDiscriminantToggle{border-top:1px solid var(--border,#303944);margin-top:4px;padding-top:12px}
+
+/* Fase 15.24 — controles de visualização com geometria estável */
+.stateWorkspaceGrid .statePanelSectionBody{gap:10px}
+.stateWorkspaceGrid .stateProjectionCompact{gap:8px;}
+.stateWorkspaceGrid .stateProjectionExplanation{min-height:0;}
+.stateWorkspaceGrid .stateProjectionCaveat{font-size:10px;opacity:.75;}
+.stateVisualizationOption{border-top:1px solid rgba(145,165,184,.2);padding-top:12px;display:flex;flex-direction:column;gap:10px}
+.stateSwitchRow{display:flex;align-items:center;justify-content:space-between;gap:10px;position:relative;cursor:pointer;min-height:39px}
+.stateSwitchCopy{display:flex;flex-direction:column;gap:4px;min-width:0;flex:1}
+.stateSwitchCopy strong{font-size:12px;line-height:1.25}
+.stateSwitchCopy small{font-size:10px;line-height:1.4;color:var(--muted,#aeb5bd)}
+.stateSwitchInput{position:absolute;right:0;top:0;width:40px;height:26px;opacity:0;cursor:pointer;z-index:1}
+.stateSwitchTrack{width:37px;height:21px;border-radius:99px;background:#343d49;border:1px solid #596474;flex:0 0 37px;position:relative;transition:background .15s,border-color .15s}
+.stateSwitchTrack:after{content:"";position:absolute;top:2px;left:2px;width:15px;height:15px;border-radius:50%;background:#e9eef5;transition:transform .15s}
+.stateSwitchInput:checked+.stateSwitchTrack{background:#247c69;border-color:#38b99d}
+.stateSwitchInput:checked+.stateSwitchTrack:after{transform:translateX(16px)}
+.stateSwitchInput:focus-visible+.stateSwitchTrack{outline:2px solid #64d2ff;outline-offset:3px}
+.stateDeltaLegend{display:flex;gap:6px 12px;flex-wrap:wrap;font-size:10px;line-height:1.4;color:var(--muted,#aeb5bd)}
+.stateDeltaLegend>span{display:inline-flex;gap:5px;align-items:center;white-space:nowrap}
+.stateDeltaLegend i{display:inline-block;width:8px;height:8px;border-radius:2px}
+.stateDeltaLegend .stateDeltaBlue{background:#0a84ff}
+.stateDeltaLegend .stateDeltaRed{background:#ff453a}
+.stateDeltaLegend .stateDeltaLine{width:12px;height:0;border-top:2px solid #ffcc00;border-radius:0}
+.stateDeltaLegend small{flex:0 0 100%;font-size:10px;line-height:1.45}
+.stateViewportCompact{display:flex;flex-direction:column;gap:10px;min-width:0}
+.stateViewportCompact .statePanelHint{margin:0;font-size:10px}
+.stateViewportFieldGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px 8px;min-width:0}
+.stateViewportFieldGrid label{display:flex;flex-direction:column;gap:5px;font-size:11px;font-weight:550;min-width:0}
+.stateViewportFieldGrid input{width:100%;min-width:0;max-width:100%;height:33px;box-sizing:border-box;padding:5px 4px;font-size:11px;font-variant-numeric:tabular-nums;border-radius:6px}
+.stateViewportFit{width:100%;min-height:32px;font-weight:600}
+.stateViewportFieldGrid input:focus-visible{outline:2px solid #64d2ff;outline-offset:1px}
+
+/* Fase 15.25 — controle de visibilidade Apple Pro Dark, sem switches. */
+.stateVisibilityRow{display:flex;align-items:center;justify-content:space-between;gap:8px;min-height:36px}
+.scientificVisibilityButton{display:inline-flex;align-items:center;justify-content:center;gap:5px;flex:none;min-width:76px;min-height:30px;padding:5px 8px;border-radius:6px;border:1px solid #48515c;background:transparent;color:#aeb7c2;cursor:pointer;font:inherit;font-size:10px;font-weight:600;transition:background .15s,border-color .15s,color .15s}
+.scientificVisibilityButton[aria-pressed="true"]{color:#6de0a0;border-color:#398960;background:rgba(43,124,79,.11)}
+.scientificVisibilityButton:hover{background:rgba(100,145,165,.13)}
+.scientificVisibilityButton:focus-visible{outline:2px solid #68c7f4;outline-offset:2px}
+/* Visibilidade 3D: manter estado, eventos e labels originais; apresentar os
+   checkboxes como botões de olho compactos e coerentes com o painel 2D. */
+#three-d-controls label.characteristicToggle:has(input[type="checkbox"]),#three-d-controls label.toggle:has(input[type="checkbox"]){display:flex;align-items:center;gap:8px;min-height:32px;cursor:pointer}
+#three-d-controls label.characteristicToggle input[type="checkbox"],#three-d-controls label.toggle input[type="checkbox"]{appearance:none;-webkit-appearance:none;flex:0 0 30px;width:30px;height:27px;margin:0;border:1px solid #48515c;border-radius:6px;background-color:transparent;background-repeat:no-repeat;background-position:center;background-size:17px 17px;cursor:pointer;transition:background-color .15s,border-color .15s;
+background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%239ba6b4' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z'/%3E%3Ccircle cx='12' cy='12' r='3'/%3E%3Cpath d='M3 3l18 18'/%3E%3C/svg%3E");}
+#three-d-controls label.characteristicToggle input[type="checkbox"]:checked,#three-d-controls label.toggle input[type="checkbox"]:checked{border-color:#398960;background-color:rgba(43,124,79,.11);background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%236de0a0' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z'/%3E%3Ccircle cx='12' cy='12' r='3'/%3E%3C/svg%3E");}
+#three-d-controls label.characteristicToggle input[type="checkbox"]:focus-visible,#three-d-controls label.toggle input[type="checkbox"]:focus-visible{outline:2px solid #68c7f4;outline-offset:2px}
+#three-d-controls label.characteristicToggle input[type="checkbox"]:hover,#three-d-controls label.toggle input[type="checkbox"]:hover{background-color:rgba(100,145,165,.13)}
+
+.stateWorkspaceGrid{position:relative;}
+
+
+.stateToolsDrawer[data-activity="states"] .statePanelSection:not([data-activity-section="states"]),.stateToolsDrawer[data-activity="curves"] .statePanelSection:not([data-activity-section="curves"]),.stateToolsDrawer[data-activity="view"] .statePanelSection:not([data-activity-section="view"]),.stateToolsDrawer[data-activity="chains"] .statePanelSection:not([data-activity-section="chains"]){display:none}
+.stateActivityRail button:focus-visible{outline:2px solid #77dca3;outline-offset:2px}
+/* Fase 15.27: navegação por atividades nos painéis restantes */
+@media(min-width:761px){
+#three-d-inspection>details[data-panel-category]{display:none}
+#three-d-inspection[data-activity=point]>details[data-panel-category=point],#three-d-inspection[data-activity=waves]>details[data-panel-category=waves],#three-d-inspection[data-activity=singular]>details[data-panel-category=singular],#three-d-inspection[data-activity=charts]>details[data-panel-category=charts]{display:block}
+.physicalSidebar[data-activity=profiles] .physicalToolsDrawer,.physicalSidebar[data-activity=time] .physicalToolsDrawer{display:none}
+.physicalSidebar[data-activity=settings] .physicalVisualizationSection{display:none}
+}
+.gwmlActivityRail button{display:grid;place-items:center;min-width:34px;min-height:34px;padding:4px;border:1px solid transparent;border-radius:7px;background:transparent;color:var(--muted,#aeb5bd);font-size:17px;cursor:pointer}
+.gwmlActivityRail button:hover{background:rgba(130,150,170,.12);color:inherit}
+.gwmlActivityRail button.active{background:rgba(54,130,100,.12);border-color:#369765;color:#83e4ac}
+.gwmlActivityRail button:focus-visible{outline:2px solid #83e4ac;outline-offset:2px}
+@media(max-width:760px){.gwmlActivityRail{display:flex;gap:5px;flex-wrap:wrap;padding:5px}.gwmlActivityRail button{min-width:38px}.physicalSidebar .gwmlActivityRail{display:flex}}
+
+@media(min-width:761px){.physicalSidebar[data-activity=profiles] .physicalToolbar>label:nth-child(2){display:none}.physicalSidebar[data-activity=time] .physicalToolbar>label:nth-child(1){display:none}}
+
+
+/* Shared section headers are owned by workspace-panel-content.css. */
+/* Shared drawer inputs and selects are styled in workspace-panel-content.css.
+   Avoid a second radius/size rule that varies with workspace selectors. */
+/* Apply scientific control styling only to drawer contents, not the shared navigation rail. */
+.workspaceLayout .workspacePanelDrawer .statePanelSectionBody button,
+.workspaceLayout .workspacePanelDrawer .sidebarSectionBody button,
+.workspaceLayout .workspacePanelDrawer .physicalToolsDrawerContent button,
+.workspaceLayout .workspacePanelDrawer .workspacePanelBody button{
+ border-radius:6px;transition:background-color .14s ease,border-color .14s ease,color .14s ease;
+}
+.workspaceLayout .workspacePanelDrawer .statePanelSectionBody button:focus-visible,
+.workspaceLayout .workspacePanelDrawer .sidebarSectionBody button:focus-visible,
+.workspaceLayout .workspacePanelDrawer .physicalToolsDrawerContent button:focus-visible,
+.workspaceLayout .workspacePanelDrawer .workspacePanelBody button:focus-visible{outline:2px solid var(--gwml-dock-active);outline-offset:2px;}
+.stateActivityRail button.active,.gwmlActivityRail button.active{
+ background:rgba(70,165,105,.12);color:var(--gwml-dock-active);
+ border-color:rgba(70,165,105,.35);
+}
+@media(prefers-reduced-motion:reduce){
+ .stateWorkspaceGrid button,#three-d-controls button,#three-d-inspection button,.physicalSidebar button{transition:none;}
+}
+
+/* Fase 15.29 — o SVG interativo ocupa toda a superfície gráfica disponível.
+   preserveAspectRatio=none faz o viewport preencher o contêiner sem barras
+   internas; as escalas u e v continuam independentes, como já previsto. */
+
+.stateWorkspaceGrid>.stateGraphStage>svg.stateSelectablePlot{object-fit:fill!important;}
+
+
+/* Fase 15.30 — HUD do gráfico sobreposto ao SVG, sem consumir altura. */
+.stateWorkspaceGrid>.stateGraphStage{isolation:isolate;}
+.stateWorkspaceGrid>.stateGraphStage>.stateSpaceKey{
+ z-index:6;
+ 
+ box-sizing:border-box;
+ border:1px solid rgba(140,160,180,.27);border-radius:7px;
+ background:rgba(14,20,28,.88);backdrop-filter:blur(8px);
+ pointer-events:none;font-size:11px;
+}
+.stateWorkspaceGrid>.stateGraphStage>.state2dCoordinates{
+ z-index:7;
+}
+
+.stateAxisTick{stroke:#778494;stroke-width:1;opacity:.65}
+.stateAxisTickLabel{fill:#8d99a8;font-size:12px;font-variant-numeric:tabular-nums}
+@media(max-width:760px){
+ .stateWorkspaceGrid>.stateGraphStage>.stateSpaceKey{font-size:10px;}
+ 
+}
+
+/* Fase 15.34: barra superior híbrida VS Code + Apple Pro */
+.app>.gwmlTopbar{display:grid!important;grid-template-columns:minmax(170px,1fr) auto minmax(170px,1fr);align-items:center;min-height:48px!important;height:48px!important;padding:5px 14px!important;gap:12px!important;background:var(--gwml-bg-panel);border-bottom:1px solid var(--gwml-border-subtle)}
+.gwmlTopbarBrand{grid-column:1;display:flex;align-items:center;gap:8px;min-width:0;white-space:nowrap}
+.gwmlTopbarBrand>strong{font-size:13px;letter-spacing:.01em;overflow:hidden;text-overflow:ellipsis}
+.gwmlBrandSymbol{color:var(--gwml-accent);font-size:23px;font-weight:700;line-height:1}
+.app .gwmlTopbar .headerActions{display:contents}
+.app .gwmlTopbar .primaryNavigation{grid-column:2;justify-self:center;display:flex;align-items:center;gap:2px;padding:3px!important;background:var(--gwml-bg-control);border:1px solid var(--gwml-border-subtle);border-radius:7px}
+.app .gwmlTopbar .primaryNavigation button{border:0!important;background:transparent!important;color:var(--gwml-text-secondary);min-height:28px!important;padding:4px 12px!important;border-radius:5px!important;font-size:11px!important;white-space:nowrap}
+.app .gwmlTopbar .primaryNavigation button.currentEnvironment{background:rgba(64,151,111,.23)!important;color:var(--gwml-text-primary);box-shadow:inset 0 0 0 1px var(--gwml-accent)}
+.gwmlTopbarUtilities{grid-column:3;display:flex;justify-content:flex-end;align-items:center;gap:5px}
+.app .gwmlTopbarIcon,.app .gwmlTopbar .gwmlIconMenu>summary{display:flex;align-items:center;justify-content:center;width:32px;height:30px;min-height:30px!important;padding:0!important;border:1px solid transparent!important;background:transparent!important;border-radius:6px!important;color:var(--gwml-text-secondary);font-size:18px!important;cursor:pointer;list-style:none}
+.app .gwmlTopbar .gwmlIconMenu>summary::after{display:none}
+.app .gwmlTopbarIcon:hover,.app .gwmlTopbar .gwmlIconMenu>summary:hover{background:var(--gwml-bg-control)!important;color:var(--gwml-text-primary)}
+.app .gwmlTopbarIcon.currentEnvironment{color:var(--gwml-accent)}
+.gwmlVersionInfo{position:relative;flex-shrink:0}
+.gwmlVersionInfo>summary{list-style:none;cursor:pointer;font-size:12px;color:var(--gwml-text-secondary);padding:4px}
+.gwmlVersionInfo>summary::-webkit-details-marker{display:none}
+.gwmlVersionPopover{position:absolute;top:calc(100% + 12px);left:0;z-index:50;width:290px;white-space:normal;padding:12px;background:var(--gwml-bg-panel);border:1px solid var(--gwml-border-subtle);border-radius:7px;box-shadow:0 14px 32px var(--gwml-shadow)}
+.gwmlVersionPopover p{font-size:11px;margin:8px 0!important}
+.app .gwmlTopbar .experimentFileInput{display:none}
+.app .gwmlTopbar .experimentStatus{position:absolute;top:48px;right:10px;z-index:40;max-width:350px}
+@media(max-width:800px){.app>.gwmlTopbar{grid-template-columns:auto 1fr auto;gap:5px!important;padding:4px 7px!important}.gwmlTopbarBrand>strong{display:none}.app .gwmlTopbar .primaryNavigation button{padding:4px 7px!important}.gwmlTopbarUtilities{gap:0}.app .gwmlTopbarIcon,.app .gwmlTopbar .gwmlIconMenu>summary{width:27px}}
+@media(max-width:480px){.gwmlVersionInfo{display:none}.app .gwmlTopbar .primaryNavigation button{font-size:10px!important;padding:4px 5px!important}}
+
+
+/* 15.63 — contain the shared logo/favicon inside the top navigation. */
+.app > .gwmlTopbar .gwmlTopbarBrand > img.gwmlBrandSymbol{
+  display: block !important;
+  position: static !important;
+  width: 22px !important;
+  height: 22px !important;
+  min-width: 22px !important;
+  min-height: 22px !important;
+  max-width: 22px !important;
+  max-height: 22px !important;
+  flex: 0 0 22px !important;
+  object-fit: contain !important;
+  transform: none !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border-radius: 4px;
+}
+.app > .gwmlTopbar .gwmlTopbarBrand{
+  min-width: 0;
+  max-width: 100%;
+  align-items: center;
+}
+
+
+/* Compact header popovers: one shared hover/click interaction and a continuous hit area. */
+.gwmlHoverMenu{position:relative;display:flex;align-items:center;flex:0 0 auto}
+.gwmlHoverMenuTrigger{font-family:inherit}
+.gwmlHoverMenu.isOpen .gwmlHoverMenuTrigger{background:var(--gwml-bg-control)!important;color:var(--gwml-text-primary)!important}
+.gwmlHoverMenuSurface{position:absolute;z-index:100;top:100%;right:0;padding-top:7px;min-width:220px;max-width:min(340px,calc(100vw - 20px));white-space:normal}
+.gwmlHoverMenuSurface.align-left{left:0;right:auto}
+.gwmlHoverMenuSurface .headerMenuItems,.gwmlHoverMenuSurface .gwmlVersionPopover{position:static;top:auto;left:auto;right:auto;width:auto;min-width:0;box-sizing:border-box;max-width:100%;border-radius:7px;background:var(--gwml-bg-panel);border:1px solid var(--gwml-border-subtle);box-shadow:0 14px 32px var(--gwml-shadow)}
+.gwmlHoverMenuSurface .gwmlVersionPopover{min-width:280px;padding:12px}
+.gwmlHoverMenuSurface .headerMenuItems{display:grid;gap:5px;padding:8px}
+.gwmlHoverMenuSurface .headerMenuItems button{width:100%;text-align:left;background:var(--gwml-bg-control);color:var(--gwml-text-primary);border:1px solid var(--gwml-border-subtle)}
+.gwmlHoverMenuTrigger:focus-visible,.gwmlHoverMenuSurface button:focus-visible{outline:2px solid var(--gwml-focus);outline-offset:2px}
+@media(max-width:480px){.gwmlTopbarBrand .gwmlHoverMenu{display:none}}
+
+/* Legenda científica compartilhada 2D/3D */
+.scientificLegend{position:absolute;bottom:10px;left:12px;right:12px;z-index:30;box-sizing:border-box;display:flex;align-items:center;gap:14px;height:34px;padding:0 12px;border:1px solid rgba(148,163,184,.25);border-radius:7px;background:rgba(12,17,24,.94);color:#d5dce5;font-size:11px;white-space:nowrap;overflow-x:auto;overflow-y:hidden;scrollbar-width:thin;pointer-events:auto}
+.scientificLegendTitle{font-weight:600;color:#e2e8f0;flex:none}
+.scientificLegendItem{display:inline-flex;align-items:center;gap:5px;flex:none}
+.scientificLegendSymbol{width:8px;height:8px;flex:none;border-radius:50%;background:var(--legend-color)}
+.scientificLegendSymbol.isDiamond{border-radius:1px;transform:rotate(45deg)}
+.scientificLegendSymbol.isRing{background:transparent;border:2px solid var(--legend-color);box-sizing:border-box;width:10px;height:10px}
+.scientificLegendSymbol.isLine{height:0;width:18px;border-top:2px solid var(--legend-color);border-radius:0;background:none}
+.scientificLegendChain{display:inline-flex;align-items:center;gap:9px;flex:none;margin-left:auto;padding-left:12px;border-left:1px solid rgba(148,163,184,.25)}
+.scientificLegendStatus{font-size:10px;color:#cbd5e1;border:1px solid rgba(148,163,184,.35);border-radius:4px;padding:2px 5px}
+.scientificLegend .katex{font-size:1em}
+
+/* Etapa 131: compactar as janelas de inspeção, sem alterar a legenda. */
+.sceneWrap .sceneInspectionCompact {
+  position:absolute; left:12px; bottom:56px; z-index:35;
+  box-sizing:border-box; width:max-content; max-width:min(260px,calc(100% - 24px));
+  padding:7px 9px; border:1px solid rgba(148,163,184,.13);
+  border-radius:8px; background:rgba(17,24,39,.94);
+  color:#f3f4f6; font-size:11px; line-height:1.28;
+  box-shadow:0 4px 16px #0005;
+}
+.sceneWrap .sceneInspectionCompact > div + div { margin-top:2px; }
+.sceneWrap .sceneInspectionCompact > div:first-child { gap:8px !important; margin-bottom:4px; }
+.sceneWrap .sceneInspectionCompact > div:first-child strong { font-size:11px; }
+.sceneWrap .sceneInspectionCompact button {
+  font-size:11px; line-height:1.2; padding:4px 7px;
+  border-radius:5px;
+}
+.sceneWrap .sceneInspectionCompact > button { margin-top:5px; }
+.sceneWrap .sceneInspectionCompact > div:first-child button { padding:2px 6px; }
+.sceneWrap .sceneInspectionCompact small { font-size:10px; line-height:1.3; }
+
+/* Etapa 136: controles do Espaço Físico com uma seção por atividade. */
+.workspaceLayout--physical .physicalControlSection{min-width:0;padding:0 10px 12px;}
+.workspaceLayout--physical .physicalControlSectionTitle{padding:11px 0 9px;border-bottom:1px solid var(--workspace-border,rgba(140,160,180,.2));font-size:12px;font-weight:650;}
+.workspaceLayout--physical .physicalControlSection .physicalToolbar{display:flex;flex-direction:column;align-items:stretch;gap:8px;padding:10px 0 0;min-width:0;}
+.workspaceLayout--physical .physicalControlSection .physicalFieldLabel{font-size:11px;font-weight:550;line-height:1.3;margin:0;}
+.workspaceLayout--physical .physicalControlSection select,.workspaceLayout--physical .physicalControlSection input[type=number]{width:100%;min-width:0;max-width:100%;box-sizing:border-box;}
+.workspaceLayout--physical .physicalTimeControl{display:flex;align-items:center;gap:8px;min-width:0;}
+.workspaceLayout--physical .physicalTimeControl input[type=range]{flex:1;min-width:0;}
+.workspaceLayout--physical .physicalTimeControl output{min-width:36px;text-align:right;font-size:12px;font-variant-numeric:tabular-nums;}
+.workspaceLayout--physical .physicalControlSection .physicalToolbar>*{flex:none;min-width:0;width:100%;}
+
+/* Etapa 140: area fisica — graficos proporcionais, expressoes e perfis. */
+.app .physicalWorkspace > main.physicalMain{gap:12px;padding:14px 16px 24px;}
+.app .physicalWorkspace .physicalVisualization > div > svg,
+.inlineWorkspaceDialog:has(#physical-title) .physicalLayoutBody.physicalWorkspace .physicalVisualization > div > svg{height:clamp(220px,36vh,350px);width:100%;object-fit:fill;}
+.app .physicalWorkspace .physicalVisualization .physicalProfilePlot > svg,
+.inlineWorkspaceDialog:has(#physical-title) .physicalLayoutBody.physicalWorkspace .physicalVisualization .physicalProfilePlot > svg{height:clamp(135px,20vh,195px);width:100%;object-fit:fill;}
+.app .physicalWorkspace .physicalVisualization .physicalProfiles{margin-top:10px;}
+.app .physicalWorkspace .physicalVisualization .physicalProfiles > p{margin:4px 0 8px;font-size:12px;opacity:.75;}
+.app .physicalWorkspace .physicalVisualization .physicalProfilePlot h3{margin:0 0 5px;font-size:13px;}
+.physicalExpressions{border:1px solid var(--workspace-border,rgba(140,160,180,.22));border-radius:9px;background:rgba(120,150,185,.055);padding:13px 16px;min-width:0;}
+.physicalExpressionsHeader{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px;}
+.physicalExpressionsHeader h3{font-size:14px;margin:0;}
+.physicalExpressionStatus{font-size:11px;color:var(--text-secondary,#9aafc4);}
+.physicalExpressions .mathBlock{max-width:100%;overflow-x:auto;overflow-y:hidden;padding:4px 0;}
+.physicalExpressionFormula{border-top:1px solid rgba(150,170,190,.14);margin-top:8px;padding-top:8px;}
+.physicalExpressionNote{font-size:12px;line-height:1.55;color:var(--text-secondary,#9aafc4);margin:8px 0 0;}
+.app .physicalWorkspace .physicalSolutionMeta{display:flex;flex-direction:column;gap:8px;}
+@media(max-width:700px){.app .physicalWorkspace > main.physicalMain{padding:9px;}.physicalExpressions{padding:10px;}.app .physicalWorkspace .physicalVisualization > div > svg{height:230px;}}
+
+
+/* Etapa 141 — diagrama e expressões lado a lado, sem alterar os cálculos. */
+.app .physicalWorkspace > main.physicalMain .physicalOverviewGrid{
+  display:grid;
+  grid-template-columns:minmax(0,1.12fr) minmax(0,1fr);
+  gap:12px;
+  align-items:stretch;
+  min-width:0;
+  max-width:100%;
+}
+.app .physicalWorkspace .physicalDiagramPanel{
+  min-width:0;
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+  padding:12px 14px;
+  border:1px solid var(--workspace-border,rgba(140,160,180,.22));
+  border-radius:9px;
+  background:rgba(120,150,185,.055);
+}
+.app .physicalWorkspace .physicalDiagramPanel > h3{font-size:14px;margin:0;line-height:1.35;}
+.app .physicalWorkspace .physicalDiagramPanel .physicalVisualization{flex:1;min-height:0;}
+.app .physicalWorkspace .physicalDiagramPanel .physicalVisualization > div > svg,
+.inlineWorkspaceDialog:has(#physical-title) .physicalLayoutBody.physicalWorkspace .physicalDiagramPanel .physicalVisualization > div > svg{
+  display:block;width:100%;height:clamp(245px,34vh,360px);object-fit:contain;
+}
+.app .physicalWorkspace .physicalDiagramPanel .localChartNote{font-size:11px;line-height:1.45;margin:6px 0 0;}
+.app .physicalWorkspace .physicalDiagramEmpty{font-size:12px;line-height:1.5;}
+.app .physicalWorkspace .physicalOverviewGrid > .physicalExpressions{min-width:0;overflow:hidden;}
+.app .physicalWorkspace .physicalOverviewGrid .physicalExpressions .mathBlock{overflow-x:auto;max-width:100%;}
+/* O painel de seleção deve manter a altura do conteúdo, sem uma caixa vazia gigante. */
+.workspaceLayout--physical .physicalControlSection .physicalToolbar{height:auto;min-height:0;max-height:none;flex:0 0 auto;}
+.workspaceLayout--physical .physicalControlSection select#physical-orbit-select{height:34px;min-height:34px;flex:0 0 auto;}
+@media(max-width:1080px){
+  .app .physicalWorkspace > main.physicalMain .physicalOverviewGrid{grid-template-columns:minmax(0,1fr);}
+  .app .physicalWorkspace .physicalDiagramPanel .physicalVisualization > div > svg{height:clamp(220px,32vh,340px);}
+}
+@media(max-width:700px){
+  .app .physicalWorkspace .physicalDiagramPanel{padding:10px;}
+  .app .physicalWorkspace .physicalOverviewGrid{gap:9px;}
+}
+
+/* Etapa 142 — proporções e leitura dos quatro painéis físicos */
+.app .physicalWorkspace > main.physicalMain{gap:10px;padding:12px 14px 20px;}
+.app .physicalWorkspace > main.physicalMain .physicalOverviewGrid{grid-template-columns:minmax(0,1.05fr) minmax(0,1fr);gap:10px;align-items:stretch;}
+.app .physicalWorkspace .physicalDiagramPanel{padding:10px 12px;gap:5px;}
+.app .physicalWorkspace .physicalDiagramPanel .physicalVisualization > div > svg,
+.inlineWorkspaceDialog:has(#physical-title) .physicalLayoutBody.physicalWorkspace .physicalDiagramPanel .physicalVisualization > div > svg{height:clamp(235px,30vh,300px);object-fit:contain;}
+.app .physicalWorkspace .physicalDiagramPanel .localChartNote{margin:3px 0 0;line-height:1.35;}
+.app .physicalWorkspace .physicalOverviewGrid > .physicalExpressions{padding:10px 12px;display:flex;flex-direction:column;gap:5px;}
+.app .physicalWorkspace .physicalExpressionsHeader{margin-bottom:0;}
+.app .physicalWorkspace .physicalExpressions .mathBlock{padding:2px 0;overflow-x:auto;overflow-y:hidden;}
+.app .physicalWorkspace .physicalExpressions .katex-display{margin:.3em 0;}
+.app .physicalWorkspace .physicalExpressionFormula{margin-top:3px;padding-top:5px;}
+.app .physicalWorkspace .physicalExpressionNote{font-size:11px;line-height:1.4;margin:4px 0 0;}
+.app .physicalWorkspace .physicalProfiles{margin:0;min-width:0;}
+.app .physicalWorkspace .physicalProfiles > h3{margin:0 0 3px;font-size:14px;}
+.app .physicalWorkspace .physicalProfiles > p{margin:2px 0 7px;font-size:11px;line-height:1.4;}
+.app .physicalWorkspace .physicalProfileGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;}
+.app .physicalWorkspace .physicalProfilePlot{min-width:0;padding:9px 11px;border:1px solid var(--workspace-border,rgba(140,160,180,.22));border-radius:8px;background:rgba(120,150,185,.055);}
+.app .physicalWorkspace .physicalProfilePlot h3{margin:0 0 4px;font-size:13px;}
+.app .physicalWorkspace .physicalProfilePlot > svg,
+.inlineWorkspaceDialog:has(#physical-title) .physicalLayoutBody.physicalWorkspace .physicalProfilePlot > svg{width:100%;height:clamp(155px,22vh,205px);object-fit:contain;display:block;}
+@media(max-width:1100px){.app .physicalWorkspace > main.physicalMain .physicalOverviewGrid{grid-template-columns:minmax(0,1fr)};}
+@media(max-width:760px){.app .physicalWorkspace .physicalProfileGrid{grid-template-columns:minmax(0,1fr)};}
+
+/* Etapa 144 — três colunas: diagrama, expressão, análises; perfis sob as duas primeiras. */
+.app .physicalWorkspace > main.physicalMain .physicalThreeColumnLayout{
+  display:grid;
+  grid-template-columns:minmax(0,1.08fr) minmax(0,1.08fr) minmax(230px,.76fr);
+  grid-template-rows:auto auto;
+  gap:10px;
+  align-items:start;
+  min-width:0;
+}
+.app .physicalWorkspace > main.physicalMain .physicalThreeColumnLayout > .physicalOverviewGrid{
+  display:contents;
+}
+.app .physicalWorkspace .physicalThreeColumnLayout > .physicalDiagramPanel,
+.app .physicalWorkspace .physicalThreeColumnLayout > .physicalExpressions{min-width:0;}
+.app .physicalWorkspace .physicalThreeColumnLayout > .physicalProfilesArea{
+  grid-column:1 / 3;
+  grid-row:2;
+  min-width:0;
+}
+.app .physicalWorkspace .physicalThreeColumnLayout > .physicalAuxiliaryColumn{
+  grid-column:3;
+  grid-row:1 / 3;
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+  min-width:0;
+  padding:10px;
+  border:1px solid var(--workspace-border,rgba(140,160,180,.22));
+  border-radius:9px;
+  background:rgba(120,150,185,.055);
+}
+.app .physicalWorkspace .physicalAuxiliaryTitle{font-size:13px;line-height:1.4;margin:0 0 3px;}
+.app .physicalWorkspace .physicalAuxiliaryColumn > button{width:100%;white-space:normal;line-height:1.35;}
+.app .physicalWorkspace .physicalAuxiliaryColumn .physicalDisclosure{min-width:0;}
+.app .physicalWorkspace .physicalAuxiliaryColumn .physicalDisclosureToggle{text-align:left;}
+.app .physicalWorkspace .physicalAuxiliaryColumn .scientificTableRegion{max-width:100%;overflow-x:auto;}
+@media(max-width:1350px){
+  .app .physicalWorkspace > main.physicalMain .physicalThreeColumnLayout{
+    grid-template-columns:repeat(2,minmax(0,1fr));
+  }
+  .app .physicalWorkspace .physicalThreeColumnLayout > .physicalAuxiliaryColumn{
+    grid-column:1 / -1;
+    grid-row:3;
+  }
+}
+@media(max-width:900px){
+  .app .physicalWorkspace > main.physicalMain .physicalThreeColumnLayout{grid-template-columns:minmax(0,1fr);}
+  .app .physicalWorkspace .physicalThreeColumnLayout > .physicalProfilesArea{grid-column:1;grid-row:auto;}
+  .app .physicalWorkspace .physicalThreeColumnLayout > .physicalAuxiliaryColumn{grid-column:1;grid-row:auto;}
+}

@@ -12,8 +12,8 @@ export {
   chartCoordinates,
   fiber,
   zChartCoefficients,
-  zFromZHat,
-  zHatFromZ,
+  zFromZc,
+  zcFromZ,
 } from './charts/zChart.js'
 
 export {
@@ -22,18 +22,21 @@ export {
 } from './charts/reciprocalChart.js'
 
 export {
-  discriminant,
   eigenResidual,
   rhResidual,
   waveState,
 } from './manifold/waveState.js'
 
-export { coincidencePoints, coincidenceTauRoots } from './manifold/coincidence.js'
+export { characteristicSpectrum, discriminant } from './characteristic/spectrum.js'
+
+export { coincidencePoints, coincidenceTauRoots } from './characteristic/coincidence.js'
 
 export {
   det2,
   directionalJacobian,
   sonicData,
+  sonicDeterminant,
+  sonicFullImplicit,
   sonicImplicit,
   sonicResidual,
 } from './sonic/sonic.js'
@@ -45,10 +48,28 @@ export {
 } from './rarefaction/field.js'
 
 export {
+  infinityRarefactionLinearData,
   infinityRarefactionSingularities,
   rarefactionJacobian,
   rarefactionSingularities,
 } from './rarefaction/singularities.js'
 
-export { infinityRarefactionSeparatrices } from './rarefaction/separatrices.js'
+export { infinityRarefactionSeparatrices, reciprocalPointToFiniteDisplay } from './rarefaction/separatrices.js'
 
+export { projectRarefactionOrbitToState, rarefactionOrbits, splitProjectedRarefactionByBranch } from './rarefaction/orbits.js'
+
+export { finiteRarefactionSeparatrices } from './rarefaction/finiteSeparatrices.js'
+
+export {
+  stateFiberPoint,
+  stateFiberPointReciprocal,
+  characteristicLiftPolynomial,
+  characteristicLifts,
+} from './state/fibers.js'
+export { hugoniotSpectralDiagnostic } from './state/hugoniotSpectrum.js'
+export { fixedStateSpectralPoint, spectralSignature, spectralCount, spectralCountSignature, laxClass2x2, partitionHugoniotSpectralRegions } from './state/hugoniotSpectralRegions.js'
+
+export { genericState, riemannData, localEndpointStates, genericInverseImages, riemannInverseImages } from './state/stateRoles.js'
+export { saturationSeeds, forwardSaturationSeeds, backwardSaturationSeeds } from './state/saturation.js'
+export { COMPOSITE_CONSTRUCTIONS, compositeConstruction, compositeSonicResidual, isOnCompositeSonicSheet } from './state/composite.js'
+export { compositeLeafIntersections, traceCompositeField } from './state/compositeTrace.js'

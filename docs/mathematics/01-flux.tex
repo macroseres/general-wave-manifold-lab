@@ -1,9 +1,31 @@
-\section{Flux}
+\section{General quadratic flux}
 
-For the current quadratic model,
+Let
 \[
-F(U)=\begin{pmatrix}f(u,v)\\g(u,v)\end{pmatrix},
-\qquad U=(u,v)\in\R^2.
+U=(u,v)\in\R^2,
+\qquad
+F(U)=\begin{pmatrix}f(u,v)\\ g(u,v)\end{pmatrix},
+\]
+with
+\begin{align*}
+f(u,v)&=a_{20}u^2+a_{11}uv+a_{02}v^2+a_{10}u+a_{01}v,\\
+g(u,v)&=b_{20}u^2+b_{11}uv+b_{02}v^2+b_{10}u+b_{01}v.
+\end{align*}
+Thus the model has ten coefficients. Its Jacobian is
+\[
+DF(u,v)=
+\begin{pmatrix}
+2a_{20}u+a_{11}v+a_{10} & a_{11}u+2a_{02}v+a_{01}\\
+2b_{20}u+b_{11}v+b_{10} & b_{11}u+2b_{02}v+b_{01}
+\end{pmatrix}.
 \]
 
-The exact formulas and parameter conventions implemented by the application must be kept synchronized with this document and verified by tests. This section will replace the legacy mathematical notes after formula-by-formula verification.
+The preset inherited from the earlier quadratic example is only a particular point in this ten-parameter family:
+\[
+a_{20}=\frac{B_1+1}{2},\quad a_{11}=0,\quad a_{02}=\frac12,
+\quad a_{10}=a,\quad a_{01}=0,
+\]
+\[
+b_{20}=0,\quad b_{11}=1,\quad b_{02}=-\frac{B_2}{2},
+\quad b_{10}=c,\quad b_{01}=a.
+\]

@@ -1,10 +1,41 @@
-:root {
-  /* Scientific UI tokens. Adoption is incremental to avoid a visual regression. */
+:root,
+:root[data-theme="dark"] {
+  color-scheme: dark;
   --gwml-bg-app: #0b0d10;
   --gwml-bg-panel: #12151a;
   --gwml-bg-elevated: #191d23;
-  --gwml-border-subtle: rgba(255, 255, 255, 0.10);
-  --gwml-text-primary: rgba(255, 255, 255, 0.94);
-  --gwml-text-secondary: rgba(255, 255, 255, 0.62);
+  --gwml-bg-view: #0e1216;
+  --gwml-bg-header: #0b2029;
+  --gwml-bg-control: #20262d;
+  --gwml-bg-note: #252318;
+  --gwml-border-subtle: rgba(255,255,255,.12);
+  --gwml-text-primary: rgba(255,255,255,.94);
+  --gwml-text-secondary: rgba(255,255,255,.64);
   --gwml-accent: #30d158;
+  --gwml-focus: #64d2ff;
+  --gwml-shadow: rgba(0,0,0,.45);
+  --gwml-chart-background: #192129;
+  --gwml-chart-text: #dce7eb;
+  --gwml-chart-grid: #53636d;
+  --gwml-overlay: rgba(4,10,15,.82);
+}
+:root[data-theme="light"] {
+  color-scheme: light;
+  --gwml-bg-app: #eef2f4;
+  --gwml-bg-panel: #ffffff;
+  --gwml-bg-elevated: #f8fafb;
+  --gwml-bg-view: #e9eef0;
+  --gwml-bg-header: #0f2e3a;
+  --gwml-bg-control: #edf2f4;
+  --gwml-bg-note: #fff6d5;
+  --gwml-border-subtle: #ccd5d9;
+  --gwml-text-primary: #162126;
+  --gwml-text-secondary: #52656d;
+  --gwml-accent: #248a3d;
+  --gwml-focus: #0a84ff;
+  --gwml-shadow: rgba(0,0,0,.14);
+  --gwml-chart-background: #eef3f5;
+  --gwml-chart-text: #34474f;
+  --gwml-chart-grid: #78909a;
+  --gwml-overlay: rgba(4,10,15,.76);
 }

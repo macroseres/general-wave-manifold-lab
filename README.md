@@ -2,7 +2,7 @@
 
 Scientific laboratory for the study and visualization of wave manifolds, sonic loci, rarefaction fields and related constructions for systems of conservation laws.
 
-Current version: **v0.6.0 — Foundation**.
+Current version: **v0.7.0-dev.21 — Foundation Verification**.
 
 ## Development
 
@@ -29,11 +29,11 @@ Mathematical definitions must remain independent of React and Three.js. New scie
 
 ## Documentation
 
-- `docs/mathematics/` — LaTeX mathematical reference under formula-by-formula verification; it becomes authoritative only after the legacy notes are fully checked.
+- `docs/mathematics/` — canonical LaTeX mathematical reference for the validated pre-Hugoniot core.
 - `docs/architecture/` — software and numerical architecture.
 - `docs/decisions/` — architecture/mathematics decision records.
 - `docs/ROADMAP.md` — planned milestones.
 - `docs/CHANGELOG.md` — version history.
 - `CONTRIBUTING.md` — Git and contribution workflow.
 
-The existing `docs/MATHEMATICS.md` is retained temporarily as legacy material while its formulas are migrated and verified against the implementation.
+The existing `docs/MATHEMATICS.md` is retained as legacy/reference material only; canonical pre-Hugoniot formulas live in `docs/mathematics/`.

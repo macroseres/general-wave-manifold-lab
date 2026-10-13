@@ -1,0 +1,460 @@
+/* Canonical workspace layout — Estados, Variedade, Físico.
+ * No per-workspace widths, offsets, absolute navigation or !important cascade.
+ * Structure: 68px navigation rail + 232px tools + flexible visualization.
+ */
+.workspaceLayout {
+  --workspace-rail: 68px;
+  --workspace-drawer: 232px;
+  --workspace-gap: 8px;
+  --workspace-pad: 8px;
+  --workspace-bg: #0b0d10;
+  --workspace-surface: #11151b;
+  --workspace-stroke: #303944;
+  min-width: 0;
+  min-height: 0;
+  background: var(--workspace-bg);
+}
+.workspaceLayout *, .workspaceLayout *::before, .workspaceLayout *::after {box-sizing:border-box}
+.workspaceLayout .workspaceRail {
+  position: relative;
+  inset: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  grid-column: 1;
+  grid-row: 1 / -1;
+  width: var(--workspace-rail);
+  min-width: 0;
+  height: 100%;
+  min-height: 0;
+  padding: 5px 3px;
+  margin: 0;
+  overflow: hidden;
+  border: 1px solid var(--workspace-stroke);
+  border-radius: 7px;
+  background: var(--workspace-surface);
+  z-index: 2;
+  flex-shrink: 0;
+  scrollbar-width: none;
+}
+.workspaceLayout .workspaceRailItems > button {
+  position: static;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  gap: 3px;
+  width: 100%;
+  min-width: 0;
+  min-height: 48px;
+  height: auto;
+  margin: 0 0 3px;
+  padding: 5px 2px;
+  border-radius: 6px;
+  border:1px solid transparent;
+  appearance:none;
+  background:transparent;
+  color:#b8c4d1;
+  font:inherit;
+  line-height:normal;
+  cursor:pointer;
+}
+/* Only navigation items scroll; the collapse control stays pinned to the footer. */
+.workspaceLayout .workspaceRailItems {
+  display:flex;flex:1 1 auto;flex-direction:column;align-items:stretch;
+  min-height:0;min-width:0;overflow-y:auto;overflow-x:hidden;scrollbar-width:none;
+}
+.workspaceLayout .workspaceRailItems::-webkit-scrollbar {display:none}
+.workspaceLayout .workspaceRailIcon {display:flex;align-items:center;justify-content:center;width:22px;height:22px}
+.workspaceLayout .workspaceRailIcon svg {width:20px;height:20px}
+/* Etapa 137 — Ícones Tabler sem cápsulas/círculos decorativos.
+   O destaque pertence ao botão ativo, nunca ao ícone interno. */
+.workspaceLayout .workspaceRailItems > button .workspaceRailIcon,
+.workspaceLayout .workspaceRailItems > button .workspaceRailIcon svg {
+  background:transparent;
+  background-image:none;
+  border:0;
+  border-radius:0;
+  box-shadow:none;
+  outline:0;
+}
+.workspaceLayout .workspaceRailItems > button .workspaceRailIcon::before,
+.workspaceLayout .workspaceRailItems > button .workspaceRailIcon::after {
+  content:none;
+  display:none;
+}
+
+.workspaceLayout .workspaceRailLabel {display:block;max-width:100%;font-size:9px;line-height:1.12;white-space:normal;overflow-wrap:anywhere;text-align:center}
+
+/* 2D: rail, drawer and canvas are siblings in one grid. */
+.workspaceLayout--states.stateWorkspaceGrid {
+  display: grid;
+  grid-template-columns: var(--workspace-rail) var(--workspace-drawer) minmax(0,1fr);
+  grid-template-rows: minmax(0,1fr);
+  gap: var(--workspace-gap);
+  height: 100%;
+  padding: var(--workspace-pad);
+  overflow: hidden;
+}
+.workspaceLayout--states[data-panel-expanded="false"] {grid-template-columns:var(--workspace-rail) minmax(0,1fr)}
+.workspaceLayout--states > .stateToolsDrawer {
+  position:relative;inset:auto;grid-column:2;grid-row:1;
+  width:100%;height:100%;min-width:0;min-height:0;margin:0;
+  display:flex;flex-direction:column;align-items:stretch;
+}
+.workspaceLayout--states[data-panel-expanded="false"] > .stateToolsDrawer {display:none}
+.workspaceLayout--states > .stateGraphStage {
+  position:relative;inset:auto;grid-column:3;grid-row:1;
+  width:100%;height:100%;min-width:0;min-height:0;margin:0;
+  overflow:hidden;background:var(--workspace-bg);
+}
+.workspaceLayout--states[data-panel-expanded="false"] > .stateGraphStage {grid-column:2}
+
+/* 3D: the left sidebar is a grid with the same rail/drawer as 2D. */
+.app > main.workspaceLayout--3d.threeDMain:not(.exploration3d) {
+  display:grid;
+  grid-template-columns:calc(var(--workspace-rail) + var(--workspace-drawer) + var(--workspace-gap) + 2 * var(--workspace-pad)) minmax(0,1fr);
+  grid-template-rows:minmax(0,1fr);
+  gap:0;
+  min-height:0;
+  overflow:hidden;
+  transition:none;
+}
+.app > main.workspaceLayout--3d[data-panel-expanded="false"].threeDMain:not(.exploration3d) {
+  grid-template-columns:calc(var(--workspace-rail) + 2 * var(--workspace-pad)) minmax(0,1fr);
+}
+.workspaceLayout--3d > #three-d-controls.unifiedSidebar,
+.workspaceLayout--physical > .physicalSidebar.unifiedSidebar {
+  position:relative;inset:auto;display:grid;
+  grid-template-columns:var(--workspace-rail) minmax(0,1fr);
+  grid-template-rows:minmax(0,1fr);
+  align-content:stretch;column-gap:var(--workspace-gap);
+  width:100%;height:100%;min-width:0;min-height:0;margin:0;
+  padding:var(--workspace-pad);overflow:hidden;
+  border:0;background:var(--workspace-bg);
+}
+.workspaceLayout--3d > .view {
+  grid-column:2;grid-row:1;position:relative;min-width:0;min-height:0;width:100%;height:100%;
+  overflow:hidden;background:var(--workspace-bg);
+}
+.workspaceLayout--3d > .view > .sceneWrap {
+  position:absolute;inset:0;width:100%;height:100%;min-width:0;min-height:0;
+}
+.workspaceLayout--3d > .view > .sceneWrap > canvas {
+  display:block;width:100%;height:100%;
+}
+.workspaceLayout--3d .edgePanelToggle,.workspaceLayout--3d .edgePanelControls {display:none}
+
+/* Physical: identical left geometry; the graph area scrolls independently. */
+.app > main.workspaceMain:has(.workspaceLayout--physical) {min-width:0;min-height:0;overflow:hidden}
+.inlineWorkspaceBackdrop:has(.workspaceLayout--physical),
+.inlineWorkspaceDialog:has(.workspaceLayout--physical) {
+  width:100%;height:100%;max-width:none;max-height:none;
+  min-width:0;min-height:0;margin:0;padding:0;border:0;border-radius:0;box-shadow:none;
+}
+.inlineWorkspaceDialog:has(.workspaceLayout--physical) > header {display:none}
+.inlineWorkspaceDialog .workspaceLayout--physical.physicalLayoutBody {
+  display:grid;
+  grid-template-columns:calc(var(--workspace-rail) + var(--workspace-drawer) + var(--workspace-gap) + 2 * var(--workspace-pad)) minmax(0,1fr);
+  grid-template-rows:minmax(0,1fr);
+  gap:0;width:100%;height:100%;min-height:0;padding:0;overflow:hidden;background:var(--workspace-bg);
+}
+.inlineWorkspaceDialog .workspaceLayout--physical[data-panel-expanded="false"] {
+  grid-template-columns:calc(var(--workspace-rail) + 2 * var(--workspace-pad)) minmax(0,1fr);
+}
+.workspaceLayout--physical > .physicalSidebar.unifiedSidebar {grid-column:1;grid-row:1}
+
+.workspaceLayout--physical[data-panel-expanded="false"] .physicalSidebar {visibility:visible;padding:var(--workspace-pad);border:0}
+.workspaceLayout--physical > .physicalMain {grid-column:2;grid-row:1;min-width:0;min-height:0;height:100%;overflow-y:auto;padding:12px;background:var(--workspace-bg)}
+
+@media (max-width:1050px) {
+  /* Preserve the existing responsive navigation without desktop fixed columns. */
+  .workspaceLayout--states.stateWorkspaceGrid {grid-template-columns:var(--workspace-rail) minmax(0,1fr);height:100%}
+  .workspaceLayout--states > .stateToolsDrawer {grid-column:2;grid-row:1;z-index:3}
+  .workspaceLayout--states > .stateGraphStage {grid-column:2;grid-row:1}
+  .workspaceLayout--states[data-panel-expanded="false"] > .stateGraphStage {grid-column:2}
+}
+
+/* Inspection is an alternative drawer, never an additional sidebar column. */
+.workspaceLayout--states > .stateRightPanel {display:none;grid-column:2;grid-row:1;min-width:0;min-height:0}
+.workspaceLayout--states[data-activity="inspection"][data-panel-expanded="true"] > .stateRightPanel {display:flex;flex-direction:column}
+.workspaceLayout--states[data-activity="inspection"] > .stateToolsDrawer {display:none}
+.workspaceLayout--states > .stateRightPanel > .stateRightDrawer {display:flex;flex-direction:column;min-height:0;height:100%}
+.workspaceLayout--states > .stateRightPanel .stateRightContent {min-height:0;overflow:visible}
+/* The 3D inspector is a second content view inside the SAME left sidebar. */
+.workspaceLayout--3d #three-d-controls > #three-d-inspection {
+  display:none;grid-column:2;grid-row:1;min-width:0;min-height:0;
+  flex-direction:column;overflow-y:auto;overflow-x:hidden;
+}
+.workspaceLayout--3d.leftInspectActive[data-panel-expanded="true"] #three-d-controls > #three-d-inspection {
+  display:flex;
+}
+.workspaceLayout--3d.leftInspectActive #three-d-controls > .continuousSidebarPanel {display:none}
+.workspaceLayout--3d[data-panel-expanded="false"] #three-d-controls > #three-d-inspection {display:none}
+
+/* Documentation: fourth workspace, same three-column shell as States. */
+.app > main.workspaceLayout--docs.workspaceMain {display:block;min-width:0;min-height:0;overflow:hidden}
+.workspaceLayout--docs.documentationShell {
+  display:grid;grid-template-columns:var(--workspace-rail) var(--workspace-drawer) minmax(0,1fr);
+  grid-template-rows:minmax(0,1fr);gap:var(--workspace-gap);
+  height:100%;min-height:0;padding:var(--workspace-pad);overflow:hidden;
+}
+.workspaceLayout--docs[data-panel-expanded="false"] {grid-template-columns:var(--workspace-rail) minmax(0,1fr)}
+.workspaceLayout--docs > .documentationDrawer {
+  grid-column:2;grid-row:1;min-width:0;min-height:0;display:flex;flex-direction:column;
+}
+.workspaceLayout--docs[data-panel-expanded="false"] > .documentationDrawer {display:none}
+.workspaceLayout--docs > .documentationWorkspace {
+  grid-column:3;grid-row:1;min-width:0;min-height:0;height:100%;overflow-y:auto;
+  border:0;border-radius:7px;background:var(--workspace-bg);
+}
+.workspaceLayout--docs[data-panel-expanded="false"] > .documentationWorkspace {grid-column:2}
+.workspaceLayout--docs .documentationIntro {padding:20px 24px;border-bottom:1px solid var(--workspace-stroke)}
+.workspaceLayout--docs .documentationArticle {width:100%;max-width:1050px;padding:24px;margin:0 auto}
+@media(max-width:760px){
+  .workspaceLayout--docs.documentationShell {grid-template-columns:var(--workspace-rail) minmax(0,1fr)}
+  .workspaceLayout--docs > .documentationDrawer {grid-column:2;grid-row:1;z-index:3}
+  .workspaceLayout--docs > .documentationWorkspace {grid-column:2;grid-row:1}
+}
+
+/* Dialog hosts fill the shared workspace grid. */
+.inlineWorkspaceDialog:has(.workspaceLayout--states) > .stateExplorationBody {
+  display:flex;
+  flex-direction:column;
+  flex:1 1 auto;
+  min-width:0;
+  min-height:0;
+  overflow:hidden;
+  padding:0;
+  gap:0;
+}
+.inlineWorkspaceDialog:has(.workspaceLayout--states) .workspaceLayout--states.stateWorkspaceGrid {
+  flex:1 1 auto;
+  align-self:stretch;
+  width:100%;
+  min-width:0;
+  min-height:0;
+}
+.workspaceLayout--states > .stateGraphStage {
+  display:flex;
+  flex-direction:column;
+  align-items:stretch;
+  justify-content:stretch;
+}
+.workspaceLayout--states > .stateGraphStage > svg.stateSelectablePlot {
+  display:block;
+  width:100%;
+  height:100%;
+  min-height:0;
+  flex:1 1 auto;
+  max-width:none;
+}
+.workspaceLayout--states > .stateToolsDrawer > .stateToolsDrawerContent {
+  display:block;
+  flex:1 1 auto;
+}
+
+
+/* Shared rail footer: no workspace-specific collapse button geometry. */
+.workspaceLayout .workspaceRail > button.workspaceRailCollapse {
+  box-sizing:border-box;
+  position:static;
+  display:flex;
+  flex:0 0 32px;
+  align-self:stretch;
+  align-items:center;
+  justify-content:center;
+  width:100%;
+  min-width:0;
+  height:32px;
+  max-height:32px;
+  margin:4px 0 0;
+  padding:0;
+  border:1px solid var(--workspace-stroke);
+  border-radius:6px;
+  appearance:none;
+  background:#202832;
+  color:#b8c4d1;
+  font:inherit;
+  line-height:normal;
+  cursor:pointer;
+}
+/* Identical CSS-drawn glyph in every workspace; no inherited SVG styling. */
+.workspaceLayout .workspaceRailCollapseGlyph {
+ display:block;flex:0 0 10px;width:10px;height:10px;
+ border-left:1.75px solid currentColor;border-bottom:1.75px solid currentColor;
+ transform:translateX(2px) rotate(45deg);
+}
+.workspaceLayout .workspaceRailCollapseGlyph--expand {transform:translateX(-2px) rotate(225deg)}
+.workspaceLayout .workspaceRail > button.workspaceRailCollapse:hover {background:#2b3d4c;color:#fff}
+.workspaceLayout .workspaceRail > button.workspaceRailCollapse:focus-visible {outline:2px solid #65caff;outline-offset:1px}
+
+/* 15.91 — Estados: remove a moldura herdada do diálogo logo abaixo
+   da barra superior. Somente rail, drawer e gráfico têm contornos. */
+.inlineWorkspaceBackdrop:has(.workspaceLayout--states),
+.inlineWorkspaceDialog:has(.workspaceLayout--states) {
+  border:0 !important;
+  border-radius:0 !important;
+  box-shadow:none !important;
+  outline:0;
+  background:var(--workspace-bg);
+  padding:0 !important;
+  margin:0 !important;
+}
+.inlineWorkspaceDialog:has(.workspaceLayout--states) > .stateExplorationBody {
+  border:0 !important;
+  border-radius:0 !important;
+  box-shadow:none !important;
+}
+
+/* Canonical rail states. Drawer headers are styled only in workspace-panel-content.css. */
+.workspaceLayout .workspaceRailItems > button.active {
+  border-color:#315849;background:#162b28;color:#eafbf3;
+}
+/* Hover must not erase the selected workspace state. */
+.workspaceLayout .workspaceRailItems > button:not(.active):hover {background:#202a33}
+.workspaceLayout .workspaceRailItems > button.active:hover {background:#1c3931}
+/* Navigation and footer share the same visible keyboard focus treatment. */
+.workspaceLayout .workspaceRailItems > button:focus-visible {
+  outline:2px solid #65caff;
+  outline-offset:-2px;
+}
+@media (prefers-reduced-motion: reduce) {
+  .workspaceLayout .workspaceRailCollapseGlyph {transition:none}
+}
+
+/* The 3D and physical workspaces use the same two-column sidebar grid. */
+.workspaceLayout--3d #three-d-controls > .continuousSidebarPanel,
+.workspaceLayout--physical .physicalSidebar > .continuousSidebarPanel {
+  grid-column:2;grid-row:1;
+  display:flex;flex-direction:column;align-items:stretch;
+  min-width:0;min-height:0;width:100%;height:100%;
+  padding:0;margin:0;
+}
+.workspaceLayout--3d[data-panel-expanded="false"] #three-d-controls > .continuousSidebarPanel,
+.workspaceLayout--physical[data-panel-expanded="false"] .physicalSidebar > .continuousSidebarPanel {display:none}
+/* Activity controls visibility; <details open> only controls expansion. */
+.workspaceLayout--3d #three-d-controls > .continuousSidebarPanel > details[data-panel-category] {display:none}
+.workspaceLayout--3d #three-d-controls[data-activity="geometry"] > .continuousSidebarPanel > details[data-panel-category="geometry"],
+.workspaceLayout--3d #three-d-controls[data-activity="surfaces"] > .continuousSidebarPanel > details[data-panel-category="surfaces"],
+.workspaceLayout--3d #three-d-controls[data-activity="curves"] > .continuousSidebarPanel > details[data-panel-category="curves"],
+.workspaceLayout--3d #three-d-controls[data-activity="fields"] > .continuousSidebarPanel > details[data-panel-category="fields"],
+.workspaceLayout--3d #three-d-controls[data-activity="view"] > .continuousSidebarPanel > details[data-panel-category="view"],
+.workspaceLayout--3d #three-d-controls[data-activity="states"] > .continuousSidebarPanel > details[data-panel-category="states"] {display:block}
+
+.workspaceLayout--3d #three-d-controls > .continuousSidebarPanel::before,
+.workspaceLayout--3d #three-d-controls > .continuousSidebarPanel::after,
+.workspaceLayout--physical .physicalSidebar > .continuousSidebarPanel::before,
+.workspaceLayout--physical .physicalSidebar > .continuousSidebarPanel::after {content:none;display:none}
+
+
+/* Etapa 47 — responsive scientific workspaces.
+   Narrow viewports keep the rail visible and overlay the drawer on the plot.
+   This is presentation-only: no curve, camera or scientific state changes. */
+@media (max-width: 900px) {
+  .app > main.workspaceLayout--3d.threeDMain:not(.exploration3d),
+  .app > main.workspaceLayout--3d[data-panel-expanded="false"].threeDMain:not(.exploration3d) {
+    grid-template-columns: calc(var(--workspace-rail) + 2 * var(--workspace-pad)) minmax(0,1fr);
+  }
+  .inlineWorkspaceDialog .workspaceLayout--physical.physicalLayoutBody,
+  .inlineWorkspaceDialog .workspaceLayout--physical[data-panel-expanded="false"] {
+    grid-template-columns: calc(var(--workspace-rail) + 2 * var(--workspace-pad)) minmax(0,1fr);
+  }
+  .workspaceLayout--3d > #three-d-controls.unifiedSidebar,
+  .workspaceLayout--physical > .physicalSidebar.unifiedSidebar {
+    z-index: 4;
+    width: calc(var(--workspace-rail) + var(--workspace-drawer) + var(--workspace-gap) + 2 * var(--workspace-pad));
+    max-width: min(100vw, calc(var(--workspace-rail) + var(--workspace-drawer) + var(--workspace-gap) + 2 * var(--workspace-pad)));
+    box-shadow: none;
+  }
+  .workspaceLayout--3d[data-panel-expanded="false"] > #three-d-controls.unifiedSidebar,
+  .workspaceLayout--physical[data-panel-expanded="false"] > .physicalSidebar.unifiedSidebar {
+    width: calc(var(--workspace-rail) + 2 * var(--workspace-pad));
+  }
+  .workspaceLayout--3d > .view,
+  .workspaceLayout--physical > .physicalMain {
+    position: relative;
+    z-index: 1;
+  }
+  .workspaceLayout--states > .stateToolsDrawer,
+  .workspaceLayout--states > .stateRightPanel,
+  .workspaceLayout--docs > .documentationDrawer {
+    width: min(var(--workspace-drawer), calc(100vw - var(--workspace-rail) - 3 * var(--workspace-pad)));
+    max-width: 100%;
+    z-index: 4;
+  }
+}
+@media (max-width: 480px) {
+  .workspaceLayout {
+    --workspace-rail: 60px;
+    --workspace-drawer: 232px;
+    --workspace-gap: 6px;
+    --workspace-pad: 6px;
+  }
+  .workspaceLayout .workspaceRailItems > button { min-height: 44px; }
+  .workspaceLayout .workspaceRailLabel { font-size: 8px; }
+  .workspaceLayout--physical > .physicalMain { padding: 8px; }
+}
+
+/* Etapa 48 — consistent open/collapsed/inspection presentation.
+ * Overlay drawers are bounded by the actual workspace width on narrow screens;
+ * the rail remains available and the scientific canvas retains its grid cell. */
+@media (max-width: 900px) {
+  .workspaceLayout--3d > #three-d-controls.unifiedSidebar,
+  .workspaceLayout--physical > .physicalSidebar.unifiedSidebar {
+    max-width: 100%;
+    filter: drop-shadow(5px 0 12px rgb(0 0 0 / 0.24));
+  }
+  .workspaceLayout--3d[data-panel-expanded="false"] > #three-d-controls.unifiedSidebar,
+  .workspaceLayout--physical[data-panel-expanded="false"] > .physicalSidebar.unifiedSidebar {
+    filter: none;
+  }
+  .workspaceLayout--states > .stateToolsDrawer,
+  .workspaceLayout--states > .stateRightPanel,
+  .workspaceLayout--docs > .documentationDrawer {
+    box-shadow: 5px 0 12px rgb(0 0 0 / 0.24);
+  }
+}
+@media (max-width: 480px) {
+  .workspaceLayout--3d > #three-d-controls.unifiedSidebar,
+  .workspaceLayout--physical > .physicalSidebar.unifiedSidebar {
+    width: min(calc(var(--workspace-rail) + var(--workspace-drawer) + var(--workspace-gap) + 2 * var(--workspace-pad)), 100vw);
+  }
+}
+/* Inspection must not introduce a second independent scroll region. */
+.workspaceLayout--states[data-activity="inspection"] > .stateRightPanel,
+.workspaceLayout--3d.leftInspectActive #three-d-controls > #three-d-inspection {
+  overscroll-behavior: contain;
+}
+
+/* Etapa 49 — drawers never consume the full graph cell on tablet screens.
+ * Both 2D and documentation use a rail + canvas grid below their breakpoint;
+ * their open drawer is a bounded overlay, not a full-width grid item. */
+@media (min-width: 481px) and (max-width: 1050px) {
+  .workspaceLayout--states > .stateToolsDrawer,
+  .workspaceLayout--states[data-activity="inspection"] > .stateRightPanel {
+    width: min(var(--workspace-drawer), 100%);
+    max-width: 100%;
+    justify-self: start;
+  }
+}
+@media (max-width: 760px) {
+  .workspaceLayout--docs > .documentationDrawer {
+    width: min(var(--workspace-drawer), 100%);
+    max-width: 100%;
+    justify-self: start;
+  }
+}
+@media (max-width: 1050px) {
+  .workspaceLayout--states > .stateToolsDrawer,
+  .workspaceLayout--states[data-activity="inspection"] > .stateRightPanel,
+  .workspaceLayout--docs > .documentationDrawer {
+    isolation: isolate;
+    box-shadow: 5px 0 12px rgb(0 0 0 / 0.24);
+  }
+  .workspaceLayout--states[data-panel-expanded="false"] > .stateToolsDrawer,
+  .workspaceLayout--docs[data-panel-expanded="false"] > .documentationDrawer {
+    box-shadow: none;
+  }
+}

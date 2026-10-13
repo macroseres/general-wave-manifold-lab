@@ -1,0 +1,71 @@
+\section{Characteristic surface and coincidence locus}
+
+In the coordinates used by the application,
+\[
+U_- = \bar U-\frac{Y}{2}r(z),
+\qquad
+U_+ = \bar U+\frac{Y}{2}r(z),
+\]
+the zero-jump set is obtained by setting $Y=0$. We denote this
+characteristic surface by
+\[
+\boxed{\mathcal C=\{(\tau,Y,z)\in\mathcal W:Y=0\}}.
+\]
+Thus, on $\mathcal C$,
+\[
+U_-=U_+=\bar U(\tau,z).
+\]
+
+Let
+\[
+DF(\bar U)=
+\begin{pmatrix}
+A&B\\
+C&D
+\end{pmatrix}.
+\]
+The discriminant of the characteristic polynomial is
+\[
+\Delta(\bar U)=(A-D)^2+4BC.
+\]
+The coincidence locus is the subset of the characteristic surface on which
+the two characteristic speeds coincide. We denote it by
+\[
+\boxed{\mathcal E=\{(\tau,0,z)\in\mathcal C:\Delta(\bar U(\tau,z))=0\}}.
+\]
+Consequently,
+\[
+\boxed{\mathcal E\subset\mathcal C}.
+\]
+
+For fixed $z$, the implementation substitutes the fiber
+\[
+\bar U(\tau,z)=U_0(z)+\tau(-Q(z),P(z))^T
+\]
+into $\Delta$. Since $F$ is quadratic, $DF$ is affine in $\bar U$ and
+$\Delta(\bar U(\tau,z))$ is a polynomial of degree at most two in $\tau$.
+The function \texttt{coincidenceTauRoots} solves precisely this scalar
+quadratic equation, while \texttt{coincidencePoints} samples the resulting
+branches in the projective $z$ direction.
+
+Away from $\mathcal E$, the characteristic surface has two spectral sheets.
+If $s$ is the eigenvalue selected by $r(z)$ and
+\[
+\lambda_{\mathrm{other}}=\operatorname{tr}DF(\bar U)-s,
+\]
+we use
+\[
+\mathcal C_s=\{s<\lambda_{\mathrm{other}}\},
+\qquad
+\mathcal C_f=\{s>\lambda_{\mathrm{other}}\}.
+\]
+Their common spectral boundary is the coincidence locus $\mathcal E$, where
+the two characteristic speeds agree.  This ordering is spectral and is not
+determined by the sign of the projective coordinate $z$.
+
+The notation is fixed throughout this project as follows:
+\[
+\mathcal C=\text{characteristic surface},
+\qquad
+\mathcal E=\text{coincidence locus}.
+\]

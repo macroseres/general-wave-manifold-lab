@@ -1,307 +1,633 @@
-import {Canvas, useThree} from '@react-three/fiber'
-import {OrbitControls, Text} from '@react-three/drei'
-import {forwardRef, useImperativeHandle, useMemo, useRef} from 'react'
+import ScientificLegend from './ScientificLegend.jsx'
+import { MathLabel } from './math/MathLabel.jsx'
+import WorkspaceToolbar from './WorkspaceToolbar.jsx'
+import ScientificPoint3D from './ScientificPoint3D.jsx'
+import { partitionSonicMesh } from '../geometry/sonic/spectralPartition.js'
+import { smoothBtSegments } from '../geometry/sonic/smoothBtCurve.js'
+import { continueBtMinus } from '../geometry/sonic/continueBtCurve.js'
+import { characteristicSpectrum } from '../math/characteristic/spectrum.js'
+import { exceptionalFiberLimit } from '../math/characteristic/fiberLimits.js'
+import { exceptionalDirections } from '../math/characteristic/exceptionalDirections.js'
+import { exceptionalMarkers } from '../math/characteristic/exceptionalMarkers.js'
+import { zFromZc as projectiveZ } from '../math/charts/zChart.js'
+import {waveColors} from '../config/waveColors.js'
+import { scientificCurveStyle, scientificLocusKind } from '../config/scientificCurveRules.js'
+import {requestHopfMesh} from '../geometry/hopf/hopfCache.js'
+import { inspectSonicPoint } from '../math/sonic/pointInspection.js'
+import {Canvas, useFrame, useThree} from '@react-three/fiber'
+import {Line as DreiLine, OrbitControls} from '@react-three/drei'
+import { finiteLinePaths } from '../rendering/finiteLinePaths.js'
+import {forwardRef, useEffect, useImperativeHandle, useMemo, useRef, useState} from 'react'
 import * as THREE from 'three'
-import {coincidencePoints,rarefactionField,rarefactionSingularities,infinityRarefactionSingularities,infinityRarefactionSeparatrices,sonicData,zFromZHat} from '../math/quadraticFlux'
+import {rarefactionOrbits,infinityRarefactionSingularities,infinityRarefactionSeparatrices,finiteRarefactionSeparatrices} from '../math/quadraticFlux'
+import {sonicSurfaceTriangles} from '../geometry/sonic/surface'
+import {flipSonicEdgesExperimental} from '../geometry/sonic/edgeFlipExperimental.js'
+import {makeSonicBufferGeometry} from '../rendering/sonicBufferGeometry.js'
+import {isCurrentSonicResponse, disposeSonicWorker} from '../rendering/sonicWorkerLifecycle.js'
+import {curvePoints3D} from '../rendering/curvePoints.js'
+import {characteristicMesh} from '../geometry/characteristic/mesh.js'
+import {disposeGeometry} from '../rendering/graphicsLifecycle.js'
+import {stateFibreGeometry} from '../geometry/state/fibreGeometry.js'
+import {hugoniotLaxGeometry} from '../geometry/state/hugoniotLaxGeometry.js'
+
+// No invalid coordinates are allowed to enter three-stdlib LineGeometry.
+// Split at non-finite vertices instead of drawing a false connecting chord.
+function Line({points,segments=false,...props}) {
+  const paths = finiteLinePaths(points,{segments})
+  return <group>{paths.map((path,i)=><DreiLine key={i} points={path} {...props}/>)}</group>
+}
 
 const clamp=(x,a,b)=>Math.max(a,Math.min(b,x))
 
-function Coincidence({p,tauMin,tauMax}){
-  const curves=useMemo(()=>coincidencePoints(p,tauMin,tauMax,361),[p,tauMin,tauMax])
-  return curves.map((curve,i)=>{
-    if(curve.length<2)return null
-    const pts=curve.map(q=>new THREE.Vector3(q.tau,0.018,q.zHat))
-    const geometry=new THREE.BufferGeometry().setFromPoints(pts)
-    return <line key={i} geometry={geometry}><lineBasicMaterial color="#7b1fa2" linewidth={2}/></line>
-  })
+function StateFibres({U,p,showMinus=true,showPlus=true,colorOverride=null}){
+  const visible=showMinus||showPlus
+  const data=useMemo(()=>visible&&U?stateFibreGeometry(U,p):{minus:[],plus:[],lifts:[]},[U,p,visible])
+  const lax=useMemo(()=>visible&&U?hugoniotLaxGeometry(data,U,p):{minus:[],plus:[]},[data,U,p,visible])
+  if(!visible||!U)return null
+  const appearance=c=>c?.kind==='lax'&&c.family===1?{color:'#22c55e',width:4.2}:c?.kind==='lax'&&c.family===2?{color:'#a855f7',width:4.2}:c?.kind==='non-lax'?{color:'#94a3b8',width:2.4}:{color:'#fbbf24',width:2.4}
+  const curves=[
+    ...(showMinus?lax.minus:[]).map((segment,i)=>({...segment,key:`m${i}`})),
+    ...(showPlus?lax.plus:[]).map((segment,i)=>({...segment,key:`p${i}`})),
+  ]
+  // Lax family controls colour/weight. Projection identity is independent:
+  // pi_-^{-1}(U*) = forward is solid; pi_+^{-1}(U*) = backward is dashed.
+  return <group>
+    {curves.filter(c=>c.points.length>1).map(c=>{const a=appearance(c.laxClass);return <Line key={c.key} points={curvePoints3D(c.points,'tauYzc')} color={colorOverride??a.color} {...scientificCurveStyle(c.side==='plus'?'auxiliary':'primary','3d')} lineWidth={colorOverride?scientificCurveStyle('selected','3d').lineWidth:a.width} depthTest={false} renderOrder={7}/>})}
+  </group>
 }
 
 
-function SonicSurface({p,tauMin,tauMax,YMin,YMax,side,visible=true}){
-  const geometry=useMemo(()=>{
-    if(!visible)return null
-
-    // The sonic sheets are defined implicitly by
-    //   Psi_-(tau,Y,z)=Y det(M_r)-2K=0,
-    //   Psi_+(tau,Y,z)=Y det(M_r)+2K=0.
-    // Psi is affine in Y.  We exploit that structure to build a clean mesh:
-    // evaluate the unique finite zero on the (tau,z-hat) grid, never connect
-    // across det(M_r)=0, and geometrically clip triangles to [YMin,YMax].
-    const nTau=72,nZ=112,epsDet=1e-8
-    const taus=Array.from({length:nTau+1},(_,i)=>tauMin+i*(tauMax-tauMin)/nTau)
-    const zHats=Array.from({length:nZ+1},(_,i)=>-.999+1.998*i/nZ)
-    const pos=[]
-
-    const sample=(tau,zHat)=>{
-      const z=zFromZHat(zHat)
-      const d=sonicData(tau,z,p,epsDet)
-      if(d.kind!=='regular'||!Number.isFinite(d.detM)||!Number.isFinite(d.K))return null
-      if(Math.abs(d.detM)<=epsDet)return {tau,zHat,detM:d.detM,Y:null}
-      const Y=side==='minus'?2*d.K/d.detM:-2*d.K/d.detM
-      return {tau,zHat,detM:d.detM,Y:Number.isFinite(Y)?Y:null}
-    }
-
-    // Sutherland-Hodgman clipping of a triangle against the two Y half-spaces.
-    const clipPlane=(poly,bound,keepAbove)=>{
-      if(!poly.length)return poly
-      const out=[]
-      const inside=v=>keepAbove?v.Y>=bound:v.Y<=bound
-      const intersect=(a,b)=>{
-        const den=b.Y-a.Y
-        const t=Math.abs(den)<1e-14?0:(bound-a.Y)/den
-        return {tau:a.tau+t*(b.tau-a.tau),Y:bound,zHat:a.zHat+t*(b.zHat-a.zHat)}
-      }
-      for(let i=0;i<poly.length;i++){
-        const a=poly[i],b=poly[(i+1)%poly.length],ia=inside(a),ib=inside(b)
-        if(ia&&ib)out.push(b)
-        else if(ia&&!ib)out.push(intersect(a,b))
-        else if(!ia&&ib){out.push(intersect(a,b));out.push(b)}
-      }
-      return out
-    }
-    const emitClipped=(tri)=>{
-      let poly=clipPlane(tri,YMin,true)
-      poly=clipPlane(poly,YMax,false)
-      if(poly.length<3)return
-      const a=poly[0]
-      for(let i=1;i<poly.length-1;i++){
-        const b=poly[i],c=poly[i+1]
-        pos.push(a.tau,a.Y,a.zHat,b.tau,b.Y,b.zHat,c.tau,c.Y,c.zHat)
-      }
-    }
-
-    const grid=zHats.map(zHat=>taus.map(tau=>sample(tau,zHat)))
-    for(let j=0;j<nZ;j++)for(let i=0;i<nTau;i++){
-      const q00=grid[j][i],q10=grid[j][i+1],q11=grid[j+1][i+1],q01=grid[j+1][i]
-      const q=[q00,q10,q11,q01]
-      if(q.some(v=>!v||v.Y===null))continue
-
-      // A sign change of det(M_r) means the explicit zero passes through a pole.
-      // The implicit equation remains valid, but the finite sheet has no bridge
-      // across that pole; connecting the samples would create the false walls
-      // seen in v0.3.1.
-      const signs=q.map(v=>Math.sign(v.detM))
-      if(signs.some(s=>s===0)||!signs.every(s=>s===signs[0]))continue
-
-      // A pole can still cross the interior of a cell even when all four
-      // corners have the same sign. Probe edge midpoints and the cell centre
-      // before triangulating. This is a topology guard, not a change to the
-      // sonic equation: it only prevents the renderer from bridging across a
-      // zero of det(M_r) that the coarse grid did not sample at a corner.
-      const tauMid=(taus[i]+taus[i+1])/2,zMid=(zHats[j]+zHats[j+1])/2
-      const probes=[
-        sample(tauMid,zHats[j]),sample(tauMid,zHats[j+1]),
-        sample(taus[i],zMid),sample(taus[i+1],zMid),sample(tauMid,zMid)
-      ]
-      if(probes.some(v=>!v||v.Y===null||Math.sign(v.detM)!==signs[0]))continue
-
-      // Reject a triangle when its centre is incompatible with the linear
-      // interpolation of its vertices. Near an unresolved pole the ratio
-      // K/det(M_r) changes hyperbolically and creates the thin vertical
-      // blades seen in v0.4.1. On a smooth sheet this interpolation error is
-      // small. The tolerance scales with the visible Y window.
-      const ySpan=Math.max(1e-9,YMax-YMin)
-      const triOK=(a,b,c)=>{
-        const tc=(a.tau+b.tau+c.tau)/3,zc=(a.zHat+b.zHat+c.zHat)/3
-        const m=sample(tc,zc)
-        if(!m||m.Y===null||Math.sign(m.detM)!==signs[0])return false
-        const yLin=(a.Y+b.Y+c.Y)/3
-        return Math.abs(m.Y-yLin)<=1.25*ySpan
-      }
-      if(triOK(q00,q10,q11))emitClipped([q00,q10,q11])
-      if(triOK(q00,q11,q01))emitClipped([q00,q11,q01])
-    }
-
-    const g=new THREE.BufferGeometry()
-    g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3))
-    if(pos.length)g.computeVertexNormals()
-    return g
-  },[p,tauMin,tauMax,YMin,YMax,side,visible])
-  if(!geometry)return null
-  const color=side==='minus'?'#d97706':'#2563eb'
-  return <mesh geometry={geometry} renderOrder={side==='minus'?1:2}>
-    <meshStandardMaterial color={color} side={THREE.DoubleSide} transparent opacity={0.42} depthWrite={false}/>
-  </mesh>
+function CompositeFields({geometry={minus:[],plus:[]},showMinus=true,showPlus=true}){
+  const draw=(groups,color,prefix)=>groups.flatMap((branch,bi)=>
+    branch.segments.filter(points=>points.length>1).map((points,si)=>
+      <Line key={`${prefix}-${bi}-${si}`} points={curvePoints3D(points,'xyz')} color={color} {...scientificCurveStyle('primary','3d')} depthTest={false} renderOrder={8}/>
+    ))
+  return <group>{showMinus&&draw(geometry.minus,waveColors.compositeSlow,'km')}{showPlus&&draw(geometry.plus,waveColors.compositeFast,'kp')}</group>
 }
 
+
+// The inflection locus may contain many vertices. Native WebGL lines avoid
+// the per-segment expanded meshes used by Drei's thick Line2 implementation.
+// Keep the mathematical samples intact; split only at invalid coordinates.
+function InflectionPath({points}) {
+  const geometries=useMemo(()=>finiteLinePaths(
+    curvePoints3D(points,'tauYzc',{yOffset:0.012})
+  ).map(path=>{
+    const geometry=new THREE.BufferGeometry()
+    geometry.setAttribute('position',new THREE.Float32BufferAttribute(path.flat(),3))
+    return geometry
+  }),[points])
+  useEffect(()=>()=>geometries.forEach(geometry=>geometry.dispose()),[geometries])
+  return <group>{geometries.map((geometry,i)=><line key={i} geometry={geometry} frustumCulled={false} renderOrder={6}>
+    <lineBasicMaterial color={waveColors.inflection} depthTest={false} depthWrite={false} transparent opacity={1}/>
+  </line>)}</group>
+}
+
+function SonicSpecialLoci({sharedLoci=[],showDS=true,showJ=true}){
+  return <group>{sharedLoci.filter(item=>(item.id==='DS'&&showDS)||(item.id==='J'&&showJ)).flatMap(item=>item.paths.map((path,i)=>
+    item.id==='J'
+      ? <InflectionPath key={`J-${i}`} points={path}/>
+      : <Line key={`DS-${i}`} points={curvePoints3D(path,'tauYzc')} color={waveColors.doubleSonic} {...scientificCurveStyle(scientificLocusKind(item.id),'3d')} depthTest={false} renderOrder={10}/>
+  ))}</group>
+}
+
+function HopfSurfaces({p,tauMin,tauMax,YMin,YMax,showMinus,showPlus,surfaceOpacity,traceOnly=false}){
+  // Geometry depends on the flux and sampling domain, never on visibility.
+  // Keep this component mounted even when both Hopf surfaces are hidden.
+  const geometryKey=JSON.stringify([p,tauMin,tauMax,YMin,YMax,traceOnly])
+  const [result,setResult]=useState({key:null,minus:null,plus:null})
+  const [,setStatus]=useState('calculando')
+  const previousKeyRef=useRef(null)
+  useEffect(()=>{
+    let active=true
+    const started=performance.now()
+    setStatus('calculando')
+    if(previousKeyRef.current!==null&&previousKeyRef.current!==geometryKey){
+      let changes=[]
+      try{const before=JSON.parse(previousKeyRef.current),after=JSON.parse(geometryKey);const labels=['fluxo','tauMin','tauMax','YMin','YMax','traceOnly'];changes=labels.filter((label,i)=>JSON.stringify(before[i])!==JSON.stringify(after[i]))}catch{changes=['chave alterada']}
+      console.info(`[geometria] Hopf: configuração alterada (${changes.join(', ')||'não identificada'})`)
+    }
+    previousKeyRef.current=geometryKey
+    // Dagger symmetry: plus at Y is minus at -Y. A symmetric window
+    // shares one worker/mesh; asymmetric windows use the reflected domain.
+    const symmetric=Math.abs(YMin+YMax)<1e-12
+    const reflectedKey=symmetric?geometryKey:JSON.stringify([p,tauMin,tauMax,-YMax,-YMin,traceOnly])
+    const minusRequest=requestHopfMesh(geometryKey,'minus',{p,tauMin,tauMax,YMin,YMax,traceOnly})
+    const plusRequest=symmetric?minusRequest:requestHopfMesh(reflectedKey,'minus',{p,tauMin,tauMax,YMin:-YMax,YMax:-YMin,traceOnly})
+    Promise.all([minusRequest,plusRequest]).then(entries=>{
+      if(!active)return
+      setResult({key:geometryKey,minus:entries[0],plus:entries[1]})
+      setStatus('pronto')
+      const elapsed=performance.now()-started
+      console.info(`[geometria] Hopf †: ${elapsed.toFixed(0)} ms; ${symmetric?'1 malha compartilhada':'2 janelas refletidas'}`)
+      for(let i=0;i<(symmetric?1:2);i++){
+        const e=entries[i],profile=e.profile?.minus
+        const fmt=n=>Number.isFinite(n)?n.toFixed(0):'—'
+        console.info(`[geometria] Hopf${i===0?'⁻':'⁺†'}: cache=${e.cacheStatus}; worker=${fmt(e.workerRoundtripMs)} ms; finita=${fmt(profile?.finiteMs)} ms; recíproca=${fmt(profile?.reciprocalMs)} ms`)
+      }
+    }).catch(error=>{
+      if(!active)return
+      console.error('Hopf worker:',error)
+      setStatus('erro')
+    })
+    return ()=>{active=false}
+    // p is represented by value in geometryKey; visibility is intentionally absent.
+  },[geometryKey,p,tauMin,tauMax,YMin,YMax,traceOnly])
+  const meshes=useMemo(()=>{
+    if(result.key!==geometryKey||!result.minus||!result.plus)return null
+    const output={}
+    for(const [name,mesh] of Object.entries(result.minus.meshes)){
+      if(mesh&&(name==='minus'||name==='minusRec'))output[name]=makeSonicBufferGeometry(mesh)
+    }
+    if(result.plus!==result.minus){
+      for(const [name,mesh] of Object.entries(result.plus.meshes)){
+        if(mesh&&(name==='minus'||name==='minusRec'))output[`dagger_${name}`]=makeSonicBufferGeometry(mesh)
+      }
+    }
+    return output
+  },[result,geometryKey])
+  useEffect(()=>()=>{if(meshes)Object.values(meshes).forEach(disposeGeometry)},[meshes])
+  return <group>
+    <group visible={showMinus}>
+      {meshes?.minus&&<mesh geometry={meshes.minus} frustumCulled={false}><meshStandardMaterial color={waveColors.hopfMinus} side={THREE.DoubleSide} transparent opacity={surfaceOpacity*0.8} depthWrite={false} roughness={0.82} metalness={0.02}/></mesh>}
+      {meshes?.minusRec&&<mesh geometry={meshes.minusRec} frustumCulled={false}><meshStandardMaterial color={waveColors.hopfMinus} side={THREE.DoubleSide} transparent opacity={surfaceOpacity*0.8} depthWrite={false} roughness={0.82} metalness={0.02}/></mesh>}
+    </group>
+    <group visible={showPlus} scale={[1,-1,1]}>
+      {meshes?.minus&&<mesh geometry={meshes.dagger_minus||meshes.minus} frustumCulled={false}><meshStandardMaterial color={waveColors.hopfPlus} side={THREE.DoubleSide} transparent opacity={surfaceOpacity*0.8} depthWrite={false} roughness={0.82} metalness={0.02}/></mesh>}
+      {meshes?.minusRec&&<mesh geometry={meshes.dagger_minusRec||meshes.minusRec} frustumCulled={false}><meshStandardMaterial color={waveColors.hopfPlus} side={THREE.DoubleSide} transparent opacity={surfaceOpacity*0.8} depthWrite={false} roughness={0.82} metalness={0.02}/></mesh>}
+    </group>
+
+  </group>
+}
+
+function sonicMaterialOptions(mode,surfaceOpacity){
+  const transparent=['transparent','front-only','back-only'].includes(mode)
+  return {
+    side:mode==='front-only'?THREE.FrontSide:mode==='back-only'?THREE.BackSide:THREE.DoubleSide,
+    transparent, opacity:transparent?surfaceOpacity:1, depthWrite:!transparent, depthTest:true, roughness:0.82, metalness:0.02,
+    wireframe:mode==='wireframe',
+  }
+}
+
+// Cache the raw sonic mesh across Scene unmounts (workspace navigation).
+// Bounded to avoid unbounded memory growth when sampling windows change.
+const sonicMeshCache = new Map()
+const SONIC_CACHE_LIMIT = 4
+function cacheSonicMesh(key, mesh) {
+  sonicMeshCache.delete(key)
+  sonicMeshCache.set(key, mesh)
+  if (sonicMeshCache.size > SONIC_CACHE_LIMIT) {
+    sonicMeshCache.delete(sonicMeshCache.keys().next().value)
+  }
+}
+
+function SonicSurfaces({p,tauMin,tauMax,YMin,YMax,showBTMinus=true,showBTPlus=true,showMinus=true,showPlus=true,showSurfaceMinus=true,showSurfacePlus=true,sonicMeshMode='original',btCurveMode='continuation',sonicRenderMode='transparent',surfaceOpacity=0.15,onInspectSonic}){
+  const key=JSON.stringify([p,tauMin,tauMax,YMin,YMax,sonicMeshMode])
+  const [result,setResult]=useState(()=>sonicMeshCache.has(key)?{key,mesh:sonicMeshCache.get(key)}:null)
+  const [,setStatus]=useState('calculando')
+  const workerRef=useRef(null)
+  const currentKeyRef=useRef(key)
+  const requestRef=useRef(0)
+  const startedRef=useRef(0)
+  const fallbackRef=useRef(false)
+  currentKeyRef.current=key
+
+  useEffect(()=>{
+    let mounted=true
+    const fallbackTimers=new Set()
+    const fallback=(reason)=>{
+      if(!mounted||fallbackRef.current)return
+      fallbackRef.current=true
+      console.warn('Sonic Worker unavailable; using synchronous fallback:',reason)
+      disposeSonicWorker(workerRef.current)
+      workerRef.current=null
+      setStatus('Worker indisponível; calculando localmente')
+      // Defer until the status has a chance to render.
+      const timer=setTimeout(()=>{
+        fallbackTimers.delete(timer)
+        if(!mounted)return
+        const current=currentKeyRef.current
+        try{
+          const [parameters,t0,t1,y0,y1,mode]=JSON.parse(current)
+          const raw=sonicSurfaceTriangles(parameters,{tauMin:t0,tauMax:t1,YMin:y0,YMax:y1,side:'minus',diagnostics:false})
+          const mesh=mode==='edge-flip'?flipSonicEdgesExperimental(raw,parameters,'minus'):raw
+          if(!mounted||currentKeyRef.current!==current)return
+          const cached={positions:Float32Array.from(mesh.positions),indices:Uint32Array.from(mesh.indices)}
+          cacheSonicMesh(current,cached)
+          setResult({key:current,mesh:cached})
+          setStatus('pronto (modo local)')
+        }catch(error){console.error('Sonic fallback failed:',error);setStatus('erro no cálculo local')}
+      },0)
+      fallbackTimers.add(timer)
+    }
+    try{
+      const worker=new Worker(new URL('../geometry/sonic/sonic.worker.js',import.meta.url),{type:'module'})
+      workerRef.current=worker
+      worker.onmessage=({data})=>{
+        if(!mounted||!isCurrentSonicResponse(data,requestRef.current,currentKeyRef.current))return
+        if(data.error){fallback(data.error);return}
+        if(!data.mesh?.positions?.length||!data.mesh?.indices?.length){fallback('empty geometry');return}
+        cacheSonicMesh(data.key,data.mesh)
+        setResult({key:data.key,mesh:data.mesh})
+        setStatus(`pronto em ${((performance.now()-startedRef.current)/1000).toFixed(1)} s`)
+      }
+      worker.onerror=event=>{if(mounted){console.error('Sonic worker loading/execution error:',event);fallback('worker error')}}
+      worker.onmessageerror=event=>{if(mounted){console.error('Sonic worker message error:',event);fallback('message error')}}
+    }catch(error){fallback(error)}
+    return ()=>{
+      mounted=false
+      for(const timer of fallbackTimers)clearTimeout(timer)
+      fallbackTimers.clear()
+      disposeSonicWorker(workerRef.current)
+      workerRef.current=null
+    }
+    // The worker is owned by the component, not by each parameter change.
+  },[])
+  useEffect(()=>{
+    if(sonicMeshCache.has(key)){
+      setResult({key,mesh:sonicMeshCache.get(key)})
+      return
+    }
+    if(fallbackRef.current){
+      const timer=setTimeout(()=>{
+        const current=key
+        try{
+          const raw=sonicSurfaceTriangles(p,{tauMin,tauMax,YMin,YMax,side:'minus',diagnostics:false})
+          const mesh=sonicMeshMode==='edge-flip'?flipSonicEdgesExperimental(raw,p,'minus'):raw
+          if(currentKeyRef.current===current){const cached={positions:Float32Array.from(mesh.positions),indices:Uint32Array.from(mesh.indices)};cacheSonicMesh(current,cached);setResult({key:current,mesh:cached});setStatus('pronto (modo local)')}
+        }catch(error){console.error('Sonic fallback failed:',error);setStatus('erro no cálculo local')}
+      },0)
+      return ()=>clearTimeout(timer)
+    }
+    if(!workerRef.current)return
+    setStatus('calculando')
+    startedRef.current=performance.now()
+    workerRef.current.postMessage({id:++requestRef.current,key,p,tauMin,tauMax,YMin,YMax,sonicMeshMode})
+  },[key,p,tauMin,tauMax,YMin,YMax,sonicMeshMode])
+  const data=result?.key===key?result.mesh:null
+  const splitMinus=useMemo(()=>data&&(showMinus||showPlus)?partitionSonicMesh(data,p,'minus'):null,[data,p,showMinus,showPlus])
+  const btPaths=useMemo(()=>{
+    if(!splitMinus||( !showBTMinus&&!showBTPlus))return []
+    if(btCurveMode==='continuation'){
+      const traced=continueBtMinus(splitMinus.bt,p,{tauMin,tauMax,YMin,YMax,zcMax:0.999},{step:0.035,maxSteps:1000})
+      if(traced.length)return traced
+    }
+    return smoothBtSegments(splitMinus.bt,p,'minus',3,320)
+  },[splitMinus,p,showBTMinus,showBTPlus,tauMin,tauMax,YMin,YMax,btCurveMode])
+  // Apply dagger to BT vertices explicitly: Line2 does not rely on a negative parent scale.
+  const btPlusPaths=useMemo(()=>showBTPlus?btPaths.map(path=>path.map(([tau,Y,zc])=>[tau,-Y,zc])):[],[btPaths,showBTPlus])
+  const minusSlow=useMemo(()=>splitMinus?makeSonicBufferGeometry(splitMinus.slow):null,[splitMinus])
+  const minusFast=useMemo(()=>splitMinus?makeSonicBufferGeometry(splitMinus.fast):null,[splitMinus])
+  // Dagger is a scene transformation: positive geometry is never remeshed.
+  useEffect(()=>()=>{disposeGeometry(minusSlow);disposeGeometry(minusFast)},[minusSlow,minusFast])
+  const pickSonic=(side,event)=>{
+    event.stopPropagation()
+    // The mesh inherits a nonuniform visual scale. Recover mathematical coordinates
+    // from the mesh-local intersection, not the world-space intersection.
+    const local=event.object.worldToLocal(event.point.clone())
+    onInspectSonic?.({side,tau:local.x,Y:side==='plus'?-local.y:local.y,zc:local.z})
+  }
+  return <group>
+    {showSurfaceMinus&&showMinus&&minusSlow&&<mesh onPointerDown={event=>pickSonic('minus',event)} geometry={minusSlow} frustumCulled={false} renderOrder={1}><meshStandardMaterial color={waveColors.sonicLeftSlow} {...sonicMaterialOptions(sonicRenderMode,surfaceOpacity)}/></mesh>}
+    {showSurfaceMinus&&showMinus&&minusFast&&<mesh onPointerDown={event=>pickSonic('minus',event)} geometry={minusFast} frustumCulled={false} renderOrder={1}><meshStandardMaterial color="#60a5fa" {...sonicMaterialOptions(sonicRenderMode,surfaceOpacity)}/></mesh>}
+    <group scale={[1,-1,1]}>
+      {showSurfacePlus&&showPlus&&minusSlow&&<mesh onPointerDown={event=>pickSonic('plus',event)} geometry={minusSlow} frustumCulled={false} renderOrder={2}><meshStandardMaterial color={waveColors.sonicRight} {...sonicMaterialOptions(sonicRenderMode,surfaceOpacity)}/></mesh>}
+      {showSurfacePlus&&showPlus&&minusFast&&<mesh onPointerDown={event=>pickSonic('plus',event)} geometry={minusFast} frustumCulled={false} renderOrder={2}><meshStandardMaterial color="#86efac" {...sonicMaterialOptions(sonicRenderMode,surfaceOpacity)}/></mesh>}
+    </group>
+    {showBTMinus&&showMinus&&btPaths.map((seg,i)=><Line key={`bt-minus-${i}`} points={seg} color="#f59e0b" {...scientificCurveStyle('specialLocus','3d')} depthTest={false} renderOrder={11}/>)}
+    {showBTPlus&&showPlus&&btPlusPaths.map((seg,i)=><Line key={`bt-plus-${i}`} points={seg} color="#e879f9" {...scientificCurveStyle('specialLocus','3d')} depthTest={false} renderOrder={11}/>)}
+
+  </group>
+}
 
 function RarefactionField({p,tauMin,tauMax,visible=true}){
-  const curves=useMemo(()=>{
-    if(!visible)return []
-    const result=[]
-    const h=.018,maxSteps=1100
-    const inside=(q)=>q.tau>=tauMin&&q.tau<=tauMax&&q.zHat>-.997&&q.zHat<.997
-    const vf=(q)=>{
-      const z=zFromZHat(q.zHat),d=rarefactionField(q.tau,z,p)
-      if(d.kind!=='regular'||!Number.isFinite(d.tauDot)||!Number.isFinite(d.zHatDot))return null
-      // Normalize only the integration speed in chart coordinates. The line
-      // field itself is unchanged and this avoids tiny/huge numerical steps.
-      const n=Math.hypot(d.tauDot,d.zHatDot)
-      if(n<1e-11)return null
-      return [d.tauDot/n,d.zHatDot/n]
-    }
-    const rk4=(q,sgn)=>{
-      const f=(x)=>{const v=vf(x);return v&&[sgn*v[0],sgn*v[1]]}
-      const k1=f(q);if(!k1)return null
-      const q2={tau:q.tau+h*k1[0]/2,zHat:q.zHat+h*k1[1]/2},k2=f(q2);if(!k2)return null
-      const q3={tau:q.tau+h*k2[0]/2,zHat:q.zHat+h*k2[1]/2},k3=f(q3);if(!k3)return null
-      const q4={tau:q.tau+h*k3[0],zHat:q.zHat+h*k3[1]},k4=f(q4);if(!k4)return null
-      return {tau:q.tau+h*(k1[0]+2*k2[0]+2*k3[0]+k4[0])/6,zHat:q.zHat+h*(k1[1]+2*k2[1]+2*k3[1]+k4[1])/6}
-    }
-    const integrate=(seed,sgn)=>{
-      const pts=[seed];let q=seed
-      for(let k=0;k<maxSteps;k++){
-        const nq=rk4(q,sgn);if(!nq||!inside(nq))break
-        if(Math.hypot(nq.tau-q.tau,nq.zHat-q.zHat)<1e-7)break
-        pts.push(nq);q=nq
-      }
-      return pts
-    }
-    // Seeds are spread over the characteristic surface. Duplicate integral
-    // curves are acceptable visually; they make the phase portrait robust
-    // without assuming a special topology for a general quadratic flux.
-    const nTau=7,nZ=9
-    for(let j=1;j<nZ;j+=2)for(let i=1;i<nTau;i+=2){
-      const seed={tau:tauMin+i*(tauMax-tauMin)/nTau,zHat:-.9+1.8*j/nZ}
-      const back=integrate(seed,-1).reverse(),forw=integrate(seed,1)
-      const joined=back.concat(forw.slice(1))
-      if(joined.length>4)result.push(joined)
-    }
-    return result
-  },[p,tauMin,tauMax,visible])
+  const curves=useMemo(()=>visible?rarefactionOrbits(p,tauMin,tauMax):[],[p,tauMin,tauMax,visible])
   if(!visible)return null
   return <group>{curves.map((curve,i)=>{
-    const pts=curve.map(q=>new THREE.Vector3(q.tau,.026,q.zHat))
-    const geometry=new THREE.BufferGeometry().setFromPoints(pts)
-    return <line key={i} geometry={geometry}><lineBasicMaterial color="#b91c1c"/></line>
+    const pts=curvePoints3D(curve.map(q=>({...q,Y:0})),'tauYzc',{yOffset:0.026})
+    return pts.length>1?<Line key={i} points={pts} color={waveColors.rarefactionFast} {...scientificCurveStyle('integralFast','3d')} depthTest={false} renderOrder={12}/>:null
   })}</group>
 }
 
 
-function RarefactionSingularities({p,tauMin,tauMax,visible=true,showStable=true,showUnstable=true,selectedSingularity,setSelectedSingularity}){
-  const data=useMemo(()=>{
-    if(!visible)return {singularities:[],separatrices:[]}
-    const singularities=rarefactionSingularities(p,tauMin,tauMax),separatrices=[]
-    const h=.012,inside=q=>q.tau>=tauMin&&q.tau<=tauMax&&q.zHat>-.997&&q.zHat<.997
-    const vf=q=>{const d=rarefactionField(q.tau,zFromZHat(q.zHat),p);if(d.kind!=='regular')return null;const n=Math.hypot(d.tauDot,d.zHatDot);return n>1e-11?[d.tauDot/n,d.zHatDot/n]:null}
-    const step=(q,sgn)=>{const f=x=>{const v=vf(x);return v&&[sgn*v[0],sgn*v[1]]},k1=f(q);if(!k1)return null;const q2={tau:q.tau+h*k1[0]/2,zHat:q.zHat+h*k1[1]/2},k2=f(q2);if(!k2)return null;const q3={tau:q.tau+h*k2[0]/2,zHat:q.zHat+h*k2[1]/2},k3=f(q3);if(!k3)return null;const q4={tau:q.tau+h*k3[0],zHat:q.zHat+h*k3[1]},k4=f(q4);if(!k4)return null;return {tau:q.tau+h*(k1[0]+2*k2[0]+2*k3[0]+k4[0])/6,zHat:q.zHat+h*(k1[1]+2*k2[1]+2*k3[1]+k4[1])/6}}
-    singularities.forEach((q,si)=>{if(q.type!=='sela'||!q.eigenvectors)return;for(let j=0;j<2;j++)for(const branch of [-1,1]){
-      const stable=q.eigenvalues[j]<0,v=q.eigenvectors[j],eps=.012,seed={tau:q.tau+branch*eps*v[0],zHat:q.zHat+branch*eps*v[1]},sgn=stable?-1:1,pts=[{tau:q.tau,zHat:q.zHat},seed];let x=seed
-      let targetIndex=null
-      for(let k=0;k<1300;k++){
-        const nx=step(x,sgn);if(!nx||!inside(nx))break
-        if(Math.hypot(nx.tau-q.tau,nx.zHat-q.zHat)<.006&&k>8)break
-        // Uma conexão entre selas é uma única órbita: W^u(p_i) ∩ W^s(p_j).
-        // Pare a integração no centro da outra sela para evitar que as duas
-        // integrações independentes apareçam como curvas paralelas.
-        const hit=singularities.findIndex((r,ri)=>ri!==si&&r.type==='sela'&&Math.hypot(nx.tau-r.tau,nx.zHat-r.zHat)<.035)
-        if(hit>=0){pts.push({tau:singularities[hit].tau,zHat:singularities[hit].zHat});targetIndex=hit;break}
-        pts.push(nx);x=nx
-      }
-      if(pts.length>3)separatrices.push({points:pts,stable,singularityIndex:si,targetIndex})
-    }})
-    // Se a mesma heteroclínica foi obtida como ramo instável de uma sela e
-    // ramo estável da outra, desenhamos apenas a órbita instável orientada.
-    const heteroKeys=new Set(separatrices.filter(c=>!c.stable&&c.targetIndex!==null).map(c=>`${c.singularityIndex}->${c.targetIndex}`))
-    const unique=separatrices.filter(c=>{
-      if(!c.stable||c.targetIndex===null)return true
-      return !heteroKeys.has(`${c.targetIndex}->${c.singularityIndex}`)
-    })
-    return {singularities,separatrices:unique}
-  },[p,tauMin,tauMax,visible])
-  if(!visible)return null
-  const selectedFinite=selectedSingularity?.kind==='finite'?selectedSingularity.index:null
-  const hideFiniteSeparatrices=selectedSingularity?.kind==='infinity'
-  return <group>
-    {data.separatrices.filter(c=>!hideFiniteSeparatrices&&(c.stable?showStable:showUnstable)&&(selectedFinite===null||c.singularityIndex===selectedFinite)).map((curve,i)=>{const color=curve.stable?'#047857':'#9a3412',g=new THREE.BufferGeometry().setFromPoints(curve.points.map(q=>new THREE.Vector3(q.tau,.043,q.zHat)));return <group key={'s'+i}><line geometry={g}><lineBasicMaterial color={color}/></line><ArrowOnCurve points={curve.points} index={Math.floor(curve.points.length*.45)} color={color}/></group>})}
-    {data.singularities.map((q,i)=>{const selected=selectedFinite===i;return <group key={i} onPointerDown={e=>{e.stopPropagation();setSelectedSingularity?.({kind:'finite',index:i})}}><mesh position={[q.tau,.05,q.zHat]}><sphereGeometry args={[selected?.085:.055,22,22]}/><meshStandardMaterial color={selected?'#f4b400':q.type==='sela'?'#111827':'#dc2626'}/></mesh><Text position={[q.tau+.09,.055,q.zHat+.055]} fontSize={.055} color="#111827">{q.type}</Text></group>})}
+// Invisible, wider picking geometry. Kept separate from the visual line so
+// selection remains possible at ordinary zoom without changing its appearance.
+function CurvePickTarget({points,onPick}){
+  const geometry=useMemo(()=>{
+    if(points.length<2)return null
+    const samples=points.filter((_,i)=>i%Math.max(1,Math.floor(points.length/180))===0)
+    if(samples[samples.length-1]!==points[points.length-1])samples.push(points[points.length-1])
+    const path=new THREE.CatmullRomCurve3(samples.map(q=>new THREE.Vector3(q.tau,.055,q.zc)))
+    return new THREE.TubeGeometry(path,Math.max(8,samples.length*2),.045,5,false)
+  },[points])
+  useEffect(()=>()=>geometry?.dispose(),[geometry])
+  if(!geometry)return null
+  return <mesh geometry={geometry} onClick={e=>{e.stopPropagation();onPick(e)}}>
+    <meshBasicMaterial transparent opacity={0} depthWrite={false} side={THREE.DoubleSide}/>
+  </mesh>
+}
+
+// Marcador 3D uniforme: a escala inversa compensa a escala anisotrópica dos eixos.
+function SingularityMarker({position,selected=false,onSelect,axisScale={tau:1,Y:1,zc:1}}){
+  const inv= [axisScale.tau,axisScale.Y,axisScale.zc].map(v=>1/Math.max(Math.abs(v||1),1e-8))
+  return <group position={position} scale={inv} onClick={e=>{e.stopPropagation();onSelect?.()}}>
+    <group renderOrder={22}>
+      <ScientificPoint3D radius={0.033} widthSegments={28} heightSegments={20}
+        color={selected?'#49baff':'#f5f7fb'} metalness={0.15} roughness={0.3}/>
+    </group>
+    <mesh rotation={[Math.PI/2,0,0]} renderOrder={23}>
+      <torusGeometry args={[0.052,0.0035,10,48]}/>
+      <meshStandardMaterial color={selected?'#4de1ff':'#d6dce6'} emissive={selected?'#087d9d':'#000000'} emissiveIntensity={selected?0.5:0} depthTest={false}/>
+    </mesh>
+    <mesh visible={false}>
+      <sphereGeometry args={[0.11,12,10]}/>
+      <meshBasicMaterial transparent opacity={0} depthWrite={false}/>
+    </mesh>
   </group>
 }
+
+function RarefactionSingularities({p,tauMin,tauMax,visible=true,showStable=true,showUnstable=true,selectedSingularity,setSelectedSingularity,onSelectCurve,axisScale}){
+  const data=useMemo(()=>visible?finiteRarefactionSeparatrices(p,tauMin,tauMax):{singularities:[],separatrices:[]},[p,tauMin,tauMax,visible])
+  if(!visible)return null
+  const selectedFinite=selectedSingularity?.kind==='finite'?selectedSingularity.index:null
+  return <group>
+    {data.separatrices.filter(c=>(c.stable?showStable:showUnstable)).map((curve,i)=>{const color=curve.stable?waveColors.rarefactionSlow:waveColors.rarefactionFast,pts=curvePoints3D(curve.points,'tauYzc',{yOffset:0.043});return <group key={'s'+i}><Line points={pts} color={color} {...scientificCurveStyle('separatrix','3d')} depthTest={false} renderOrder={18} onClick={e=>{e.stopPropagation();onSelectCurve?.({kind:"separatrix",origin:"finite",stable:curve.stable,singularityIndex:curve.singularityIndex,branch:i,point:{tau:e.point.x,zc:e.point.z}})}}/><CurvePickTarget points={curve.points} onPick={e=>onSelectCurve?.({kind:"separatrix",origin:"finite",stable:curve.stable,singularityIndex:curve.singularityIndex,branch:i,point:{tau:e.point.x,zc:e.point.z}})}/><ArrowOnCurve points={curve.points} index={Math.floor(curve.points.length*.45)} color={color}/></group>})}
+    {data.singularities.map((q,i)=>{const selected=selectedFinite===i;return <group key={i}><SingularityMarker position={[q.tau,0,q.zc]} selected={selected} axisScale={axisScale} onSelect={()=>setSelectedSingularity?.({kind:'finite',index:i})}/></group>})}
+  </group>
+}
+
 
 function ArrowOnCurve({points,index,color}){
   if(points.length<4)return null
   const i=Math.max(1,Math.min(points.length-2,index))
   const a=points[i-1],b=points[i+1],p=points[i]
-  const dx=b.tau-a.tau,dz=b.zHat-a.zHat,L=Math.hypot(dx,dz)
+  const dx=b.tau-a.tau,dz=b.zc-a.zc,L=Math.hypot(dx,dz)
   if(L<1e-10)return null
-  // coneGeometry points along +Y; rotate it onto the tangent in the tau-zHat plane.
+  // coneGeometry points along +Y; rotate it onto the tangent in the tau-zc plane.
   const dir=new THREE.Vector3(dx/L,0,dz/L),q=new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0,1,0),dir)
-  return <mesh position={[p.tau,.078,p.zHat]} quaternion={q}><coneGeometry args={[.025,.10,12]}/><meshStandardMaterial color={color}/></mesh>
+  return <mesh position={[p.tau,.078,p.zc]} quaternion={q}><coneGeometry args={[.025,.10,12]}/><meshStandardMaterial color={color}/></mesh>
 }
 
-function InfinityRarefactionSingularity({p,tauMin,tauMax,visible=true,showStable=true,showUnstable=true,selectedSingularity,setSelectedSingularity}){
+function InfinityRarefactionSingularity({p,tauMin,tauMax,visible=true,showStable=true,showUnstable=true,selectedSingularity,setSelectedSingularity,onSelectCurve,axisScale}){
   const qs=useMemo(()=>infinityRarefactionSingularities(p),[p])
   const separatrices=useMemo(()=>visible?infinityRarefactionSeparatrices(p,{tauMin,tauMax}):[],[p,tauMin,tauMax,visible])
   if(!visible||!qs.length)return null
   const selected=selectedSingularity?.kind==='infinity'
   return <group>
-    {separatrices.filter(c=>selectedSingularity?.kind!=='finite'&&(c.stable?showStable:showUnstable)).map((curve,i)=>{const color=curve.stable?'#047857':'#9a3412',pts=curve.points.map(x=>new THREE.Vector3(x.tau,.062,x.zHat)),g=new THREE.BufferGeometry().setFromPoints(pts);return <group key={'infsep'+i}><line geometry={g}><lineBasicMaterial color={color}/></line><ArrowOnCurve points={curve.points} index={Math.floor(curve.points.length*.38)} color={color}/></group>})}
-    {[-1,1].map((zh,i)=><group key={i} onPointerDown={e=>{e.stopPropagation();setSelectedSingularity?.({kind:'infinity'})}}>
-      <mesh position={[0,.07,zh*.998]}><sphereGeometry args={[selected?.055:.032,20,20]}/><meshStandardMaterial color={selected?'#f4b400':'#111827'}/></mesh>
-      <Text position={[.07,.075,zh*.965]} fontSize={.042} color="#111827">sela ∞</Text>
-    </group>)}
+    {separatrices.filter(c=>c.visibleInFiniteChart&&(c.stable?showStable:showUnstable)).map((curve,i)=>{const color=curve.stable?waveColors.rarefactionSlow:waveColors.rarefactionFast,pts=curvePoints3D(curve.points,'tauYzc',{yOffset:0.062});return <group key={'infsep'+i}><Line points={pts} color={color} {...scientificCurveStyle('separatrix','3d')} depthTest={false} renderOrder={18} onClick={e=>{e.stopPropagation();onSelectCurve?.({kind:"separatrix",origin:"infinity",stable:curve.stable,branch:i,point:{tau:e.point.x,zc:e.point.z}})}}/><CurvePickTarget points={curve.points} onPick={e=>onSelectCurve?.({kind:"separatrix",origin:"infinity",stable:curve.stable,branch:i,point:{tau:e.point.x,zc:e.point.z}})}/><ArrowOnCurve points={curve.points} index={Math.floor(curve.points.length*.38)} color={color}/></group>})}
+    {[-1,1].map((zh,i)=><group key={i}><SingularityMarker position={[0,0,zh*.998]} selected={selected} axisScale={axisScale} onSelect={()=>setSelectedSingularity?.({kind:'infinity'})}/></group>)}
   </group>
 }
 
-function CharacteristicSurface({tauMin,tauMax,p,_point,setPoint}){
+// C_s and C_f are classified by the selected eigenvalue, never by screen position.
+const CHARACTERISTIC_COLORS={slow:'#87cefa',fast:'#f08080'}
+function CharacteristicSurface({tauMin,tauMax,p,_point,setPoint,showSlow=true,showFast=true,showCoincidence=true,sharedLoci=[],surfaceOpacity=0.15,onInspectPoint}){
+  const surfaces=useMemo(()=>{
+    return characteristicMesh(p,tauMin,tauMax)
+  },[p,tauMin,tauMax])
   return <>
-    <mesh rotation={[-Math.PI/2,0,0]} position={[(tauMin+tauMax)/2,0,0]}
-      onPointerDown={e=>{e.stopPropagation();setPoint(q=>({...q,Y:0,tau:clamp(e.point.x,tauMin,tauMax),zHat:clamp(e.point.z,-.999,.999)}))}}>
-      <planeGeometry args={[tauMax-tauMin,2,48,32]}/>
-      <meshStandardMaterial color="#5d8798" side={THREE.DoubleSide} transparent opacity={0.42} depthWrite={false}/>
-    </mesh>
-    <lineSegments rotation={[-Math.PI/2,0,0]} position={[(tauMin+tauMax)/2,0.004,0]}>
-      <edgesGeometry args={[new THREE.PlaneGeometry(tauMax-tauMin,2)]}/><lineBasicMaterial color="#274752"/>
-    </lineSegments>
-    <Coincidence {...{p,tauMin,tauMax}}/>
-    <Text position={[tauMin+0.12,0.035,0.88]} fontSize={0.085} color="#274752">C : Y=0</Text>
+    {surfaces.leaves.filter(item=>item.branch==='slow'?showSlow:showFast).map(item=><mesh key={item.branch} onPointerDown={e=>{e.stopPropagation();const selected={tau:clamp(e.point.x,tauMin,tauMax),Y:0,zc:clamp(e.point.z,-.999,.999)};setPoint(q=>({...q,...selected}));onInspectPoint?.(selected)}}>
+      <bufferGeometry><bufferAttribute attach="attributes-position" args={[item.coords,3]}/></bufferGeometry>
+      <meshStandardMaterial color={CHARACTERISTIC_COLORS[item.branch]} side={THREE.DoubleSide} transparent opacity={surfaceOpacity} depthWrite={false} depthTest={true} roughness={0.82} metalness={0.02}/>
+    </mesh>)}
+    {showCoincidence&&sharedLoci.filter(item=>item.id==='E').flatMap(item=>item.paths.map((path,i)=><Line key={i} points={path}  color="#bc9cba" {...scientificCurveStyle('locus','3d')} depthTest={false} renderOrder={5}/>))}
   </>
 }
 
-function Axes({tauMin,tauMax}){
-  const len=Math.max(2.4,tauMax-tauMin+0.8)
-  return <>
-    <primitive object={new THREE.AxesHelper(Math.min(len,4))}/>
-    <Text position={[tauMax+0.25,0,0]} fontSize={0.11} color="#23343b">τ</Text>
-    <Text position={[0,2.18,0]} fontSize={0.11} color="#23343b">Y</Text>
-    <Text position={[0,0,1.17]} fontSize={0.09} color="#23343b">ẑ=+1</Text>
-    <Text position={[0,0,-1.17]} fontSize={0.09} color="#23343b">ẑ=-1</Text>
-  </>
+function ExceptionalDirectionHandles({p,tauMin,tauMax,onSelect,selectedDirection,axisScale}) {
+  const {markers}=useMemo(()=>exceptionalMarkers(p),[p])
+  return <group>{markers.map((marker,i)=>{const selected=selectedDirection&&(marker.infinity?selectedDirection.infinity:!selectedDirection.infinity&&Math.abs(marker.zc-selectedDirection.zc)<1e-8);const zc=marker.zc*(marker.infinity?.995:1);const center=clamp(0,tauMin,tauMax);const inverseScale=[axisScale.tau,axisScale.Y,axisScale.zc].map(v=>1/Math.max(Math.abs(v||1),1e-8));return <group key={`${marker.infinity?'inf':marker.z}-${i}`} position={[center,0,zc]}>
+    <group scale={inverseScale}><group onClick={e=>{e.stopPropagation();onSelect(marker)}} onPointerOver={e=>{e.stopPropagation()}}>
+      <ScientificPoint3D radius={selected?.068:.052} color={selected?"#ffffff":"#ffd166"} material="basic"/>
+    </group>
+    <mesh raycast={()=>null}><torusGeometry args={[selected?.104:.083,.009,6,28]}/><meshBasicMaterial color={selected?"#fbbf24":"#1f2937"} depthTest={false}/></mesh></group>
+    {selected&&<Line points={[[tauMin-center,0,0],[tauMax-center,0,0]]} color="#fbbf24" lineWidth={1.5} transparent opacity={0.75} depthTest={false} renderOrder={20}/> }
+  </group>})}</group>
+}
+
+// All axis labels use the same KaTeX/HTML renderer, with anchors
+// derived from their corresponding axis segments.
+// Project every axis label into the same DOM overlay, avoiding Drei Html
+// clipping and inconsistent depth/scale behavior.
+function AxisScreenAnchors({tauMax,YMax,axisScale,onPositions}) {
+  const {camera,size}=useThree()
+  const previous=useRef(null)
+  const lastUpdate=useRef(-Infinity)
+  const projected=useMemo(()=>new THREE.Vector3(),[])
+  const originVector=useMemo(()=>new THREE.Vector3(),[])
+  useFrame(({clock})=>{
+    // Axis labels live in React DOM: updating them on every WebGL frame
+    // forces unnecessary React reconciliation while OrbitControls rotates.
+    // Cap label refresh at 20 Hz; the WebGL camera remains fully responsive.
+    const now=clock.elapsedTime
+    if(now-lastUpdate.current<0.05)return
+    lastUpdate.current=now
+    const origin=originVector.set(0,0,0).project(camera)
+    const ox=(origin.x+1)*size.width/2
+    const oy=(1-origin.y)*size.height/2
+    const axes=[
+      {id:'tau',end:[Math.max(0,tauMax)*axisScale.tau,0,0]},
+      {id:'Y',end:[0,Math.max(0,YMax)*axisScale.Y,0]},
+      {id:'zcPlus',end:[0,0,axisScale.zc]},
+      {id:'zcMinus',end:[0,0,-axisScale.zc]},
+    ]
+    const next={}
+    for(const axis of axes){
+      const [ex,ey,ez]=axis.end
+      // Find the furthest point of this ray that is still inside the canvas.
+      let found=null
+      for(let i=0;i<=40;i++){
+        const t=1-i/40
+        projected.set(ex*t,ey*t,ez*t).project(camera)
+        if(projected.z>=-1&&projected.z<=1&&Math.abs(projected.x)<0.88&&Math.abs(projected.y)<0.88){
+          found={x:(projected.x+1)*size.width/2,y:(1-projected.y)*size.height/2}
+          break
+        }
+      }
+      if(!found)continue
+      const dx=found.x-ox,dy=found.y-oy
+      const distance=Math.hypot(dx,dy)
+      // Offset each label 16 screen pixels beyond its axis tip.
+      // When a ray is viewed end-on, use a stable screen direction.
+      const ux=distance>2?dx/distance:(axis.id==='Y'?0:axis.id==='zcMinus'?-1:1)
+      const uy=distance>2?dy/distance:(axis.id==='Y'?-1:0)
+      next[axis.id]={
+        x:THREE.MathUtils.clamp(found.x+16*ux,32,size.width-32),
+        y:THREE.MathUtils.clamp(found.y+16*uy,26,size.height-26),
+      }
+    }
+    const old=previous.current
+    if(!old||Object.keys(next).some(id=>!old[id]||Math.hypot(next[id].x-old[id].x,next[id].y-old[id].y)>1.5)
+      ||Object.keys(old).some(id=>!next[id])){
+      previous.current=next
+      onPositions(next)
+    }
+  })
+  return null
+}
+
+function Axes({tauMin,tauMax,YMin,YMax,axisScale,onAxisPositions}) {
+  const axisLines=[
+    {id:'tau',from:[tauMin,0,0],to:[tauMax,0,0],color:'#698b9c'},
+    {id:'Y',from:[0,YMin,0],to:[0,YMax,0],color:'#718d7a'},
+    {id:'zc',from:[0,0,-1],to:[0,0,1],color:'#8e829b'},
+  ]
+  const scale=[axisScale.tau,axisScale.Y,axisScale.zc]
+  const worldPoint=point=>point.map((value,i)=>value*scale[i])
+  return <group>
+    {axisLines.map(axis=><Line key={axis.id} points={[worldPoint(axis.from),worldPoint(axis.to)]}
+      color={axis.color} lineWidth={1} transparent opacity={0.55}
+      depthTest={false} renderOrder={1}/>)}
+    <AxisScreenAnchors {...{tauMin,tauMax,YMin,YMax,axisScale}} onPositions={onAxisPositions}/>
+  </group>
+}
+
+function LiftedSampleMarker({sample,axisScale}){
+  if(!sample)return null
+  const {tau,Y,zc}=sample
+  if(![tau,Y,zc].every(Number.isFinite))return null
+  const inv=[axisScale.tau,axisScale.Y,axisScale.zc].map(v=>1/Math.max(Math.abs(v||1),1e-8))
+  return <group position={[tau,Y,zc]} scale={inv} renderOrder={45}>
+    <mesh raycast={()=>null}><sphereGeometry args={[0.056,24,16]}/><meshBasicMaterial color="#ffffff" depthTest={false}/></mesh>
+    <mesh raycast={()=>null}><sphereGeometry args={[0.089,24,16]}/><meshBasicMaterial color="#30c9ff" wireframe transparent opacity={0.95} depthTest={false}/></mesh>
+  </group>
 }
 
 const CameraRig=forwardRef(function CameraRig(_,ref){
   const controls=useRef(),{camera}=useThree()
-  const setView=(pos,up=[0,1,0])=>{camera.position.set(...pos);camera.up.set(...up);camera.lookAt(0,0,0);controls.current?.target.set(0,0,0);controls.current?.update()}
-  useImperativeHandle(ref,()=>({front:()=>setView([0,0,5]),side:()=>setView([5,0,0]),top:()=>setView([0,5,0],[0,0,-1]),reset:()=>setView([3,3,3]),zoom:(factor)=>{camera.position.multiplyScalar(factor);controls.current?.update()}}))
-  return <OrbitControls ref={controls} makeDefault enableDamping dampingFactor={0.08}/>
+  const setView=(pos,up=[0,1,0])=>{
+    camera.position.set(...pos)
+    camera.up.set(...up)
+    camera.lookAt(0,0,0)
+    controls.current?.target.set(0,0,0)
+    controls.current?.update()
+  }
+  useImperativeHandle(ref,()=>({front:()=>setView([0,0,5]),side:()=>setView([5,0,0]),back:()=>setView([0,0,-5]),left:()=>setView([-5,0,0]),bottom:()=>setView([0,-5,0],[0,0,1]),top:()=>setView([0.06,5,0.0001]),reset:()=>setView([3,3,3]),focus:(target)=>{if(!Array.isArray(target)||!target.every(Number.isFinite))return;const oldTarget=controls.current?.target;const offset=camera.position.clone().sub(oldTarget||{x:0,y:0,z:0});camera.position.set(target[0]+offset.x,target[1]+offset.y,target[2]+offset.z);controls.current?.target.set(...target);controls.current?.update()},zoom:(factor)=>{camera.position.multiplyScalar(factor);controls.current?.update()}}))
+  return <OrbitControls ref={controls} makeDefault enableDamping dampingFactor={0.08} />
 })
 
-function SceneContent({tauMin,tauMax,YMin,YMax,p,point,setPoint,cameraRef,showSMinus,showSPlus,showRarefaction,showRareCurves,showFiniteStable,showFiniteUnstable,showInfinityStable,showInfinityUnstable,selectedSingularity,setSelectedSingularity,axisScale}){
+function SceneContent({sharedLoci=[],tauMin,tauMax,YMin,YMax,p,point,setPoint,cameraRef,compositeGeometry,fixedState,riemannStates,showLeftRiemannFibre,showRightRiemannFibre,showMinusStateFibre,showPlusStateFibre,showSMinus,showSPlus,showDS,showJ,showKMinus,showKPlus,showRarefaction,showRareCurves,showCharacteristicSlow,showCharacteristicFast,showCoincidence,showFiniteStable,showFiniteUnstable,showInfinityStable,showInfinityUnstable,selectedSingularity,setSelectedSingularity,onSelectCurve,axisScale,sonicMeshMode,btCurveMode,sonicRenderMode,surfaceOpacity,surfaceIsolation,showBTMinus,showBTPlus,showHopfMinus,showHopfPlus,onSelectExceptional,selectedExceptional,onInspectPoint,onInspectSonic,liftedInspection,onAxisPositions}){
   return <>
-    <group scale={[axisScale.tau,axisScale.Y,axisScale.zHat]}>
-    <ambientLight intensity={1.25}/><directionalLight position={[3,4,5]} intensity={1.7}/>
-    <gridHelper args={[8,16]} position={[0,-0.025,0]}/>
-    <CharacteristicSurface {...{tauMin,tauMax,p,point,setPoint}}/>
+    <group scale={[axisScale.tau,axisScale.Y,axisScale.zc]}>
+    <hemisphereLight args={['#dbeafe','#28364a',1.05]}/><ambientLight intensity={0.32}/><directionalLight position={[4,7,5]} intensity={2.1}/><directionalLight position={[-5,2,-4]} intensity={0.55} color="#9cc7ff"/>
+    <CharacteristicSurface sharedLoci={sharedLoci} {...{tauMin,tauMax,p,point,setPoint}} showSlow={showCharacteristicSlow&&(surfaceIsolation==='all'||surfaceIsolation==='characteristic')} showFast={showCharacteristicFast&&(surfaceIsolation==='all'||surfaceIsolation==='characteristic')} showCoincidence={showCoincidence} surfaceOpacity={surfaceOpacity} onInspectPoint={onInspectPoint}/>
+    <StateFibres U={fixedState} p={p} showMinus={showMinusStateFibre} showPlus={showPlusStateFibre}/><StateFibres U={riemannStates?.left} p={p} showMinus={showLeftRiemannFibre} showPlus={false} colorOverride="#ff9f0a"/><StateFibres U={riemannStates?.right} p={p} showMinus={false} showPlus={showRightRiemannFibre} colorOverride="#30d158"/>
     <RarefactionField {...{p,tauMin,tauMax}} visible={showRarefaction&&showRareCurves}/>
-    <RarefactionSingularities {...{p,tauMin,tauMax,selectedSingularity,setSelectedSingularity}} visible={showRarefaction} showStable={showFiniteStable} showUnstable={showFiniteUnstable}/>
-    <InfinityRarefactionSingularity {...{p,tauMin,tauMax,selectedSingularity,setSelectedSingularity}} visible={showRarefaction} showStable={showInfinityStable} showUnstable={showInfinityUnstable}/>
-    <SonicSurface {...{p,tauMin,tauMax,YMin,YMax}} side="minus" visible={showSMinus}/>
-    <SonicSurface {...{p,tauMin,tauMax,YMin,YMax}} side="plus" visible={showSPlus}/>
-    <Axes {...{tauMin,tauMax}}/>
-    <mesh position={[point.tau,point.Y,point.zHat]}><sphereGeometry args={[0.055,20,20]}/><meshStandardMaterial color="#f4b400"/></mesh>
+    <CompositeFields geometry={compositeGeometry} showMinus={showKMinus} showPlus={showKPlus}/>
+    <RarefactionSingularities {...{p,tauMin,tauMax,selectedSingularity,setSelectedSingularity,onSelectCurve,axisScale}} visible={showRarefaction} showStable={showFiniteStable} showUnstable={showFiniteUnstable}/>
+    <InfinityRarefactionSingularity {...{p,tauMin,tauMax,selectedSingularity,setSelectedSingularity,onSelectCurve,axisScale}} visible={showRarefaction} showStable={showInfinityStable} showUnstable={showInfinityUnstable}/>
+    {<HopfSurfaces {...{p,tauMin,tauMax,YMin,YMax,axisScale}} showMinus={showHopfMinus&&(surfaceIsolation==='all'||surfaceIsolation==='hopf-minus'||surfaceIsolation==='trace-minus')} showPlus={showHopfPlus&&(surfaceIsolation==='all'||surfaceIsolation==='hopf-plus'||surfaceIsolation==='trace-plus')} surfaceOpacity={surfaceOpacity} traceOnly={surfaceIsolation==='trace-minus'||surfaceIsolation==='trace-plus'}/>}
+    {(surfaceIsolation==='all'||surfaceIsolation==='sonic-minus'||surfaceIsolation==='sonic-plus')&&(showSMinus||showSPlus||showBTMinus||showBTPlus)&&<SonicSurfaces {...{p,tauMin,tauMax,YMin,YMax,showBTMinus,showBTPlus}} showMinus={(showSMinus||showBTMinus)&&(surfaceIsolation==='all'||surfaceIsolation==='sonic-minus')} showPlus={(showSPlus||showBTPlus)&&(surfaceIsolation==='all'||surfaceIsolation==='sonic-plus')} showSurfaceMinus={showSMinus} showSurfacePlus={showSPlus} sonicMeshMode={sonicMeshMode} btCurveMode={btCurveMode} sonicRenderMode={sonicRenderMode} surfaceOpacity={surfaceOpacity} onInspectSonic={onInspectSonic}/>}
+    <SonicSpecialLoci sharedLoci={sharedLoci} showDS={showDS} showJ={showJ}/>
+    <LiftedSampleMarker sample={liftedInspection?.point} axisScale={axisScale}/>
+    <ExceptionalDirectionHandles p={p} tauMin={tauMin} tauMax={tauMax} onSelect={onSelectExceptional} selectedDirection={selectedExceptional} axisScale={axisScale}/>
     </group>
+    <Axes {...{tauMin,tauMax,YMin,YMax,axisScale}} onAxisPositions={onAxisPositions}/>
     <CameraRig ref={cameraRef}/>
   </>
 }
 
-export default function Scene({tauMin,tauMax,YMin=-2,YMax=2,p,point,setPoint,showSMinus=true,showSPlus=true,showRarefaction=true,showRareCurves=true,showFiniteStable=true,showFiniteUnstable=true,showInfinityStable=true,showInfinityUnstable=true,selectedSingularity=null,setSelectedSingularity,axisScale={tau:1,Y:1,zHat:1}}){
+export default function Scene({sharedLoci=[],tauMin,tauMax,YMin=-2,YMax=2,p,point,setPoint,compositeGeometry={minus:[],plus:[]},fixedState=null,riemannStates=null,showLeftRiemannFibre=true,showRightRiemannFibre=true,showMinusStateFibre=true,showPlusStateFibre=true,showSMinus=true,showSPlus=true,sonicMeshMode='original',btCurveMode='continuation',sonicRenderMode='transparent',showDS=true,showJ=true,showKMinus=false,showKPlus=false,showRarefaction=true,showRareCurves=true,showCharacteristicSlow=true,showCharacteristicFast=true,showCoincidence=true,showFiniteStable=true,showFiniteUnstable=true,showInfinityStable=true,showInfinityUnstable=true,showBTMinus=true,showBTPlus=true,showHopfMinus=true,showHopfPlus=true,selectedSingularity=null,setSelectedSingularity,onSelectCurve,liftedInspection=null,axisScale={tau:1,Y:1,zc:1}}){
   const cameraRef=useRef()
+  const [axisScreenPositions,setAxisScreenPositions]=useState(null)
+  useEffect(()=>{
+    const q=liftedInspection?.point
+    if(q&&[q.tau,q.Y,q.zc].every(Number.isFinite))
+      cameraRef.current?.focus([q.tau*axisScale.tau,q.Y*axisScale.Y,q.zc*axisScale.zc])
+  },[liftedInspection,axisScale])
+
+  const [surfaceOpacity,setSurfaceOpacity]=useState(0.38)
+  const [surfaceIsolation,setSurfaceIsolation]=useState('all')
+  const [showFiberInspection,setShowFiberInspection]=useState(false)
+  const [inspectInfinity,setInspectInfinity]=useState(false)
+  const [selectedExceptional,setSelectedExceptional]=useState(null)
+  const [inspectedCharacteristic,setInspectedCharacteristic]=useState(null)
+  const [inspectedSonic,setInspectedSonic]=useState(null)
+  const fiberInspection=useMemo(()=>showFiberInspection
+    ? exceptionalFiberLimit(inspectInfinity ? Infinity : projectiveZ(point.zc),p)
+    : null,[showFiberInspection,inspectInfinity,point.zc,p])
+  const exceptional=useMemo(()=>showFiberInspection?exceptionalDirections(p):null,[showFiberInspection,p])
+  const onSelectExceptional=marker=>{setSelectedExceptional(marker);setShowFiberInspection(true);setInspectInfinity(Boolean(marker.infinity));setPoint(current=>({...current,zc:marker.zc,Y:0}))}
+  const characteristicInspection=useMemo(()=>inspectedCharacteristic
+    ? characteristicSpectrum(inspectedCharacteristic.tau,projectiveZ(inspectedCharacteristic.zc),p)
+    : null,[inspectedCharacteristic,p])
+  const sonicInspection=useMemo(()=>inspectedSonic?inspectSonicPoint(inspectedSonic,p):null,[inspectedSonic,p])
+  const fmt=n=>Number.isFinite(n)?Number(n.toPrecision(6)).toString():String(n)
   return <div className="sceneWrap">
-    <Canvas camera={{position:[3,3,3],fov:45}}><SceneContent {...{tauMin,tauMax,p,point,setPoint,cameraRef,showSMinus,showSPlus,showRarefaction,showRareCurves,showFiniteStable,showFiniteUnstable,showInfinityStable,showInfinityUnstable,selectedSingularity,setSelectedSingularity,YMin,YMax,axisScale}}/></Canvas>
-    <div className="cameraBar">
-      <span>Girar/selecionar</span><span>·</span><span>Mover vista</span>
-      <button onClick={()=>cameraRef.current?.zoom(1.18)}>−</button><button onClick={()=>cameraRef.current?.zoom(0.84)}>+</button>
-      <button onClick={()=>cameraRef.current?.front()}>Frente</button><button onClick={()=>cameraRef.current?.side()}>Lado</button><button onClick={()=>cameraRef.current?.top()}>Topo</button><button onClick={()=>cameraRef.current?.reset()}>Restaurar vista</button>
-    </div>
+    <ScientificLegend environment="3d" items={[
+      {id:'left-fibre',tex:String.raw`\mathcal H^{\mathrm{forw}}(U_L)`,color:'#ff9f0a',shape:'line',visible:Boolean(riemannStates?.left&&showLeftRiemannFibre)},
+      {id:'right-fibre',tex:String.raw`\mathcal H^{\mathrm{back}}(U_R)`,color:'#30d158',shape:'line',visible:Boolean(riemannStates?.right&&showRightRiemannFibre)},
+      {id:'sonic-minus',tex:String.raw`\mathcal S^-`,color:'#64a5ff',shape:'line',visible:showSMinus},
+      {id:'sonic-plus',tex:String.raw`\mathcal S^+`,color:'#45bc86',shape:'line',visible:showSPlus},
+      {id:'coincidence',tex:String.raw`\mathcal E`,color:'#bd95b0',shape:'line',visible:showCoincidence},
+      {id:'ds',tex:String.raw`\mathcal{DS}`,color:'#8da5b5',shape:'line',visible:showDS},
+      {id:'inflection',tex:String.raw`\mathcal J`,color:'#8da5b5',shape:'line',visible:showJ},
+      {id:'bt-minus',tex:String.raw`\mathcal{BT}^-`,color:'#8da5b5',shape:'line',visible:showBTMinus},
+      {id:'bt-plus',tex:String.raw`\mathcal{BT}^+`,color:'#8da5b5',shape:'line',visible:showBTPlus},
+    ]}/>
+    <Canvas dpr={[1,1.5]} gl={{powerPreference:'high-performance'}} camera={{position:[3,3,3],fov:45}}><SceneContent sharedLoci={sharedLoci} {...{tauMin,tauMax,p,point,setPoint,cameraRef,compositeGeometry,fixedState,riemannStates,showLeftRiemannFibre,showRightRiemannFibre,showMinusStateFibre,showPlusStateFibre,showSMinus,showSPlus,showDS,showJ,showKMinus,showKPlus,showRarefaction,showRareCurves,showCharacteristicSlow,showCharacteristicFast,showCoincidence,showFiniteStable,showFiniteUnstable,showInfinityStable,showInfinityUnstable,selectedSingularity,setSelectedSingularity,onSelectCurve,YMin,YMax,axisScale,sonicMeshMode,btCurveMode,sonicRenderMode,surfaceOpacity,surfaceIsolation,showBTMinus,showBTPlus,showHopfMinus,showHopfPlus,onSelectExceptional,selectedExceptional:showFiberInspection?selectedExceptional:null,onInspectPoint:selected=>{setInspectedSonic(null);setInspectedCharacteristic(selected)},onInspectSonic:selected=>{setInspectedCharacteristic(null);setInspectedSonic(selected)},liftedInspection,onAxisPositions:setAxisScreenPositions}}/></Canvas>
+    {axisScreenPositions&&[
+      {id:'tau',tex:String.raw`\tau`,name:'Eixo tau'},
+      {id:'Y',tex:String.raw`Y`,name:'Eixo Y'},
+      {id:'zcPlus',tex:String.raw`z_c=+1`,name:'Eixo z positivo'},
+      {id:'zcMinus',tex:String.raw`z_c=-1`,name:'Eixo z negativo'},
+    ].map(label=>axisScreenPositions[label.id]&&<div key={label.id} aria-label={label.name}
+      style={{position:'absolute',left:axisScreenPositions[label.id].x,top:axisScreenPositions[label.id].y,
+        transform:'translate(-50%,-50%)',pointerEvents:'none',zIndex:30,color:'#ffffff',
+        fontSize:14,fontWeight:600,textShadow:'0 1px 3px #000, 0 0 6px #000',whiteSpace:'nowrap'}}>
+      <MathLabel>{label.tex}</MathLabel>
+    </div>)}
+    {liftedInspection?.point&&<div className="liftedSampleStatus" role="status">Amostra levantada em 3D · τ={liftedInspection.point.tau.toPrecision(5)} · Y={liftedInspection.point.Y.toPrecision(5)} · z_c={liftedInspection.point.zc.toPrecision(5)} <button type="button" onClick={()=>cameraRef.current?.focus([liftedInspection.point.tau*axisScale.tau,liftedInspection.point.Y*axisScale.Y,liftedInspection.point.zc*axisScale.zc])}>Centralizar amostra</button></div>}
+    <WorkspaceToolbar label="ferramentas 3D"><div className="workspaceToolbarActions" role="toolbar" aria-label="Ferramentas de navegação 3D">
+      <span className="workspaceToolbarHint">Girar · mover</span>
+      <button type="button" title="Afastar" aria-label="Afastar" onClick={()=>cameraRef.current?.zoom(1.18)}>−</button><button type="button" title="Aproximar" aria-label="Aproximar" onClick={()=>cameraRef.current?.zoom(0.84)}>+</button>
+      <button type="button" onClick={()=>cameraRef.current?.front()}>Frente</button><button type="button" onClick={()=>cameraRef.current?.side()}>Direita</button><button type="button" onClick={()=>cameraRef.current?.top()}>Topo</button><button type="button" onClick={()=>cameraRef.current?.reset()}>Restaurar</button><details className="cameraMoreViews"><summary title="Outras vistas">Vistas ▾</summary><div className="cameraMoreMenu"><button type="button" onClick={()=>cameraRef.current?.back()}>Trás</button><button type="button" onClick={()=>cameraRef.current?.left()}>Esquerda</button><button type="button" onClick={()=>cameraRef.current?.bottom()}>Inferior</button></div></details>
+      <label className="surfaceIsolationControl" title="Exibe apenas uma família de superfícies; mantém curvas, inspeções e câmera">Isolar
+        <select aria-label="Isolar superfície" value={surfaceIsolation} onChange={e=>setSurfaceIsolation(e.target.value)}>
+          <option value="all">Todas</option>
+          <option value="characteristic">𝓒 (característica)</option>
+          <option value="sonic-minus">𝓢⁻ (sônica)</option>
+          <option value="sonic-plus">𝓢⁺ (sônica)</option>
+          <option value="hopf-minus">Hopf⁻</option>
+          <option value="hopf-plus">Hopf⁺</option>
+          <option value="trace-minus">Traço zero ⁻ (sem recorte)</option>
+          <option value="trace-plus">Traço zero ⁺ (sem recorte)</option>
+        </select>
+      </label>
+      <label className="surfaceOpacityControl" title="Ajusta a opacidade das superfícies, sem alterar curvas ou equações">Superfícies <input type="range" min="0" max="1" step="0.01" value={surfaceOpacity} onChange={e=>setSurfaceOpacity(Number(e.target.value))} aria-label="Opacidade das superfícies"/><output>{Math.round(surfaceOpacity*100)}%</output></label>
+    </div></WorkspaceToolbar>
+    {inspectedCharacteristic&&characteristicInspection&&<aside className="sceneInspectionCompact" aria-label="Inspeção da característica">
+      <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',gap:12}}><strong>Ponto na característica</strong><button onClick={()=>setInspectedCharacteristic(null)} aria-label="Fechar inspeção da característica">×</button></div>
+      <div>τ = {fmt(inspectedCharacteristic.tau)} · Y = 0 · z_c = {fmt(inspectedCharacteristic.zc)}</div>
+      <div>Região: <strong>{characteristicInspection.branch==='slow'?'𝓒ₛ (lenta)':characteristicInspection.branch==='fast'?'𝓒𝒇 (rápida)':characteristicInspection.branch==='coincidence'?'𝓔 (coincidência)':'fibra excepcional'}</strong></div>
+      {characteristicInspection.kind==='regular'&&<><div>s = {fmt(characteristicInspection.s)} · s outro = {fmt(characteristicInspection.other)}</div><div>G = {fmt(characteristicInspection.gap)}</div></>}
+      <button onClick={()=>{setShowFiberInspection(true);setInspectInfinity(false);setSelectedExceptional(null)}}>Inspecionar fibra projetiva</button>
+    </aside>}
+    {inspectedSonic&&<aside className="sceneInspectionCompact" aria-label="Inspeção da superfície sônica">
+      <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',gap:12}}><strong><><MathLabel>{inspectedSonic.side==='minus'?String.raw`\mathcal S^-`:String.raw`\mathcal S^+`}</MathLabel> {inspectedSonic.side==='minus'?'(sônica menos)':'(sônica mais)'}</></strong><button onClick={()=>setInspectedSonic(null)} aria-label="Fechar inspeção da sônica">×</button></div>
+      <div>τ = {fmt(inspectedSonic.tau)} · Y = {fmt(inspectedSonic.Y)} · z_c = {fmt(inspectedSonic.zc)}</div>
+      {sonicInspection?.kind==='regular'?<>
+        <div>z = {fmt(sonicInspection.z)}</div>
+        <div>Φ⁻ = {fmt(sonicInspection.phiMinus)} · Φ⁺ = {fmt(sonicInspection.phiPlus)}</div>
+        <div>Ramo espectral {sonicInspection.onSonic?"":"(aproximado pela malha)"}: <strong>{sonicInspection.branch==='slow'?(inspectedSonic.side==='minus'?'𝓢⁻ₛ':'𝓢⁺ₛ'):sonicInspection.branch==='fast'?(inspectedSonic.side==='minus'?'𝓢⁻𝒇':'𝓢⁺𝒇'):'coincidência espectral'}</strong></div>
+        <div>s = {fmt(sonicInspection.s)} · outro = {fmt(sonicInspection.other)} · G = {fmt(sonicInspection.gap)}</div>
+        <div>Resíduo relativo da sônica selecionada: <strong>{sonicInspection.relativeResidual.toExponential(3)}</strong></div>
+        <div>Resíduo da equação completa: {sonicInspection.fullResidual.toExponential(3)}</div>
+        <div>det M = {fmt(sonicInspection.detM)} · K = {fmt(sonicInspection.K)}</div>
+        {sonicInspection.exceptional&&<div>Próximo da degeneração K = det M = 0.</div>}
+        <small style={{display:'block',opacity:.75,marginTop:7}}>Resíduo calculado na superfície implícita, não na interpolação triangular. Um valor não nulo pode indicar erro de discretização; a seleção não certifica pertencimento exato.</small>
+      </>:<small style={{display:'block',opacity:.75,marginTop:7}}>Diagnóstico indisponível nesta carta: {sonicInspection?.kind}.</small>}
+    </aside>}
+    {showFiberInspection&&fiberInspection&&<aside style={{position:'absolute',right:12,top:12,zIndex:15,maxWidth:310,padding:'12px 14px',borderRadius:10,background:'rgba(17,24,39,.94)',color:'#f3f4f6',fontSize:12,boxShadow:'0 5px 22px #0006'}} aria-label="Inspeção da fibra projetiva">
+      <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',gap:12}}><strong>Fibra projetiva</strong><button onClick={()=>setShowFiberInspection(false)} aria-label="Fechar inspeção">×</button></div>
+      <label style={{display:'flex',alignItems:'center',gap:6,margin:'8px 0'}}><input type="checkbox" checked={inspectInfinity} onChange={e=>{if(e.target.checked)onSelectExceptional({infinity:true,zc:point.zc<0?-1:1});else{setInspectInfinity(false);setSelectedExceptional(null)}}}/> Inspecionar direção infinita (Z=0)</label>
+      <div style={{margin:'8px 0'}}>Direções excepcionais: {exceptional?.allDirectionsDegenerate?'todas as direções':exceptional?.directions.length ? exceptional.directions.map(({z},i)=><button key={i} style={{margin:'2px 4px 2px 0',padding:'4px 7px'}} onClick={()=>onSelectExceptional(Number.isFinite(z)?{infinity:false,zc:2*Math.atan(z)/Math.PI,z}:{infinity:true,zc:point.zc<0?-1:1,z:Infinity})}>{Number.isFinite(z)?`z=${fmt(z)}`:'z=∞'}</button>):'nenhuma identificada'}</div>
+      <div>Direção: {inspectInfinity?'z=∞':`z=${fmt(projectiveZ(point.zc))}`}</div>
+      <div>Classificação: <strong>{fiberInspection.kind}</strong></div>
+      {fiberInspection.kind==='degenerate'&&<><div>Ordem comum: {Number.isFinite(fiberInspection.order)?fiberInspection.order:'persistente'}</div><div>Limite: {fiberInspection.limitKind}</div>{fiberInspection.limitEquation&&<div>Reta limite: {fmt(fiberInspection.limitEquation.P)}u + {fmt(fiberInspection.limitEquation.Q)}v + {fmt(fiberInspection.limitEquation.R)} = 0</div>}</>}
+      {fiberInspection.kind==='regular'&&<div>Fibra regular: reta no espaço de estados.</div>}
+      {fiberInspection.kind==='absent'&&<div>Nenhum estado pertence a esta fibra.</div>}
+      <small style={{display:'block',opacity:.75,marginTop:7}}>Diagnóstico algébrico; nenhuma geometria excepcional é inventada.</small>
+    </aside>}
   </div>
 }

@@ -48,4 +48,8 @@ export default defineConfig([
       'react-refresh/only-export-components': 'off',
     },
   },
+  {
+    files: ['scripts/**/*.{js,jsx}'],
+    languageOptions: { globals: globals.node },
+  },
 ])

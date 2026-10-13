@@ -1,0 +1,160 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[brazil]{babel}
+\usepackage{amsmath,amssymb,amsthm,geometry,hyperref,longtable,array}
+\geometry{margin=2.5cm}
+\title{General Wave Manifold Lab\\Definições matemáticas canônicas — ciclo v0.7.0}
+\date{8 de outubro de 2026}
+\begin{document}
+\maketitle
+\noindent\textbf{Escopo.} Este documento formaliza o núcleo matemático efetivamente identificado no código da versão \texttt{0.7.0-dev.24.47.58}. Não certifica construções ainda não revisadas, como perfis viscosos, histerese e bifurcações. A notação canônica usa $\mathcal E$ para coincidência e $\mathcal C$ para característica.
+\section{Fluxo quadrático geral}
+Para $U=(u,v)^T$, seja $F(U)=(f(u,v),g(u,v))^T$, onde
+\begin{align*}
+f(u,v)&=a_{20}u^2+a_{11}uv+a_{02}v^2+a_{10}u+a_{01}v,\\
+g(u,v)&=b_{20}u^2+b_{11}uv+b_{02}v^2+b_{10}u+b_{01}v.
+\end{align*}
+O jacobiano é
+\[
+DF(U)=\begin{pmatrix}
+2a_{20}u+a_{11}v+a_{10}&a_{11}u+2a_{02}v+a_{01}\\
+2b_{20}u+b_{11}v+b_{10}&b_{11}u+2b_{02}v+b_{01}
+\end{pmatrix}.
+\]
+\section{Variedade de ondas e Rankine--Hugoniot}
+A variedade de ondas é o conjunto
+\[
+\mathcal W=\left\{(U_-,U_+,s)\in\mathbb R^2\times\mathbb R^2\times\mathbb R:\ F(U_+)-F(U_-)=s(U_+-U_-)\right\}.
+\]
+Escrevendo $\bar U=(U_-+U_+)/2$ e $\Delta U=U_+-U_-$, a quadraticidade implica a identidade exata
+\[
+F(U_+)-F(U_-)=DF(\bar U)\Delta U.
+\]
+Na carta direcional finita, $\Delta U=Y r(z)$, $r(z)=(z,1)^T$, portanto, para $Y\ne0$,
+\[
+[DF(\bar U)-sI]r(z)=0.
+\]
+A parametrização adotada também estende essa relação ao locus $Y=0$, que define a superfície característica no modelo do aplicativo. Assim, esta carta parametriza a componente característica da variedade de Rankine--Hugoniot, não todos os pontos triviais $U_-=U_+$ com $s$ arbitrário.
+\section{Coordenadas $(\tau,Y,z)$}
+Eliminando $s$ da condição de autovetor, obtém-se
+\[
+P(z)\bar u+Q(z)\bar v+R(z)=0,
+\]
+com
+\begin{align*}
+P(z)&=2b_{20}z^2+(b_{11}-2a_{20})z-a_{11},\\
+Q(z)&=b_{11}z^2+(2b_{02}-a_{11})z-2a_{02},\\
+R(z)&=b_{10}z^2+(b_{01}-a_{10})z-a_{01}.
+\end{align*}
+Quando $D(z)=P(z)^2+Q(z)^2>0$, a seção ortogonal e o vetor tangente são
+\[
+U^0(z)=-\frac{R(z)}{D(z)}(P(z),Q(z))^T,\qquad T(z)=(-Q(z),P(z))^T.
+\]
+Define-se \emph{precisamente}
+\[
+\boxed{\bar U(\tau,z)=U^0(z)+\tau T(z)},\quad
+U_\pm=\bar U\pm\frac Y2(z,1)^T,\quad
+s=\frac{r^TDF(\bar U)r}{r^Tr}.
+\]
+Logo $\tau$ é o coeficiente de $T$ não normalizado, não o comprimento de arco da fibra. Em particular, não se identifica automaticamente com a coordenada do aplicativo particular antigo. Quando $D=0$, esta parametrização regular não é aplicável sem tratamento separado.
+\section{Carta recíproca e compactificação visual}
+Para $z\ne0$, tome $Z=1/z$ e defina $P_Z(Z)=Z^2P(1/Z)$, $Q_Z(Z)=Z^2Q(1/Z)$ e $R_Z(Z)=Z^2R(1/Z)$. Como $U^0_Z=U^0$ e $T(z)=Z^{-2}T_Z(Z)$, a mesma média física é descrita por
+\[
+\boxed{\eta=\frac{\tau}{Z^2}=\tau z^2},\qquad
+\bar U=U^0_Z(Z)+\eta T_Z(Z).
+\]
+A variável $\hat z=(2/\pi)\arctan z$ é uma compactificação \emph{visual}; os bordos $\hat z=\pm1$ correspondem às duas aproximações da direção projetiva $Z=0$. A representação recíproca dos estados completos exige também transformar $\Delta U$: como $(z,1)=z(1,Z)$, a amplitude recíproca é $Y_Z=Yz=Y/Z$. A implementação atual da carta recíproca cobre explicitamente a fibra de $\bar U$ e o campo de rarefação; não se deve presumir que todo o espaço de estados completos esteja implementado nessa carta.
+\section{Característica e coincidência}
+Na parametrização anterior, $\mathcal C=\{Y=0\}$, com $U_-=U_+=\bar U$. A coincidência é
+\[
+\mathcal E=\{(\tau,0,z)\in\mathcal C:\Delta(\bar U)=0\},\qquad
+\Delta(U)=(DF_{11}-DF_{22})^2+4DF_{12}DF_{21}.
+\]
+Em pontos regulares com autovalores reais distintos, a velocidade $s$ define o ramo lento quando $s<\operatorname{tr}DF(\bar U)-s$ e o ramo rápido quando ocorre a desigualdade inversa.
+\section{Superfícies sônicas}
+Seja $A=DF(\bar U)-sI$ e $M_r=D(DF)[r]$ (constante em $U$ para fluxo quadrático). Então
+\[
+DF(U_\pm)-sI=A\pm\frac Y2M_r,\qquad\det A=0.
+\]
+Defina
+\[
+K=A_{11}(M_r)_{22}+(M_r)_{11}A_{22}-A_{12}(M_r)_{21}-(M_r)_{12}A_{21}.
+\]
+A expansão exata dos determinantes fornece
+\[
+\det(DF(U_-)-sI)=\frac Y4\big(Y\det M_r-2K\big),\qquad
+\det(DF(U_+)-sI)=\frac Y4\big(Y\det M_r+2K\big).
+\]
+Retirando o fator trivial $Y=0$, definem-se as folhas sônicas não triviais
+\[
+\boxed{\mathcal S^-:\ \Phi_-=Y\det M_r-2K=0},\qquad
+\boxed{\mathcal S^+:\ \Phi_+=Y\det M_r+2K=0}.
+\]
+A interseção satisfaz $K=0$ e $Y\det M_r=0$. Em $Y=0$ resulta o locus de inflexão $\mathcal J=\{Y=0,K=0\}$; para $Y\ne0$ e $\det M_r=0$, resulta a dupla sônica $\mathcal{DS}$. Essas caracterizações são algébricas e não pressupõem regularidade global.
+\section{Campo de rarefação na característica}
+Em $Y=0$, ponha $U_z=\partial_z\bar U$ e $T=\partial_\tau\bar U$. O levantamento dessingularizado é
+\[
+\boxed{\dot\tau=\det(r,U_z)=z(U_z)_2-(U_z)_1},\qquad
+\boxed{\dot z=\det(T,r)=-(Q+zP)}.
+\]
+Segue da identidade bidimensional que
+\[
+D\bar U(\dot\tau,\dot z)=\det(T,U_z)r.
+\]
+Portanto, onde $\det(T,U_z)\ne0$, as órbitas projetadas são tangentes à direção característica, a menos de reparametrização. Na coordenada visual,
+\[
+\dot{\hat z}=\frac{2}{\pi(1+z^2)}\dot z.
+\]
+Na carta recíproca, com $r_Z=(1,Z)$, o campo implementado é
+\[
+\dot\eta=\det(r_Z,\partial_Z\bar U),\qquad
+\dot Z=\det(\partial_\eta\bar U,r_Z).
+\]
+Na interseção das cartas, a mudança de coordenadas é
+\[
+\Psi(\tau,z)=(\eta,Z)=(\tau z^2,z^{-1}),\qquad z\ne0.
+\]
+Sua diferencial é
+\[
+D\Psi(\tau,z)=\begin{pmatrix}z^2&2\tau z\\0&-z^{-2}\end{pmatrix}.
+\]
+Escrevendo $V_z=(\dot\tau,\dot z)$ e $V_Z=(\dot\eta,\dot Z)$ para os campos definidos acima, as identidades de homogeneização
+$P_Z(Z)=Z^2P(1/Z)$, $Q_Z(Z)=Z^2Q(1/Z)$ e $R_Z(Z)=Z^2R(1/Z)$ fornecem
+\[
+\boxed{D\Psi(\tau,z)V_z(\tau,z)=-z\,V_Z(\Psi(\tau,z)).}
+\]
+Em particular, $\dot\eta=z^2\dot\tau+2\tau z\dot z=-z\dot\eta_{Z}$ e $-\dot z/z^2=-z\dot Z_{Z}$, onde os subscritos distinguem a derivação por $V_z$ e por $V_Z$. O fator $-z$ não se anula na sobreposição. Assim, as órbitas não estacionárias correspondem como curvas não orientadas; a orientação dos campos é oposta para $z>0$ e igual para $z<0$. A parametrização de tempo de cada campo é auxiliar, não necessariamente o tempo físico da lei de conservação. Esta identidade não se estende automaticamente à fronteira $Z=0$, fora da sobreposição.
+\section{Degenerescências e limites da cobertura projetiva}
+Para uma direção fixa, a equação de fibra é $P\bar u+Q\bar v+R=0$.
+Se $P=Q=0$ e $R\ne0$, a fibra é vazia. Se $P=Q=R=0$, toda a
+superfície de estados médios $\mathbb R^2$ satisfaz a equação, e a
+parametrização por uma única coordenada $\tau$ (ou $\eta$) não é válida.
+Estas alternativas são distinguidas pelas funções \texttt{fiber} e
+\texttt{fiberZ}.
+
+A homogeneização da carta recíproca fornece, na direção $Z=0$,
+\[
+(P_Z(0),Q_Z(0),R_Z(0))=(2b_{20},b_{11},b_{10}).
+\]
+Quando $P_Z(0)^2+Q_Z(0)^2>0$, a fibra de estados médios nessa direção
+é regular; quando se anula, aplicam-se as alternativas degeneradas acima.
+A identidade das cartas na sobreposição $z\ne0$ não constitui prova
+de cobertura global de $\mathcal W$.
+
+Em particular, na componente trivial $U_-=U_+=U$, a condição de
+Rankine--Hugoniot é satisfeita para \emph{qualquer} velocidade $s$.
+A parametrização característica seleciona apenas as velocidades
+associadas às direções próprias e, por isso, não cobre essa componente
+trivial completa.
+
+Na característica, o locus $\mathcal E$ é definido pelo discriminante
+$\Delta(\bar U)=0$. Para $z$ fixo e fibra regular, a função
+$\tau\mapsto\Delta(\bar U(\tau,z))$ é um polinômio de grau no máximo dois.
+Os testes confrontam as raízes computadas com o discriminante original,
+incluindo raiz dupla; não demonstram a completude global dos ramos
+nem resolvem o caso de polinômio identicamente nulo.
+
+\section{Limites de certificação}
+A presente formalização cobre as definições centrais implementadas e auditáveis. As condições de regularidade, singularidades no infinito, saturações, compostas e critérios de admissibilidade requerem documentos e verificações próprios. A correspondência de arquivos e testes está em \texttt{docs/\detokenize{MATH_CODE_TRACEABILITY.md}}.
+\end{document}

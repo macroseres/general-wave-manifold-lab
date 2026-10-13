@@ -1,0 +1,3 @@
+# Fase 14.39 — Partição espectral das sônicas
+
+As malhas sônicas existentes são recortadas por G^±=2s-tr DF(U_±). O recorte compartilha interseções de arestas entre os ramos lento e rápido. A geometria de base e o worker permanecem inalterados. O cálculo é efetuado por vértice da malha, sem reavaliar o espectro para cada triângulo. O limite de G=0 é uma fronteira espectral candidata, não identificado automaticamente com BT^±. A interseção é linearmente interpolada nas arestas e precisa de validação visual e convergência de malha. Triângulos integralmente coincidentes não são atribuídos arbitrariamente a uma folha.

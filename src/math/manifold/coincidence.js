@@ -1,4 +1,4 @@
-import { fiber, zFromZHat } from '../charts/zChart.js'
+import { fiber, zFromZc } from '../charts/zChart.js'
 import { discriminant } from './waveState.js'
 import { quadraticRoots } from '../numerics/polynomialRoots.js'
 
@@ -16,14 +16,14 @@ export function coincidenceTauRoots(z, p) {
 export function coincidencePoints(p, tauMin, tauMax, samples = 721) {
   const branches = []
   for (let i = 0; i < samples; i++) {
-    const zHat = -1 + 2 * (i + 0.5) / samples
-    const z = zFromZHat(zHat)
+    const zc = -1 + 2 * (i + 0.5) / samples
+    const z = zFromZc(zc)
     const roots = coincidenceTauRoots(z, p)
       .filter(tau => Number.isFinite(tau) && tau >= tauMin && tau <= tauMax)
       .sort((a, b) => a - b)
     roots.forEach((tau, j) => {
       if (!branches[j]) branches[j] = []
-      branches[j].push({ tau, z, zHat })
+      branches[j].push({ tau, z, zc })
     })
   }
   return branches.filter(Boolean)

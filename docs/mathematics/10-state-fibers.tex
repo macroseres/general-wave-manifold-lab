@@ -1,0 +1,95 @@
+\section{State fibres and characteristic lifts}
+
+A state $U_*=(u_*,v_*)\in\mathcal U$ is not, in general, a point of the wave
+manifold.  For $P\in\mathcal W$, the canonical projections
+\[
+ \pi_-(P)=U_-,\qquad \pi_+(P)=U_+
+\]
+associate to it the inverse images
+\[
+ \mathcal F_-(U_*):=\pi_-^{-1}(U_*),\qquad
+ \mathcal F_+(U_*):=\pi_+^{-1}(U_*).
+\]
+Generically these inverse images are curves in $\mathcal W$.  The notation
+$\mathcal F_\pm$ is used here only for projection fibres; it does not introduce
+a Hugoniot notation or an admissibility condition.
+
+\subsection{Finite chart}
+Let
+\[
+ L_{U_*}(z):=P(z)u_*+Q(z)v_*+R(z),\qquad
+ D_r(z):=P(z)z+Q(z).
+\]
+For a point of $\mathcal F_\sigma(U_*)$, where $\sigma=-1$ denotes $\pi_-$
+and $\sigma=+1$ denotes $\pi_+$,
+\[
+ U_*=\bar U+\frac{\sigma Y}{2}(z,1).
+\]
+Substitution in $P\bar u+Q\bar v+R=0$ gives, whenever $D_r\ne0$,
+\[
+ \boxed{Y=\frac{2L_{U_*}(z)}{\sigma D_r(z)}}.
+\]
+The midpoint follows from
+\[
+ \bar U=U_*-\frac{\sigma Y}{2}(z,1),
+\]
+and $\tau$ is recovered uniquely from
+\[
+ \bar U=U_0(z)+\tau(-Q(z),P(z)).
+\]
+Thus $z$ parametrizes a regular part of the projection fibre.  If $D_r=0$,
+this parametrization can fail or become non-unique; this is recorded explicitly
+rather than silently choosing a branch.
+
+\subsection{Full reciprocal transition}
+The reciprocal chart must also transform the jump coordinate.  Since
+\[
+ (z,1)=Z^{-1}(1,Z),\qquad Z=1/z,
+\]
+write the reciprocal jump coordinate as $\Upsilon$.  Equality of the physical
+end states on the chart overlap requires
+\[
+ \boxed{\eta=\frac{\tau}{Z^2}},\qquad
+ \boxed{\Upsilon=\frac{Y}{Z}}.
+\]
+Hence the full reciprocal wave coordinates are $(\eta,\Upsilon,Z)$, not
+$(\eta,Y,Z)$ with an unchanged numerical $Y$.  On the characteristic both
+jump coordinates vanish, so the earlier rarefaction calculations on $Y=0$
+are unaffected by this clarification.
+
+With
+\[
+ \widetilde L_{U_*}(Z)=\widetilde P(Z)u_*+\widetilde Q(Z)v_*+\widetilde R(Z),
+ \qquad
+ \widetilde D_r(Z)=\widetilde P(Z)+Z\widetilde Q(Z),
+\]
+the regular reciprocal fibre satisfies
+\[
+ \boxed{\Upsilon=\frac{2\widetilde L_{U_*}(Z)}{\sigma\widetilde D_r(Z)}}.
+\]
+At $Z=0$ the denominator can vanish.  If the numerator vanishes as well, the
+fixed-state constraint may cease to determine $\Upsilon$ uniquely.  This is a
+genuine projective degeneracy of the fibre parametrization and is not replaced
+by a fabricated finite-$z$ point.
+
+\subsection{Characteristic lifts of a state}
+The intersections of either projection fibre with the characteristic satisfy
+$Y=0$ (or $\Upsilon=0$), hence
+\[
+ \mathcal F_-(U_*)\cap\mathcal C
+ =\mathcal F_+(U_*)\cap\mathcal C.
+\]
+In the finite chart their directions are the real roots of
+\[
+ \boxed{L_{U_*}(z)=A_2z^2+A_1z+A_0=0},
+\]
+where
+\begin{align*}
+ A_2&=2b_{20}u_*+b_{11}v_*+b_{10},\\
+ A_1&=(b_{11}-2a_{20})u_*+(2b_{02}-a_{11})v_*+(b_{01}-a_{10}),\\
+ A_0&=-a_{11}u_*-2a_{02}v_*-a_{01}.
+\end{align*}
+These are precisely the projective characteristic directions at $U_*$.  If
+$A_2=0$, the projective root at infinity is represented in the reciprocal chart
+by $Z=0$.  Therefore a state may possess more than one characteristic lift;
+it must not be identified with a unique point of $\mathcal C$ or $\mathcal W$.

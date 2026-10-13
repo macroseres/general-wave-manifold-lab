@@ -1,0 +1,907 @@
+/* Shared drawer controls. Structural geometry belongs to workspace-layout.css. */
+.workspaceLayout {
+ --drawer-control-bg:#191e25;
+ --drawer-control-border:#303944;
+ --drawer-control-text:#edf2f7;
+}
+.workspaceLayout .workspacePanelHeader {
+ box-sizing:border-box;display:flex;align-items:center;justify-content:space-between;
+ position:sticky;top:0;z-index:2;gap:8px;flex:0 0 42px;height:42px;min-height:42px;
+ padding:0 10px;margin:0;border:0;border-bottom:1px solid var(--workspace-stroke);
+ border-radius:0;background:var(--workspace-surface);color:var(--drawer-control-text);
+}
+.workspaceLayout .workspacePanelHeader > strong {min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:12px;font-weight:650;line-height:1.2}
+.workspaceLayout .workspacePanelHeader > .workspacePanelClose {
+ box-sizing:border-box;flex:0 0 30px;display:grid;place-items:center;
+ width:30px;height:30px;padding:0;border:1px solid var(--workspace-stroke);
+ border-radius:6px;background:#202731;color:#e5ebf2;line-height:1;cursor:pointer;
+}
+.workspaceLayout .workspacePanelHeader > .workspacePanelClose svg {width:17px;height:17px;pointer-events:none}
+.workspaceLayout .workspacePanelHeader > .workspacePanelClose:hover {background:#2a3542}
+.workspaceLayout .workspacePanelHeader > .workspacePanelClose:focus-visible,
+.workspaceLayout .workspaceDisclosure > summary:focus-visible {outline:2px solid var(--gwml-accent,#64d2ff);outline-offset:-2px}
+/* The same drawer surface is used by all four workspaces. */
+.workspaceLayout .workspacePanelDrawer {
+ box-sizing:border-box;min-width:0;min-height:0;padding:0;
+ overflow-x:hidden;overflow-y:auto;scrollbar-gutter:stable;background:var(--workspace-surface);
+ border:1px solid var(--workspace-stroke);border-radius:7px;box-shadow:none;
+}
+.workspaceLayout .workspacePanelBody {min-width:0;padding:10px;color:var(--drawer-control-text);font-size:12px}
+/* The drawer is the sole scrolling region; section bodies own spacing. */
+.workspaceLayout .stateToolsDrawerContent {min-width:0;min-height:0;flex:1 1 auto;max-height:none;padding:0;overflow:visible}
+.workspaceLayout .workspacePanelDrawer input:not([type=checkbox]):not([type=range]),
+.workspaceLayout .workspacePanelDrawer select {
+ box-sizing:border-box;min-width:0;max-width:100%;min-height:30px;
+ border:1px solid var(--drawer-control-border);border-radius:5px;
+ background:var(--drawer-control-bg);color:var(--drawer-control-text);font-size:12px;
+}
+.workspaceLayout--3d #three-d-controls .coeff {grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.workspaceLayout--3d #three-d-controls .coeff label {min-width:0;margin:0}
+/* Shared compact toolbars: every action stays on one line. */
+.workspaceToolbar {box-sizing:border-box;min-height:40px;align-items:center;}
+.workspaceToolbarContents {flex:1 1 auto;min-width:0;overflow-x:auto;overflow-y:hidden;}
+.workspaceToolbarActions {display:flex;flex-flow:row nowrap;align-items:center;gap:5px;white-space:nowrap;}
+.workspaceToolbarActions > * {flex-shrink:0;}
+.workspaceToolbarActions label,
+.workspaceToolbarActions .surfaceIsolationControl,
+.workspaceToolbarActions .surfaceOpacityControl {display:inline-flex !important;flex-direction:row !important;align-items:center !important;gap:6px !important;margin:0 !important;white-space:nowrap !important;}
+.workspaceToolbarActions .surfaceOpacityControl input[type=range] {width:72px !important;margin:0 !important;}
+.workspaceToolbarActions select {width:auto;max-width:132px;min-height:29px;}
+.workspaceToolbarActions .cameraMoreViews summary {white-space:nowrap;}
+.workspaceToolbarActions button {white-space:nowrap;}
+.workspaceToolbarToggle {flex:0 0 30px !important;}
+
+
+/* Documentation: the index is the shared drawer body, not a second layout. */
+.workspaceLayout--docs .documentationDrawer > .documentationIndex {
+ position:static;align-self:stretch;display:flex;flex:0 0 auto;flex-direction:column;
+ gap:2px;min-height:0;max-height:none;margin:0;padding:10px;
+ overflow:visible;background:transparent;border:0;
+}
+.workspaceLayout--docs .documentationIndex > a {
+ box-sizing:border-box;display:flex;align-items:center;flex:0 0 auto;
+ min-height:34px;width:100%;margin:0;padding:7px 9px;
+ border:1px solid transparent;border-radius:5px;
+ color:#b8c4d1;font-size:11px;line-height:1.35;text-decoration:none;
+ overflow-wrap:break-word;
+}
+.workspaceLayout--docs .documentationIndex > a:hover,
+.workspaceLayout--docs .documentationIndex > a:focus-visible {background:#202a33;color:#edf2f7}
+.workspaceLayout--docs .documentationIndex > a[aria-current="location"] {border-color:#315849;background:#162b28;color:#eafbf3}
+
+
+
+/* One structural disclosure implementation for every scientific workspace. */
+.workspaceLayout .workspaceDisclosure {flex:0 0 auto;min-width:0;width:100%;margin:0;padding:0;border:0;border-radius:0;background:transparent;box-shadow:none}
+.workspaceLayout .workspaceDisclosure > summary {
+ box-sizing:border-box;display:flex;align-items:center;justify-content:space-between;
+ gap:8px;min-height:40px;margin:0;padding:0 12px;
+ border:0;border-bottom:1px solid var(--workspace-stroke);border-radius:0;
+ background:transparent;color:var(--drawer-control-text);
+ font-size:12px;font-weight:600;line-height:1.35;list-style:none;cursor:pointer;
+}
+.workspaceLayout .workspaceDisclosure > summary::-webkit-details-marker {display:none}
+.workspaceLayout .workspaceDisclosure > summary::after {
+ content:"⌄";position:static;inset:auto;display:block;flex:0 0 auto;
+ font-size:14px;font-weight:400;line-height:1;color:#b8c8d7;
+ transform:rotate(0);transition:transform .15s ease;
+}
+.workspaceLayout .workspaceDisclosure[open] > summary::after {transform:rotate(180deg)}
+.workspaceLayout .workspaceDisclosure > .sidebarSectionBody,
+.workspaceLayout .workspaceDisclosure > .physicalToolsDrawerContent,
+.workspaceLayout .workspaceDisclosure > .statePanelSectionBody {margin:0;padding:10px;border:0;background:transparent}
+
+/* The physical visualization selector shares the disclosure body geometry. */
+.workspaceLayout--physical .physicalVisualizationSection > .sidebarSectionBody > .workspacePanelBody {padding:0}
+
+/* Inspection uses the same single scrolling surface as the other drawers. */
+.workspaceLayout--states .stateRightPanel.workspacePanelDrawer > .stateRightDrawer,
+.workspaceLayout--3d #three-d-inspection.workspacePanelDrawer > .continuousSidebarPanel {min-height:0;overflow:visible}
+
+/* Inspector and controls share the exact same drawer geometry. */
+.workspaceLayout--3d #three-d-controls > #three-d-inspection.workspacePanelDrawer {
+  width:100%;height:100%;margin:0;padding:0;
+  border:1px solid var(--workspace-stroke);border-radius:7px;
+  background:var(--workspace-surface);
+}
+.workspaceLayout--3d #three-d-inspection > .inspectorIntro {padding:10px 12px}
+
+/* 3D surface controls: grouping without affecting scientific state or the rail. */
+.workspaceLayout--3d .surfaceControls{display:flex;flex-direction:column;gap:0;padding:0}
+.workspaceLayout--3d .surfaceControlGroup{display:flex;flex-direction:column;gap:8px;padding:12px 10px;border-bottom:1px solid var(--workspace-stroke)}
+.workspaceLayout--3d .surfaceControlHeading{display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:11px;font-weight:700;color:var(--drawer-control-text)}
+.workspaceLayout--3d .surfaceControlHeading span{font-weight:500;color:var(--muted,#9ca6b2)}
+.workspaceLayout--3d .surfaceControlHint{display:block;line-height:1.4;color:var(--muted,#9ca6b2)}
+.workspaceLayout--3d .surfaceAdvanced{border:0;margin:0}
+.workspaceLayout--3d .surfaceAdvanced>summary{cursor:pointer;padding:12px 10px;font-size:11px;font-weight:650;list-style:none}
+.workspaceLayout--3d .surfaceAdvanced>summary::-webkit-details-marker{display:none}
+.workspaceLayout--3d .surfaceAdvanced>summary::after{content:'⌄';float:right}
+.workspaceLayout--3d .surfaceAdvanced[open]>summary::after{transform:rotate(180deg)}
+.workspaceLayout--3d .surfaceAdvancedBody{display:flex;flex-direction:column;gap:10px;padding:0 10px 12px}
+
+/* Surface list: symbol : name | color swatch | visibility toggle. */
+.workspaceLayout--3d .surfaceObjectRow{display:grid;grid-template-columns:minmax(0,1fr) 22px 32px;align-items:center;column-gap:9px;min-height:34px;margin:0;padding:2px 0;font-size:11px;cursor:pointer}
+.workspaceLayout--3d .surfaceObjectName{display:flex;align-items:baseline;gap:5px;min-width:0;white-space:normal}
+.workspaceLayout--3d .surfaceObjectSymbol{font-weight:700;white-space:nowrap}
+.workspaceLayout--3d .surfaceObjectColon{color:var(--muted,#9ca6b2)}
+.workspaceLayout--3d .surfaceObjectSwatch{display:block;width:19px;height:11px;border:1px solid rgba(255,255,255,.3);border-radius:3px;box-sizing:border-box}
+.workspaceLayout--3d .surfaceObjectRow>input[type="checkbox"]{justify-self:end;margin:0}
+
+/* Surface visibility: compact color marker immediately beside a real eye icon. */
+.workspaceLayout--3d .surfaceObjectRow {
+  grid-template-columns:minmax(0,1fr) 7px 27px;
+  column-gap:2px;
+}
+.workspaceLayout--3d .surfaceObjectSwatch {
+  width:7px;height:27px;border-radius:2px;
+  border:1px solid rgba(255,255,255,.25);
+  justify-self:end;align-self:center;
+}
+.workspaceLayout--3d .surfaceObjectRow > input[type="checkbox"] {
+  -webkit-appearance:none;appearance:none;
+  display:block;box-sizing:border-box;
+  width:27px;height:27px;min-width:27px;min-height:27px;
+  padding:0;margin:0;justify-self:end;
+  border:1px solid #346d5b;border-radius:5px;
+  background-color:#10251f;
+  background-repeat:no-repeat;background-position:center;background-size:17px 17px;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%237e9c91' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6S2 12 2 12Z'/%3E%3Ccircle cx='12' cy='12' r='3'/%3E%3Cpath d='M3 3l18 18'/%3E%3C/svg%3E");
+  cursor:pointer;
+}
+.workspaceLayout--3d .surfaceObjectRow > input[type="checkbox"]:checked {
+  border-color:#237b58;background-color:#102d22;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%2355dca1' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6S2 12 2 12Z'/%3E%3Ccircle cx='12' cy='12' r='3'/%3E%3C/svg%3E");
+}
+.workspaceLayout--3d .surfaceObjectRow > input[type="checkbox"]:focus-visible {
+  outline:2px solid #87cefa;outline-offset:2px;
+}
+
+/* Shared visibility row for remaining 3D and 2D scientific toggles.
+   Explicit class avoids styling ordinary checkboxes used as form inputs. */
+.workspaceLayout .scientificVisibilityRow {
+  display:grid;grid-template-columns:minmax(0,1fr) 7px 27px;
+  column-gap:2px;align-items:center;min-height:34px;
+  padding:2px 0;cursor:pointer;font-size:11px;
+}
+.workspaceLayout .scientificVisibilityRow::before {
+  content:"";grid-column:2;grid-row:1;
+  box-sizing:border-box;width:7px;height:27px;
+  border:1px solid rgba(255,255,255,.25);border-radius:2px;
+  background:var(--visibility-color,#8da5b5);
+}
+.workspaceLayout .scientificVisibilityRow > input[type="checkbox"] {
+  grid-column:3;grid-row:1;justify-self:end;
+  appearance:none;-webkit-appearance:none;box-sizing:border-box;
+  width:27px;height:27px;min-width:27px;min-height:27px;
+  padding:0;margin:0;border:1px solid #346d5b;border-radius:5px;
+  background:#10251f center / 17px 17px no-repeat;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%237e9c91' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6S2 12 2 12Z'/%3E%3Ccircle cx='12' cy='12' r='3'/%3E%3Cpath d='M3 3l18 18'/%3E%3C/svg%3E");
+  cursor:pointer;
+}
+.workspaceLayout .scientificVisibilityRow > input[type="checkbox"]:checked {
+  border-color:#237b58;background-color:#102d22;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2355dca1' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6S2 12 2 12Z'/%3E%3Ccircle cx='12' cy='12' r='3'/%3E%3C/svg%3E");
+}
+.workspaceLayout .scientificVisibilityRow > input[type="checkbox"]:focus-visible {outline:2px solid #87cefa;outline-offset:2px}
+
+/* 2D inspected-point visibility uses the same marker and eye geometry. */
+.workspaceLayout--states .stateInspectionToggle label.toggle {display:grid;grid-template-columns:minmax(0,1fr) 7px 27px;column-gap:2px;align-items:center}
+.workspaceLayout--states .stateInspectionToggle label.toggle::before {content:"";grid-column:2;grid-row:1;width:7px;height:27px;border-radius:2px;background:#8da5b5}
+.workspaceLayout--states .stateInspectionToggle label.toggle > input[type="checkbox"] {grid-column:3;grid-row:1;appearance:none;width:27px;height:27px;margin:0;border:1px solid #346d5b;border-radius:5px;background:#10251f center / 17px 17px no-repeat;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%237e9c91' stroke-width='1.8' stroke-linecap='round'%3E%3Cpath d='M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6S2 12 2 12Z'/%3E%3Ccircle cx='12' cy='12' r='3'/%3E%3Cpath d='M3 3l18 18'/%3E%3C/svg%3E")}
+.workspaceLayout--states .stateInspectionToggle label.toggle > input[type="checkbox"]:checked {background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2355dca1' stroke-width='1.8' stroke-linecap='round'%3E%3Cpath d='M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6S2 12 2 12Z'/%3E%3Ccircle cx='12' cy='12' r='3'/%3E%3C/svg%3E")}
+
+/* Curvas: label à esquerda, marcador vertical e olho agrupados à direita. */
+.workspaceLayout--3d .curveObjectRow {
+  display:grid;grid-template-columns:minmax(0,1fr) 7px 27px;
+  gap:2px;align-items:center;min-height:34px;padding:2px 0;
+  font-size:11px;cursor:pointer;
+}
+.workspaceLayout--3d .curveObjectName {grid-column:1;min-width:0;line-height:1.3}
+.workspaceLayout--3d .curveObjectColor {
+  grid-column:2;width:7px;height:27px;box-sizing:border-box;
+  background:var(--visibility-color,#8da5b5);border-radius:2px;
+  border:1px solid rgba(255,255,255,.2);
+}
+.workspaceLayout--3d .curveObjectRow > input[type="checkbox"] {
+  grid-column:3;appearance:none;-webkit-appearance:none;box-sizing:border-box;
+  width:27px;height:27px;min-width:27px;min-height:27px;margin:0;padding:0;
+  border:1px solid #346d5b;border-radius:5px;cursor:pointer;
+  background:#10251f center / 17px 17px no-repeat;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%237e9c91' stroke-width='1.8' stroke-linecap='round'%3E%3Cpath d='M2 12s3.5-6 10-6 10 6-3.5 6-10 6S2 12 2 12Z'/%3E%3Ccircle cx='12' cy='12' r='3'/%3E%3Cpath d='M3 3l18 18'/%3E%3C/svg%3E");
+}
+.workspaceLayout--3d .curveObjectRow > input[type="checkbox"]:checked {
+  border-color:#237b58;background-color:#102d22;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2355dca1' stroke-width='1.8' stroke-linecap='round'%3E%3Cpath d='M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6S2 12 2 12Z'/%3E%3Ccircle cx='12' cy='12' r='3'/%3E%3C/svg%3E");
+}
+.workspaceLayout--3d .curveObjectRow > input[type="checkbox"]:focus-visible {outline:2px solid #87cefa;outline-offset:2px}
+
+/* Campos uses the same symbol–name / color / eye rows as Curvas. */
+.workspaceLayout--3d .fieldObjectList .fieldObjectGroupTitle {
+  margin:12px 0 5px;padding:0 0 6px;
+  border-bottom:1px solid var(--workspace-stroke);
+  color:var(--drawer-control-text);font-size:11px;font-weight:650;
+}
+.workspaceLayout--3d .fieldObjectList .fieldObjectGroupTitle:first-child {margin-top:2px}
+
+/* Espaço de parâmetros: controles científicos compactos, responsivos. */
+.parametersWorkspace{width:100%;height:100%;overflow:auto;padding:16px;box-sizing:border-box}
+.parametersPanel{border:1px solid var(--border-color,rgba(140,150,165,.25));border-radius:8px;padding:16px;min-width:0}
+.parametersPanel h2{font-size:1rem;margin:0 0 12px}
+.parametersPanel p{font-size:.85rem;line-height:1.5}
+.parametersCoefficients,.parametersMatrix{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:10px 0}
+.parametersPanel label{display:flex;flex-direction:column;gap:4px;font-size:.8rem;min-width:0}
+.parametersPanel input{width:100%;box-sizing:border-box;min-width:0}
+.parametersPanel button{margin:4px 6px 4px 0}
+
+/* Diagrama de parâmetros: escala uniforme e interação por célula. */
+.parametersDiagramPanel{min-width:0}
+.parameterDiagram{display:block;width:min(100%,480px);height:auto;margin:10px auto}
+.parameterDiagram rect[fill]:not([fill="none"]){cursor:pointer}
+.parameterDiagramLegend{display:flex;flex-wrap:wrap;gap:8px 12px;margin:10px 0;font-size:12px}
+.parameterDiagramLegend span{display:inline-flex;align-items:center;gap:5px}
+.parameterDiagramLegend i{width:10px;height:10px;border-radius:2px;display:inline-block}
+.parametersDiagramActions{display:flex;gap:8px;flex-wrap:wrap}
+
+/* Documentation: grouped, searchable index. */
+.workspaceLayout--docs .documentationSearch{display:flex;align-items:center;gap:4px;margin:10px 10px 2px;padding:0 8px;border:1px solid var(--workspace-stroke);border-radius:6px;min-height:34px}
+.workspaceLayout--docs .documentationSearch input{flex:1;min-width:0;border:0;outline:0;background:transparent;color:inherit;font:inherit;font-size:12px}
+.workspaceLayout--docs .documentationSearch button{border:0;background:transparent;color:inherit;cursor:pointer;font-size:19px}
+.workspaceLayout--docs .documentationIndexGroup{display:flex;flex-direction:column;gap:2px}
+.workspaceLayout--docs .documentationGroupToggle{display:flex;align-items:center;gap:8px;width:100%;min-height:33px;padding:7px 8px;border:0;border-radius:5px;background:transparent;color:inherit;text-align:left;font-size:11px;font-weight:650;cursor:pointer}
+.workspaceLayout--docs .documentationGroupToggle:hover{background:var(--workspace-stroke)}
+.workspaceLayout--docs .documentationGroupToggle:disabled{cursor:default}
+.workspaceLayout--docs .documentationGroupToggle small{margin-left:auto;opacity:.55;font-size:10px}
+.workspaceLayout--docs .documentationIndexGroup > a{display:block;padding:7px 8px 7px 23px;border-left:2px solid transparent;border-radius:4px;color:inherit;opacity:.82;text-decoration:none;font-size:11px;line-height:1.4}
+.workspaceLayout--docs .documentationIndexGroup > a:hover{background:var(--workspace-stroke);opacity:1}
+.workspaceLayout--docs .documentationIndexGroup > a[aria-current="location"]{border-left-color:#51b98b;background:rgba(81,185,139,.12);opacity:1}
+.workspaceLayout--docs .documentationNoResults{padding:8px;font-size:12px;opacity:.7}
+.workspaceLayout--docs .documentationArticle section{scroll-margin-top:20px}
+
+/* Documentação: glossário e busca na barra de ferramentas existente. */
+.workspaceLayout--docs .documentationGlossary{display:flex;flex-direction:column;gap:3px}
+.workspaceLayout--docs .documentationGlossary .documentationSearch{margin:6px 2px 10px}
+.workspaceLayout--docs .documentationGlossary>button{display:flex;align-items:center;gap:8px;padding:9px 8px;border:0;border-radius:5px;background:transparent;color:inherit;text-align:left;cursor:pointer;font-size:11px}
+.workspaceLayout--docs .documentationGlossary>button:hover{background:var(--workspace-stroke)}
+.workspaceLayout--docs .documentationGlossary>button code{min-width:30px;color:#51b98b;font-size:11px}
+.workspaceLayout--docs .documentationPanelHint{font-size:11px;line-height:1.5;opacity:.65;margin:8px}
+
+/* Documentation: reading hierarchy, contextual outline and semantic references. */
+.workspaceLayout--docs .documentationReadingLayout{display:grid;grid-template-columns:minmax(0,1fr) 212px;align-items:start;gap:18px;max-width:1420px;margin:0 auto;padding:0 24px}
+.workspaceLayout--docs .documentationReadingLayout .documentationArticle{min-width:0;max-width:960px;padding:24px 0 64px;margin:0}
+.workspaceLayout--docs .documentationArticle section{padding:0 0 30px;margin:0 0 32px;border-bottom:1px solid var(--workspace-stroke)}
+.workspaceLayout--docs .documentationArticle section h3{font-size:19px;line-height:1.35;margin:6px 0 16px}
+.workspaceLayout--docs .documentationSectionContent{line-height:1.75}
+.workspaceLayout--docs .documentationSectionContent p{margin:10px 0 14px}
+.workspaceLayout--docs .documentationSectionMeta{display:flex;align-items:center;justify-content:space-between;gap:12px;color:var(--workspace-muted,#94a3b8);font-size:10px}
+.workspaceLayout--docs .documentationSectionMeta button{padding:5px 7px;border:1px solid var(--workspace-stroke);border-radius:5px;background:transparent;color:inherit;cursor:pointer;font-size:10px}
+.workspaceLayout--docs .documentationGlossarySymbol{display:inline-flex;min-width:45px;color:#51b98b}
+.workspaceLayout--docs .documentationSearchCount{padding:4px 8px;font-size:10px;opacity:.7}
+
+/* Mathematical reader: quiet cards for statements; proofs remain in the text flow. */
+.workspaceLayout--docs .documentationStatement,
+.workspaceLayout--docs .documentationSectionContent .documentationDefinition,
+.workspaceLayout--docs .documentationSectionContent .documentationNote,
+.workspaceLayout--docs .documentationSectionContent .documentationWarning {
+  margin: 16px 0;
+  padding: 14px 16px;
+  border: 1px solid var(--workspace-stroke, rgba(150, 160, 175, .18));
+  border-radius: 7px;
+  background: rgba(125, 145, 155, .065);
+  box-shadow: none;
+}
+.workspaceLayout--docs .documentationProof {
+  margin: 12px 0 20px;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  line-height: 1.75;
+}
+
+/* Referência matemática: enunciados e demonstrações */
+.documentationStatementHeading{font-size:.92rem;margin-bottom:9px;line-height:1.5}
+.documentationStatementHeading strong{font-weight:700}
+.documentationStatement p:last-child,.documentationProof p:last-child{margin-bottom:0}
+.documentationProof>strong{font-style:italic}
+.documentationQed{float:right;margin-left:12px;font-weight:700}
+
+/* Documentation: chapter-first mathematical reading sequence. */
+.workspaceLayout--docs .documentationChapterHeader{padding:22px 0 15px;margin:20px 0 12px;border-bottom:1px solid var(--workspace-stroke)}
+.workspaceLayout--docs .documentationChapter:first-child .documentationChapterHeader{margin-top:0}
+.workspaceLayout--docs .documentationChapterHeader>span{font-size:10px;font-weight:650;letter-spacing:.09em;text-transform:uppercase;color:#51b98b}
+.workspaceLayout--docs .documentationChapterHeader h2{margin:7px 0;font-size:22px;line-height:1.25}
+.workspaceLayout--docs .documentationChapterHeader p{margin:0;color:var(--workspace-muted,#94a3b8);font-size:12px;line-height:1.6}
+.workspaceLayout--docs .documentationPager{display:flex;justify-content:space-between;gap:12px;margin-top:20px;padding-top:12px;border-top:1px solid var(--workspace-stroke)}
+.workspaceLayout--docs .documentationPager button{max-width:48%;padding:8px 10px;border:1px solid var(--workspace-stroke);border-radius:6px;background:transparent;color:inherit;cursor:pointer;font-size:11px;text-align:left}
+.workspaceLayout--docs .documentationPager button:last-child{text-align:right}
+.workspaceLayout--docs .documentationPager button:hover{border-color:#51b98b}
+
+/* Complementary mathematical notes: preserve the former reference without repeating it in the chapter index. */
+.documentationSupplement{margin:1rem 0;border:1px solid var(--border-color,rgba(150,160,175,.25));border-radius:7px;overflow:hidden;background:rgba(125,140,160,.045)}
+.documentationSupplement>summary{padding:.7rem .9rem;cursor:pointer;font-weight:600;font-size:.86rem;list-style-position:inside}
+.documentationSupplement[open]>summary{border-bottom:1px solid rgba(150,160,175,.2)}
+.documentationSupplementContent{padding:.8rem 1rem}
+.documentationSupplementContent>:first-child{margin-top:0}
+
+
+/* Scientific reader: compact index, consistent typesetting and one reading column. */
+.workspaceLayout--docs .documentationReadingLayout{display:block;max-width:1020px;margin:0 auto;padding:0 clamp(20px,3vw,46px)}
+.workspaceLayout--docs .documentationReadingLayout .documentationArticle{max-width:100%;padding:18px 0 64px}
+.workspaceLayout--docs .documentationChapterHeader{display:block;padding:10px 0 18px;margin:22px 0 24px;border-bottom:1px solid var(--workspace-stroke);background:transparent}
+.workspaceLayout--docs .documentationChapter:first-child .documentationChapterHeader{margin-top:0}
+.workspaceLayout--docs .documentationChapterHeader>span{display:block;font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#62b99b}
+.workspaceLayout--docs .documentationChapterHeader h2{font-size:clamp(24px,2.3vw,31px);letter-spacing:-.025em;line-height:1.2;margin:7px 0 7px}
+.workspaceLayout--docs .documentationChapterHeader p{font-size:13px;line-height:1.6;max-width:75ch;margin:0;color:var(--workspace-muted,#94a3b8)}
+.workspaceLayout--docs .documentationArticle section{margin:0 0 30px;padding:0 0 22px;scroll-margin-top:22px}
+.workspaceLayout--docs .documentationArticle section h3{font-size:clamp(18px,1.55vw,22px);letter-spacing:-.015em;line-height:1.35;margin:7px 0 14px}
+.workspaceLayout--docs .documentationSectionMeta{font-size:11px}
+.workspaceLayout--docs .documentationSectionMeta button{font-size:11px;border-color:transparent}
+.workspaceLayout--docs .documentationSectionMeta button:hover{background:rgba(140,160,170,.09)}
+.workspaceLayout--docs .documentationSectionContent{font-size:14px;line-height:1.75}
+.workspaceLayout--docs .documentationSectionContent p,.workspaceLayout--docs .documentationArticle p{font-size:14px;line-height:1.75}
+.workspaceLayout--docs .documentationSectionContent .katex-display{max-width:100%;margin:12px 0;padding:6px 0;overflow-x:auto;overflow-y:hidden}
+.workspaceLayout--docs .documentationStatementHeading{font-size:13px;margin-bottom:7px}
+.workspaceLayout--docs .documentationPager{margin-top:20px;padding-top:12px}
+.workspaceLayout--docs .documentationPager button{font-size:11px;padding:9px 11px;border-radius:6px}
+/* Keep the index independent from the article scroll; avoid a second scrollbar inside the drawer. */
+.workspaceLayout--docs .documentationDrawer{min-height:0;overflow-y:auto;overscroll-behavior:contain;scrollbar-width:thin}
+.workspaceLayout--docs .documentationDrawer>.documentationIndex{gap:0;padding:6px 8px 14px}
+.workspaceLayout--docs .documentationIndexGroup{gap:0}
+.workspaceLayout--docs .documentationGroupToggle{min-height:29px;padding:5px 7px;gap:6px;font-size:10.5px;line-height:1.25}
+.workspaceLayout--docs .documentationIndexGroup>a{padding:5px 7px 5px 19px;font-size:10.5px;line-height:1.35}
+.workspaceLayout--docs .documentationIndexGroup--current>.documentationGroupToggle{color:#d6f4e5}
+.workspaceLayout--docs .documentationIndexGroup>a[aria-current="location"]{color:#eafbf3}
+@media(max-width:760px){.workspaceLayout--docs .documentationReadingLayout{padding:0 16px}.workspaceLayout--docs .documentationChapterHeader h2{font-size:24px}.workspaceLayout--docs .documentationSectionContent .katex-display{font-size:.92em}}
+
+/* Unified keyboard and scrolling treatment for every scientific drawer. */
+.workspaceLayout .workspacePanelDrawer {overscroll-behavior:contain;scrollbar-width:thin;scrollbar-color:#465461 transparent}
+.workspaceLayout .workspacePanelDrawer:focus-within {scroll-behavior:auto}
+.workspaceLayout .workspacePanelHeader > .workspacePanelClose:active {background:#334153}
+@media (prefers-reduced-motion: reduce) {
+  .workspaceLayout .workspaceDisclosure > summary::after {transition:none}
+}
+
+/* Etapa 44 — Estados uses the same disclosure geometry as Físico/Variedade.
+   Keep scientific controls untouched; unify only section presentation. */
+.workspaceLayout--states .stateToolsDrawer .statePanelSection.workspaceDisclosure {
+  min-width:0;
+}
+.workspaceLayout--states .stateToolsDrawer .statePanelSection.workspaceDisclosure > summary {
+  width:100%;
+  min-height:40px;
+}
+.workspaceLayout--states .stateToolsDrawer .statePanelSection.workspaceDisclosure > .statePanelSectionBody {
+  padding:10px;
+  min-width:0;
+}
+/* Navigation and disclosure rows share the same restrained interaction feedback. */
+.workspaceLayout .workspaceDisclosure > summary:hover {
+  background:rgba(135,160,175,.07);
+}
+.workspaceLayout .workspaceDisclosure > summary:focus-visible,
+.workspaceLayout--docs .documentationGroupToggle:focus-visible,
+.workspaceLayout--docs .documentationIndex a:focus-visible {
+  outline:2px solid #65c5a1;
+  outline-offset:-2px;
+}
+.workspaceLayout .workspacePanelDrawer :is(input,select,textarea):focus-visible {
+  outline:2px solid #65c5a1;
+  outline-offset:1px;
+}
+@media (prefers-reduced-motion:reduce) {
+  .workspaceLayout .workspaceDisclosure > summary,
+  .workspaceLayout .workspacePanelDrawer * {scroll-behavior:auto;}
+}
+
+/* Etapa 45 — densidade e alinhamento compartilhados dos formulários dos drawers.
+   Não altera dimensões dos gráficos, estados científicos ou a barra de navegação. */
+.workspaceLayout .workspacePanelDrawer {
+  --drawer-field-height:32px;
+  --drawer-field-gap:6px;
+}
+.workspaceLayout .workspacePanelDrawer :is(
+  .riemannCoordinates,
+  .stateStarCoordinates,
+  .stateViewportFieldGrid
+) {column-gap:8px;row-gap:10px;min-width:0;}
+.workspaceLayout .workspacePanelDrawer :is(
+  .riemannCoordinates,
+  .stateStarCoordinates,
+  .stateViewportFieldGrid
+) > label {min-width:0;gap:5px;line-height:1.35;color:#c6d1dc;}
+.workspaceLayout .workspacePanelDrawer :is(
+  .riemannCoordinates,
+  .stateStarCoordinates,
+  .stateViewportFieldGrid
+) input[type="number"] {
+  width:100%;height:var(--drawer-field-height);min-height:var(--drawer-field-height);
+  padding:5px 8px;font-size:12px;font-variant-numeric:tabular-nums;
+}
+.workspaceLayout--physical .physicalToolsDrawerContent {
+  display:grid;grid-template-columns:minmax(0,1fr);gap:10px;
+}
+.workspaceLayout--physical .physicalToolsDrawerContent > label {
+  display:flex;flex-direction:column;align-items:stretch;gap:var(--drawer-field-gap);
+  min-width:0;margin:0;font-size:11px;line-height:1.4;color:#c6d1dc;
+}
+.workspaceLayout--physical .physicalToolsDrawerContent > label > input[type="number"] {
+  width:100%;height:var(--drawer-field-height);padding:5px 8px;
+  font-variant-numeric:tabular-nums;
+}
+.workspaceLayout .workspacePanelDrawer :is(.statePanelHint,.surfaceControlHint) {
+  line-height:1.5;overflow-wrap:break-word;
+}
+.workspaceLayout .workspacePanelDrawer :is(.stateViewportFit,.riemannApply,.stateStarEditor > button) {
+  min-height:32px;
+}
+@media (prefers-reduced-motion:reduce) {
+  .workspaceLayout .workspacePanelDrawer :is(input,select,button) {transition:none;}
+}
+
+
+/* Etapa 46 — hierarquia dos controles 3D, sem alterar a cena ou os estados.
+   Os grupos continuam usando o drawer e os disclosures compartilhados. */
+.workspaceLayout--3d #three-d-controls .workspacePanelSection > .sidebarSectionBody {
+  min-width:0;
+}
+.workspaceLayout--3d #three-d-controls .coeff {
+  align-items:start;
+  column-gap:8px;
+  row-gap:10px;
+}
+.workspaceLayout--3d #three-d-controls .coeff > label {
+  display:flex;
+  flex-direction:column;
+  align-items:stretch;
+  gap:5px;
+  min-width:0;
+  color:#c6d1dc;
+  font-size:11px;
+  line-height:1.4;
+}
+.workspaceLayout--3d #three-d-controls .coeff input[type="number"] {
+  box-sizing:border-box;
+  width:100%;
+  min-width:0;
+  height:var(--drawer-field-height,32px);
+  padding:5px 8px;
+  font-variant-numeric:tabular-nums;
+}
+.workspaceLayout--3d #three-d-controls .surfaceControlGroup {
+  gap:9px;
+  padding:12px 10px;
+}
+.workspaceLayout--3d #three-d-controls .surfaceControlHeading {
+  min-width:0;
+  line-height:1.4;
+}
+.workspaceLayout--3d #three-d-controls .surfaceObjectRow,
+.workspaceLayout--3d #three-d-controls .scientificVisibilityRow {
+  min-width:0;
+  min-height:36px;
+  gap:4px;
+  line-height:1.4;
+}
+.workspaceLayout--3d #three-d-controls .surfaceObjectName {
+  min-width:0;
+  overflow-wrap:anywhere;
+}
+.workspaceLayout--3d #three-d-controls .surfaceAdvanced > summary {
+  box-sizing:border-box;
+  min-height:40px;
+  border-bottom:1px solid var(--workspace-stroke);
+  line-height:1.35;
+}
+.workspaceLayout--3d #three-d-controls .surfaceAdvanced > summary:focus-visible {
+  outline:2px solid var(--gwml-accent,#64d2ff);
+  outline-offset:-2px;
+}
+.workspaceLayout--3d #three-d-controls .surfaceAdvancedBody {
+  min-width:0;
+  gap:10px;
+  padding:10px;
+}
+@media (prefers-reduced-motion:reduce) {
+  .workspaceLayout--3d #three-d-controls .surfaceAdvanced > summary::after {
+    transition:none;
+  }
+}
+
+
+/* Etapa 50 — Chave de cor: uma única linguagem visual para visibilidade.
+   Mantém os inputs nativos e handlers React; apenas a apresentação muda. */
+.workspaceLayout--3d .surfaceObjectRow,
+.workspaceLayout--3d .curveObjectRow,
+.workspaceLayout .scientificVisibilityRow {
+  grid-template-columns:minmax(0,1fr) 9px 28px;
+  column-gap:8px;
+  min-height:32px;
+  align-items:center;
+}
+.workspaceLayout--3d .surfaceObjectSwatch,
+.workspaceLayout--3d .curveObjectColor,
+.workspaceLayout .scientificVisibilitySwatch {
+  width:9px;height:9px;min-width:9px;
+  border:0;border-radius:50%;
+  justify-self:center;align-self:center;
+  box-shadow:0 0 0 1px rgba(255,255,255,.16);
+}
+.workspaceLayout--3d .surfaceObjectRow > input[type="checkbox"],
+.workspaceLayout--3d .curveObjectRow > input[type="checkbox"],
+.workspaceLayout .scientificVisibilityRow > input[type="checkbox"] {
+  width:28px;height:28px;min-width:28px;min-height:28px;
+  border:1px solid transparent;border-radius:6px;
+  background-color:transparent;
+  justify-self:end;
+}
+.workspaceLayout--3d .surfaceObjectRow > input[type="checkbox"]:checked,
+.workspaceLayout--3d .curveObjectRow > input[type="checkbox"]:checked,
+.workspaceLayout .scientificVisibilityRow > input[type="checkbox"]:checked {
+  border-color:transparent;background-color:transparent;
+}
+.workspaceLayout--3d .surfaceObjectRow > input[type="checkbox"]:hover,
+.workspaceLayout--3d .curveObjectRow > input[type="checkbox"]:hover,
+.workspaceLayout .scientificVisibilityRow > input[type="checkbox"]:hover {
+  background-color:rgba(93,133,122,.13);
+}
+/* O estado oculto mantém o marcador de cor para identificar o objeto. */
+.workspaceLayout--3d .surfaceObjectRow:has(input:not(:checked)) .surfaceObjectName,
+.workspaceLayout--3d .curveObjectRow:has(input:not(:checked)) .curveObjectName,
+.workspaceLayout .scientificVisibilityRow:has(input:not(:checked)) .scientificVisibilityName {
+  opacity:.68;
+}
+/* Estados 2D: texto | chave de cor | olho, sem botão textual largo. */
+.workspaceLayout--states .stateVisibilityRow {
+  display:grid;grid-template-columns:minmax(0,1fr) 9px 28px;
+  align-items:center;column-gap:8px;min-height:36px;
+}
+.workspaceLayout--states .stateVisibilityRow > .stateSwitchCopy {min-width:0;grid-column:1}
+.workspaceLayout--states .stateVisibilityRow::before {
+  content:"";grid-column:2;grid-row:1;
+  width:9px;height:9px;border-radius:50%;
+  background:var(--visibility-color,#8da5b5);
+  box-shadow:0 0 0 1px rgba(255,255,255,.16);
+  justify-self:center;
+}
+.workspaceLayout--states .stateVisibilityRow > .scientificVisibilityButton {
+  grid-column:3;grid-row:1;justify-self:end;
+  width:28px;height:28px;min-width:28px;min-height:28px;
+  padding:0;border:1px solid transparent;border-radius:6px;
+  background:transparent;color:#7e9c91;
+}
+.workspaceLayout--states .stateVisibilityRow > .scientificVisibilityButton[aria-pressed="true"] {
+  color:#55dca1;border-color:transparent;background:transparent;
+}
+.workspaceLayout--states .stateVisibilityRow > .scientificVisibilityButton:hover {background:rgba(93,133,122,.13)}
+.workspaceLayout--states .stateVisibilityRow > .scientificVisibilityButton > span {display:none}
+.workspaceLayout--states .stateVisibilityRow > .scientificVisibilityButton > svg {flex:none}
+.workspaceLayout--states .stateVisibilityRow:has(.scientificVisibilityButton[aria-pressed="false"]) .stateSwitchCopy {opacity:.68}
+@media (prefers-reduced-motion:reduce) {
+  .workspaceLayout--states .stateVisibilityRow > .scientificVisibilityButton {transition:none}
+}
+
+
+/* Etapa 51 — chave de cor real, inclusive em superficies, curvas e campos.
+   A regra anterior mudava a grade, mas deixava o marcador vertical e o
+   controle quadrado definidos em seletores mais especificos. */
+.workspaceLayout.workspaceLayout--3d #three-d-controls .surfaceObjectRow,
+.workspaceLayout.workspaceLayout--3d #three-d-controls .curveObjectRow {
+  display:grid;
+  grid-template-columns:minmax(0,1fr) 12px 28px;
+  align-items:center;
+  column-gap:9px;
+  min-height:34px;
+}
+.workspaceLayout.workspaceLayout--3d #three-d-controls .surfaceObjectSwatch,
+.workspaceLayout.workspaceLayout--3d #three-d-controls .curveObjectColor {
+  display:block;
+  grid-column:2;
+  width:9px;height:9px;min-width:9px;min-height:9px;
+  padding:0;margin:0;
+  border-radius:50%;
+  border:0;
+  justify-self:center;align-self:center;
+  box-shadow:0 0 0 1px rgba(255,255,255,.17);
+}
+.workspaceLayout.workspaceLayout--3d #three-d-controls .surfaceObjectRow > input[type="checkbox"],
+.workspaceLayout.workspaceLayout--3d #three-d-controls .curveObjectRow > input[type="checkbox"] {
+  grid-column:3;
+  -webkit-appearance:none;appearance:none;
+  box-sizing:border-box;
+  width:28px;height:28px;min-width:28px;min-height:28px;
+  padding:0;margin:0;
+  border:1px solid transparent;
+  border-radius:6px;
+  background-color:transparent;
+  background-position:center;
+  background-repeat:no-repeat;
+  background-size:17px 17px;
+  justify-self:end;
+  cursor:pointer;
+}
+.workspaceLayout.workspaceLayout--3d #three-d-controls .surfaceObjectRow > input[type="checkbox"]:checked,
+.workspaceLayout.workspaceLayout--3d #three-d-controls .curveObjectRow > input[type="checkbox"]:checked {
+  border-color:transparent;
+  background-color:transparent;
+}
+.workspaceLayout.workspaceLayout--3d #three-d-controls .surfaceObjectRow > input[type="checkbox"]:hover,
+.workspaceLayout.workspaceLayout--3d #three-d-controls .curveObjectRow > input[type="checkbox"]:hover {
+  background-color:rgba(93,133,122,.13);
+}
+.workspaceLayout.workspaceLayout--states .stateVisibilityRow {
+  display:grid;
+  grid-template-columns:minmax(0,1fr) 12px 28px;
+  column-gap:9px;
+  align-items:center;
+}
+.workspaceLayout.workspaceLayout--states .stateVisibilityRow::before {
+  grid-column:2;grid-row:1;
+  width:9px;height:9px;
+  border-radius:50%;
+}
+.workspaceLayout.workspaceLayout--states .stateVisibilityRow > .scientificVisibilityButton {
+  display:inline-flex;
+  grid-column:3;grid-row:1;
+  justify-content:center;align-items:center;
+  width:28px;height:28px;min-width:28px;min-height:28px;
+  padding:0;
+  border:1px solid transparent;
+  background:transparent;
+}
+.workspaceLayout.workspaceLayout--states .stateVisibilityRow > .scientificVisibilityButton[aria-pressed="true"] {
+  border-color:transparent;
+  background:transparent;
+  color:#55dca1;
+}
+.workspaceLayout.workspaceLayout--states .stateVisibilityRow > .scientificVisibilityButton[aria-pressed="false"] {color:#81949c}
+.workspaceLayout.workspaceLayout--states .stateVisibilityRow > .scientificVisibilityButton:hover {background:rgba(93,133,122,.13)}
+.workspaceLayout.workspaceLayout--states .stateVisibilityRow > .scientificVisibilityButton > span {display:none}
+.workspaceLayout.workspaceLayout--states .stateVisibilityRow > .scientificVisibilityButton > svg {display:block;flex:none}
+
+/* Etapa 52 — canonical color-key visibility. No checkbox backgrounds or vertical swatches. */
+.workspaceLayout--3d #three-d-controls :is(.surfaceObjectRow,.curveObjectRow),
+.workspaceLayout--3d #three-d-controls .scientificVisibilityRow {
+  display:grid;grid-template-columns:minmax(0,1fr) 10px 30px;
+  align-items:center;column-gap:9px;min-height:36px;
+}
+.workspaceLayout--3d #three-d-controls :is(.surfaceObjectSwatch,.curveObjectColor),
+.workspaceLayout--3d #three-d-controls .scientificVisibilityRow::before {
+  display:block;grid-column:2;grid-row:1;
+  width:9px;height:9px;min-width:9px;min-height:9px;
+  padding:0;margin:0;border:0;border-radius:50%;
+  background:var(--visibility-color,#8da5b5);
+  box-shadow:0 0 0 1px rgba(255,255,255,.12);
+  justify-self:center;align-self:center;
+}
+.workspaceLayout--3d #three-d-controls .surfaceObjectSwatch {background-color:var(--surface-color,#8da5b5)}
+.workspaceLayout--3d #three-d-controls :is(.surfaceObjectRow,.curveObjectRow) > .visibilityEye,
+.workspaceLayout--3d #three-d-controls .scientificVisibilityRow > .visibilityEye {
+  grid-column:3;grid-row:1;
+}
+.workspaceLayout .visibilityEye,
+.workspaceLayout--states .stateVisibilityRow > .scientificVisibilityButton {
+  display:inline-flex;align-items:center;justify-content:center;
+  box-sizing:border-box;width:30px;height:30px;min-width:30px;min-height:30px;
+  margin:0;padding:0;border:0;border-radius:6px;
+  background:transparent;color:#81939e;cursor:pointer;
+  box-shadow:none;
+}
+.workspaceLayout .visibilityEye[aria-pressed="true"],
+.workspaceLayout--states .stateVisibilityRow > .scientificVisibilityButton[aria-pressed="true"] {
+  background:transparent;border:0;color:#55dca1;box-shadow:none;
+}
+.workspaceLayout .visibilityEye:hover,
+.workspaceLayout--states .stateVisibilityRow > .scientificVisibilityButton:hover {background:rgba(93,133,122,.13)}
+.workspaceLayout .visibilityEye:focus-visible,
+.workspaceLayout--states .stateVisibilityRow > .scientificVisibilityButton:focus-visible {
+  outline:2px solid #87cefa;outline-offset:2px;
+}
+.workspaceLayout--3d #three-d-controls .surfaceObjectRow .surfaceObjectSwatch {
+  background-color:var(--surface-color,#8da5b5);
+}
+.workspaceLayout--3d #three-d-controls :is(.surfaceObjectRow,.curveObjectRow) > :is(.surfaceObjectName,.curveObjectName) {grid-column:1;grid-row:1;min-width:0}
+.workspaceLayout--3d #three-d-controls :is(.surfaceObjectRow,.curveObjectRow):has(.visibilityEye[aria-pressed="false"]) > :is(.surfaceObjectName,.curveObjectName) {opacity:.68}
+.workspaceLayout--states .stateVisibilityRow {grid-template-columns:minmax(0,1fr) 10px 30px;column-gap:9px}
+.workspaceLayout--states .stateVisibilityRow::before {width:9px;height:9px;grid-column:2;grid-row:1;border-radius:50%}
+.workspaceLayout--states .stateVisibilityRow > .scientificVisibilityButton {grid-column:3;grid-row:1}
+
+/* Etapa 53: chave de cor canônica: ponto ANTES do rótulo, olho sem moldura.
+   Especificidade deliberada para superar regras históricas dos controles. */
+.workspaceLayout.workspaceLayout--3d #three-d-controls :is(.surfaceObjectRow,.curveObjectRow),
+.workspaceLayout.workspaceLayout--3d #three-d-controls .scientificVisibilityRow,
+.workspaceLayout.workspaceLayout--states .stateVisibilityRow {
+  display:grid;
+  grid-template-columns:10px minmax(0,1fr) 30px;
+  column-gap:9px;
+  align-items:center;
+}
+.workspaceLayout.workspaceLayout--3d #three-d-controls :is(.surfaceObjectSwatch,.curveObjectColor),
+.workspaceLayout.workspaceLayout--3d #three-d-controls .scientificVisibilityRow::before,
+.workspaceLayout.workspaceLayout--states .stateVisibilityRow::before {
+  grid-column:1;grid-row:1;
+  width:9px;height:9px;min-width:9px;min-height:9px;
+  border:0;border-radius:50%;padding:0;margin:0;
+  background:var(--visibility-color,#8da5b5);
+  box-shadow:none;
+  justify-self:center;
+}
+.workspaceLayout.workspaceLayout--3d #three-d-controls .surfaceObjectSwatch {
+  background:var(--surface-color,#8da5b5);
+}
+.workspaceLayout.workspaceLayout--3d #three-d-controls :is(.surfaceObjectName,.curveObjectName),
+.workspaceLayout.workspaceLayout--states .stateVisibilityRow > .stateSwitchCopy {
+  grid-column:2;grid-row:1;min-width:0;
+}
+.workspaceLayout.workspaceLayout--3d #three-d-controls :is(.surfaceObjectRow,.curveObjectRow,.scientificVisibilityRow) > .visibilityEye,
+.workspaceLayout.workspaceLayout--states .stateVisibilityRow > .visibilityEye {
+  grid-column:3;grid-row:1;
+}
+.workspaceLayout.workspaceLayout--3d #three-d-controls .visibilityEye,
+.workspaceLayout.workspaceLayout--states .stateVisibilityRow > .visibilityEye {
+  appearance:none;-webkit-appearance:none;
+  display:inline-flex;align-items:center;justify-content:center;
+  width:30px;height:30px;min-width:30px;min-height:30px;
+  padding:0;margin:0;border:0 !important;outline:0;
+  border-radius:6px;background:transparent !important;
+  box-shadow:none !important;color:#82929d;cursor:pointer;
+}
+.workspaceLayout.workspaceLayout--3d #three-d-controls .visibilityEye[aria-pressed="true"],
+.workspaceLayout.workspaceLayout--states .stateVisibilityRow > .visibilityEye[aria-pressed="true"] {color:#55dca1}
+.workspaceLayout.workspaceLayout--3d #three-d-controls .visibilityEye:hover,
+.workspaceLayout.workspaceLayout--states .stateVisibilityRow > .visibilityEye:hover {background:rgba(93,133,122,.12) !important}
+.workspaceLayout.workspaceLayout--3d #three-d-controls .visibilityEye:focus-visible,
+.workspaceLayout.workspaceLayout--states .stateVisibilityRow > .visibilityEye:focus-visible {
+  outline:2px solid #87cefa;outline-offset:2px;
+}
+.workspaceLayout.workspaceLayout--states .stateVisibilityRow::before {content:""}
+
+/* Etapa 54 — remove the old global pressed-button chrome, including the
+   general .app button[aria-pressed] rule and inherited button backgrounds. */
+.app .workspaceLayout button.visibilityEye,
+.app .workspaceLayout button.visibilityEye[aria-pressed="true"],
+.app .workspaceLayout button.visibilityEye[aria-pressed="false"],
+.app .workspaceLayout button.visibilityEye:hover,
+.app .workspaceLayout button.visibilityEye:active {
+  appearance:none !important;
+  -webkit-appearance:none !important;
+  border:0 !important;
+  border-color:transparent !important;
+  background:transparent !important;
+  background-image:none !important;
+  box-shadow:none !important;
+  outline:none;
+  min-height:30px;
+  min-width:30px;
+  width:30px;
+  height:30px;
+  padding:0;
+  border-radius:0;
+  display:inline-grid;
+  place-items:center;
+  color:#81939e;
+}
+.app .workspaceLayout button.visibilityEye[aria-pressed="true"] {color:#55dca1}
+.app .workspaceLayout button.visibilityEye:focus-visible {
+  outline:2px solid #87cefa;
+  outline-offset:2px;
+  border-radius:4px;
+}
+.app .workspaceLayout button.visibilityEye svg {
+  display:block;
+  width:18px;
+  height:18px;
+  flex:none;
+}
+
+/* Etapa 139: X simples no botao de fechar, sem aro interno. */
+.workspaceLayout .workspacePanelHeader > .workspacePanelClose { position: relative; }
+.workspaceLayout .workspacePanelHeader > .workspacePanelClose > svg { display: none; }
+.workspaceLayout .workspacePanelHeader > .workspacePanelClose::before,
+.workspaceLayout .workspacePanelHeader > .workspacePanelClose::after {
+  content: ""; position: absolute; width: 13px; height: 1.75px;
+  border-radius: 1px; background: currentColor; left: 50%; top: 50%;
+  transform: translate(-50%, -50%) rotate(45deg); pointer-events: none;
+}
+.workspaceLayout .workspacePanelHeader > .workspacePanelClose::after {
+  transform: translate(-50%, -50%) rotate(-45deg);
+}
+
+/* Parâmetros: somente geometria própria. Cabeçalhos, acordeões e campos
+   reutilizam workspacePanelHeader, workspaceDisclosure e workspacePanelDrawer. */
+.parametersWorkspace--unified{padding:0;overflow:hidden;display:flex;flex-direction:column;min-height:0}
+.parametersUnifiedLayout{display:flex;flex:1;min-width:0;min-height:0;border-top:1px solid var(--workspace-stroke)}
+.parametersNavRail{width:68px;flex:0 0 68px;border-right:1px solid var(--workspace-stroke);padding:8px 5px;display:flex;flex-direction:column;gap:5px}
+.parametersNavItem,.parametersNavCollapse{border:1px solid transparent;background:transparent;color:inherit;cursor:pointer;border-radius:6px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;padding:9px 2px;font-size:10px;min-height:54px}
+.parametersNavItem:hover,.parametersNavCollapse:hover{background:rgba(140,150,165,.1)}
+.parametersNavItem.is-active{border-color:rgba(80,200,145,.38);background:rgba(45,155,113,.16)}
+.parametersNavItem .tablerNavIcon,.parametersNavCollapse .tablerNavIcon{width:21px;height:21px}
+.parametersNavCollapse{margin-top:auto;min-height:36px}
+.parametersControlSidebar.workspacePanelDrawer{width:224px;flex:0 0 224px;min-width:0;display:flex;flex-direction:column;border-radius:0;border-top:0;border-bottom:0;border-left:0;overflow-y:auto}
+.parametersSidebarHeading.workspacePanelHeader{position:relative;flex:0 0 42px}
+/* O drawer compartilhado é o único contêiner de rolagem.
+   Acordeões e seus corpos usam as regras comuns do workspace. */
+.workspaceLayout--parameters .parametersCoefficients,
+.workspaceLayout--parameters .parametersMatrix {
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:8px 6px;
+  margin:8px 0 0;
+}
+.workspaceLayout--parameters .statePanelSectionBody label {
+  display:flex;
+  flex-direction:column;
+  gap:4px;
+  min-width:0;
+  font-size:11px;
+}
+.workspaceLayout--parameters .statePanelSectionBody :is(input,select) {
+  width:100%;
+  min-width:0;
+}
+.workspaceLayout--parameters .statePanelSectionBody button {
+  max-width:100%;
+  white-space:normal;
+}
+.parametersMain{min-width:0;flex:1;overflow:auto;display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);gap:12px;padding:12px;align-items:start;align-content:start}
+.parametersMain>.parametersPanel{min-width:0}
+.parametersDiagramPanel{display:flex;flex-direction:column;min-width:0}
+.parametersMain .parameterDiagram{width:100%;max-width:min(100%,720px);height:auto;max-height:none;aspect-ratio:440/470;align-self:center;margin:8px auto 12px}
+.parametersDiagramActions{margin-top:4px}
+.parametersClassificationPanel{min-width:0;overflow-wrap:anywhere}
+.parametersEquation{overflow-x:auto;max-width:100%;padding:10px 8px;border:1px solid var(--workspace-stroke);border-radius:6px;background:rgba(140,150,165,.06)}
+.parametersEquation .mathBlock{margin:0;min-width:max-content;text-align:center}
+.parametersClassificationRules{display:flex;flex-wrap:wrap;gap:8px 14px;margin:12px 0}
+.parametersClassificationRules span{display:inline-flex;gap:7px;align-items:baseline;font-size:12px}
+@media(max-width:1250px){.parametersMain{grid-template-columns:minmax(0,1fr)}.parametersMain .parameterDiagram{max-width:min(100%,620px)}}
+@media(max-width:650px){.parametersNavRail{width:55px;flex-basis:55px}.parametersNavItem{font-size:9px}.parametersControlSidebar.workspacePanelDrawer{position:absolute;z-index:12;left:55px;top:0;bottom:0;width:min(224px,calc(100vw - 55px));box-shadow:8px 0 22px #0005}.parametersUnifiedLayout{position:relative}.parametersMain{padding:8px}.parametersMain .parameterDiagram{max-width:100%}.parametersClassificationRules{flex-direction:column;gap:7px}.parametersEquation{font-size:12px}}
+
+/* Etapa 147: inspeção independente do fluxo e painel de análise à direita. */
+.parametersAnalysisColumn{display:flex;flex-direction:column;gap:12px;min-width:0}
+.parametersInspectionPanel{min-width:0}
+.parametersInspectionHeading{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.parametersInspectionHeading h2{margin:0}
+.parametersInspectionHeading button{font-size:11px}
+.parametersInspectionHint{color:var(--text-muted,#9ca9b8);font-size:12px}
+.parametersInspectionValues{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:12px 0}
+.parametersInspectionValues>div{background:rgba(140,150,165,.07);border:1px solid rgba(140,150,165,.2);border-radius:6px;padding:9px;min-width:0}
+.parametersInspectionValues small{display:block;opacity:.7;margin-bottom:5px}
+.parametersInspectionValues strong{font-size:12px;overflow-wrap:anywhere}
+.parametersInspectionPanel p{font-size:12px;line-height:1.55}
+.parametersInspectionActions{margin:12px 0}
+.parametersInspectionPanel>small{display:block;line-height:1.5;opacity:.75}
+.parametersDiagramPanel .parameterDiagram rect[fill]:not([fill="none"]){cursor:crosshair}
+@media(max-width:650px){.parametersInspectionValues{grid-template-columns:1fr}}
+
+/* Etapa 148 — legenda dos marcadores e inspeção compacta; sidebar preservado */
+.parametersPointLegend{display:flex;flex-wrap:wrap;align-items:center;gap:8px 18px;margin:2px 0 6px;color:var(--text-muted,#a5b1c1);font-size:11px}
+.parametersPointLegend span{display:inline-flex;align-items:center;gap:7px}
+.parametersPointLegend i{display:inline-block;box-sizing:border-box;width:12px;height:12px;flex:none;border:2px solid #fff}
+.parametersPointLegendCurrent{border-radius:50%}
+.parametersPointLegendInspected{border-radius:1px}
+.parametersInspectionPanel{display:flex;flex-direction:column;gap:10px}
+.parametersInspectionPanel .parametersInspectionValues{margin:0;gap:6px}
+.parametersInspectionPanel .parametersInspectionValues>div{padding:7px 9px}
+.parametersInspectionPanel .parametersInspectionValues small{margin-bottom:2px}
+.parametersInspectionSummary{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);gap:0 12px;border-top:1px solid rgba(140,150,165,.18);border-bottom:1px solid rgba(140,150,165,.18)}
+.parametersInspectionSummary>div{min-width:0;padding:8px 0;display:flex;flex-direction:column;gap:3px}
+.parametersInspectionSummary>div:nth-child(n+3){border-top:1px solid rgba(140,150,165,.12)}
+.parametersInspectionSummary span{font-size:11px;color:var(--text-muted,#a5b1c1)}
+.parametersInspectionSummary strong{font-size:12px;font-weight:600;overflow-wrap:anywhere}
+.parametersInspectionPanel .parametersInspectionApply{align-self:flex-start;margin:0}
+.parametersInspectionPanel>small{font-size:11px}
+@media(max-width:650px){.parametersInspectionSummary{grid-template-columns:1fr}.parametersInspectionSummary>div{border-top:1px solid rgba(140,150,165,.12)}}
+
+
+.workspaceLayout--docs .documentationSectionMeta button:hover{border-color:#51b98b}
+
+/* Documentation index: chapter navigation and disclosure are independent controls. */
+.workspaceLayout--docs .documentationGroupHeading{display:flex;align-items:center;min-height:33px;border-radius:5px;gap:0}
+.workspaceLayout--docs .documentationGroupHeading:hover{background:var(--workspace-stroke)}
+.workspaceLayout--docs .documentationGroupExpand{flex:0 0 23px;align-self:stretch;border:0;background:transparent;color:inherit;cursor:pointer;padding:0 3px;font-size:11px}
+.workspaceLayout--docs .documentationGroupExpand:disabled{cursor:default;opacity:.5}
+.workspaceLayout--docs .documentationGroupTitle{flex:1;min-width:0;align-self:stretch;border:0;background:transparent;color:inherit;text-align:left;font-size:11px;font-weight:650;line-height:1.3;cursor:pointer;padding:6px 0}
+.workspaceLayout--docs .documentationGroupHeading>small{flex:none;padding:0 8px 0 3px;opacity:.55;font-size:10px}
+.workspaceLayout--docs .documentationGroupTitle:focus-visible,.workspaceLayout--docs .documentationGroupExpand:focus-visible{outline:2px solid #65c5a1;outline-offset:-2px;border-radius:4px}
+.workspaceLayout--docs .documentationChapter{scroll-margin-top:12px}
+
+.workspaceLayout--docs .documentationSectionContent .mathBlock{border-left:0;border-inline-start:0}

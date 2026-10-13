@@ -1,3 +1,4 @@
+import { NUMERICAL_POLICY } from '../numerics/policy.js'
 import { fiber } from '../charts/zChart.js'
 import { fiberZ } from '../charts/reciprocalChart.js'
 
@@ -18,9 +19,9 @@ function ZChartDerivatives(Z, p) {
 }
 
 // Lifted rarefaction field on the characteristic surface Y=0 in the finite z chart.
-export function rarefactionField(tau, z, p, eps = 1e-12) {
+export function rarefactionField(tau, z, p, eps = NUMERICAL_POLICY.rarefaction.fieldRegularityTolerance) {
   const f = fiber(z, tau, p, eps)
-  if (f.kind !== 'regular') return { ...f, tauDot: NaN, zDot: NaN, zHatDot: NaN, mapDet: NaN }
+  if (f.kind !== 'regular') return { ...f, tauDot: NaN, zDot: NaN, zcDot: NaN, mapDet: NaN }
   const { P, Q, R, D } = f
   const { Pz, Qz, Rz } = zChartDerivatives(z, p)
   const Dz = 2 * (P * Pz + Q * Qz)
@@ -31,9 +32,9 @@ export function rarefactionField(tau, z, p, eps = 1e-12) {
   const T = [-Q, P]
   const tauDot = z * Uz[1] - Uz[0]
   const zDot = T[0] - T[1] * z
-  const zHatDot = (2 / Math.PI) * zDot / (1 + z * z)
+  const zcDot = (2 / Math.PI) * zDot / (1 + z * z)
   const mapDet = T[0] * Uz[1] - T[1] * Uz[0]
-  return { ...f, Uz, T, tauDot, zDot, zHatDot, mapDet }
+  return { ...f, Uz, T, tauDot, zDot, zcDot, mapDet }
 }
 
 export function rarefactionDirectionResidual(tau, z, p) {
@@ -44,7 +45,7 @@ export function rarefactionDirectionResidual(tau, z, p) {
 }
 
 // Rarefaction field in the complementary chart Z=1/z, eta=tau/Z^2.
-export function rarefactionFieldZ(eta, Z, p, eps = 1e-12) {
+export function rarefactionFieldZ(eta, Z, p, eps = NUMERICAL_POLICY.rarefaction.fieldRegularityTolerance) {
   const f = fiberZ(Z, eta, p, eps)
   if (f.kind !== 'regular') return { ...f, etaDot: NaN, ZDot: NaN, mapDet: NaN }
   const { P, Q, R, D } = f

@@ -1,0 +1,73 @@
+\section{Fixed-state Hugoniot fibres and their projections}
+\label{sec:hugoniot}
+
+Let $P\in\mathcal W$ and let
+\[
+  \pi_-(P)=U_-(P),\qquad \pi_+(P)=U_+(P).
+\]
+The symbols $U_-$ and $U_+$ denote local endpoint states attached to the moving point $P$; they are not global Riemann data.
+
+\subsection{A generic fixed state}
+For a generic exploration state $U_*\in\mathcal U$, neither a left nor a right role is intrinsic.  The two inverse images are
+\[
+ \mathcal H^{\mathrm{forw}}(U_*)=\pi_-^{-1}(U_*),\qquad
+ \mathcal H^{\mathrm{back}}(U_*)=\pi_+^{-1}(U_*).
+\]
+Thus $U_-=U_*$ is fixed on the forward fibre while $U_+$ varies, and $U_+=U_*$ is fixed on the backward fibre while $U_-$ varies.
+
+The full reciprocal transition used by these fibres is
+\[
+ Z=\frac1z,\qquad \eta=\frac{\tau}{Z^2},\qquad
+ \Upsilon=\frac{Y}{Z}.
+\]
+Continuation through $Z=0$ is therefore a chart operation and must not be replaced by a renderer segment joining the two visual compactification boundaries.
+
+\subsection{Characteristic lifts}
+Intersections with $\mathcal C=\{Y=0\}$ are characteristic lifts of $U_*$.  When finite and spectrally distinct, the slow and fast lifts are denoted $P_s$ and $P_f$.  Coincidence and projective-infinity cases are retained as separate cases rather than forced into slow/fast labels.
+
+\subsection{Spectral partition and strict Lax classification}
+At every regular Hugoniot point, compute the ordered spectra
+\[
+ \lambda_1(U_-)\leq\lambda_2(U_-),\qquad
+ \lambda_1(U_+)\leq\lambda_2(U_+)
+\]
+and the four gaps $s-\lambda_i(U_\pm)$.  In a strictly hyperbolic region define
+\[
+ n_-=\#\{i:\lambda_i(U_-)<s\},\qquad
+ n_+=\#\{i:\lambda_i(U_+)<s\}.
+\]
+For a $2\times2$ system, the strict Lax conditions used by the application are
+\[
+ (n_-,n_+)=(0,1)\quad\Longleftrightarrow\quad\text{Lax family 1},
+\]
+\[
+ (n_-,n_+)=(1,2)\quad\Longleftrightarrow\quad\text{Lax family 2}.
+\]
+All other strictly hyperbolic signatures are labelled non-Lax only with respect to this strict Lax criterion.  No Liu condition or other admissibility criterion is implied.
+
+\subsection{Explicit projection to state space}
+The two canonical projections must remain explicit.  Their action on the fixed-state fibres is
+\[
+\begin{array}{c|cc}
+ &\pi_-&\pi_+\\ \hline
+ \mathcal H^{\mathrm{forw}}(U_*)&\{U_*\}&\text{curve of }U_+\\
+ \mathcal H^{\mathrm{back}}(U_*)&\text{curve of }U_-&\{U_*\}.
+\end{array}
+\]
+Consequently the state-space view does not independently recompute a Hugoniot locus or its Lax class: it projects the already validated segments in $\mathcal W$.
+
+\subsection{Riemann data and future saturation}
+Global Riemann data have a different role:
+\[
+ U(x,0)=\begin{cases}U_L,&x<0,\\U_R,&x>0.\end{cases}
+\]
+The oriented inverse images are $\pi_-^{-1}(U_L)$ for waves leaving $U_L$ and $\pi_+^{-1}(U_R)$ for waves arriving at $U_R$.  This does not identify $U_L,U_R$ globally with the local symbols $U_-,U_+$.
+
+For a moving curve $\Gamma\subset\mathcal W$, the local states may later seed the saturations
+\[
+ \operatorname{sat}_{\mathrm{forw}}(\Gamma)=
+ \bigcup_{P\in\Gamma}\pi_-^{-1}(U_-(P)),\qquad
+ \operatorname{sat}_{\mathrm{back}}(\Gamma)=
+ \bigcup_{P\in\Gamma}\pi_+^{-1}(U_+(P)).
+\]
+These formulas define the next construction boundary; this Hugoniot closure does not yet construct composite waves or claim a general Riemann solver.

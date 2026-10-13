@@ -1,0 +1,44 @@
+\section{Composite waves: canonical construction boundary}
+
+This chapter opens the composite-wave block.  It fixes the mathematical
+construction before any numerical surface meshing or Three.js rendering is
+introduced.
+
+Let $\Gamma\subset\mathcal W$ be a moving curve.  Its local endpoint states
+are $U_-(P)=\pi_-(P)$ and $U_+(P)=\pi_+(P)$.  The two oriented saturations are
+\[
+ \operatorname{sat}_{\mathrm{forw}}(\Gamma)
+ =\bigcup_{P\in\Gamma}\pi_-^{-1}\!\left(U_-(P)\right),
+ \qquad
+ \operatorname{sat}_{\mathrm{back}}(\Gamma)
+ =\bigcup_{P\in\Gamma}\pi_+^{-1}\!\left(U_+(P)\right).
+\]
+Thus forward saturation fixes the moving left state on each leaf, whereas
+backward saturation fixes the moving right state.
+
+For the rarefaction set $\mathcal R$ used as seed, the canonical composite
+constructions are
+\[
+ \boxed{\mathcal K_-=
+ \operatorname{sat}_{\mathrm{forw}}(\mathcal R)\cap\mathcal S^-},
+ \qquad
+ \boxed{\mathcal K_+=
+ \operatorname{sat}_{\mathrm{back}}(\mathcal R)\cap\mathcal S^+}.
+\]
+Here $\mathcal S^-$ and $\mathcal S^+$ mean the corresponding non-trivial
+sonic sheets.  In the finite $z$ chart their implicit factors are
+\[
+ \Phi_-(\tau,Y,z)=Y\det M-2K,
+ \qquad
+ \Phi_+(\tau,Y,z)=Y\det M+2K.
+\]
+Consequently a candidate point of $\mathcal K_-$ must belong simultaneously
+to a forward saturation leaf and satisfy $\Phi_-=0$; a candidate point of
+$\mathcal K_+$ must belong to a backward saturation leaf and satisfy
+$\Phi_+=0$.
+
+This definition does \emph{not} yet prescribe a numerical algorithm for
+constructing the two-dimensional saturated set, continuing its intersection
+with a sonic sheet, selecting connected branches, or imposing an additional
+admissibility criterion.  Those are subsequent stages of the scientific
+pipeline.
