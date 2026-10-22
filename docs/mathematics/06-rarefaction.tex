@@ -42,8 +42,10 @@ so that
 D\bar U(\dot\tau,\dot z)=\det(T,U_z)r.
 }
 \]
-Thus every regular integral curve of the lifted field projects to a
-rarefaction curve in state space, up to reparametrization.  The factor
+Where $\det(T,U_z)\ne0$, a regular integral curve of the lifted field projects
+to a regular characteristic integral curve, up to reparametrization. At a zero
+of this determinant the projected velocity can vanish; tangency alone does not
+certify a regular rarefaction fan. The factor
 $\det(T,U_z)$ also makes explicit where the coordinate map itself becomes
 singular; no division by this factor is used in the implementation.
 
@@ -241,6 +243,21 @@ segments in $\mathcal C_s$ project to $\mathcal R_s$ and segments in
 $\mathcal C_f$ project to $\mathcal R_f$.  At $\mathcal E$ the two
 eigenvalues coincide, so the slow/fast label is not assigned across that
 point.
+
+\subsection{Exact parameter factor between chart representatives}
+
+For the representatives implemented in \texttt{rarefactionField} and
+\texttt{rarefactionFieldZ}, let $\Psi(\tau,z)=(\tau z^2,1/z)$ on a regular
+overlap with $z\ne0$. Direct substitution into the determinant formulas gives
+\[
+ D\Psi\,V_z=-z\,V_Z\circ\Psi.
+\]
+Indeed, the transformed components are
+$\dot\eta=z^2\dot\tau+2\tau z\dot z$ and
+$\dot Z=-\dot z/z^2$. The factor is negative for $z>0$ and positive for
+$z<0$. Thus unoriented orbits correspond, but the chosen field parameters need
+not have the same orientation. These parameters are not physical PDE time.
+This identity does not extend the finite chart to $Z=0$ by division.
 
 \subsection{A mesma órbita através da coincidência}
 

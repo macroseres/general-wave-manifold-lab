@@ -219,12 +219,12 @@ export function selectedCandidateHugoniotArc(profile,projection,riemannHugoniot,
   if(!states?.every(valid))return null
   const [left,middle,right]=states
   const waves=profile.provenance?.waves??[]
-  if(projection==='plus'&&(profile.kind==='two-shock'||profile.kind==='shock-rarefaction')){
+  if(projection==='plus'&&(profile.kind==='two-shock'||profile.kind==='shock-rarefaction'||profile.pattern==='SC')){
     const shock=waves.find(w=>w.type==='shock'&&w.origin==='forward-hugoniot')
     return sampledHugoniotArc(riemannHugoniot?.left,left,middle,{tolerance,curveId:shock?.segment??null,segmentIndex:shock?.segmentIndex??null,fluxCoefficients})
       ??stitchedHugoniotArc(riemannHugoniot?.left,left,middle,{tolerance,fluxCoefficients})
   }
-  if(projection==='minus'&&(profile.kind==='two-shock'||profile.kind==='rarefaction-shock')){
+  if(projection==='minus'&&(profile.kind==='two-shock'||profile.kind==='rarefaction-shock'||profile.pattern==='CS')){
     const shock=waves.find(w=>w.type==='shock'&&w.origin==='backward-hugoniot')
     return sampledHugoniotArc(riemannHugoniot?.right,right,middle,{tolerance,curveId:shock?.segment??null,segmentIndex:shock?.segmentIndex??null,fluxCoefficients})
       ??stitchedHugoniotArc(riemannHugoniot?.right,right,middle,{tolerance,fluxCoefficients})

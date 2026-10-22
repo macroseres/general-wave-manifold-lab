@@ -1,4 +1,6 @@
-# Scientific workspace — architecture decision (proposal, not implemented)
+# Scientific workspace — historical architecture proposal
+
+This is a historical proposal: parts of the workspace and candidate pipeline are now implemented. Current scientific direction is defined in [scientific objectives and scope](../OBJETIVOS_E_ESCOPO.md): the wave manifold is the central research space, with state-space constructions and physical realizations linked to it. The milestones below must not be read as a current feature inventory.
 
 ## Scientific goals
 
@@ -30,4 +32,4 @@ C. Provide a parameter-slice explorer, explicitly marking it as a slice rather t
 D. Reorganize panel layout with 3D and state-space coordinated selections, without altering existing scientific kernels.
 E. Implement the Riemann solver incrementally through definition -> pure code -> test -> numerics -> geometry -> renderer.
 
-**Current status:** This document is a proposed product architecture. It does not claim that parameter classification or a complete Riemann solver has been implemented.
+**Status of this proposal:** Partial implementation has superseded this planning snapshot. Complete parameter classification and a complete validated Riemann solver are not claimed; consult the scientific scope and current implementation evidence rather than inferring availability from these milestones.

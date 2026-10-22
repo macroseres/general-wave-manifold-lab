@@ -10,6 +10,7 @@ import { regularFibreBranches } from './fibreAnalysis.js'
 import { waveState } from '../manifold/waveState.js'
 import { hugoniotSpectralDiagnostic } from './hugoniotSpectrum.js'
 import { NUMERICAL_POLICY } from '../numerics/policy.js'
+import {classifySpectralDiagnostic} from './shockConfiguration.js'
 
 const finite=Number.isFinite
 
@@ -82,7 +83,7 @@ export function partitionHugoniotSpectralRegions(U,p,side='minus',{samples=721,t
       const q=seq[i]
       if(!region||region.signature!==q.signature){
         if(region)branch.regions.push(region)
-        region={signature:q.signature,countSignature:spectralCountSignature(q.spectral),laxClass:laxClass2x2(q.spectral),thetaStart:q.theta,thetaEnd:q.theta,zStart:q.z,zEnd:q.z,sampleCount:1}
+        region={signature:q.signature,countSignature:spectralCountSignature(q.spectral),configuration:classifySpectralDiagnostic(q.spectral),laxClass:laxClass2x2(q.spectral),thetaStart:q.theta,thetaEnd:q.theta,zStart:q.z,zEnd:q.z,sampleCount:1}
       }else{region.thetaEnd=q.theta;region.zEnd=q.z;region.sampleCount++}
       if(i){
         const prev=seq[i-1]
@@ -126,9 +127,8 @@ export function spectralCountSignature(d){
  * undefined; Liu admissibility is deliberately not tested here.
  */
 export function laxClass2x2(d){
-  const c=spectralCountSignature(d)
-  if(c.minus===null||c.plus===null)return {kind:'undefined',family:null,label:'indefinida'}
-  if(c.minus===0&&c.plus===1)return {kind:'lax',family:1,label:'Lax 1'}
-  if(c.minus===1&&c.plus===2)return {kind:'lax',family:2,label:'Lax 2'}
+  const c=classifySpectralDiagnostic(d)
+  if(d?.kind!=='regular'||c.kind!=='spectral-interior')return {kind:'undefined',family:null,label:'indefinida'}
+  if(c.family)return {kind:'lax',family:c.family,label:`Lax ${c.family}`}
   return {kind:'non-lax',family:null,label:'não-Lax'}
 }

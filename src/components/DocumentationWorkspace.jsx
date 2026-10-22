@@ -26,7 +26,7 @@ const orderedIndices = groups.flatMap(group=>group.indices)
 const availableIndices = new Set(orderedIndices)
 const locationByIndex = new Map(groups.flatMap((group,chapter)=>group.indices.map((index,section)=>[index,{chapter,section,label:`${chapter+1}.${section+1}`}])) )
 const glossary = [
- ['\\mathcal W','Variedade de Ondas',6],['\\mathcal C','Característica',13],['\\mathcal E','Coincidência',13],['D','Discriminante espectral',2],['N(z)','Denominador da carta finita',8],['\\mathcal S^-','Sônica negativa',14],['\\mathcal S^+','Sônica positiva',14],['\\mathcal J','Inflexão',15],['\\mathcal{DS}','Dupla sônica',15],['\\mathcal R','Rarefação',16],['\\mathcal K_-','Composta negativa',18],['\\mathcal K_+','Composta positiva',18],['\\pi_-','Projeção negativa',9],['\\pi_+','Projeção positiva',9]
+ ['\\mathcal W','Variedade de Ondas',6],['\\mathcal C','Característica',13],['\\mathcal E','Coincidência',13],['\\Delta','Discriminante espectral',2],['N(z)','Denominador da carta finita',8],['\\mathcal S^-','Sônica no extremo esquerdo',14],['\\mathcal S^+','Sônica no extremo direito',14],['\\mathcal J','Inflexão',15],['\\mathcal{DS}','Dupla sônica',15],['\\mathcal R','Rarefação',16],['\\mathcal K_-','Composta negativa',18],['\\mathcal K_+','Composta positiva',18],['\\pi_-','Projeção negativa',9],['\\pi_+','Projeção positiva',9]
 ]
 const normalize = value => String(value).normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase()
 // Extract textual JSX content without rendering a second copy of the reference.
@@ -34,7 +34,7 @@ function extractText(node){
  if(node==null||typeof node==='boolean')return ''
  if(typeof node==='string'||typeof node==='number')return String(node)
  if(Array.isArray(node))return node.map(extractText).join(' ')
- if(typeof node==='object'&&node.props)return [node.props.children, node.props.title].map(extractText).join(' ')
+ if(typeof node==='object'&&node.props)return [node.props.children, node.props.title, node.props.source].map(extractText).join(' ')
  return ''
 }
 

@@ -1,4 +1,5 @@
 import {flux,jacobian} from '../flux/quadraticFlux.js'
+import {classifyShockConfiguration} from '../state/shockConfiguration.js'
 
 /** Diagnostic for a single direct discontinuity U_L -> U_R.
  * This is NOT a general Riemann solver and does not certify entropy admissibility.
@@ -23,5 +24,6 @@ export function directShockDiagnostic(left,right,p,{relativeTolerance=1e-8}={}){
   return {kind:'jump',jump,magnitude,speed,residual,residualNorm,relativeResidual,
     rankineHugoniot:relativeResidual<=relativeTolerance,
     spectrumLeft,spectrumRight,
+    configuration:classifyShockConfiguration(spectrumLeft,spectrumRight,speed),
     spectralStatus:!spectrumLeft||!spectrumRight?'nonhyperbolic-endpoint':'real-endpoint-spectra'}
 }

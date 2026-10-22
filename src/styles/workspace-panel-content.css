@@ -905,3 +905,18 @@
 .workspaceLayout--docs .documentationChapter{scroll-margin-top:12px}
 
 .workspaceLayout--docs .documentationSectionContent .mathBlock{border-left:0;border-inline-start:0}
+
+/* DOC-02: semantic mathematical statements from shared Markdown. */
+.workspaceLayout--docs .documentationMarkdownStatement{margin:16px 0;padding:14px 16px}
+.workspaceLayout--docs .documentationMarkdownStatement .documentationStatementHeading{margin-bottom:9px}
+.workspaceLayout--docs .documentationMarkdownStatement .documentationStatementHeading strong{font-weight:700}
+.workspaceLayout--docs .documentationMarkdownStatement>div:last-child>:first-child{margin-top:0}
+.workspaceLayout--docs .documentationMarkdownStatement>div:last-child>:last-child{margin-bottom:0}
+.workspaceLayout--docs .documentationMarkdownProof{margin:12px 0 20px;padding:0;border:0;background:transparent}
+.workspaceLayout--docs .documentationMarkdownProof p{margin:0}
+.workspaceLayout--docs .documentationMarkdownProof strong:first-child{font-style:italic}
+
+.documentationMarkdown a{color:var(--accent,#70c9f3);text-underline-offset:3px;overflow-wrap:anywhere}
+.documentationFigure{margin:22px 0}
+.documentationFigure img{display:block;width:100%;height:auto;background:#fff;border-radius:6px}
+.documentationFigure figcaption{margin-top:8px;font-size:.85em;line-height:1.5;opacity:.8}

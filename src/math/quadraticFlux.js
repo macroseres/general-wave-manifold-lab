@@ -68,6 +68,8 @@ export {
 } from './state/fibers.js'
 export { hugoniotSpectralDiagnostic } from './state/hugoniotSpectrum.js'
 export { fixedStateSpectralPoint, spectralSignature, spectralCount, spectralCountSignature, laxClass2x2, partitionHugoniotSpectralRegions } from './state/hugoniotSpectralRegions.js'
+export {classifyShockConfiguration,classifySpectralDiagnostic} from './state/shockConfiguration.js'
+export {reciprocalSonicImplicit} from './sonic/reciprocalSonic.js'
 
 export { genericState, riemannData, localEndpointStates, genericInverseImages, riemannInverseImages } from './state/stateRoles.js'
 export { saturationSeeds, forwardSaturationSeeds, backwardSaturationSeeds } from './state/saturation.js'

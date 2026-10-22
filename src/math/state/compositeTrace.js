@@ -13,6 +13,7 @@ import { stateFiberPoint, stateFiberPointReciprocal } from './fibers.js'
 import { compositeConstruction } from './composite.js'
 import { sonicImplicit } from '../sonic/sonic.js'
 import { localEndpointStates } from './stateRoles.js'
+import {reciprocalSonicImplicit} from '../sonic/reciprocalSonic.js'
 
 const finite = Number.isFinite
 
@@ -32,28 +33,7 @@ function candidateAtTheta(U,theta,p,side){
 
 function reciprocalSonicResidual(q,p,sonicSide){
   if(!q||q.kind!=='regular'||![q.eta,q.Upsilon,q.Z].every(finite))return NaN
-  const Z=q.Z
-  // Canonical composite condition is the NON-TRIVIAL sonic sheet Phi_±=0,
-  // not det(DF(U_±)-sI)=Y Phi_±/4=0.  The latter would accept every Y=0
-  // characteristic point as a false composite root.
-  if(Math.abs(Z)>1e-10){
-    const z=1/Z
-    const tau=q.eta*Z*Z
-    const Y=q.Upsilon*Z
-    // Phi grows like Z^-2 near the reciprocal boundary; multiplying by Z^2
-    // is a positive projective regularization and therefore preserves roots.
-    return sonicImplicit(tau,Y,z,p,sonicSide)*Z*Z
-  }
-  // Evaluate the regularized boundary value by symmetric continuation.
-  // This is used only at the single projective boundary sample.
-  const h=1e-7
-  const evalAt=Zh=>{
-    const qh=stateFiberPointReciprocal(q.fixedState??q.Ubar,Zh,p,q.side??sonicSide)
-    if(qh.kind!=='regular')return NaN
-    return sonicImplicit(qh.eta*Zh*Zh,qh.Upsilon*Zh,1/Zh,p,sonicSide)*Zh*Zh
-  }
-  const fm=evalAt(-h),fp=evalAt(h)
-  return finite(fm)&&finite(fp)?(fm+fp)/2:NaN
+  return reciprocalSonicImplicit(q.eta,q.Upsilon,q.Z,p,sonicSide)
 }
 function reciprocalTheta(Z){
   let theta=Math.atan2(1,Z)
@@ -79,11 +59,13 @@ function bisectRoot(U,p,side,a,b,fa,fb,tol,maxIterations){
     const mid=(left+right)/2
     const q=candidateAtTheta(U,mid,p,side)
     if(!q)return null
-    if(Math.abs(q.residual)<=tol||Math.abs(right-left)<=1e-14)return q
+    if(Math.abs(q.residual)<=tol)return q
+    if(Math.abs(right-left)<=1e-14)return null
     if(fLeft*q.residual<=0){right=mid}
     else {left=mid;fLeft=q.residual}
   }
-  return candidateAtTheta(U,(left+right)/2,p,side)
+  const q=candidateAtTheta(U,(left+right)/2,p,side)
+  return q&&Math.abs(q.residual)<=tol?q:null
 }
 
 function bisectReciprocalRoot(U,p,side,sonicSide,a,b,fa,tol,maxIterations){
@@ -92,11 +74,13 @@ function bisectReciprocalRoot(U,p,side,sonicSide,a,b,fa,tol,maxIterations){
     const mid=(left+right)/2
     const q=candidateAtZ(U,mid,p,side,sonicSide)
     if(!q)return null
-    if(Math.abs(q.residual)<=tol||Math.abs(right-left)<=1e-14)return q
+    if(Math.abs(q.residual)<=tol)return q
+    if(Math.abs(right-left)<=1e-14)return null
     if(fLeft*q.residual<=0)right=mid
     else {left=mid;fLeft=q.residual}
   }
-  return candidateAtZ(U,(left+right)/2,p,side,sonicSide)
+  const q=candidateAtZ(U,(left+right)/2,p,side,sonicSide)
+  return q&&Math.abs(q.residual)<=tol?q:null
 }
 
 function reciprocalIntersections(U,p,side,sonicSide,options){

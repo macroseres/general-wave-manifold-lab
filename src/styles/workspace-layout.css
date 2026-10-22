@@ -458,3 +458,11 @@
     box-shadow: none;
   }
 }
+
+/* Shared object controls remain reachable in both workspaces. */
+.workspaceLayout--3d #three-d-controls[data-activity="points"] > .continuousSidebarPanel > details[data-panel-category="points"] {display:block}
+.sharedStateVisibility {display:flex;flex-direction:column;gap:10px;min-width:0}
+.sharedStateVisibility .stateVisibilityRow {display:flex;align-items:center;justify-content:space-between;gap:10px;border-left:3px solid var(--visibility-color);padding:6px 8px}
+.sharedStateVisibility .stateSwitchCopy {display:flex;flex-direction:column;min-width:0}
+.sharedStateVisibility .stateSwitchCopy small {line-height:1.4}
+.sharedStateVisibility button {flex-shrink:0}

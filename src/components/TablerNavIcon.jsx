@@ -1,6 +1,10 @@
 
 // Traços da família Tabler Icons (24 × 24, stroke 1.75).
 const paths = {
+  points: <><circle cx="6" cy="7" r="2"/><circle cx="17" cy="5" r="2"/><circle cx="13" cy="18" r="2"/></>,
+  surfaces: <><path d="m3 9 9-5 9 5-9 5Z"/><path d="m3 14 9 5 9-5"/></>,
+  fields: <><path d="m3 7 4-4m-4 0h4v4M10 14l4-4m-4 0h4v4M17 21l4-4m-4 0h4v4"/></>,
+  arcs: <><path d="M3 20C3 6 10 4 21 4M3 20C9 12 16 16 21 8"/></>,
   states: <><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3"/><path d="M12 3v3m0 12v3M3 12h3m12 0h3"/></>,
   curves: <path d="M3 17c4 0 4-10 9-10s5 10 9 10"/>,
   view: <><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M12 3v18M3 12h18"/></>,

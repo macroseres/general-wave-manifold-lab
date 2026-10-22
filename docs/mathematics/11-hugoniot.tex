@@ -31,7 +31,9 @@ At every regular Hugoniot point, compute the ordered spectra
  \lambda_1(U_-)\leq\lambda_2(U_-),\qquad
  \lambda_1(U_+)\leq\lambda_2(U_+)
 \]
-and the four gaps $s-\lambda_i(U_\pm)$.  In a strictly hyperbolic region define
+and the four gaps $s-\lambda_i(U_\pm)$.  For the strict Lax equivalence below,
+both endpoint spectra must be strictly hyperbolic and all four gaps must be
+nonzero.  Under these assumptions define
 \[
  n_-=\#\{i:\lambda_i(U_-)<s\},\qquad
  n_+=\#\{i:\lambda_i(U_+)<s\}.
@@ -44,6 +46,11 @@ For a $2\times2$ system, the strict Lax conditions used by the application are
  (n_-,n_+)=(1,2)\quad\Longleftrightarrow\quad\text{Lax family 2}.
 \]
 All other strictly hyperbolic signatures are labelled non-Lax only with respect to this strict Lax criterion.  No Liu condition or other admissibility criterion is implied.
+
+Characteristic equalities and repeated endpoint eigenvalues require separate
+analysis: counts alone do not enforce these exclusions.  The current
+\texttt{laxClass2x2} implementation classifies counts without an independent
+strictness check; its label on those boundaries is not a strict Lax certificate.
 
 \subsection{Explicit projection to state space}
 The two canonical projections must remain explicit.  Their action on the fixed-state fibres is

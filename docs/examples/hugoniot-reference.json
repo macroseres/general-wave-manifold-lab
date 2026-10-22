@@ -1,0 +1,9 @@
+{
+  "description": "Fibra direta de (2,0), fluxo triangular quadrático; exemplo derivado no projeto.",
+  "coefficients": {"a20":0.5,"a11":0,"a02":0,"a10":0,"a01":0,"b20":0,"b11":0,"b02":0.5,"b10":0.75,"b01":0},
+  "left": [2,0],
+  "right": [0,-1],
+  "selectedZ": 2,
+  "plotZRange": [1.75,2.25],
+  "expected": {"tau":-0.125,"Y":-1,"speed":1,"eta":-0.5,"Upsilon":-2,"Z":0.5}
+}

@@ -856,7 +856,8 @@ test('every sampled regular spectral region carries an endpoint count signature'
 // dev.24.14 — strict Lax classification derived from the spectral signature
 test('strict Lax classes in 2x2 are exactly signatures (0,1) and (1,2)',async()=>{
   const {laxClass2x2}=await import('../src/math/state/hugoniotSpectralRegions.js')
-  const D=(m,p)=>({kind:'regular',minus:{position:m},plus:{position:p}})
+  const spectra={'below-spectrum':[1,2],between:[-1,1],'above-spectrum':[-2,-1]}
+  const D=(m,p)=>({kind:'regular',s:0,minus:{position:m,eigenvalues:spectra[m]},plus:{position:p,eigenvalues:spectra[p]}})
   assert.deepEqual(laxClass2x2(D('below-spectrum','between')),{kind:'lax',family:1,label:'Lax 1'})
   assert.deepEqual(laxClass2x2(D('between','above-spectrum')),{kind:'lax',family:2,label:'Lax 2'})
   assert.equal(laxClass2x2(D('between','below-spectrum')).kind,'non-lax')

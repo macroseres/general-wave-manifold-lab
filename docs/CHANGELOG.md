@@ -1,3 +1,31 @@
+## Correção do atlas e rastreabilidade — 21/10/2026
+
+- Corrigida a classificação dos quocientes lineares excepcionais: coordenadas pequenas não nulas não são mais tratadas como eixos exatos por um limiar absoluto. Decisões ambíguas retornam `ill-conditioned` sem classe residual; regressões cobrem reescala positiva, eixos resolvidos e os setores de posto um. A avaliação do produto residual evita perda de sinal por subfluxo do produto direto.
+- Registrados estratificação escalar, par traço/cúbico, carta genérica e atlas global na matriz canônica, com definições, módulos, testes, verificações simbólicas, UI planejada e limites de validação. Inclusão no LaTeX compilado e classificação das ondas permanecem pendentes.
+
+## Documentação matemática — 20/10/2026
+
+- Fechamento algébrico do atlas relativo ao grupo afim de estados com escala positiva de velocidade e referencial: representação por traço e cúbico binário, nove famílias quadráticas, estabilizadores completos e quocientes lineares, incluindo as exceções de posto um. Acrescentados normalizador global, diagnósticos racionais e testes de cobertura, reconstrução e equivalência. Classificação de ondas e certificação numérica nas fronteiras permanecem separadas desse resultado.
+
+- Atlas dos dez parâmetros: classificador racional dos lugares escalares e homogeneização; dedução de uma forma normal residual no setor quadrático genérico por base e centro intrínsecos. Novos módulos puros e testes de transporte, invariância, reconstrução e setores excepcionais. As formas dos setores excepcionais e a classificação global das folheações permanecem abertas.
+
+- Concluído o mapa editorial dos 26 capítulos. Acrescentados estudos de composta degenerada, perfil viscoso B=I, separatriz recíproca, classificações exatas e transporte afim, com fixtures, figuras, fontes localizadas e testes. O mapa distingue fechamento editorial de validação científica global e reúne as pendências de implementação.
+
+- Acrescentados estudos exatos de rarefação rápida e cadeia de dois choques aos capítulos 17 e 20, com fontes localizadas, figuras nos três espaços, fixtures e testes de campo, conservação, famílias e perfil. Explicitada uma conexão regular que exige outra parametrização local; cálculos de produção preservados.
+
+- Desenvolvido o capítulo-modelo de fibras de Hugoniot: referências primárias com seção e limites de aplicação, exemplo exato nos três espaços, fixture, gerador de dados, figura científica e dois testes matemáticos. O renderizador passa a exibir links bibliográficos e figuras locais; cálculos de produção preservados.
+
+- Registrados os objetivos científicos com a Variedade de Ondas como eixo da pesquisa e correspondência entre os três espaços.
+- Migradas todas as 26 seções da referência exibida para Markdown compartilhado entre Documentação e Ajuda; o registro JSX mantém apenas títulos e ordem.
+- Concluídos diagnósticos, critérios de auditoria, ambientes e guia de leitura. O teste de renderização carrega o registro completo; convenções, procedimentos e critérios usam agrupamento semântico. A inspeção visual e a revisão bibliográfica permanecem pendentes.
+- Detalhados cadeias e traço inicial, limites da interpolação física e de junções sônicas implementadas, transporte afim de dados e entropias, e distinção entre espectro local, cônicas e cortes de parâmetros.
+- Ampliado o bloco de rarefação, separatrizes e compostas: projeção regular, fator exato de orientação entre cartas e limitações da seleção de ramos e do resíduo recíproco na fronteira.
+- Revisados coincidência e lugares sônicos: notação uniforme para o discriminante, distinção entre determinantes completos e folhas reduzidas, relação exata entre K e perda de genuína não linearidade, e convenções numéricas de dupla sônica na característica.
+- Consolidado o bloco da variedade: distinção da diagonal prolongada, domínios regulares, velocidade, amplitude de fibras e dedução da mudança recíproca preservando estados e velocidade. Explicitados limites de cobertura das projeções numéricas.
+- Ampliadas as deduções de velocidade/resíduo de salto e produção entrópica; explicitadas as desigualdades completas de Lax, a orientação das fibras e os limites dos diagnósticos numéricos.
+- Explicitada a hipótese de derivada positiva para a construção do leque suave de rarefação, distinguindo-a da monotonicidade numérica amostrada.
+- Adicionado guia das fontes matemáticas, limites do renderizador e sequência de consolidação. Incluídos testes de interpretação, agrupamento e renderização matemática; nenhuma equação de produção foi alterada.
+
 ## Diagnóstico infinitesimal de contato sônico (etapa de pesquisa)
 
 - Derivada analítica de velocidade de choque na coincidência, usando Hessiana quadrática e autovetores esquerdo/direito.
@@ -657,3 +685,45 @@ The project follows Semantic Versioning while recognizing that versions below 1.
 - Diagnóstico de multiplicidade projetiva de direções características, inclusive carta recíproca; não equivale à tangência geométrica da fibra.
 
 - Análise diferencial desingularizada de Rankine–Hugoniot nas cartas finita e recíproca, com cinco testes de regressão.
+
+## Fundamentação antes da construção geométrica — 20/10/2026
+
+A direção editorial passa a exigir definição na teoria de origem, seleção clássica ou não clássica quando aplicável, construção intrínseca, demonstração da correspondência, degenerações e realização física antes do algoritmo. O contrato e o mapa dos objetos dos 26 capítulos estão em docs/FUNDAMENTACAO_E_CONSTRUCAO.md. Foram acrescentadas definições de pré-imagem, levantamento, saturação por fibras e interseção ao capítulo da variedade; a admissibilidade foi separada de extensões geométricas nos capítulos de entropia e compostas. LeFloch foi incorporado como referência de trabalho com alcance da consulta explícito. A leitura detalhada do livro e a revisão por resultado continuam pendentes.
+
+## Terminologia: construção tradicional e construção topológica — 20/10/2026
+
+Uniformizados os capítulos, títulos do aplicativo e guia de notação: a construção tradicional em leis de conservação abrange as teorias clássica e não clássica de LeFloch; a construção sobre a Variedade de Ondas é denominada topológica. Preservado o significado técnico de solução clássica para regularidade da EDP. A admissibilidade escolhida deve ser preservada ao passar entre as construções.
+
+## Camada tradicional antes da construção topológica — 20/10/2026
+
+Criada uma referência autônoma em docs/traditional/, com formulação fraca, espectro, rarefações, contatos, Hugoniot, Lax, Liu, entropia, sonicidade, compostas, perfis regularizados, relação cinética e montagem física do problema de Riemann. Inclui deduções explícitas e uma proposição condicional para a resolução local do estado intermediário. A ordem de revisão foi atualizada: base tradicional primeiro, camada topológica depois. Preservados os capítulos existentes. A revisão por teorema e a seleção cinética específica permanecem abertas; não se declara solver global para os dez parâmetros.
+
+## Consolidação das cadeias tradicionais — 20/10/2026
+
+Criado docs/traditional/CADEIAS_E_ADMISSIBILIDADE.md com registro de ondas, condições de fechamento, ordenação, tratamento de interfaces coincidentes, catálogo de padrões e matriz de critérios. Inclui quatro cadeias exatas do fluxo triangular, prova de Liu para os ramos especificados, contato e junção sônica, proposição de colagem e rastreabilidade dos limites do aplicativo. A consolidação é documental; não implementa busca geral nem determina uma relação cinética para o fluxo geral.
+
+## Ampliação do catálogo de blocos — 20/10/2026
+
+A lista inicial de cadeias era restrita: acrescentada a matriz formal dos 16 pares R, S, C e K, regras para cadeias maiores e distinção entre decomposição em blocos e perfil físico. Incluídos exemplos exatos C–C para um fluxo linear pertencente à família implementada e K–K/R–K para um fluxo cúbico didático explicitamente fora do escopo quadrático do aplicativo. Conferidos RH e produções entrópicas dos novos choques; os exemplos não implicam cobertura do solver.
+
+## Revisão de resultados e regimes tradicionais — 20/10/2026
+
+Localizada a referência CW-01, §6.1, para as curvas de ondas e o teorema clássico local. Acrescentadas deduções dos ramos de pequenos choques e da produção entrópica, tabela de padrões locais por famílias e limites dos regimes degenerados. A classe não clássica escolhida pelo usuário é difusão–dispersão com coeficientes a definir. Documentada a equação geral de perfil e um ramo cúbico escalar explícito com RH, perfil e produção entrópica verificados. O estudo não determina uma cinética universal para os dez coeficientes. Novos script e testes reproduzem as identidades de três escolhas de parâmetros.
+
+## Nove tipos de salto e contrato das 16 cadeias — 20/10/2026
+
+Consolidada a classificação dos nove interiores espectrais da imagem fornecida, com desigualdades, orientação, número de características incidentes, exclusões sônicas e separação de admissibilidade. A origem bibliográfica da imagem não foi identificada e não é atribuída a LeFloch. Criados nove exemplos quadráticos exatos de RH, com script e testes. O contrato IMPLEMENTACAO_16_CADEIAS.md define dados, construtores, equações de fechamento, disponibilidade por regime, resultados dos critérios e sequência de implementação nos estados. Nenhuma busca geral ou correção de classificador de produção foi implementada nesta etapa documental.
+
+## Espaço de estados: configurações estritas e RR — 20/10/2026
+
+Implementado o classificador dos nove interiores espectrais, separado das fronteiras sônicas e da admissibilidade. Corrigido laxClass2x2 para exigir espectros completos e rejeitar coincidências e igualdades dentro da tolerância. O diagnóstico direto e as regiões espectrais apresentam a configuração. Acrescentados candidatos RR por interseções de curvas integrais amostradas, com dois leques, avaliação física, proveniência e seleção compartilhada entre os ambientes. Comparação e agrupamento não inventam choques para RR. Contatos e composição geral de K permanecem pendentes; esta etapa não implementa os 16 padrões nem certifica entropia.
+
+## Espaço de estados: contatos de direção constante — 20/10/2026
+
+Acrescentados RC, SC, CR, CS e CC para modelos de contato com direção própria e velocidade constantes. O critério verifica o núcleo comum dos coeficientes quadráticos e a equação própria da parte linear, com tolerâncias explícitas. SC/CS podem ser resolvidos diretamente pela equação afim de RH na reta de contato. Os candidatos são compartilhados entre estados e físico, com contatos roxos, traços separados e nenhuma interpolação através das interfaces. A janela de estados agora pode ser criada dos dados de Riemann sem um ponto regular da variedade. Contatos de direção variável, amplitudes nulas, incidências não isoladas e composição geral de K permanecem fora desta ampliação.
+
+## Compostas nos estados e correção recíproca — 20/10/2026
+
+Acrescentada busca local de pares com K, usando parceiros sônicos de amplitude finita calculados diretamente nas equações quadráticas de RH. K lento usa R–S e K rápido usa S–R; as interseções de blocos são refinadas em parâmetros locais e todos os segmentos são reavaliados. Casos quadráticos RK/KR/SK/KS possuem testes positivos; CK/KC/KK continuam sem fixture positiva validada. A representação física preserva os segmentos internos e o traço direito nas junções sônicas. No plano, segmentos de referência entre extremos de choques não são apresentados como curvas de Hugoniot.
+
+Corrigido o resíduo de compositeTrace: avaliação direta de PhiHat, inclusive em Z=0 regular, em vez de Z²Phi e continuação simétrica. Bisseções não aceitam apenas largura pequena. A regressão do falso certificado da fronteira foi reproduzida e passou a ser rejeitada. Não há certificação entrópica, cinética ou de completude global.

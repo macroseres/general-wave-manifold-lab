@@ -21,7 +21,7 @@ const jsxUsage = {
 }
 
 export default defineConfig([
-  globalIgnores(['dist', 'node_modules']),
+  globalIgnores(['dist', 'node_modules', '.cache']),
   {
     files: ['**/*.{js,jsx}'],
     extends: [

@@ -1,0 +1,5 @@
+{
+  "fluxFixture": "hugoniot-reference.json",
+  "rarefaction": {"left":[0,-0.75],"right":[1,0.25],"z":1,"samples":41},
+  "twoShock": {"left":[2,1],"middle":[2,0],"right":[0,-1],"expectedSpeeds":[0.5,1]}
+}

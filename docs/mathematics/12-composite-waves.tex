@@ -42,3 +42,13 @@ constructing the two-dimensional saturated set, continuing its intersection
 with a sonic sheet, selecting connected branches, or imposing an additional
 admissibility criterion.  Those are subsequent stages of the scientific
 pipeline.
+
+\paragraph{Current numerical implementation.}
+The preceding paragraph describes the scope of this definition, not the absence
+of numerical implementations. Sampling and branch tracing now exist in
+\texttt{src/math/state/compositeTrace.js}. They provide candidates rather than
+a proof of global coverage. In particular, its reciprocal search residual uses
+$Z^2\Phi_\pm=Z\widehat\Phi_\pm$ on the overlap. The additional factor can make
+the residual small near $Z=0$ without satisfying the canonical reciprocal sonic
+condition. Boundary candidates require direct reciprocal verification; the
+regularized residual alone is not a sonic certificate.

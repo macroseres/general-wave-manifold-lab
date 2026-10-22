@@ -1,5 +1,7 @@
 import {directShockDiagnostic} from './directShockDiagnostic.js'
 import {stateCharacteristicDirection} from '../rarefaction/stateIntegralCurves.js'
+import {evaluateRarefactionPair} from './rarefactionPairCandidates.js'
+import {evaluateContactChain} from './contactChainCandidates.js'
 
 const valid=U=>Array.isArray(U)&&U.length===2&&U.every(Number.isFinite)
 const point=U=>[U[0],U[1]]
@@ -53,6 +55,8 @@ export function mixedSelfSimilarCandidate(left,right,candidate,branches,p,{speed
 /** Evaluate a piecewise candidate U(x/t). Values at shocks use the right trace. */
 export function evaluateSelfSimilarCandidate(candidate,xi){
   if(candidate?.status!=='sampled-candidate'||!Number.isFinite(xi))return null
+  if(candidate.kind==='two-rarefaction')return evaluateRarefactionPair(candidate,xi)
+  if(candidate.kind==='contact-chain'||candidate.kind==='composite-chain')return evaluateContactChain(candidate,xi)
   if(candidate.kind==='two-shock'){
     const [a,b]=candidate.speeds
     return point(candidate.states[xi<a?0:xi<b?1:2])

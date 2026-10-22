@@ -1,14 +1,14 @@
 /** Geometry-only adapter for the (u,v) state plane. */
 export function stateSpaceGeometry(projection, {padding=.16,minSpan=.12,curves=[],extraPoints=[]}={}) {
-  if(!projection)return null
   const curvePoints=curves.flatMap(c=>c.points??[])
-  const points=[projection.minus,projection.plus,projection.mean,...curvePoints,...extraPoints]
+  const points=[...(projection?[projection.minus,projection.plus,projection.mean]:[]),...curvePoints,...extraPoints]
+  if(!points.length)return null
   if(points.some(q=>!Number.isFinite(q.u)||!Number.isFinite(q.v)))return null
   const us=points.map(q=>q.u),vs=points.map(q=>q.v)
   const uMid=(Math.min(...us)+Math.max(...us))/2,vMid=(Math.min(...vs)+Math.max(...vs))/2
   const uSpan=Math.max(minSpan,Math.max(...us)-Math.min(...us)),vSpan=Math.max(minSpan,Math.max(...vs)-Math.min(...vs))
   const span=Math.max(uSpan,vSpan),half=span*(1+2*Math.max(0,padding))/2
-  return {uMin:uMid-half,uMax:uMid+half,vMin:vMid-half,vMax:vMid+half,projection,curves}
+  return {uMin:uMid-half,uMax:uMid+half,vMin:vMid-half,vMax:vMid+half,projection,curves,anchorPoints:extraPoints}
 }
 export function statePointToUnit(point,geometry){return{x:(point.u-geometry.uMin)/(geometry.uMax-geometry.uMin),y:(point.v-geometry.vMin)/(geometry.vMax-geometry.vMin)}}
 

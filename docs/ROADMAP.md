@@ -1,5 +1,17 @@
 # Roadmap
 
+## Direção científica e leitura do histórico
+
+Próxima etapa após a consolidação tradicional: implementar progressivamente as [16 combinações de blocos no espaço de estados](traditional/IMPLEMENTACAO_16_CADEIAS.md). A [classificação dos nove saltos](traditional/CLASSIFICACAO_DOS_SALTOS.md) deve ser independente da seleção e tratar fronteiras explicitamente. A disponibilidade dos construtores e a cobertura científica devem ser registradas por padrão; o catálogo não implica 16 soluções para cada dado inicial.
+
+Prioridade de documentação atualizada: desenvolver e revisar primeiro a [construção tradicional](traditional/README.md), com suas teorias clássica e não clássica, nos espaços de estados e físico. A camada topológica será consolidada depois, objeto por objeto. A referência tradicional autônoma já foi escrita como base de revisão; os teoremas locais citáveis e a seleção cinética específica permanecem pendentes. O material topológico existente foi preservado.
+
+O objetivo central é construir e visualizar na Variedade de Ondas as soluções do problema de Riemann, em correspondência com os espaços de estados e físico, e estudar suas classificações por parâmetros. O escopo e os critérios de cobertura estão em [OBJETIVOS_E_ESCOPO.md](OBJETIVOS_E_ESCOPO.md).
+
+As versões abaixo registram etapas históricas e planos; não são um inventário completo do estado atual. Já existem construções numéricas de compostas e cadeias candidatas em `src/math/solution/`, além da vista de estados e de realizações físicas. Isso não significa encerramento da validação científica ou cobertura global das soluções.
+
+Prioridade atual: consolidar a documentação e sua rastreabilidade; registrar referências e hipóteses das construções no espaço de estados; desenvolver e validar seus levantamentos à variedade e a correspondência física; ampliar a classificação por parâmetros. A migração dos textos exibidos está concluída nas 26 seções; permanecem a revisão bibliográfica, a inspeção visual e as validações científicas indicadas na rastreabilidade.
+
 ## v0.6.0 — Foundation
 
 - Repository hygiene and GitHub CI.
@@ -42,7 +54,7 @@
 - [x] Distinguish wave manifold `W`, state space `(u,v)`, and physical space `(x,t)`.
 - [x] Document `pi_-`, `pi_+`, and the future solution map `U(x,t)`.
 - [x] Start an incremental user-manual source alongside the mathematical and technical documentation.
-- [ ] Implement the dedicated state-space view only after its mathematical/geometry interface is specified and tested.
+- [x] Implement the dedicated state-space view after its mathematical/geometry interface is specified and tested (implemented in dev.9).
 - [ ] Implement physical-space Riemann solutions only after the required wave constructions are validated.
 
 ## v0.8.x — Geometry and local analysis

@@ -4,7 +4,7 @@ const near = (a,b,tol) => Number.isFinite(a) && Number.isFinite(b) && Math.abs(a
 const nearPoint = (a,b,tol) => point(a) && point(b) && near(a[0],b[0],tol) && near(a[1],b[1],tol)
 const endpoints = c => c.kind === 'two-shock' ? [c.states?.[0],c.states?.[2]] : [c.left,c.right]
 const middle = c => c.kind === 'two-shock' ? c.states?.[1] : c.middle
-const speeds = c => c.kind === 'two-shock' ? c.speeds : [c.shockSpeed]
+const speeds = c => c.kind === 'two-shock' ? c.speeds : c.kind==='two-rarefaction'?c.fans.flatMap(f=>[f.speeds[0],f.speeds.at(-1)]):[c.shockSpeed]
 const evidenceKey = c => {
   const e=c.evidence??{}
   return [e.status??'',e.geometry??'',e.lax??'',e.fan??'',e.liu??''].join('|')
@@ -17,6 +17,17 @@ function equivalent(a,b,stateTolerance,speedTolerance){
   if(a?.status!=='sampled-candidate'||b?.status!=='sampled-candidate'||a.kind!==b.kind||evidenceKey(a)!==evidenceKey(b))return false
   const ea=endpoints(a),eb=endpoints(b)
   if(!ea.every((p,i)=>nearPoint(p,eb[i],stateTolerance))||!nearPoint(middle(a),middle(b),stateTolerance))return false
+  if(a.kind==='contact-chain'||a.kind==='composite-chain'){
+    if(a.pattern!==b.pattern||a.segments.length!==b.segments.length)return false
+    return a.segments.every((q,i)=>{
+      const r=b.segments[i]
+      if(q.type!==r.type||q.family!==r.family||!nearPoint(q.from,r.from,stateTolerance)||!nearPoint(q.to,r.to,stateTolerance))return false
+      if(q.type!=='rarefaction')return near(q.speed,r.speed,speedTolerance)
+      for(const t of [0,.25,.5,.75,1])if(!nearPoint(interpolate(q.states,t),interpolate(r.states,t),stateTolerance))return false
+      // Conservative grouping: different sampling remains in separate groups.
+      return q.speeds.length===r.speeds.length&&q.speeds.every((s,j)=>near(s,r.speeds[j],speedTolerance))
+    })
+  }
   const sa=speeds(a),sb=speeds(b)
   if(!Array.isArray(sa)||!Array.isArray(sb)||sa.length!==sb.length||!sa.every((s,i)=>near(s,sb[i],speedTolerance)))return false
   if(a.kind==='two-shock')return true

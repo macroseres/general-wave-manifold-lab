@@ -67,13 +67,15 @@ Current and planned ownership:
 
 ```text
 src/math/state/       state-space operations and projections
-src/math/solution/     validated physical realizations (currently rarefaction fans)
+src/math/solution/     rarefaction realizations, Riemann candidates and numerical admissibility diagnostics
 src/math/riemann/      future assembly of wave families into general Riemann solutions
 src/geometry/state/   drawable geometry in the (u,v) plane
 src/geometry/physical/ drawable geometry in the (x,t) plane
 ```
 
-The state and physical geometry directories are implemented. A general `math/riemann/` solver remains future work. Physical-space visualization consumes validated solution data from `math/solution/`; React/Three.js must not reconstruct PDE solutions.
+The state and physical geometry directories are implemented. Current Riemann candidate assembly lives in `math/solution/`, including mixed and two-shock chains, Hugoniot continuation and sampled Liu diagnostics. The `math/riemann/` directory above is a possible future ownership boundary, not an existing module. A complete general validated solver remains future work. Physical-space visualization consumes solution/candidate data with their qualification from `math/solution/`; React/Three.js must not reconstruct PDE solutions.
+
+The scientific priority is lifting state-space Riemann constructions to the wave manifold and relating them to physical realizations. See [scientific objectives and scope](../OBJETIVOS_E_ESCOPO.md).
 
 ## Documentation lifecycle
 

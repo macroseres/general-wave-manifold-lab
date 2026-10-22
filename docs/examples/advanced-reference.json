@@ -1,0 +1,7 @@
+{
+  "triangularFluxFixture":"hugoniot-reference.json",
+  "composite":{"alphaMin":0,"alphaMax":1,"halfJump":0.75,"viscosity":"identity"},
+  "separatrix":{"B1":8,"B2":0,"a":0,"c":1,"steps":80,"step":0.002,"seed":0.00001,"ZMax":0.05},
+  "classification":{"B1":8,"B2":0,"a":0,"c":1},
+  "affine":{"A":[[1,1],[0,1]],"translation":[1,-1]}
+}
