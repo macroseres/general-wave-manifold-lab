@@ -24,7 +24,7 @@ export function monotoneRarefactionSegment(branch, p, { tolerance = 1e-7 } = {})
     speeds.push(speed)
   }
   if (accepted.length < 2 && points.length >= 2 && status === 'speed-order-reversal') status = 'not-expansive'
-  return { ...branch, points: accepted, speeds, status, speedStart: speeds[0] ?? null, speedEnd: speeds.at(-1) ?? null }
+  return { ...branch, points: accepted, parameters: branch.parameters?.slice(0,accepted.length), speeds, status, speedStart: speeds[0] ?? null, speedEnd: speeds.at(-1) ?? null }
 }
 
 export function riemannMonotoneRarefactions(states, p, options = {}) {

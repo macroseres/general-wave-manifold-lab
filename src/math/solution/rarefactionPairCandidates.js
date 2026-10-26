@@ -1,5 +1,6 @@
 import {intersectWavePolylines} from './mixedWaveChains.js'
 import {stateCharacteristicDirection} from '../rarefaction/stateIntegralCurves.js'
+import {refineRarefactionMiddleJoint} from './rarefactionJointCorrector.js'
 
 const valid=q=>Array.isArray(q)&&q.length===2&&q.every(Number.isFinite)
 const coords=q=>Array.isArray(q)?q:[q?.u,q?.v]
@@ -43,20 +44,32 @@ export function rarefactionPairCandidates(states,branches,p,options={}){
   const result=[]
   for(const a of forward)for(const b of backward){
     for(const hit of intersectWavePolylines(a.points,b.points)){
-      const first=sampledRarefactionPrefix(a,hit.aIndex,hit.point,p,false,opts)
-      const second=sampledRarefactionPrefix(b,hit.bIndex,hit.point,p,true,opts)
+      if(!sampledRarefactionPrefix(a,hit.aIndex,hit.point,p,false,opts)||
+        !sampledRarefactionPrefix(b,hit.bIndex,hit.point,p,true,opts))continue
+      const refinement=refineRarefactionMiddleJoint(a,b,p,hit,opts.corrector)
+      if(refinement.status!=='refined-candidate')continue
+      const middle=refinement.middle
+      const fans=refinement.curves.map((curve,i)=>{
+        const branch={...(i===0?a:b),points:curve.states.map(q=>[...q])}
+        branch.points[branch.points.length-1]=[...middle]
+        const fan=sampledRarefactionPrefix(branch,branch.points.length-1,middle,p,i===1,opts)
+        if(fan)fan.source.index=i===0?hit.aIndex:hit.bIndex
+        return fan
+      })
+      const [first,second]=fans
       if(!first||!second)continue
       const gap=second.speeds[0]-first.speeds.at(-1)
       if(!(gap>opts.speedTolerance*(1+Math.max(Math.abs(second.speeds[0]),Math.abs(first.speeds.at(-1))))))continue
-      if(result.some(q=>distance(q.middle,hit.point)<=opts.stateTolerance&&
+      if(result.some(q=>distance(q.middle,middle)<=opts.stateTolerance&&
         q.fans[0].source.sign===a.sign&&q.fans[1].source.sign===b.sign))continue
       result.push({status:'sampled-candidate',kind:'two-rarefaction',pattern:'RR',
-        left:[...left],middle:[...hit.point],right:[...right],fans:[first,second],
+        left:[...left],middle:[...middle],right:[...right],fans:[first,second],
+        refinement:{...refinement,curves:undefined},
         fanStates:[...first.states,...second.states.slice(1)],
         fanSpeeds:[...first.speeds,...second.speeds.slice(1)],
-        evidence:{status:'sampled-fans-ordered',geometry:'sampled-intersection',lax:'not-applicable',
+        evidence:{status:'sampled-fans-ordered',geometry:'corrected-characteristic-intersection',lax:'not-applicable',
           fan:'sampled-speed-and-tangent-compatible',liu:'not-applicable',entropyCertified:false},
-        provenance:{kind:'two-rarefaction',intersection:'sampled-characteristic-intersection',
+        provenance:{kind:'two-rarefaction',intersection:'corrected-characteristic-intersection',
           waves:[first,second].map((fan,i)=>({type:'rarefaction',family:fan.family,
             from:i===0?'U_L':'U_M',to:i===0?'U_M':'U_R',origin:'sampled-characteristic-branch',
             branchSign:fan.source.sign,branchIndex:fan.source.index,

@@ -31,29 +31,35 @@ function rk4(U, p, family, h, reference) {
 
 /** Trace one oriented branch with RK4 step-doubling and a hyperbolicity stop. */
 export function traceStateRarefaction(U, p, family, sign = 1, options = {}) {
-  const { maxSteps = 320, maxLength = 12, step = 0.04, minStep = 1e-5, tolerance = 2e-5 } = options
-  if (!U || !Array.isArray(U) || !U.every(Number.isFinite)) return { points: [], stop: 'missing-state' }
+  const { maxSteps = 320, maxLength = 12, step = 0.04, minStep = 1e-5, tolerance = 2e-5, boundedLength = false } = options
+  if (!U || !Array.isArray(U) || U.length !== 2 || !U.every(Number.isFinite)) return { points: [], stop: 'missing-state' }
+  if (![step,minStep,tolerance,maxLength].every(x=>Number.isFinite(x)&&x>0)||
+    !Number.isInteger(maxSteps)||maxSteps<1||![1,-1].includes(sign)) return { points: [], stop: 'invalid-options' }
   const initial = stateCharacteristicDirection(U, p, family)
   if (!initial) return { points: [], stop: 'non-strict-hyperbolicity' }
   const points = [[...U]]
+  const parameters = [0]
   let current = [...U], ref = initial.direction.map(x => x * sign), h = Math.min(step, maxLength), length = 0
   for (let i = 0; i < maxSteps && length < maxLength; i++) {
+    if (boundedLength) h = Math.min(h, maxLength-length)
     const advance = size => rk4(current, p, family, size, ref)
     const full = advance(h), half1 = advance(h / 2)
     const half2 = half1 && rk4(half1.point, p, family, h / 2, half1.direction)
     if (!full || !half2) {
       if (h > minStep * 1.01) { h /= 2; continue }
-      return { points, stop: 'hyperbolicity-boundary' }
+      return { points, parameters, stop: 'hyperbolicity-boundary' }
     }
     const error = Math.hypot(...full.point.map((x, j) => x - half2.point[j]))
     if (error > tolerance && h > minStep * 1.01) { h /= 2; continue }
+    if (error > tolerance) return { points, parameters, stop: 'integration-tolerance' }
     const next = half2.point
-    if (!stateCharacteristicDirection(next, p, family)) return { points, stop: 'hyperbolicity-boundary' }
-    length += Math.hypot(next[0] - current[0], next[1] - current[1])
+    if (!stateCharacteristicDirection(next, p, family)) return { points, parameters, stop: 'hyperbolicity-boundary' }
+    length += boundedLength ? h : Math.hypot(next[0]-current[0],next[1]-current[1])
     current = next; ref = half2.direction; points.push(current)
+    parameters.push(parameters.at(-1)+h)
     if (error < tolerance / 16) h = Math.min(step * 2, h * 1.5)
   }
-  return { points, stop: length >= maxLength ? 'max-length' : 'max-steps' }
+  return { points, parameters, stop: length >= maxLength ? 'max-length' : 'max-steps' }
 }
 
 export function riemannRarefactionBranches(states, p, options = {}) {
