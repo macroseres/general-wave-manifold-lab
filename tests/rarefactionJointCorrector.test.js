@@ -1,13 +1,32 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
 import {rrStudy} from '../scripts/audit-rr-convergence.js'
-import {refineRarefactionMiddleJoint} from '../src/math/solution/rarefactionJointCorrector.js'
+import {refineRarefactionMiddleJoint,refineRarefactionIntersection,integrateCharacteristicLength,sampledArcLength} from '../src/math/solution/rarefactionJointCorrector.js'
 import {traceStateRarefaction} from '../src/math/rarefaction/stateIntegralCurves.js'
 import {rarefactionPairCandidates,evaluateRarefactionPair} from '../src/math/solution/rarefactionPairCandidates.js'
 import {riemannMonotoneRarefactions} from '../src/math/rarefaction/monotoneBranches.js'
 import {candidatePhysicalProfiles} from '../src/geometry/physical/riemannCandidatePhysical.js'
 
 const p={a20:.5,a11:0,a02:0,a10:0,a01:0,b20:.5,b11:0,b02:.5,b10:0,b01:2}
+test('remote RR API retains analytic intersection, invalid-range and provenance checks',()=>{
+  const triangular={...p,b20:0,b10:.75,b01:0}
+  const left={side:'left',family:'slow',sign:1,points:[[0,-1],[0,-.8],[0,-.6]]}
+  const right={side:'right',family:'fast',sign:-1,points:[[1,.25],[.5,-.25],[-.5,-1.25]]}
+  const result=refineRarefactionIntersection(left,right,triangular,1.25,1)
+  assert.equal(result.status,'refined-candidate')
+  assert.ok(Math.hypot(result.middle[0],result.middle[1]+.75)<1e-7)
+  assert.ok(result.residual<1e-8)
+  assert.equal(result.entropyCertified,false)
+  assert.equal(refineRarefactionIntersection(left,right,triangular,-1,0).status,'invalid-input')
+  const [q]=rarefactionPairCandidates({left:[0,-1],right:[1,.25]},[left,right],triangular)
+  assert.equal(q.refinement.status,'refined-candidate')
+  assert.equal(q.evidence.geometry,'corrected-characteristic-intersection')
+  assert.equal(q.search.complete,false)
+  assert.ok(Math.abs(sampledArcLength(left,1.25)-.25)<1e-14)
+  assert.ok(Math.abs(integrateCharacteristicLength(left,triangular,.25)[1]+.75)<1e-12)
+  assert.equal(integrateCharacteristicLength(left,triangular,1),null)
+  assert.equal(integrateCharacteristicLength(left,triangular,.1,{step:Infinity}),null)
+})
 test('RR curved quadratic fluxes converge independently of source sampling',()=>{
   for(const b20 of [.5,1]){
     const study=rrStudy(b20)

@@ -44,6 +44,35 @@ function curve(branch,p,step){
   return {at,parameters,extent:parameters.at(-1)}
 }
 
+/** Branch-coordinate lookup, using integrated arclength metadata when available. */
+export function sampledArcLength(branch,index){
+  const points=branch?.points?.map(coords)
+  if(!points?.length||!points.every(valid)||!Number.isFinite(index)||index<0||index>points.length-1)return null
+  const parameters=[0]
+  for(let i=1;i<points.length;i++)parameters.push(parameters[i-1]+norm(sub(points[i],points[i-1])))
+  if(branch.parameters){
+    if(branch.parameters.length!==points.length||branch.parameters[0]!==0||
+      !branch.parameters.every((x,i)=>Number.isFinite(x)&&(i===0||x>branch.parameters[i-1])))return null
+    parameters.splice(0,parameters.length,...branch.parameters)
+  }
+  const i=Math.floor(index),fraction=index-i
+  return parameters[i]+(fraction?fraction*(parameters[i+1]-parameters[i]):0)
+}
+
+/** Compatibility API: integrate within the supplied oriented branch extent. */
+export function integrateCharacteristicLength(branch,p,length,{step=.01}={}){
+  if(!Number.isFinite(step)||step<=0)return null
+  return curve(branch,p,step)?.at(length)?.U??null
+}
+
+/** Compatibility entry point from the parallel RR implementation. */
+export function refineRarefactionIntersection(left,right,p,leftIndex,rightIndex,options={}){
+  const result=refineRarefactionMiddleJoint(left,right,p,{aIndex:leftIndex,bIndex:rightIndex},options)
+  if(result.status==='invalid-seed')return {...result,status:'invalid-input'}
+  if(result.status==='refined-candidate')return {...result,otherMiddle:result.curves[1].U}
+  return result
+}
+
 /** Damped Newton for C_left(s)-C_right(t)=0 in bounded branch coordinates.
  * Residual concerns discretized ODEs; it is not an integration-error certificate.
  */

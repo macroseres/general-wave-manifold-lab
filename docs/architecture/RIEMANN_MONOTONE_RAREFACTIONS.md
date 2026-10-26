@@ -127,3 +127,12 @@ Arquivos afetados: `src/math/solution/rarefactionJointCorrector.js`,
 `src/math/rarefaction/monotoneBranches.js`,
 `tests/rarefactionJointCorrector.test.js`, `scripts/audit-rr-convergence.js`
 e este documento existente.
+
+A integração da revisão paralela preservou também os pontos de entrada
+`refineRarefactionIntersection`, `sampledArcLength` e
+`integrateCharacteristicLength`, agora apoiados nos mesmos limites e na mesma
+reintegração do corretor validado. O teste adicional cobre a interseção triangular,
+os índices inválidos, a proveniência e a rejeição de extrapolação na API auxiliar.
+Após a integração, lint, 807 testes (zero falhas) e build passaram; o aviso de
+tamanho do bundle permanece. O registro de status em `docs/STATE_SPACE_STATUS.md`
+foi atualizado para refletir esses resultados.
