@@ -78,6 +78,10 @@ export function refineTwoShockMiddle(left,right,seed,p,{
 export function twoShockCandidates(left,right,forward=[],backward=[],p,{tolerance=1e-8,maxCandidates=40}={}){
   if(!left?.every?.(Number.isFinite)||!right?.every?.(Number.isFinite))return []
   const found=[]
+  const report={status:'no-candidates-found',sampledIntersections:0,refined:0,
+    rejected:[],maxCandidates,complete:false}
+  const finish=()=>{report.status=found.some(q=>q.refinement?.status==='refined-candidate')?'candidates-found':
+    report.sampledIntersections?'inconclusive':'no-candidates-found';found.report=report;return found}
   for(const f of forward){
     for(let i=1;i<(f.points?.length??0);i++){
       const a=f.points[i-1],b=f.points[i];if(!finitePoint(a)||!finitePoint(b))continue
@@ -90,9 +94,12 @@ export function twoShockCandidates(left,right,forward=[],backward=[],p,{toleranc
           if(scale===0||Math.abs(den)<=1e-12*scale)continue
           const diff=sub(C,A),t=cross(diff,s)/den,u=cross(diff,r)/den
           if(t<0||t>1||u<0||u>1)continue
+          report.sampledIntersections++
           const seed=[A[0]+t*r[0],A[1]+t*r[1]]
           const refinement=refineTwoShockMiddle(left,right,seed,p)
           const middle=refinement.status==='refined-candidate'?refinement.middle:seed
+          if(refinement.status==='refined-candidate')report.refined++
+          else report.rejected.push({forwardSegment:f.id,backwardSegment:g.id,seed,status:refinement.status})
           if(found.some(q=>Math.hypot(q.middle[0]-middle[0],q.middle[1]-middle[1])<=tolerance))continue
           const first=directShockDiagnostic(left,middle,p)
           const second=directShockDiagnostic(middle,right,p)
@@ -101,10 +108,16 @@ export function twoShockCandidates(left,right,forward=[],backward=[],p,{toleranc
             rhBoth:first.rankineHugoniot&&second.rankineHugoniot,
             forwardSegment:f.id,backwardSegment:g.id,refinement,
             geometryStatus:refinement.status==='refined-candidate'?'corrected-rh-junction':'sampled-only'})
-          if(found.length>=maxCandidates)return found
+          if(found.length>=maxCandidates){report.limitReached=true;return finish()}
         }
       }
     }
   }
-  return found
+  return finish()
+}
+
+/** Bounded search with explicit diagnostics; absence is not a nonexistence proof. */
+export function searchTwoShockCandidates(...args){
+  const candidates=twoShockCandidates(...args)
+  return {candidates,report:candidates.report??{status:'invalid-input',complete:false}}
 }
