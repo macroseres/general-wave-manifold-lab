@@ -156,6 +156,11 @@ export function mixedWaveCandidates(states,rarefactions,hugoniot,p,{maxCandidate
   const left=states?.left,right=states?.right
   if(!valid(left)||!valid(right))return []
   const found=[]
+  const report={status:'no-candidates-found',sampledIntersections:0,refined:0,
+    rejected:[],maxCandidates,complete:false}
+  const finish=()=>{report.status=found.some(q=>q.refinement?.status==='refined-candidate'&&
+    q.evidence.status==='mixed-ordered-lax-candidate'&&q.fanArc.passes)?'candidates-found':
+    report.sampledIntersections?'inconclusive':'no-candidates-found';found.report=report;return found}
   const cases=[
     {kind:'rarefaction-shock',side:'left',hugoniot:hugoniot?.right},
     {kind:'shock-rarefaction',side:'right',hugoniot:hugoniot?.left},
@@ -163,6 +168,7 @@ export function mixedWaveCandidates(states,rarefactions,hugoniot,p,{maxCandidate
   for(const spec of cases)for(const branch of rarefactions??[]){
     if(branch.side!==spec.side||!['slow','fast'].includes(branch.family))continue
     for(const curve of spec.hugoniot??[])for(const hit of intersectWavePolylines(branch.points,curve.points)){
+      report.sampledIntersections++
       const middle=hit.point
       if(distance(middle,left)<1e-6||distance(middle,right)<1e-6)continue
       if(found.some(q=>q.kind===spec.kind&&q.family===branch.family&&distance(q.middle,middle)<1e-5))continue
@@ -174,6 +180,9 @@ export function mixedWaveCandidates(states,rarefactions,hugoniot,p,{maxCandidate
       })
       const refinement=joint.status==='refined-candidate'?joint:
         refineMixedMiddle(left,right,branch,p,spec.kind,segmentIndex)
+      if(refinement.status==='refined-candidate')report.refined++
+      else report.rejected.push({kind:spec.kind,branchFamily:branch.family,
+        branchIndex:hit.aIndex,curveId:curve.id,status:refinement.status})
       const evaluatedMiddle=refinement.status==='refined-candidate'?refinement.middle:middle
       const fanArc=assessMixedFanArc(branch,evaluatedMiddle,p,spec.kind,Math.floor(hit.aIndex),{joinTolerance})
       const evidence=assessMixedWaveChain(left,evaluatedMiddle,right,p,spec.kind,branch.family)
@@ -182,8 +191,14 @@ export function mixedWaveCandidates(states,rarefactions,hugoniot,p,{maxCandidate
       found.push({kind:spec.kind,family:branch.family,middle,branchSign:branch.sign,
         branchIndex:hit.aIndex,hugoniotIndex:hit.bIndex,curveId:curve.id,evidence,refinement,fanArc,
         geometryStatus:'sampled-polyline-intersection',entropyCertified:false})
-      if(found.length>=maxCandidates)return found
+      if(found.length>=maxCandidates){report.limitReached=true;return finish()}
     }
   }
-  return found
+  return finish()
+}
+
+/** Preserve local search limits and numerical failures for inspection. */
+export function searchMixedWaveCandidates(...args){
+  const candidates=mixedWaveCandidates(...args)
+  return {candidates,report:candidates.report??{status:'invalid-input',complete:false}}
 }
