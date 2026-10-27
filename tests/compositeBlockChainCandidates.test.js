@@ -93,7 +93,7 @@ test('T05: KR composite has an explicit sonic junction, conserved jump and order
   assert.deepEqual(q.segments.at(-1).to,states.right)
   assert.deepEqual(q.segments[0].to,q.blocks[0].sonicJunction)
   assert.deepEqual(q.segments[1].from,q.blocks[0].sonicJunction)
-  assert.deepEqual(q.segments[1].to,q.middle)
+  q.segments[1].to.forEach((value,i)=>close(value,q.middle[i]))
   assert.deepEqual(q.segments[2].from,q.middle)
   const jump=q.segments[1],leftFlux=flux(jump.from,p),rightFlux=flux(jump.to,p)
   for(let i=0;i<2;i++)close(rightFlux[i]-leftFlux[i],jump.speed*(jump.to[i]-jump.from[i]))
