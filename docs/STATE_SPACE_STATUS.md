@@ -161,4 +161,6 @@ Escopo aprovado: RS, SR e SS no espaço de estados; RR permanece como referênci
 
 **Separação de critérios:** conservação (RH), configuração espectral, Lax estrito, Liu orientado, desigualdade de entropia com par compatível, perfil de regularização e relação cinética são evidências independentes. A ausência de modelo, arco completo ou perfil verificado exige `não avaliado`, não `aprovado`. Fronteiras sônicas e coincidências não pertencem aos nove interiores estritos.
 
-**Estado:** **em execução; CI do commit inicial ainda não confirmado**. Ainda falta verificar a cobertura dos diagnósticos existentes e registrar os limites finais antes de encerrar a T06.
+**Validação da primeira entrega:** captura do GitHub Actions apresentada pelo responsável em 27/10/2026 confirma **CI #36 aprovado** para `bf9f681` e **CI #37 aprovado** para `33443f7`, ambos em `main`. A regressão dos nove interiores, RH e Lax passou; isso **não valida** Liu contínuo, desigualdades de entropia para pares especificados, existência de perfil viscoso ou relação cinética.
+
+**Estado:** **em execução; primeira entrega validada pelo CI**. A T06 não está encerrada: falta consolidar a rastreabilidade dos diagnósticos de admissibilidade e os seus limites no escopo previsto. A T07 não foi iniciada.
