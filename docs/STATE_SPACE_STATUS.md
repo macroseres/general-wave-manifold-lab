@@ -117,3 +117,16 @@ Escopo aprovado: RS, SR e SS no espaço de estados; RR permanece como referênci
 - Regressões: adicionados testes para correção SS, dados inválidos, diagnósticos e reconstrução do leque. A execução **CI #23**, referente ao commit `058c2d3`, foi informada como concluída com sucesso na branch `main`, após corrigir a compatibilidade do retorno de `twoShockCandidates`. O workflow executa lint, testes e build por `npm run check`. A contagem detalhada do CI #23 não foi conferida diretamente neste registro; a execução anterior #21 apresentou 825 testes aprovados e um teste reprovado, posteriormente corrigido.
 
 **Encerramento formal GWML-T03 — 27/10/2026:** autorizado pelo responsável pelo projeto e registrado na documentação. As quatro entregas aprovadas (corretor conjunto SS, reconstrução RS/SR, diagnósticos de busca e validação automatizada) ficam encerradas **no escopo numérico delimitado**. A aprovação do CI não constitui demonstração de completude global, unicidade, certificação entrópica geral ou admissibilidade física em todos os regimes. Permanecem limitações explícitas: buscas por interseções amostradas podem perder soluções, o corretor SS é local, RS/SR não possuem certificado global de integração, e a interface ainda não expõe integralmente os relatórios de busca. Essas limitações não são incorporadas retroativamente ao escopo encerrado. Nenhuma tarefa posterior é iniciada por este registro.
+
+
+## GWML-T04 — contatos de direção e velocidade constantes (27/10/2026)
+
+**Autorização:** início da GWML-T04 conforme o plano finito T01–T08 de `ROADMAP.md`. A T05 não foi iniciada.
+
+**Escopo fechado:** RC, SC, CR, CS e CC apenas no modelo de contato com autovetor e autovalor constantes. O construtor preexistente é `src/math/solution/contactChainCandidates.js`; sua fundamentação está em `traditional/CONTATOS_DIRECAO_CONSTANTE.md`. Contatos de direção variável e certificação entrópica geral não pertencem à T04.
+
+**Primeira entrega:** commit `766c498`, com regressões conjuntas em `tests/contactChainCandidates.test.js` para os cinco padrões, conferindo estados de entrada/saída, estado intermediário, ordenação estrita das velocidades, verificação de cada contato pelo modelo nos coeficientes, conservação numérica e indicação explícita de ausência de certificação entrópica/completude. Acrescentado caso negativo para fluxo quadrático sem direção de contato constante.
+
+**Validação:** testes foram adicionados no GitHub; **execução do CI ainda não confirmada neste registro**. O encerramento da T04 exige resultado de CI aprovado, verificação dos cinco padrões no escopo definido e documentação de limitações. Não confundir existência de fixture com prova de cobertura geral.
+
+**Estado:** **em execução; não encerrada**.
