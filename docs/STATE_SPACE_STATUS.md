@@ -127,6 +127,6 @@ Escopo aprovado: RS, SR e SS no espaço de estados; RR permanece como referênci
 
 **Primeira entrega:** commit `766c498`, com regressões conjuntas em `tests/contactChainCandidates.test.js` para os cinco padrões, conferindo estados de entrada/saída, estado intermediário, ordenação estrita das velocidades, verificação de cada contato pelo modelo nos coeficientes, conservação numérica e indicação explícita de ausência de certificação entrópica/completude. Acrescentado caso negativo para fluxo quadrático sem direção de contato constante.
 
-**Validação:** testes foram adicionados no GitHub; **execução do CI ainda não confirmada neste registro**. O encerramento da T04 exige resultado de CI aprovado, verificação dos cinco padrões no escopo definido e documentação de limitações. Não confundir existência de fixture com prova de cobertura geral.
+**Validação:** captura do GitHub Actions apresentada pelo responsável em 27/10/2026 confirma **CI #26 aprovado** para o commit `766c498` (regressões dos cinco padrões) e **CI #27 aprovado** para o commit `0d66684` (registro documental), ambos em `main`. O pipeline passou; não se reivindica prova matemática global nem completude dos contatos.
 
-**Estado:** **em execução; não encerrada**.
+**Encerramento GWML-T04 — 27/10/2026:** os cinco padrões RC, SC, CR, CS e CC possuem fixtures reproduzíveis no modelo restrito de direção e velocidade constantes, testes de fechamento, ordenação, conservação e rejeição de casos fora do modelo. **Estado: encerrada no escopo aprovado.** Permanecem fora deste marco contatos de direção variável, certificação entrópica geral e cobertura global. Nenhuma tarefa posterior foi iniciada.
