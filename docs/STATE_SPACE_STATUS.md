@@ -151,3 +151,14 @@ Escopo aprovado: RS, SR e SS no espaço de estados; RR permanece como referênci
 
 
 **Encerramento formal GWML-T05 — 27/10/2026:** captura do GitHub Actions fornecida pelo responsável confirma **CI #33 aprovado** para o commit `84dcb68` e **CI #34 aprovado** para o commit `b604ecf`, ambos na branch `main`. O escopo fechado da T05 é a validação numérica delimitada das sete entradas RK, KR, SK, KS, CK, KC e KK, com regressões positivas existentes para RK/KR/SK/KS, verificação adicional da junção KR e registros de disponibilidade para CK/KC/KK **sem fixtures positivas validadas**. Não há demonstração de existência para todas as entradas, completude da busca, seleção entrópica global ou cinética específica. **Estado: T05 encerrada no escopo aprovado; T06 não iniciada.**
+
+
+## GWML-T06 — classificação e admissibilidade (27/10/2026)
+
+**Autorização:** início da T06 no plano fechado T01–T08. A T07 não foi iniciada.
+
+**Primeira entrega:** commit `bf9f681` acrescenta regressão às nove assinaturas espectrais de saltos com Rankine–Hugoniot, confrontando o diagnóstico direto com a classificação de Lax estrito de extremos. Apenas *one-shock* e *two-shock* correspondem às famílias Lax estritas no regime do exemplo; nenhum caso recebe certificação entrópica a partir da assinatura.
+
+**Separação de critérios:** conservação (RH), configuração espectral, Lax estrito, Liu orientado, desigualdade de entropia com par compatível, perfil de regularização e relação cinética são evidências independentes. A ausência de modelo, arco completo ou perfil verificado exige `não avaliado`, não `aprovado`. Fronteiras sônicas e coincidências não pertencem aos nove interiores estritos.
+
+**Estado:** **em execução; CI do commit inicial ainda não confirmado**. Ainda falta verificar a cobertura dos diagnósticos existentes e registrar os limites finais antes de encerrar a T06.
