@@ -2,7 +2,7 @@
 
 ## Direção científica e leitura do histórico
 
-Próxima etapa após a consolidação tradicional: implementar progressivamente as [16 combinações de blocos no espaço de estados](traditional/IMPLEMENTACAO_16_CADEIAS.md). A [classificação dos nove saltos](traditional/CLASSIFICACAO_DOS_SALTOS.md) deve ser independente da seleção e tratar fronteiras explicitamente. A disponibilidade dos construtores e a cobertura científica devem ser registradas por padrão; o catálogo não implica 16 soluções para cada dado inicial.
+A fase tradicional encontra-se na **auditoria final GWML-T08** do plano fechado T01–T08; consultar a matriz de 16 entradas em [STATE_SPACE_STATUS.md](STATE_SPACE_STATUS.md). A passagem à investigação geométrica/topológica ocorrerá após a validação e o encerramento formal da T08. O catálogo das [16 combinações](traditional/IMPLEMENTACAO_16_CADEIAS.md) não implica existência de solução para todos os dados. A [classificação dos nove saltos](traditional/CLASSIFICACAO_DOS_SALTOS.md) deve ser independente da seleção e tratar fronteiras explicitamente. A disponibilidade dos construtores e a cobertura científica devem ser registradas por padrão; o catálogo não implica 16 soluções para cada dado inicial.
 
 Prioridade de documentação atualizada: desenvolver e revisar primeiro a [construção tradicional](traditional/README.md), com suas teorias clássica e não clássica, nos espaços de estados e físico. A camada topológica será consolidada depois, objeto por objeto. A referência tradicional autônoma já foi escrita como base de revisão; os teoremas locais citáveis e a seleção cinética específica permanecem pendentes. O material topológico existente foi preservado.
 
