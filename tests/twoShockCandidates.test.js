@@ -22,3 +22,22 @@ test('shared vertex is deduplicated',()=>{
  const a=[curve('f',[[-1,0],[0,0],[1,0]])],b=[curve('b',[[0,-1],[0,1]])]
  assert.equal(twoShockCandidates([-2,-2],[2,2],a,b,defaultCoefficients).length,1)
 })
+
+
+test('bounded four-equation corrector recovers a non-poligonal SS junction',async()=>{
+ const {refineTwoShockMiddle,searchTwoShockCandidates}=await import('../src/math/solution/twoShockCandidates.js')
+ const p={a20:.5,a11:0,a02:0,a10:0,a01:0,b20:0,b11:0,b02:.5,b10:0,b01:5}
+ const result=refineTwoShockMiddle([2,2],[0,0],[.03,1.98],p)
+ assert.equal(result.status,'refined-candidate')
+ assert.ok(Math.hypot(result.middle[0],result.middle[1]-2)<1e-6)
+ assert.ok(result.residual<1e-8)
+ const found=searchTwoShockCandidates([2,2],[0,0],
+   [curve('forward',[[-.2,1.8],[.2,2.2]])],
+   [curve('backward',[[-.2,2.2],[.2,1.8]])],p)
+ assert.ok(found.report)
+ assert.equal(found.report.complete,false)
+})
+test('singular or invalid SS input does not claim refinement',async()=>{
+ const {refineTwoShockMiddle}=await import('../src/math/solution/twoShockCandidates.js')
+ assert.equal(refineTwoShockMiddle(null,[0,0],[1,1],defaultCoefficients).status,'invalid-input')
+})
