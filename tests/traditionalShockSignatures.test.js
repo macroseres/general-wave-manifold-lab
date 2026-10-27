@@ -32,3 +32,16 @@ test('nine RH fixtures agree with endpoint diagnostics and incidence orientation
     assert.equal(incoming===3,['one-shock','two-shock'].includes(q.name))
   }
 })
+
+test('T06: nine RH signatures are not entropy certificates',async()=>{
+  const {classifyLaxShock}=await import('../src/math/solution/twoShockFamilyEvidence.js')
+  const {directShockDiagnostic}=await import('../src/math/solution/directShockDiagnostic.js')
+  for(const q of traditionalShockSignatures()){
+    const d=directShockDiagnostic(q.left,q.right,q.coefficients)
+    const lax=classifyLaxShock(q.left,q.right,q.coefficients)
+    assert.equal(d.rankineHugoniot,true)
+    assert.equal(lax.entropyCertified,false)
+    const expected=q.name==='one-shock'?['slow']:q.name==='two-shock'?['fast']:[]
+    assert.deepEqual(lax.families,expected)
+  }
+})
