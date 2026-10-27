@@ -182,3 +182,43 @@ Escopo aprovado: RS, SR e SS no espaço de estados; RR permanece como referênci
 **Limites:** CK, KC e KK permanecem sem exemplos positivos quadráticos validados; não são reconstruídos artificialmente. Perfis amostrados não certificam admissibilidade entrópica.
 
 **Validação e encerramento — 27/10/2026:** captura do GitHub Actions fornecida pelo responsável confirma **CI #42 aprovado** (commit `3667c5d`) e **CI #43 aprovado** (commit `d48e207`), ambos na branch `main`. A regressão de reconstrução KR, os traços de salto, a autossimilaridade e a rejeição de entradas inconclusivas passaram no pipeline. **Estado: GWML-T07 formalmente encerrada no escopo numérico aprovado.** Não há certificação geral de admissibilidade nem exemplos positivos validados para CK/KC/KK. **A T08 não foi iniciada.**
+
+
+## GWML-T08 — auditoria integrada final (27/10/2026)
+
+**Autorização:** última tarefa do conjunto fechado GWML-T01–T08; nenhuma T09 está prevista. Este relatório audita a **cobertura delimitada**, não reivindica um solver universal ou certificação de entropia.
+
+### Matriz das 16 combinações
+
+| Cadeia | Construção / exemplo quadrático | Reconstrução física | Evidência principal |
+|---|---|---|---|
+| RR | Exemplo positivo validado no escopo T02 | Candidato autossimilar com dois leques | `rarefactionPairCandidates.js`, `riemannSelfSimilarCandidate.js`; T02 |
+| RS | Exemplo positivo validado no escopo T03 | Leque + salto | `riemannSelfSimilarCandidate.js`; T03 |
+| RC | Positivo, contato de direção e velocidade constantes | Leque + contato | `contactChainCandidates.js`, `contactChainCandidates.test.js` |
+| RK | Positivo quadrático em fixture | Leque + K desdobrada | `compositeBlockChainCandidates.js`, `compositeBlockChainCandidates.test.js` |
+| SR | Exemplo positivo validado no escopo T03 | Salto + leque | `riemannSelfSimilarCandidate.js`; T03 |
+| SS | Exemplo positivo validado no escopo T03 | Dois saltos e patamar | `riemannSelfSimilarCandidate.js`; T03 |
+| SC | Positivo, contato constante | Salto + contato | `contactChainCandidates.test.js` |
+| SK | Positivo quadrático em fixture | Salto + K desdobrada | `compositeBlockChainCandidates.test.js` |
+| CR | Positivo, contato constante | Contato + leque | `contactChainCandidates.test.js` |
+| CS | Positivo, contato constante | Contato + salto | `contactChainCandidates.test.js` |
+| CC | Positivo, duas famílias linearmente degeneradas | Dois contatos | `contactChainCandidates.test.js` |
+| CK | Entrada no construtor, **sem fixture quadrática positiva validada** | Não demonstrada | `compositeBlockChainCandidates.js`; T05 |
+| KR | Positivo quadrático em fixture | K desdobrada + leque; traço interno testado | `compositeBlockChainCandidates.test.js`; T05/T07 |
+| KS | Positivo quadrático em fixture | K desdobrada + salto | `compositeBlockChainCandidates.test.js` |
+| KC | Entrada no construtor, **sem fixture quadrática positiva validada** | Não demonstrada | `compositeBlockChainCandidates.js`; T05 |
+| KK | Entrada no construtor, **sem fixture quadrática positiva validada** | Não demonstrada | `compositeBlockChainCandidates.js`; T05 |
+
+**Contagem:** 16 padrões especificados; 13 com casos positivos quadráticos documentados no escopo atual; 3 com entrada de construção, mas sem caso positivo quadrático validado. **Não** interpretar a contagem como cobertura de todos os dados iniciais, todos os fluxos ou todos os regimes. Em CK/KC/KK, não se pode afirmar existência nem inexistência a partir de buscas limitadas.
+
+### Rastreabilidade por objetivo
+
+1. **Espaço de estados:** definição e fechamento em `traditional/IMPLEMENTACAO_16_CADEIAS.md`; construtores R/S, `contactChainCandidates.js` e `compositeBlockChainCandidates.js`; regressões das tarefas T02–T05. Estados intermediários, ramos e segmentos internos das compostas são preservados nos candidatos suportados.
+2. **Classificação e admissibilidade:** nove interiores e fronteiras em `traditional/CLASSIFICACAO_DOS_SALTOS.md`; `directShockDiagnostic.js`, `twoShockFamilyEvidence.js`, `shockConfiguration.js`; regressões `traditionalShockSignatures.test.js`; matriz dos oito canais em `traditional/CADEIAS_E_ADMISSIBILIDADE.md`. RH e Lax não certificam Liu, entropia, perfil viscoso ou cinética.
+3. **Espaço físico:** `riemannSelfSimilarCandidate.js` e `riemannCandidatePhysical.js` derivam perfil `U(x,t)=W(x/t)`, raios, leques e traços **do mesmo candidato**. Regressões de contatos e compostas, incluindo KR em dois tempos, sustentam o escopo numérico. Perfis não são produzidos para candidatos inconclusivos.
+
+### Limites e decisão de encerramento
+
+Permanecem fora do escopo concluído: contatos de direção variável; validação positiva quadrática de CK/KC/KK; completude global, existência e unicidade para dados arbitrários; fluxos degenerados e regiões não hiperbólicas em geral; certificação contínua de Liu, pares entrópicos não especificados, perfis de difusão–dispersão sem coeficientes e relação cinética não definida. Fronteiras sônicas, velocidades coincidentes e amplitudes nulas exigem interpretação específica, não promoção automática a soluções físicas. A aprovação dos testes não constitui teorema.
+
+**Histórico de CI confirmado pelo responsável:** T02–T07 concluídas em escopo delimitado; para T07, CI #42 e #43 verdes. **Validação da T08:** os commits documentais desta auditoria devem receber CI verde antes da decisão final de encerramento. Até essa confirmação, **T08 em validação; fase tradicional ainda não formalmente encerrada**. Nenhuma nova tarefa GWML-T será criada para tratar limitações científicas externas ao escopo.
