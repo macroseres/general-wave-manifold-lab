@@ -5,7 +5,8 @@ export function candidateProvenance(profile, source){
     kind:profile.kind,
     waves:[{type:'shock',family:'slow',from:'U_L',to:'U_M',speed:profile.speeds[0],origin:'forward-hugoniot',segment:source.forwardSegment??null},
       {type:'shock',family:'fast',from:'U_M',to:'U_R',speed:profile.speeds[1],origin:'backward-hugoniot',segment:source.backwardSegment??null}],
-    intersection:'sampled-hugoniot-intersection',entropyCertified:false
+    intersection:source.refinement?.status==='refined-candidate'?'corrected-rh-junction':'sampled-hugoniot-intersection',
+    refinementStatus:source.refinement?.status??'not-evaluated',entropyCertified:false
   }
   if(!['rarefaction-shock','shock-rarefaction'].includes(profile.kind))return null
   const rarefaction={type:'rarefaction',family:source.family,from:profile.kind==='rarefaction-shock'?'U_L':'U_M',to:profile.kind==='rarefaction-shock'?'U_M':'U_R',origin:'sampled-characteristic-branch',branchSign:source.branchSign??null,branchIndex:source.branchIndex??null,speedStart:profile.fanSpeeds?.[0],speedEnd:profile.fanSpeeds?.at(-1)}
