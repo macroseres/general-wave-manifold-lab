@@ -610,7 +610,7 @@
 .statePanelSection .riemannCoordinates label{display:flex;flex-direction:column;gap:4px;min-width:0;font-size:11px}
 .statePanelSection .riemannCoordinates input{width:100%;min-width:0;max-width:100%;height:31px;padding:4px 5px;font-variant-numeric:tabular-nums;box-sizing:border-box}
 .statePanelSection .riemannStateEditor .riemannApply{width:100%;min-height:30px;font-weight:650}
-.statePanelSection .riemannNudgeGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:5px}
+.statePanelSection .riemannNudgeGrid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:5px}
 .statePanelSection .riemannNudgeGrid button{min-width:0;min-height:27px;font-size:11px;padding:3px 5px}
 @media(max-width:1050px){.statePanelSection .riemannStateEditor{padding:9px}}
 
@@ -682,7 +682,14 @@ background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/sv
 .stateWorkspaceGrid{position:relative;}
 
 
-.stateToolsDrawer[data-activity="states"] .statePanelSection:not([data-activity-section="states"]),.stateToolsDrawer[data-activity="curves"] .statePanelSection:not([data-activity-section="curves"]),.stateToolsDrawer[data-activity="view"] .statePanelSection:not([data-activity-section="view"]),.stateToolsDrawer[data-activity="chains"] .statePanelSection:not([data-activity-section="chains"]){display:none}
+.stateToolsDrawer .statePanelSection {display:none}
+.stateToolsDrawer[data-activity="states"] .statePanelSection[data-activity-section="states"],
+.stateToolsDrawer[data-activity="curves"] .statePanelSection[data-activity-section="curves"],
+.stateToolsDrawer[data-activity="points"] .statePanelSection[data-activity-section="points"],
+.stateToolsDrawer[data-activity="arcs"] .statePanelSection[data-activity-section="arcs"],
+.stateToolsDrawer[data-activity="fields"] .statePanelSection[data-activity-section="fields"],
+.stateToolsDrawer[data-activity="view"] .statePanelSection[data-activity-section="view"],
+.stateToolsDrawer[data-activity="chains"] .statePanelSection[data-activity-section="chains"] {display:block}
 .stateActivityRail button:focus-visible{outline:2px solid #77dca3;outline-offset:2px}
 /* Fase 15.27: navegação por atividades nos painéis restantes */
 @media(min-width:761px){

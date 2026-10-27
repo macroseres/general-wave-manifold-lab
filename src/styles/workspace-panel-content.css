@@ -10,7 +10,7 @@
  padding:0 10px;margin:0;border:0;border-bottom:1px solid var(--workspace-stroke);
  border-radius:0;background:var(--workspace-surface);color:var(--drawer-control-text);
 }
-.workspaceLayout .workspacePanelHeader > strong {min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:12px;font-weight:650;line-height:1.2}
+.workspaceLayout .workspacePanelHeader > strong {min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:13px;font-weight:650;line-height:1.2}
 .workspaceLayout .workspacePanelHeader > .workspacePanelClose {
  box-sizing:border-box;flex:0 0 30px;display:grid;place-items:center;
  width:30px;height:30px;padding:0;border:1px solid var(--workspace-stroke);
@@ -75,12 +75,13 @@
 .workspaceLayout .workspaceDisclosure {flex:0 0 auto;min-width:0;width:100%;margin:0;padding:0;border:0;border-radius:0;background:transparent;box-shadow:none}
 .workspaceLayout .workspaceDisclosure > summary {
  box-sizing:border-box;display:flex;align-items:center;justify-content:space-between;
- gap:8px;min-height:40px;margin:0;padding:0 12px;
+ gap:8px;min-height:42px;margin:0;padding:0 12px;
  border:0;border-bottom:1px solid var(--workspace-stroke);border-radius:0;
- background:transparent;color:var(--drawer-control-text);
+ background:#151b23;color:var(--drawer-control-text);
  font-size:12px;font-weight:600;line-height:1.35;list-style:none;cursor:pointer;
 }
 .workspaceLayout .workspaceDisclosure > summary::-webkit-details-marker {display:none}
+.workspaceLayout .workspaceDisclosure > summary:hover {background:#1c2631}
 .workspaceLayout .workspaceDisclosure > summary::after {
  content:"⌄";position:static;inset:auto;display:block;flex:0 0 auto;
  font-size:14px;font-weight:400;line-height:1;color:#b8c8d7;
@@ -89,7 +90,7 @@
 .workspaceLayout .workspaceDisclosure[open] > summary::after {transform:rotate(180deg)}
 .workspaceLayout .workspaceDisclosure > .sidebarSectionBody,
 .workspaceLayout .workspaceDisclosure > .physicalToolsDrawerContent,
-.workspaceLayout .workspaceDisclosure > .statePanelSectionBody {margin:0;padding:10px;border:0;background:transparent}
+.workspaceLayout .workspaceDisclosure > .statePanelSectionBody {margin:0;padding:12px 10px;border:0;background:transparent}
 
 /* The physical visualization selector shares the disclosure body geometry. */
 .workspaceLayout--physical .physicalVisualizationSection > .sidebarSectionBody > .workspacePanelBody {padding:0}
@@ -106,6 +107,33 @@
 .workspaceLayout--states .riemannLabHeader h3,
 .workspaceLayout--states .riemannLabHeader p {max-width:100%;overflow-wrap:break-word}
 .physicalStaleNotice {padding:24px;max-width:720px;line-height:1.5}
+
+/* Related controls retain their own label and a clear reading order. */
+.workspaceLayout .workspaceControlGroup {
+  min-width:0;margin:0 0 14px;padding:8px 0 0;border:0;
+}
+.workspaceLayout .workspaceControlGroup:last-child {margin-bottom:0}
+.workspaceLayout .workspaceControlGroup > legend {
+  padding:0;color:#a8bacb;font-size:11px;font-weight:650;line-height:1.5;
+}
+.workspaceLayout .workspaceFlowComponents {display:flex;flex-direction:column;gap:4px}
+.workspaceLayout .workspaceFlowComponents .coeff {margin:0}
+.workspaceLayout .workspaceSubsection {
+  min-width:0;margin:12px 0 0;border:1px solid var(--workspace-stroke);
+  border-radius:6px;background:transparent;
+}
+.workspaceLayout .workspaceSubsection > summary {
+  padding:10px;cursor:pointer;color:#c6d1dc;font-size:11px;font-weight:600;
+  line-height:1.45;overflow-wrap:break-word;
+}
+.workspaceLayout .workspaceSubsection > summary:focus-visible {
+  outline:2px solid #65c5a1;outline-offset:-2px;border-radius:5px;
+}
+.workspaceLayout .workspaceSubsectionBody {
+  display:flex;flex-direction:column;gap:10px;min-width:0;padding:0 10px 12px;
+}
+.workspaceLayout .workspaceSubsectionBody > small {line-height:1.5}
+.workspaceLayout .workspaceSubsection[hidden] {display:none}
 
 /* Inspector and controls share the exact same drawer geometry. */
 .workspaceLayout--3d #three-d-controls > #three-d-inspection.workspacePanelDrawer {
@@ -249,6 +277,7 @@
 .parameterDiagramLegend{display:flex;flex-wrap:wrap;gap:8px 12px;margin:10px 0;font-size:12px}
 .parameterDiagramLegend span{display:inline-flex;align-items:center;gap:5px}
 .parameterDiagramLegend i{width:10px;height:10px;border-radius:2px;display:inline-block}
+.parameterAxisLabel{display:flex;align-items:center;justify-content:center;width:100%;height:100%;color:inherit;font-size:14px}
 .parametersDiagramActions{display:flex;gap:8px;flex-wrap:wrap}
 
 /* Documentation: grouped, searchable index. */
@@ -818,14 +847,14 @@
 /* Parâmetros: somente geometria própria. Cabeçalhos, acordeões e campos
    reutilizam workspacePanelHeader, workspaceDisclosure e workspacePanelDrawer. */
 .parametersWorkspace--unified{padding:0;overflow:hidden;display:flex;flex-direction:column;min-height:0}
-.parametersUnifiedLayout{display:flex;flex:1;min-width:0;min-height:0;border-top:1px solid var(--workspace-stroke)}
+.parametersUnifiedLayout{display:flex;flex:1;min-width:0;min-height:0;gap:var(--workspace-gap);padding:var(--workspace-pad)}
 .parametersNavRail{width:68px;flex:0 0 68px;border-right:1px solid var(--workspace-stroke);padding:8px 5px;display:flex;flex-direction:column;gap:5px}
 .parametersNavItem,.parametersNavCollapse{border:1px solid transparent;background:transparent;color:inherit;cursor:pointer;border-radius:6px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;padding:9px 2px;font-size:10px;min-height:54px}
 .parametersNavItem:hover,.parametersNavCollapse:hover{background:rgba(140,150,165,.1)}
 .parametersNavItem.is-active{border-color:rgba(80,200,145,.38);background:rgba(45,155,113,.16)}
 .parametersNavItem .tablerNavIcon,.parametersNavCollapse .tablerNavIcon{width:21px;height:21px}
 .parametersNavCollapse{margin-top:auto;min-height:36px}
-.parametersControlSidebar.workspacePanelDrawer{width:224px;flex:0 0 224px;min-width:0;display:flex;flex-direction:column;border-radius:0;border-top:0;border-bottom:0;border-left:0;overflow-y:auto}
+.parametersControlSidebar.workspacePanelDrawer{width:var(--workspace-drawer);flex:0 0 var(--workspace-drawer);min-width:0;display:flex;flex-direction:column;overflow-y:auto}
 .parametersSidebarHeading.workspacePanelHeader{position:relative;flex:0 0 42px}
 /* O drawer compartilhado é o único contêiner de rolagem.
    Acordeões e seus corpos usam as regras comuns do workspace. */
@@ -851,10 +880,48 @@
   max-width:100%;
   white-space:normal;
 }
-.parametersMain{min-width:0;flex:1;overflow:auto;display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);gap:12px;padding:12px;align-items:start;align-content:start}
+.parametersMain{min-width:0;flex:1;overflow:auto;display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);grid-template-rows:max-content;grid-auto-rows:max-content;gap:12px;padding:12px;align-items:start;align-content:start}
 .parametersMain>.parametersPanel{min-width:0}
+.parametersEyebrow {display:block;font-size:10px;font-weight:650;letter-spacing:.03em;color:#90acbd;line-height:1.5}
+.parametersSectionHeading {margin-bottom:10px}
+.parametersSectionHeading h2 {margin:4px 0 0;font-size:16px;line-height:1.35}
+/* Quiet parameter drawer: one surface, separated groups and consistent fields. */
+.workspaceLayout--parameters .parametersSidebarBody {padding:0 0 12px}
+.workspaceLayout--parameters .parametersControlSidebar .workspaceDisclosure {margin:0}
+.workspaceLayout--parameters .parametersControlSidebar .workspaceDisclosure + .workspaceDisclosure {border-top:1px solid #252e38}
+.workspaceLayout--parameters .parametersControlSidebar .workspaceDisclosure > summary {
+ background:transparent;border-bottom:0;min-height:42px;padding:10px 14px;
+ color:#d2dde7;font-size:11px;font-weight:600;
+}
+.workspaceLayout--parameters .parametersControlSidebar .workspaceDisclosure > summary:hover {background:#171e26}
+.workspaceLayout--parameters .parametersControlSidebar .statePanelSectionBody {padding:2px 14px 16px}
+.workspaceLayout--parameters .parametersControlSidebar .statePanelSectionBody > p {margin:4px 0 12px;font-size:11px;line-height:1.5;color:#9eafbf}
+.workspaceLayout--parameters .parametersControlSidebar .statePanelSectionBody > small {display:block;margin-top:8px;font-size:10px;line-height:1.5;color:#91a2b4}
+.workspaceLayout--parameters .parametersControlSidebar :is(.parametersCoefficients,.parametersMatrix) {margin:4px 0 0;gap:12px 10px}
+.workspaceLayout--parameters .parametersControlSidebar :is(input,select) {min-height:32px;padding:5px 8px;background:#151c24;border-color:#2c3642;border-radius:5px;font-variant-numeric:tabular-nums}
+.workspaceLayout--parameters .parametersControlSidebar button:not(.workspacePanelClose) {width:100%;min-height:32px;margin:8px 0 0;padding:7px 9px;font-size:11px;line-height:1.35}
+.workspaceLayout--parameters .parametersControlSidebar button:not(.workspacePanelClose):not(.parametersPrimaryAction) {background:transparent;border:1px solid #34414d;color:#c6d2df;box-shadow:none}
+.workspaceLayout--parameters .parametersControlSidebar button:not(.workspacePanelClose):disabled {opacity:.4;cursor:default}
+.workspaceLayout--parameters .parametersControlSidebar .workspaceControlGroup {margin:8px 0 14px}
+.workspaceLayout--parameters .parametersControlSidebar .parametersSidebarHint {padding:8px 14px;margin:0;font-size:10px;color:#91a2b4;line-height:1.5}
+
+.parametersSidebarHint {margin:0;padding:12px;font-size:11px;line-height:1.5;color:#a8b7c6}
+.workspaceLayout--parameters .parametersPrimaryAction,
+.workspaceLayout--parameters .parametersInspectionApply {border-color:#39785f;background:#193b30;color:#e3fff0}
+.workspaceLayout--parameters .parametersPrimaryAction:disabled {opacity:.45}
+.parametersReferenceTable {display:flex;flex-direction:column;gap:0;font-size:10px;font-variant-numeric:tabular-nums}
+.parametersReferenceTable > div {display:grid;grid-template-columns:30px minmax(0,1fr) 12px minmax(0,1fr);gap:4px;align-items:center;padding:8px 0;border-bottom:1px solid var(--workspace-stroke)}
+.parametersReferenceTable > div.is-changed {color:#8fe0b7}
+.parametersReferenceTable strong {font-weight:600}
+.parametersConicResult {display:flex;flex-direction:column;gap:3px}
+.parametersConicResult > strong {font-size:20px;color:#d9f5e6}
+.parametersConicResult > span {color:#acbac8}
+.parametersClassificationPanel > small {display:block;color:#a8b7c6;font-size:11px;line-height:1.5}
+.parametersProbeResult {display:flex;flex-direction:column;gap:5px;margin-top:12px;padding:10px;border:1px solid var(--workspace-stroke);border-radius:6px;font-size:12px;font-variant-numeric:tabular-nums}
+.parametersStateProbe > p {color:#a8b7c6;font-size:12px}
+.parametersDiagramPanel > small {font-size:11px;line-height:1.5;color:#a8b7c6}
 .parametersDiagramPanel{display:flex;flex-direction:column;min-width:0}
-.parametersMain .parameterDiagram{width:100%;max-width:min(100%,720px);height:auto;max-height:none;aspect-ratio:440/470;align-self:center;margin:8px auto 12px}
+.parametersMain .parameterDiagram{width:100%;max-width:min(100%,720px);height:auto;max-height:min(58vh,520px);aspect-ratio:440/470;align-self:center;margin:8px auto 12px}
 .parametersDiagramActions{margin-top:4px}
 .parametersClassificationPanel{min-width:0;overflow-wrap:anywhere}
 .parametersEquation{overflow-x:auto;max-width:100%;padding:10px 8px;border:1px solid var(--workspace-stroke);border-radius:6px;background:rgba(140,150,165,.06)}
@@ -862,7 +929,7 @@
 .parametersClassificationRules{display:flex;flex-wrap:wrap;gap:8px 14px;margin:12px 0}
 .parametersClassificationRules span{display:inline-flex;gap:7px;align-items:baseline;font-size:12px}
 @media(max-width:1250px){.parametersMain{grid-template-columns:minmax(0,1fr)}.parametersMain .parameterDiagram{max-width:min(100%,620px)}}
-@media(max-width:650px){.parametersNavRail{width:55px;flex-basis:55px}.parametersNavItem{font-size:9px}.parametersControlSidebar.workspacePanelDrawer{position:absolute;z-index:12;left:55px;top:0;bottom:0;width:min(224px,calc(100vw - 55px));box-shadow:8px 0 22px #0005}.parametersUnifiedLayout{position:relative}.parametersMain{padding:8px}.parametersMain .parameterDiagram{max-width:100%}.parametersClassificationRules{flex-direction:column;gap:7px}.parametersEquation{font-size:12px}}
+@media(max-width:650px){.parametersNavRail{width:55px;flex-basis:55px}.parametersNavItem{font-size:9px}.parametersControlSidebar.workspacePanelDrawer{position:absolute;z-index:12;left:calc(var(--workspace-pad) + var(--workspace-rail) + var(--workspace-gap));top:var(--workspace-pad);bottom:var(--workspace-pad);width:min(var(--workspace-drawer),calc(100% - var(--workspace-rail) - var(--workspace-gap) - 2 * var(--workspace-pad)));box-shadow:8px 0 22px #0005}.parametersUnifiedLayout{position:relative}.parametersMain{padding:8px}.parametersMain .parameterDiagram{max-width:100%}.parametersClassificationRules{flex-direction:column;gap:7px}.parametersEquation{font-size:12px}}
 
 /* Etapa 147: inspeção independente do fluxo e painel de análise à direita. */
 .parametersAnalysisColumn{display:flex;flex-direction:column;gap:12px;min-width:0}
@@ -897,6 +964,8 @@
 .parametersInspectionSummary span{font-size:11px;color:var(--text-muted,#a5b1c1)}
 .parametersInspectionSummary strong{font-size:12px;font-weight:600;overflow-wrap:anywhere}
 .parametersInspectionPanel .parametersInspectionApply{align-self:flex-start;margin:0}
+.parametersInspectionActions{display:flex;align-items:center;flex-wrap:wrap;gap:8px}
+.parametersInspectionActions > button{margin:0;min-height:32px;font-size:11px}
 .parametersInspectionPanel>small{font-size:11px}
 @media(max-width:650px){.parametersInspectionSummary{grid-template-columns:1fr}.parametersInspectionSummary>div{border-top:1px solid rgba(140,150,165,.12)}}
 

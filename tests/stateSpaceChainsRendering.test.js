@@ -9,6 +9,7 @@ import {oldWavePreset} from '../src/math/flux/quadraticFlux.js'
 import {traceStateRarefaction} from '../src/math/rarefaction/stateIntegralCurves.js'
 import {riemannMonotoneRarefactions} from '../src/math/rarefaction/monotoneBranches.js'
 import {compositeBlockChainCandidates} from '../src/math/solution/compositeBlockChainCandidates.js'
+import {supplementalRRCase} from '../scripts/audit-rr-convergence.js'
 
 test('RR and contact components render fans and distinct contact interfaces',async()=>{
   const p={a20:.5,a11:0,a02:0,a10:0,a01:0,b20:0,b11:0,b02:.5,b10:.75,b01:0}
@@ -89,5 +90,10 @@ test('RR and contact components render fans and distinct contact interfaces',asy
     assert.match(failedHtml,/Busca inconclusiva/)
     assert.match(failedHtml,/Interseção mal condicionada/)
     assert.doesNotMatch(failedHtml,/NaN|Infinity/)
+    const recovered=supplementalRRCase()
+    const warningHtml=renderToStaticMarkup(createElement(SearchReport,{report:recovered.search.report}))
+    assert.match(warningHtml,/Sementes com ressalvas poligonais/)
+    assert.match(warningHtml,/Candidatos numéricos encontrados/)
+    assert.doesNotMatch(warningHtml,/Motivos por tentativa/)
   }finally{await server.close()}
 })

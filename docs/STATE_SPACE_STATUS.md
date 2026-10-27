@@ -90,3 +90,18 @@ Lint, 812 testes (zero falhas) e build passaram. As capturas e as limitações
 estão no relatório RR. A aprovação visual é restrita aos cenários descritos;
 não acrescenta certificação entrópica nem completude global. A T03 permanece
 fora do trabalho realizado.
+
+**Revisão complementar de 27/10/2026:** corrigida a rejeição antecipada de
+sementes por verificações poligonais: essas falhas são ressalvas, e a decisão
+usa a correção e os leques reintegrados. Três casos curvos antes descartados
+passam a retornar um candidato, com resíduos entre 5.83e-16 e 1.71e-11 e erros
+de U_M entre 3.72e-12 e 7.65e-12. A consistência dos vértices dos ramos com a
+reintegração continua verificada numericamente; incompatibilidade é inconclusiva.
+A média dos extremos foi preservada e recebeu diagnósticos de deslocamento e
+velocidade, além de orçamento absoluto opcional. Metade do resíduo mede o
+deslocamento até a média, não o erro até a interseção nem o erro do perfil.
+O estudo original de 24 combinações foi reproduzido. Lint, 817 testes e build
+passaram, com o aviso preexistente de tamanho do bundle. Métodos, tabelas,
+limitações e reprodução estão no relatório RR acima. A T02 está validada para
+encerramento em seu escopo numérico delimitado, sem completude global ou
+certificação entrópica. Nenhuma outra família foi alterada; a T03 não foi iniciada.

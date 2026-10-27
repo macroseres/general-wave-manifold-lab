@@ -51,14 +51,17 @@ export function searchRarefactionPairs(states,branches,p,options={}){
   const opts={stateTolerance:1e-7,speedTolerance:1e-9,tangentTolerance:.15,maxCandidates:24,...options}
   const corrector=opts.corrector
   const invalidCorrector=corrector!==undefined&&(!corrector||typeof corrector!=='object'||Array.isArray(corrector)||
-    ['integrationStep','residualTolerance','parameterTolerance','conditioningTolerance'].some(key=>
+    ['integrationStep','residualTolerance','parameterTolerance','conditioningTolerance','sourceBranchTolerance'].some(key=>
       corrector[key]!==undefined&&(!Number.isFinite(corrector[key])||corrector[key]<=0))||
+    corrector.joinStateTolerance!==undefined&&corrector.joinStateTolerance!==null&&
+      (!Number.isFinite(corrector.joinStateTolerance)||corrector.joinStateTolerance<0)||
     corrector.maxIterations!==undefined&&(!Number.isInteger(corrector.maxIterations)||corrector.maxIterations<1))
   if(!Number.isInteger(opts.maxCandidates)||opts.maxCandidates<1||
     ![opts.stateTolerance,opts.speedTolerance,opts.tangentTolerance].every(v=>Number.isFinite(v)&&v>=0)||
     !Array.isArray(branches)||invalidCorrector)return finish('invalid-options-or-branches','invalid-input')
   report.tolerances={...opts,corrector:{integrationStep:.01,residualTolerance:1e-10,
-    parameterTolerance:1e-12,conditioningTolerance:1e-8,maxIterations:24,...corrector}}
+    parameterTolerance:1e-12,conditioningTolerance:1e-8,maxIterations:24,
+    sourceBranchTolerance:2e-4,joinStateTolerance:null,...corrector}}
   const eligible=(branch,side,family,anchor)=>branch?.side===side&&branch.family===family&&
     Array.isArray(branch.points)&&branch.points.length>1&&valid(coords(branch.points[0]))&&distance(coords(branch.points[0]),anchor)<=opts.stateTolerance
   report.branches=branches.map((b,index)=>{
@@ -90,11 +93,11 @@ export function searchRarefactionPairs(states,branches,p,options={}){
         seed:{aIndex:hit.aIndex,bIndex:hit.bIndex},stage,status,classification,...details})
       if(!sampledRarefactionPrefix(a,hit.aIndex,hit.point,p,false,opts)||
         !sampledRarefactionPrefix(b,hit.bIndex,hit.point,p,true,opts)){
-        record('sampled-fans','sampled-fan-rejected','numerically-incompatible');continue
+        record('sampled-fans','sampled-fan-warning','seed-warning')
       }
       const refinement=refineRarefactionMiddleJoint(a,b,p,hit,opts.corrector)
       if(refinement.status!=='refined-candidate'){
-        const classification=refinement.status==='integration-failed'?'numerical-failure':
+        const classification=['integration-failed','branch-integration-failed'].includes(refinement.status)?'numerical-failure':
           refinement.status.startsWith('invalid-')?'invalid-input':'inconclusive'
         record('corrector',refinement.status,classification,{refinement});continue
       }

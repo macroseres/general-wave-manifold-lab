@@ -78,12 +78,29 @@ export function refineRarefactionIntersection(left,right,p,leftIndex,rightIndex,
  */
 export function refineRarefactionMiddleJoint(left,right,p,seed,options={}){
   const {integrationStep=.01,residualTolerance=1e-10,parameterTolerance=1e-12,
-    conditioningTolerance=1e-8,maxIterations=24}=options
-  if(![integrationStep,residualTolerance,parameterTolerance,conditioningTolerance].every(x=>Number.isFinite(x)&&x>0)||
+    conditioningTolerance=1e-8,maxIterations=24,sourceBranchTolerance=2e-4,joinStateTolerance=null}=options
+  if(![integrationStep,residualTolerance,parameterTolerance,conditioningTolerance,sourceBranchTolerance].every(x=>Number.isFinite(x)&&x>0)||
+    (joinStateTolerance!==null&&(!Number.isFinite(joinStateTolerance)||joinStateTolerance<0))||
     !Number.isInteger(maxIterations)||maxIterations<1||!seed||
     left?.family!=='slow'||right?.family!=='fast'||left.side!=='left'||right.side!=='right')return {status:'invalid-input'}
   const a=curve(left,p,integrationStep),b=curve(right,p,integrationStep)
   if(!a||!b)return {status:'invalid-branch'}
+  // Check supplied vertices, not chord tangents or a polygonal intersection.
+  // Include the seed segment and the corrected prefix; never extend the branch.
+  const checkSource=(c,branch,index,length)=>{
+    const end=Math.max(Math.ceil(index),c.parameters.findIndex(x=>x>=length))
+    let maxDeviation=0
+    for(let i=1;i<=end;i++){
+      const integrated=c.at(c.parameters[i]),sample=coords(branch.points[i])
+      if(!integrated)return {status:'branch-integration-failed',sampleIndex:i}
+      const deviation=norm(sub(integrated.U,sample)),scale=1+norm(sample)
+      maxDeviation=Math.max(maxDeviation,deviation)
+      if(deviation>sourceBranchTolerance*scale)return {status:'branch-trace-mismatch',sampleIndex:i,
+        deviation,allowedDeviation:sourceBranchTolerance*scale}
+    }
+    return {status:'sampled-trace-compatible',checkedSamples:end+1,maxDeviation,
+      relativeTolerance:sourceBranchTolerance,parameterSource:branch.parameters?'integrated-arclength':'chord-length'}
+  }
   const initial=(c,index)=>{
     if(!Number.isFinite(index)||index<0||index>c.parameters.length-1)return NaN
     const i=Math.min(Math.floor(index),c.parameters.length-2),f=index-i
@@ -107,7 +124,22 @@ export function refineRarefactionMiddleJoint(left,right,p,seed,options={}){
     if(!Number.isFinite(transversality)||transversality<=conditioningTolerance)return {status:'ill-conditioned',residual,transversality}
     if(residual<=residualTolerance*scale){
       const first=a.at(s,true),second=b.at(t,true)
-      return {status:'refined-candidate',middle:A.U.map((x,i)=>(x+B.U[i])/2),
+      const branchChecks=[checkSource(a,left,seed.aIndex,s),checkSource(b,right,seed.bIndex,t)]
+      const failed=branchChecks.find(q=>q.status!=='sampled-trace-compatible')
+      if(failed)return {status:failed.status,residual,parameters:[s,t],branchChecks}
+      const middle=A.U.map((x,i)=>(x+B.U[i])/2)
+      const endpointSpeeds=[stateCharacteristicDirection(A.U,p,left.family)?.lambda,
+        stateCharacteristicDirection(B.U,p,right.family)?.lambda]
+      const middleSpeeds=[left,right].map(branch=>stateCharacteristicDirection(middle,p,branch.family)?.lambda)
+      const displacements=[A.U,B.U].map(U=>norm(sub(middle,U)))
+      const junction={convention:'endpoint-midpoint',endpoints:[[...A.U],[...B.U]],
+        displacements,maxDisplacement:Math.max(...displacements),halfResidual:residual/2,
+        roundoffAllowance:4*Number.EPSILON*scale,stateTolerance:joinStateTolerance,
+        endpointSpeeds,middleSpeeds,
+        characteristicSpeedShifts:middleSpeeds.map((speed,i)=>Number.isFinite(speed)?speed-endpointSpeeds[i]:null)}
+      if(joinStateTolerance!==null&&junction.maxDisplacement>joinStateTolerance)
+        return {status:'join-tolerance-exceeded',residual,parameters:[s,t],junction,branchChecks}
+      return {status:'refined-candidate',middle,junction,branchChecks,
         parameters:[s,t],bounds:[a.extent,b.extent],residual,relativeResidual:residual/scale,
         transversality,conditionNumber:(1+Math.sqrt(Math.max(0,1-transversality*transversality)))/transversality,
         iterations:iteration,integrationStep,curves:[first,second],entropyCertified:false}

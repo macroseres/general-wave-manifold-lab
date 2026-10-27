@@ -127,13 +127,16 @@ test('RR candidate cap records unvisited branch pairs and shares its report with
   assert.equal(exact.report.complete,false)
 })
 
-test('RR report retains sampled rejections and deduplication without changing array compatibility',()=>{
+test('RR report retains seed warnings, inconsistent trace failures and array compatibility',()=>{
   const input=[...branches,{...branches[1]}]
   const q=searchRarefactionPairs(states,input,p)
   assert.equal(q.report.candidateCount,1)
   assert.ok(q.report.diagnostics.some(d=>d.status==='duplicate-candidate'))
   assert.deepEqual(rarefactionPairCandidates(states,input,p),q.candidates)
   const rejected=searchRarefactionPairs(states,[{...branches[0],points:[[0,-1],[.5,0]]},branches[1]],p)
-  assert.equal(rejected.report.diagnostics[0].status,'sampled-fan-rejected')
-  assert.equal(rejected.report.status,'no-candidates-found')
+  assert.equal(rejected.report.diagnostics[0].status,'sampled-fan-warning')
+  assert.equal(rejected.report.diagnostics[0].classification,'seed-warning')
+  assert.equal(rejected.report.diagnostics[1].status,'branch-trace-mismatch')
+  assert.deepEqual(rejected.candidates,[])
+  assert.equal(rejected.report.status,'inconclusive')
 })

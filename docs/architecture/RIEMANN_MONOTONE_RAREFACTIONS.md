@@ -294,3 +294,81 @@ Arquivos destas correções: `src/App.jsx`,
 `src/styles/workspace-panel-content.css`, `tests/stateSpaceChainsRendering.test.js`
 e os dois registros documentais da T02. O corretor e suas tolerâncias não foram
 alterados nesta etapa. Não foram criados branch ou PR nem iniciada a GWML-T03.
+
+### Revisão complementar — 27/10/2026
+
+Foi confirmado um defeito: a rejeição dos leques poligonais antes do Newton
+eliminava sementes recuperáveis das curvas características reintegradas. Essa
+verificação passou a produzir `sampled-fan-warning`, sem veto antecipado. A
+aceitação continua exigindo correção dentro dos intervalos dos ramos, verificações
+dos leques reconstruídos e ordenação das velocidades. Não se ampliou a busca
+para ramos não fornecidos nem se demonstrou completude.
+
+Para evitar aceitar dados de ramo inconsistentes, o corretor compara os vértices
+fornecidos com a reintegração nos respectivos parâmetros, cobrindo o prefixo
+corrigido e o segmento da semente. `sourceBranchTolerance=2e-4` limita o desvio
+por `tolerância*(1+norma do vértice)`. A incompatibilidade é inconclusiva, e falha
+de integração tem diagnóstico próprio. É uma verificação numérica amostrada,
+sem certificação contínua. Ramos legados sem parâmetros usam comprimentos de
+cordas; sua subestimação do arco pode tornar dados grosseiros inconclusivos.
+Esse limite não deve ser interpretado como inexistência da interseção.
+
+Reprodução: `node scripts/audit-rr-convergence.js --supplemental`.
+O fluxo é `F=(u²/2, k*u²+v²/2+2v)`, com estados `(0,0)` e `(0.5,0.5)`.
+Os ramos são integrados inicialmente com passo 0.0025 e decimados preservando
+os parâmetros de arco. A referência usa uma EDO independente parametrizada por u.
+
+| k | Espaçamento da amostragem | Candidatos antes → depois | Resíduo de fechamento | Erro de U_M |
+| --- | --- | --- | --- | --- |
+| 0.5 | 1 | 0 → 1 | 1.22534e-15 | 7.65062e-12 |
+| 0.5 | 0.4 | 0 → 1 | 1.71020e-11 | 3.72004e-12 |
+| 1 | 1 | 0 → 1 | 5.82867e-16 | 4.97716e-12 |
+
+Os parâmetros corrigidos permanecem em `[0,1]` nos três casos. Uma regressão
+adicional usa `F_1=u²/2+0.1v²`, com ambas as curvas curvas, e interseção
+manufaturada `(0.4,-0.1)`; o erro fica abaixo de 1e-9. Entradas com vértices
+inconsistentes e orientação invertida não geram candidatos nesses testes.
+
+Para extremos reintegrados A e B e `rho=norma(A-B)`, mantém-se
+`U_M=(A+B)/2`. Em aritmética real, cada deslocamento tem norma `rho/2`, a
+menor distância máxima possível aos dois extremos. Isso não limita o erro
+até a interseção exata. O diagnóstico `junction` registra extremos,
+deslocamentos, `halfResidual`, velocidades nos extremos e na média, e suas
+diferenças assinadas. `roundoffAllowance` é uma margem prática de arredondamento,
+sem certificado rigoroso. O orçamento absoluto opcional `joinStateTolerance`
+(padrão `null`, desativado) limita o deslocamento da junção separadamente da
+tolerância relativa de fechamento e da tolerância de agrupamento de candidatos.
+Se excedido, o resultado é inconclusivo; não há iterações adicionais automáticas.
+
+Para k=0.5 e espaçamento 0.2:
+
+| Tolerância de fechamento | Resíduo | Maior deslocamento até a média | Erro de U_M | Diferença amostrada do perfil |
+| --- | --- | --- | --- | --- |
+| 1e-10 (padrão) | 5.31282e-14 | 2.65798e-14 | 7.62002e-12 | 2.81165e-14 |
+| 1e-4 (ensaio de tolerância relaxada) | 9.89105e-7 | 4.94552e-7 | 6.04732e-7 | 5.23396e-7 |
+
+As mudanças assinadas das velocidades são `(8.77076e-15,-2.50910e-14)`
+e `(1.64378e-7,-4.66435e-7)`, respectivamente. A comparação do perfil usa
+10009 valores de xi (malha e fronteiras) contra uma reconstrução auxiliar com
+A e B separados. Essa referência auxiliar não é uma solução RR fechada.
+O resultado mede o efeito numérico da junção e da reinterpolação por velocidade;
+não é erro contra solução exata, supremo contínuo nem limite por `rho/2`.
+No padrão, o erro de integração domina o deslocamento até a média.
+
+O estudo original foi repetido com passos de amostragem 0.08, 0.04 e 0.02,
+e integração 0.08, 0.04, 0.02 e 0.01 (24 combinações). Para amostragem 0.08,
+o erro de U_M diminui de 2.19834e-8 para 7.65094e-12 em k=0.5 e de
+1.46031e-8 para 5.00108e-12 em k=1. Os resíduos correspondentes variam de
+6.94e-17 a 6.33e-16 e de 2.77e-14 a 2.80e-14. A estabilidade frente à
+amostragem nesses exemplos não prova independência global da geração de sementes.
+
+Validação: `npm run lint`, `npm run test` (817 testes, zero falhas) e
+`npm run build` passaram; permanece o aviso preexistente de tamanho do bundle.
+Os cinco testes novos cobrem sementes grosseiras, duas curvas não retilíneas,
+junção/perfil, orçamento absoluto e inconsistência dos ramos. A renderização
+automatizada distingue ressalvas poligonais de rejeições. Não houve nova inspeção
+visual interativa nesta revisão. A T02 pode ser encerrada no escopo numérico
+delimitado: permanecem busca local dependente de sementes, erros de integração
+e interpolação sem estimativa rigorosa e verificações amostradas, sem prova
+contínua de monotonicidade, completude global ou certificação entrópica.
+A GWML-T03 não foi iniciada.
