@@ -12,7 +12,7 @@ A documentação tradicional permite ampliar o núcleo por casos delimitados. N�
 
 **Correção de Lax nas fronteiras.** `laxClass2x2` passa a exigir espectros completos, gap de hiperbolicidade e distância às velocidades características conforme tolerância. Contagens isoladas ou rótulos de posição sem os autovalores não bastam. As fronteiras deixam de receber um rótulo estrito de Lax. O comportamento é compartilhado pela geometria que usa essa rotina.
 
-**RR numérico.** `src/math/solution/rarefactionPairCandidates.js` procura interseções das curvas amostradas lenta a partir de U_L e rápida retrospectiva a partir de U_R. Verifica ancoragem, hiperbolicidade nas amostras, crescimento estrito amostrado, compatibilidade aproximada de tangentes e separação das velocidades. Constrói dois leques, estado intermediário, proveniência e relatório de busca limitada.
+**RR numérico.** `src/math/solution/rarefactionPairCandidates.js` usa interseções poligonais como sementes e corrige a interseção das curvas lenta a partir de U_L e rápida retrospectiva a partir de U_R por reintegração e Newton amortecido. Verifica ancoragem, hiperbolicidade nas amostras, crescimento estrito amostrado, compatibilidade aproximada de tangentes e separação das velocidades. Reconstrói os dois leques e registra estado intermediário, proveniência, resíduo, condicionamento e relatório de busca limitada.
 
 Os candidatos RR são selecionáveis no espaço de estados e compartilhados com o espaço físico. O desenho nos estados usa os dois arcos, e o físico representa dois leques sem inventar choques ou resíduos de RH. A avaliação de W(ξ) interpola cada leque separadamente e mantém o patamar intermediário.
 
@@ -20,7 +20,7 @@ Os candidatos RR são selecionáveis no espaço de estados e compartilhados com 
 
 | Grupo | Situação atual |
 |---|---|
-| RR | Novo construtor numérico sobre ramos amostrados; integrado às vistas de estados e física |
+| RR | Corretor conjunto sobre curvas reintegradas, convergência em casos curvos e diagnósticos de busca; integrado às vistas de estados e física |
 | RS, SR, SS | Candidatos e perfis existentes, com verificações necessárias e limitações documentadas |
 | RC, SC, CR, CS, CC | Construtor de contatos com direção e velocidade constantes; perfis e seleção compartilhados nas vistas |
 | RK, SK, KR, KS | Busca local com blocos K orientados e casos quadráticos verificados; perfis compartilhados |
@@ -29,9 +29,9 @@ Os candidatos RR são selecionáveis no espaço de estados e compartilhados com 
 
 ## Limitações e sequência
 
-RR usa interseções de poligonais e não um corretor conjunto das duas EDOs. Tangência e monotonicidade são verificadas em amostras; não há prova contínua de rarefação nem certificação entrópica geral. Uma busca sem candidatos não demonstra inexistência. Contatos e ondas de amplitude zero não são classificados como leques RR.
+RR possui corretor conjunto das duas curvas reintegradas, com parâmetros restritos aos ramos fornecidos. Tangência e monotonicidade são verificadas em amostras; não há prova contínua de rarefação nem certificação entrópica geral. O relatório distingue falhas numéricas, tentativas inconclusivas e nenhum candidato encontrado; nenhuma dessas situações demonstra inexistência. Contatos e ondas de amplitude zero não são classificados como leques RR.
 
-Os próximos blocos são o corretor conjunto e estudos de convergência de RR/RC/CR, contatos de direção variável e normalização dos segmentos para compor blocos K. O resíduo recíproco registrado em `architecture/TRACEABILITY.md` foi corrigido na terceira etapa descrita abaixo.
+O corretor conjunto e os estudos de convergência de RR foram entregues na GWML-T02. Permanecem refinamento e convergência de RC/CR, contatos de direção variável e ampliação da normalização de segmentos e junções. Blocos K já possuem a cobertura delimitada descrita abaixo. O resíduo recíproco registrado em `architecture/TRACEABILITY.md` foi corrigido na terceira etapa. Estas pendências não definem nem iniciam a GWML-T03.
 
 ## Segunda etapa: contatos tradicionais
 
@@ -59,3 +59,34 @@ Verificação concluída: lint, 760 testes e build passaram. O build mantém o a
 Implementação em `src/math/solution/rarefactionJointCorrector.js`. As interseções de poligonais fornecem sementes; as duas curvas características são reintegradas a partir de seus estados âncora e a diferença vetorial é corrigida por Newton amortecido. A busca permanece restrita aos intervalos paramétricos dos ramos investigados, sem exigir permanência no segmento poligonal da semente. O construtor RR registra resíduo, parâmetros e condicionamento, e reconstrói os leques a partir das curvas reintegradas. As funções públicas da revisão paralela foram preservadas como entradas compatíveis para a implementação validada.
 
 **Estado:** os estudos de convergência e exemplos curvos estão implementados e documentados em [Ordenação e corretor RR](architecture/RIEMANN_MONOTONE_RAREFACTIONS.md). A reintegração emprega RK4 com passo limitado, sem estimativa rigorosa do erro global. O perfil físico interpola as curvas reintegradas amostradas. Monotonicidade e hiperbolicidade permanecem verificações amostradas, sem certificação entrópica nem completude global. Na integração das revisões, lint, 807 testes (zero falhas) e build passaram; permanece o aviso de tamanho do bundle. A T02 está numericamente validada no escopo descrito, sem iniciar a T03.
+
+**Fechamento dos diagnósticos da T02:** `searchRarefactionPairs` preserva motivos
+por tentativa e condições de parada dos ramos, distingue falha numérica de
+resultado inconclusivo e de nenhum candidato encontrado, e registra a parada
+por limite de candidatos com os pares/sementes não examinados. O painel do
+espaço de estados mostra o resumo e os motivos. O contrato das 16 cadeias e a
+rastreabilidade foram atualizados. Nesta revisão, lint, 812 testes (zero falhas)
+e build passaram; o aviso de tamanho do bundle permanece. A verificação da
+interface foi por renderização automatizada, sem inspeção manual no navegador.
+
+**Inspeção visual posterior:** a sessão interativa de 26/10/2026 reproduziu
+os dois casos RR curvos e a atualização temporal dos perfis, mas não aprovou
+integralmente a interface. Permanecem cinco achados: candidato físico desatualizado
+ao mudar o fluxo sem visitar Estados, legenda RR exibida como S–R, expressão
+por trechos ausente com mensagem inadequada, diagnóstico lateral sobreposto/cortado
+e enquadramento incompleto da cadeia no segundo caso. Os passos de reprodução
+e as evidências estão no [relatório RR](architecture/RIEMANN_MONOTONE_RAREFACTIONS.md).
+O núcleo numérico mantém a validação delimitada já registrada; o fechamento
+visual requer correção e nova inspeção desses achados. Nenhum código foi
+modificado durante a inspeção, e a T03 não foi iniciada.
+
+**Correções e reinspeção visual:** os cinco achados foram corrigidos e
+reverificados no navegador. Ao mudar os dados, candidatos anteriores são
+invalidados e a vista física oferece atualização em Estados; a legenda RR
+mostra R1–R2; a expressão contém os cinco trechos; o diagnóstico fica legível
+e acessível por rolagem; o ajuste da janela inclui a cadeia selecionada completa.
+Os cenários com `b20=0.5` e `1` e os tempos `0.25,0.5,1` foram inspecionados.
+Lint, 812 testes (zero falhas) e build passaram. As capturas e as limitações
+estão no relatório RR. A aprovação visual é restrita aos cenários descritos;
+não acrescenta certificação entrópica nem completude global. A T03 permanece
+fora do trabalho realizado.

@@ -14,7 +14,7 @@ import {compareRiemannCandidates} from '../math/solution/riemannCandidateCompari
 import {groupRiemannCandidates} from '../math/solution/riemannCandidateGroups.js'
 
 const W=720,H=520,P=58
-export default function PhysicalSpaceDialog({open,onClose,inline=false,p,tauMin,tauMax,point,onSelectWavePoint,profileCandidates=[],candidateIndex=-1,onSelectCandidate,onInspectStateCandidate}){
+export default function PhysicalSpaceDialog({open,onClose,inline=false,p,tauMin,tauMax,point,onSelectWavePoint,profileCandidates=[],candidatesStale=false,candidateIndex=-1,onSelectCandidate,onInspectStateCandidate}){
  const [physicalActivity,setPhysicalActivity]=useState('profiles')
  const [tMax,setTMax]=useState(1)
  const [time,setTime]=useState(.5)
@@ -28,6 +28,7 @@ export default function PhysicalSpaceDialog({open,onClose,inline=false,p,tauMin,
  const candidateGroups=useMemo(()=>groupRiemannCandidates(profileCandidates),[profileCandidates])
  const selectedCandidate=candidateIndex>=0?profileCandidates[candidateIndex]??null:null
  if(!open)return null
+ if(candidatesStale)return <section className="physicalStaleNotice" role="status" aria-label="Cadeias físicas desatualizadas"><h2>Atualize as cadeias para o problema atual</h2><p>O fluxo ou os dados da construção mudaram. Os candidatos anteriores foram invalidados e seus perfis não serão exibidos.</p><button type="button" onClick={onInspectStateCandidate}>Atualizar cadeias em Estados</button></section>
  return <div className={inline?"inlineWorkspaceBackdrop":"localChartBackdrop"} onPointerDown={inline?undefined:onClose}><section className={inline?"localChartDialog inlineWorkspaceDialog":"localChartDialog"} onPointerDown={e=>e.stopPropagation()} role="dialog" aria-modal={inline?undefined:"true"} aria-labelledby="physical-title"><header><div><h2 id="physical-title">Espaço físico (x, t)</h2><p>Realização auto-similar da mesma órbita de rarefação selecionada em 𝒲 e projetada em 𝒰</p></div>{!inline&&<button onClick={onClose}>Fechar</button>}</header><WorkspaceLayout kind="physical" expanded={physicalSidebarOpen} className={`localChartBody physicalLayoutBody physicalWorkspace ${physicalSidebarOpen?"":"physicalSidebarCollapsed"}`}><aside data-activity={physicalActivity} className="physicalSidebar workspaceSidebar unifiedSidebar" aria-label="Controles do espaço físico"><WorkspaceRail className="gwmlActivityRail" ariaLabel="Categorias do espaço físico"
  items={[{id:'profiles',label:'Perfis'},{id:'time',label:'Tempo'},{id:'settings',label:'Configurações'}]}
  active={physicalActivity} expanded={physicalSidebarOpen}

@@ -98,6 +98,15 @@
 .workspaceLayout--states .stateRightPanel.workspacePanelDrawer > .stateRightDrawer,
 .workspaceLayout--3d #three-d-inspection.workspacePanelDrawer > .continuousSidebarPanel {min-height:0;overflow:visible}
 
+/* Scientific diagnostic headers are document content inside the scrolling drawer. */
+.workspaceLayout--states .riemannLabHeader {
+ display:block;position:static;width:auto;height:auto;min-height:0;max-height:none;
+ margin:0;padding:2px 2px 6px;overflow:visible;
+}
+.workspaceLayout--states .riemannLabHeader h3,
+.workspaceLayout--states .riemannLabHeader p {max-width:100%;overflow-wrap:break-word}
+.physicalStaleNotice {padding:24px;max-width:720px;line-height:1.5}
+
 /* Inspector and controls share the exact same drawer geometry. */
 .workspaceLayout--3d #three-d-controls > #three-d-inspection.workspacePanelDrawer {
   width:100%;height:100%;margin:0;padding:0;

@@ -136,3 +136,161 @@ os índices inválidos, a proveniência e a rejeição de extrapolação na API 
 Após a integração, lint, 807 testes (zero falhas) e build passaram; o aviso de
 tamanho do bundle permanece. O registro de status em `docs/STATE_SPACE_STATUS.md`
 foi atualizado para refletir esses resultados.
+
+### Relatório de busca RR e alinhamento da especificação
+
+`searchRarefactionPairs(states,branches,p,options)` retorna `{candidates,report}`.
+O relatório permanece disponível quando `candidates` está vazio. A entrada
+existente `rarefactionPairCandidates` continua retornando um array; cada candidato
+inclui o mesmo relatório em `search.report`, sem referência circular. O espaço
+de estados usa a entrada com relatório e mostra o diagnóstico no laboratório
+numérico, incluindo os motivos de tentativas rejeitadas ou inconclusivas.
+
+O campo `status` distingue `invalid-input`, `incompatible-branches`,
+`no-candidates-found`, `inconclusive`, `numerical-failure` e `candidates-found`.
+`incompatible-branches` significa que os dados fornecidos não contêm um par
+elegível ancorado lenta/esquerda e rápida/direita; não é prova de incompatibilidade
+matemática do problema. Se houver candidatos e também falhas, o resumo permanece
+`candidates-found` e as falhas continuam nos diagnósticos individuais.
+
+Cada tentativa registra o par de ramos, os índices da semente, etapa, motivo e
+classificação. Falhas do corretor preservam seu resultado, incluindo resíduo e
+transversalidade quando disponíveis. Mau condicionamento, estagnação, limite de
+iterações e falha de amortecimento são inconclusivos; falha de reintegração é
+uma falha numérica. Rejeições dos leques ou da ordenação são incompatibilidades
+nas verificações amostradas, sem prova de inexistência de outro candidato.
+
+`report.branches` preserva identificador local, família, lado, orientação,
+elegibilidade/motivo de exclusão, quantidade de pontos, extensão paramétrica e
+condições de parada do traçado e do filtro. `report.pairs` distingue pares
+`examined`, `partially-examined` e `not-explored`; registra quantas sementes foram
+encontradas e examinadas e, no par interrompido, os índices das sementes restantes.
+Para pares ainda não explorados, a quantidade de sementes é desconhecida (`null`).
+
+`stopReason:'candidate-limit'` e `candidateLimitReached:true` registram a parada
+pelo orçamento. `seedSearchExhausted` indica somente se todas as sementes dos
+pares fornecidos foram examinadas; pode ser verdadeiro quando o limite coincide
+exatamente com a última semente. `complete:false` permanece em todos os casos,
+pois não há completude global das curvas nem da busca. `tolerances` registra os
+parâmetros da busca e do corretor inclusive quando não há candidatos.
+
+As seções de status, o contrato das 16 cadeias e a rastreabilidade foram alinhados
+com a T02, removendo as declarações de ausência do corretor RR. As pendências de
+RC/CR, contatos variáveis e outros padrões continuam fora desta entrega. A
+especificação geral dos critérios ainda é um contrato mais amplo: este relatório
+não implementa uma certificação entrópica ou todos os critérios das 16 cadeias.
+
+Validação deste fechamento: `npm run lint`, `npm run test` (812 testes, zero
+falhas) e `npm run build` passaram. Os cinco novos testes de busca cobrem
+entradas inválidas, ausência de pares elegíveis, busca sem sementes, resultados
+inconclusivos, falhas de integração, metadados de parada, limites com pares ou
+sementes pendentes, esgotamento exato no limite e compatibilidade da API de arrays.
+O teste de renderização existente cobre o novo painel, inclusive os motivos
+de mau condicionamento e a parada por limite. Não houve inspeção manual no
+navegador; permanece o aviso preexistente de bundle superior a 500 kB.
+
+### Inspeção visual interativa — 26/10/2026
+
+Foi inspecionado o aplicativo em `http://192.168.50.73:5173/`, no navegador
+integrado, com viewport de aproximadamente 1304 × 884 pixels. Foram usados os
+controles públicos de coeficientes, coordenadas de Riemann, seleção de cadeia,
+ajuste da janela, diagnóstico e tempo; nenhum dado interno foi injetado na página.
+
+Casos positivos: `F=(u²/2,b20*u²+v²/2+2v)`, `U_L=(0,0)`,
+`U_R=(0.5,0.5)`, com `b20=0.5` e `1`. A interface exibiu respectivamente
+`U_M=(0.50000,-0.077242)` e `(0.50000,-0.15866)`, compatíveis com as referências
+na precisão mostrada. No primeiro caso, o relatório registrou um candidato,
+zero pares pendentes e zero falhas/casos inconclusivos. A seleção no plano foi
+compartilhada com a vista física; apareceram dois leques azuis, patamar
+intermediário e perfis contínuos. As bordas mostradas foram `[0,0.5]` e
+`[1.9228,2.5]`. Os controles atualizaram os perfis em `t=0.25,0.5,1`.
+Essas observações não medem o erro contínuo do perfil nem substituem os estudos
+numéricos anteriores.
+
+Caso negativo: mantendo `b20=0.5`, alterou-se `U_R` para `(0.5,-0.5)`.
+A árvore de acessibilidade registrou zero candidatos e a mensagem
+“Nenhum candidato encontrado na busca limitada”, preservando a ressalva de
+que isso não demonstra inexistência. A leitura visual desse diagnóstico teve
+o problema de acesso descrito abaixo. Limite de candidatos, falha de integração
+e mau condicionamento não foram induzidos pela interface nesta sessão; sua
+evidência permanece nos testes automatizados.
+
+**Resultado: inspeção concluída, aprovação visual integral pendente.** Foram
+reproduzidos cinco problemas, sem corrigir o código nesta sessão:
+
+| Prioridade | Problema observado | Reprodução e resultado esperado |
+| --- | --- | --- |
+| Alta | A vista física conserva candidato de outro fluxo | Calcular RR em Estados com `b20=1`; em Parâmetros mudar para `0.5`; ir diretamente a Físico. O valor continua `v_M=-0.15866`, embora o correto para o fluxo atual seja aproximadamente `-0.077242`. Visitar Estados e voltar a Físico atualiza o candidato. Deve haver recomputação ou invalidação explícita antes de mostrar um perfil para outro fluxo. |
+| Média | Legenda do plano classifica RR como S–R | Selecionar “Cadeia 1 · RR”. A legenda inferior mostra `U_L →S U_M →R U_R`. Deve mostrar duas rarefações, coerentes com a cadeia selecionada. |
+| Média | Expressão física ausente com justificativa incorreta | Abrir Físico para RR. O painel afirma que estados/velocidades são insuficientes ou não ordenados, apesar dos dois leques ordenados e dos perfis desenhados. Deve representar os cinco trechos de RR ou declarar a limitação específica do gerador de expressões. |
+| Média | Diagnóstico sobreposto e cortado no painel lateral | Em Estados → Inspeção → Informações e diagnósticos adicionais → Construção e verificação das cadeias, o cabeçalho sobrepõe título e texto. A rolagem tentada sobre o painel não expõe o diagnóstico RR inferior no viewport testado, embora o texto exista na acessibilidade. O conteúdo deve ficar legível e acessível por rolagem. |
+| Média | Ajuste da janela não enquadra a cadeia completa | Com `b20=1`, selecionar RR e acionar “Ajustar à geometria”. O estado intermediário de ordenada `-0.15866` e parte final do arco ficam abaixo da área visível. O ajuste deve incluir os arcos e o estado intermediário da cadeia selecionada. |
+
+As mensagens de não certificação entrópica permaneceram visíveis. O console
+capturado não apresentou erro de execução; houve um aviso de depreciação de
+`THREE.Clock`, sem atribuí-lo ao corretor RR.
+
+As capturas locais estão em `.cache/gwml-t02-visual/`: `state-rr.png`,
+`state-rr-b20-1.png`, `physical-rr.png`, `diagnostic-layout.png`,
+`parameters-restored.png` e `physical-stale.png`. São evidências de trabalho
+locais, sem inclusão obrigatória no Git. A sessão terminou na vista física do
+caso `b20=0.5`, com dados positivos e `t=0.5`, após visitar Estados para atualizar
+o candidato. Não foram reexecutados lint/test/build, pois somente este registro
+e o status documental foram alterados nesta inspeção. A GWML-T03 não foi iniciada.
+
+### Correções e segunda inspeção visual — 26/10/2026
+
+Os cinco achados acima foram corrigidos e seus caminhos de reprodução foram
+repetidos no mesmo navegador e viewport. A primeira inspeção permanece como
+registro histórico; a conclusão atual é aprovação dos cinco cenários visuais
+delimitados, sem declaração de cobertura global ou certificação entrópica.
+
+1. **Candidato de outro fluxo:** `App.jsx` associa o conjunto publicado de
+   candidatos aos dados da construção (`p`, estados de Riemann, intervalo de tau
+   e estado fixado). Dados diferentes invalidam o conjunto durante a renderização,
+   sem aguardar um efeito ou uma visita ao plano. `PhysicalSpaceDialog.jsx` oculta
+   os perfis anteriores e mostra a ação “Atualizar cadeias em Estados”. Não foi
+   introduzida recomputação automática do solver no ambiente físico. Na repetição
+   `b20=1 → Parâmetros → b20=0.5 → Físico`, o candidato antigo não apareceu.
+   O botão de recuperação levou a Estados e o candidato atualizado mostrou
+   `v_M=-0.077242`, substituindo `-0.15866`.
+2. **Legenda RR:** a cadeia selecionada é representada por
+   `U_L →R_1 U_M →R_2 U_R`; o rótulo S–R foi eliminado para RR.
+3. **Expressão física:** `PhysicalSolutionExpressions.jsx` passou a representar
+   os cinco trechos: estado esquerdo, primeiro leque, patamar intermediário,
+   segundo leque e estado direito. Os intervalos são derivados dos dois leques;
+   velocidades não finitas, inversões internas ou sobreposição de leques continuam
+   impedindo a apresentação da fórmula. R1 e R2 são perfis numéricos, sem fórmula
+   fechada ou nova afirmação de admissibilidade.
+4. **Painel de diagnóstico:** a região de inspeção recebeu a mesma superfície
+   de rolagem dos demais painéis, com altura limitada à célula da janela. O
+   conteúdo interno pode crescer e o cabeçalho científico deixa de herdar o layout
+   horizontal do cabeçalho principal. Título e texto ficaram separados; a rolagem
+   alcançou o relatório RR legível. Na observação do DOM, a região tinha altura
+   de 818 px para conteúdo de 4561 px e efetivamente alterou sua posição de rolagem.
+5. **Enquadramento:** “Ajustar à geometria” inclui todos os estados e pontos dos
+   leques da cadeia selecionada, sem aplicar a eles o recorte por quantis usado
+   para a geometria de fundo. No caso `b20=1`, o arco completo e o estado
+   `U_M=(0.5,-0.15866)` passaram a ficar dentro da janela.
+
+A vista física foi novamente inspecionada em `t=0.25,0.5,1`, com atualização
+dos perfis e preservação dos dois leques e do patamar. A sessão terminou no caso
+`b20=0.5`, em `t=0.5`. As evidências adicionais locais estão na mesma pasta:
+`state-rr-fixed.png`, `physical-rr-fixed.png`, `physical-invalidation-fixed.png`
+e `diagnostic-layout-fixed.png`.
+
+`stateSpaceChainsRendering.test.js` ganhou regressões para a legenda RR,
+presença dos dois leques na expressão, rejeição de velocidades fora de ordem
+e ocultação de candidatos invalidados com ação de recuperação. A verificação
+da invalidação entre ambientes, rolagem e enquadramento foi também interativa,
+sem confundi-la com uma prova científica. `npm run lint`, `npm run test`
+(812 testes, zero falhas) e `npm run build` passaram após as correções.
+O aviso preexistente de tamanho do bundle permanece.
+
+Arquivos destas correções: `src/App.jsx`,
+`src/components/PhysicalSpaceDialog.jsx`,
+`src/components/PhysicalSolutionExpressions.jsx`,
+`src/components/StateSpaceDialog.jsx`, `src/styles/workspace-layout.css`,
+`src/styles/workspace-panel-content.css`, `tests/stateSpaceChainsRendering.test.js`
+e os dois registros documentais da T02. O corretor e suas tolerâncias não foram
+alterados nesta etapa. Não foram criados branch ou PR nem iniciada a GWML-T03.

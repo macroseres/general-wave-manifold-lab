@@ -177,10 +177,10 @@
 }
 
 /* Inspection is an alternative drawer, never an additional sidebar column. */
-.workspaceLayout--states > .stateRightPanel {display:none;grid-column:2;grid-row:1;min-width:0;min-height:0}
+.workspaceLayout--states > .stateRightPanel {display:none;grid-column:2;grid-row:1;min-width:0;min-height:0;height:100%;max-height:100%}
 .workspaceLayout--states[data-activity="inspection"][data-panel-expanded="true"] > .stateRightPanel {display:flex;flex-direction:column}
 .workspaceLayout--states[data-activity="inspection"] > .stateToolsDrawer {display:none}
-.workspaceLayout--states > .stateRightPanel > .stateRightDrawer {display:flex;flex-direction:column;min-height:0;height:100%}
+.workspaceLayout--states > .stateRightPanel > .stateRightDrawer {display:flex;flex-direction:column;flex:0 0 auto;min-height:100%;height:auto;overflow:visible}
 .workspaceLayout--states > .stateRightPanel .stateRightContent {min-height:0;overflow:visible}
 /* The 3D inspector is a second content view inside the SAME left sidebar. */
 .workspaceLayout--3d #three-d-controls > #three-d-inspection {

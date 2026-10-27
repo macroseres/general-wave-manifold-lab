@@ -1,6 +1,6 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
-import {rarefactionPairCandidates} from '../src/math/solution/rarefactionPairCandidates.js'
+import {rarefactionPairCandidates,searchRarefactionPairs} from '../src/math/solution/rarefactionPairCandidates.js'
 import {riemannMonotoneRarefactions} from '../src/math/rarefaction/monotoneBranches.js'
 import {evaluateSelfSimilarCandidate} from '../src/math/solution/riemannSelfSimilarCandidate.js'
 import {candidatePhysicalGeometry,candidatePhysicalProfiles} from '../src/geometry/physical/riemannCandidatePhysical.js'
@@ -65,4 +65,75 @@ test('RR comparison and grouping do not invent shocks or RH residuals',()=>{
   assert.equal(comparison.lax,'not-applicable')
   const groups=groupRiemannCandidates([q,structuredClone(q)])
   assert.equal(groups[0].groupId,groups[1].groupId)
+})
+
+test('RR report distinguishes invalid inputs, missing branches and an exhausted seed search',()=>{
+  assert.equal(searchRarefactionPairs(null,branches,p).report.status,'invalid-input')
+  assert.equal(searchRarefactionPairs(states,branches,p,{maxCandidates:0}).report.status,'invalid-input')
+  assert.equal(searchRarefactionPairs(states,branches,p,{corrector:null}).report.status,'invalid-input')
+  assert.equal(searchRarefactionPairs(states,[],p,{corrector:{integrationStep:0}}).report.status,'invalid-input')
+  assert.equal(searchRarefactionPairs(states,[],p).report.status,'incompatible-branches')
+  const q=searchRarefactionPairs(states,[{...branches[0],points:[[0,-1],[0,-.9]]},branches[1]],p)
+  assert.deepEqual(q.candidates,[])
+  assert.equal(q.report.status,'no-candidates-found')
+  assert.equal(q.report.stopReason,'supplied-branches-exhausted')
+  assert.equal(q.report.seedSearchExhausted,true)
+  assert.equal(q.report.complete,false)
+  assert.equal(q.report.tolerances.corrector.integrationStep,.01)
+})
+
+test('RR report preserves inconclusive Newton diagnostics instead of implying nonexistence',()=>{
+  const q=searchRarefactionPairs(states,branches,p,{corrector:{conditioningTolerance:1}})
+  assert.deepEqual(q.candidates,[])
+  assert.equal(q.report.status,'inconclusive')
+  assert.equal(q.report.diagnostics[0].status,'ill-conditioned')
+  assert.equal(q.report.diagnostics[0].classification,'inconclusive')
+  assert.ok(Number.isFinite(q.report.diagnostics[0].refinement.residual))
+  assert.deepEqual(q.report.diagnostics[0].seed,{aIndex:1.25,bIndex:1.5})
+})
+
+test('RR report preserves numerical integration failures and branch termination metadata',()=>{
+  const q=searchRarefactionPairs(states,[{...branches[0],parameters:[0,2,4],stop:'max-steps'},branches[1]],p)
+  assert.equal(q.report.status,'numerical-failure')
+  assert.equal(q.report.diagnostics[0].status,'integration-failed')
+  assert.equal(q.report.branches[0].stop,'max-steps')
+  assert.equal(q.report.branches[0].parameterExtent,4)
+  const failed=searchRarefactionPairs(states,[{...branches[0],points:[[0,-1]],stop:'integration-tolerance'},branches[1]],p)
+  assert.equal(failed.report.status,'numerical-failure')
+  const unrelated=searchRarefactionPairs(states,[{...branches[0],family:'fast',stop:'integration-tolerance'},
+    {...branches[0],points:[[0,-1],[0,-.9]]},branches[1]],p)
+  assert.equal(unrelated.report.status,'no-candidates-found')
+  assert.equal(unrelated.report.branches[0].rejectionReason,'not-rr-family')
+})
+
+test('RR candidate cap records unvisited branch pairs and shares its report with candidates',()=>{
+  const q=searchRarefactionPairs(states,[...branches,{...branches[1]}],p,{maxCandidates:1})
+  assert.equal(q.candidates.length,1)
+  assert.equal(q.report.stopReason,'candidate-limit')
+  assert.equal(q.report.candidateLimitReached,true)
+  assert.equal(q.report.seedSearchExhausted,false)
+  assert.equal(q.report.pairs[1].status,'not-explored')
+  assert.equal(q.report.pairs[1].seedsFound,null)
+  assert.equal(q.candidates[0].search.report,q.report)
+  assert.equal(q.report.complete,false)
+  assert.doesNotThrow(()=>JSON.stringify(q))
+  const partial=searchRarefactionPairs(states,[branches[0],{...branches[1],
+    points:[...branches[1].points,[.5,-.05]]}],p,{maxCandidates:1})
+  assert.equal(partial.report.pairs[0].status,'partially-examined')
+  assert.equal(partial.report.pairs[0].unexaminedSeeds.length,1)
+  const exact=searchRarefactionPairs(states,branches,p,{maxCandidates:1})
+  assert.equal(exact.report.candidateLimitReached,true)
+  assert.equal(exact.report.seedSearchExhausted,true)
+  assert.equal(exact.report.complete,false)
+})
+
+test('RR report retains sampled rejections and deduplication without changing array compatibility',()=>{
+  const input=[...branches,{...branches[1]}]
+  const q=searchRarefactionPairs(states,input,p)
+  assert.equal(q.report.candidateCount,1)
+  assert.ok(q.report.diagnostics.some(d=>d.status==='duplicate-candidate'))
+  assert.deepEqual(rarefactionPairCandidates(states,input,p),q.candidates)
+  const rejected=searchRarefactionPairs(states,[{...branches[0],points:[[0,-1],[.5,0]]},branches[1]],p)
+  assert.equal(rejected.report.diagnostics[0].status,'sampled-fan-rejected')
+  assert.equal(rejected.report.status,'no-candidates-found')
 })
