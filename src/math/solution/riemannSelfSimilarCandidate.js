@@ -36,9 +36,13 @@ export function mixedSelfSimilarCandidate(left,right,candidate,branches,p,{speed
   if(!branch||!Number.isInteger(index)||index<0||index+1>=branch.points.length)return {status:'missing-fan',entropyCertified:false}
   // Reintegrate the sampled prefix from the original anchored characteristic state.
   // The corrected junction remains the endpoint; this is a numerical consistency check.
+  const initialDirection=stateCharacteristicDirection(coords(branch.points[0]),p,branch.family)?.direction
+  const chord=branch.points.length>1?coords(branch.points[1]).map((v,i)=>v-coords(branch.points[0])[i]):null
+  const sign=branch.sign??(initialDirection&&chord&&initialDirection[0]*chord[0]+initialDirection[1]*chord[1]<0?-1:1)
+  const integrationBranch={...branch,sign}
   const raw=branch.points.slice(0,index+1).map((_,i)=>{
-    const length=sampledArcLength(branch,i)
-    return length===null?null:integrateCharacteristicLength(branch,p,length)
+    const length=sampledArcLength(integrationBranch,i)
+    return length===null?null:integrateCharacteristicLength(integrationBranch,p,length)
   })
   if(!raw.every(valid))return {status:'fan-integration-failed',entropyCertified:false}
   const sampledStart=coords(branch.points[0])
