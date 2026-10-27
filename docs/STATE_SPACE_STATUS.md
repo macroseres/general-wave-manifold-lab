@@ -148,3 +148,6 @@ Escopo aprovado: RS, SR e SS no espaço de estados; RR permanece como referênci
 
 
 **Complemento de correção T05 — 27/10/2026:** CI #31 e #32 também falharam com 829/830 testes. Logs dos jobs #122448504915 e #122448568530 mostram que a primeira comparação foi corrigida, mas havia **segunda comparação exata** no mesmo teste, agora na linha 97 (entrada do leque final versus estado intermediário), com diferenças da ordem de 1e-13. Commit `84dcb68` aplica a mesma tolerância numérica já usada no teste a essa segunda interface. Nenhum código de produção foi modificado. **Aguardar novo CI antes de encerrar T05.**
+
+
+**Encerramento formal GWML-T05 — 27/10/2026:** captura do GitHub Actions fornecida pelo responsável confirma **CI #33 aprovado** para o commit `84dcb68` e **CI #34 aprovado** para o commit `b604ecf`, ambos na branch `main`. O escopo fechado da T05 é a validação numérica delimitada das sete entradas RK, KR, SK, KS, CK, KC e KK, com regressões positivas existentes para RK/KR/SK/KS, verificação adicional da junção KR e registros de disponibilidade para CK/KC/KK **sem fixtures positivas validadas**. Não há demonstração de existência para todas as entradas, completude da busca, seleção entrópica global ou cinética específica. **Estado: T05 encerrada no escopo aprovado; T06 não iniciada.**
