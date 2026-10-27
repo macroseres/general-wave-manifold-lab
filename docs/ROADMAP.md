@@ -12,6 +12,37 @@ As versões abaixo registram etapas históricas e planos; não são um inventár
 
 Prioridade atual: consolidar a documentação e sua rastreabilidade; registrar referências e hipóteses das construções no espaço de estados; desenvolver e validar seus levantamentos à variedade e a correspondência física; ampliar a classificação por parâmetros. A migração dos textos exibidos está concluída nas 26 seções; permanecem a revisão bibliográfica, a inspeção visual e as validações científicas indicadas na rastreabilidade.
 
+## Plano finito de encerramento da construção tradicional — GWML-T01 a T08 (27/10/2026)
+
+**Finalidade:** encerrar a fase de construção tradicional das soluções de Riemann para o fluxo quadrático geral de dois estados, nos espaços de estados e físico, em **escopo numérico e matemático explicitamente delimitado**. A investigação topológica na Variedade de Ondas constitui uma fase posterior, não uma condição para fechar este plano. Esta seção prevalece como controle das tarefas GWML; não substitui as especificações matemáticas de `traditional/`.
+
+### Três objetivos e entregas finais
+
+1. **Construção no espaço de estados:** representar os blocos R (rarefação), S (choque), C (contato) e K (composta), seus ramos, estados intermediários e equações de fechamento; manter o catálogo formal das 16 combinações, com disponibilidade e limitações por regime.
+2. **Classificação e admissibilidade:** separar conservação/RH, espectro, nove tipos de salto e fronteiras sônicas, Lax, Liu, pares de entropia, perfis regularizados, cinética e ordenação física. Cada critério só poderá ser declarado verificado sob hipóteses, domínio e evidência próprios. A ausência de uma relação cinética definida para o fluxo quadrático geral deve ser apresentada como **modelo não especificado**, não como aprovação ou reprovação.
+3. **Realização no espaço físico:** reconstruir o perfil autossimilar `U(x,t)` a partir da **mesma cadeia validada** nos estados, com choques, contatos, leques, patamares, compostas desdobradas e tratamento de velocidades coincidentes; não fabricar trechos físicos quando a construção for inconclusiva.
+
+### Tarefas numeradas — conjunto fechado
+
+| Tarefa | Objetivo | Entregas delimitadas | Critério de encerramento |
+|---|---|---|---|
+| **GWML-T01** | Preparação | Auditoria da construção tradicional e identificação de lacunas | **Encerrada** conforme histórico do projeto |
+| **GWML-T02** | 1 e 3 | Cadeia RR: corretor conjunto, leques reintegrados, realização física e testes | **Encerrada** em escopo numérico delimitado |
+| **GWML-T03** | 1 e 3 | Cadeias RS, SR, SS: correção, reconstrução, diagnósticos e CI | **Encerrada**; registro em `STATE_SPACE_STATUS.md` |
+| **GWML-T04** | 1 | Consolidar e validar RC, SC, CR, CS, CC **apenas para contatos de direção e velocidade constantes**, já implementados; conferir fechamento, orientação, degenerescência linear, casos negativos e integração nos estados | Cinco padrões com evidência reproduzível e limites explícitos; contatos de direção variável ficam fora deste marco |
+| **GWML-T05** | 1 | Consolidar RK, KR, SK, KS e revisar CK, KC, KK, sem pressupor casos positivos inexistentes; verificar definição interna de K, junções sônicas, RH, ramos e ordenação; registrar cobertura por padrão | Sete entradas K com disponibilidade e diagnósticos verificáveis; casos sem exemplo quadrático positivo permanecem **não validados**, sem bloquear o fechamento |
+| **GWML-T06** | 2 | Integrar a classificação dos nove saltos e fronteiras com os registros separados de RH, Lax, Liu, entropia, perfis e cinética, preservando `não avaliado`, `inconclusivo` e `não aplicável`; testar violações e não inferir admissibilidade de amostragem | Diagnósticos coerentes e testados nos casos suportados; nenhuma alegação de certificação geral; modelos físicos não parametrizados identificados explicitamente |
+| **GWML-T07** | 3 | Revisar a realização física das 16 entradas do catálogo **quando construtíveis**, incluindo desdobramento de K, contatos, bordas coincidentes, amplitude nula, ordenação, seleção compartilhada entre vistas e exemplos negativos | Perfis reprodutíveis para casos suportados, sem perfis fictícios para entradas inconclusivas; testes de consistência estados–físico |
+| **GWML-T08** | 1, 2 e 3 | Validação integrada e encerramento: matriz final das 16 entradas, rastreabilidade definição→código→teste→vista, execução de lint/test/build e registro das exclusões científicas | Relatório único de cobertura delimitada, verificações automatizadas aprovadas e decisão explícita de encerramento da fase tradicional |
+
+**Regra de execução:** T04–T08 são tarefas **planejadas, não autorizadas nem iniciadas** por este registro. Uma tarefa por vez; nenhuma implementação sem autorização específica. Testes, correções e documentação necessários à entrega permanecem dentro da tarefa correspondente; não recebem novos números GWML-T. Não subdividir automaticamente em T09, T10 etc.
+
+**Regra de parada:** após a decisão de fechamento da **T08**, a fase tradicional termina. Não há T09 prevista. Defeitos que impeçam critérios aprovados devem ser corrigidos **dentro da tarefa aberta**; problemas fora do escopo ficam no relatório final como limitações ou futuras pesquisas, sem reabrir automaticamente a fase. Qualquer mudança do conjunto fechado exige decisão explícita do responsável, com justificativa e revisão deste plano **antes** de executar.
+
+**Limites científicos:** a matriz de 16 entradas é um catálogo formal, não um teorema de existência ou completude. A classificação dos nove saltos não equivale a admissibilidade. Fluxos degenerados, regiões não hiperbólicas, contatos de direção variável, completude global, unicidade geral e seleção cinética ainda não definida não serão declarados resolvidos. O fechamento significa **implementação e validação no domínio documentado**, não solução de todos os problemas matemáticos.
+
+**Referências operacionais:** [contrato das 16 cadeias](traditional/IMPLEMENTACAO_16_CADEIAS.md), [cadeias e admissibilidade](traditional/CADEIAS_E_ADMISSIBILIDADE.md), [classificação dos saltos](traditional/CLASSIFICACAO_DOS_SALTOS.md), [estado da implementação](STATE_SPACE_STATUS.md) e [objetivos científicos](OBJETIVOS_E_ESCOPO.md).
+
 ## v0.6.0 — Foundation
 
 - Repository hygiene and GitHub CI.
