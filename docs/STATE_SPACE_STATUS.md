@@ -105,3 +105,15 @@ passaram, com o aviso preexistente de tamanho do bundle. Métodos, tabelas,
 limitações e reprodução estão no relatório RR acima. A T02 está validada para
 encerramento em seu escopo numérico delimitado, sem completude global ou
 certificação entrópica. Nenhuma outra família foi alterada; a T03 não foi iniciada.
+
+
+## GWML-T03 — implementação inicial das cadeias clássicas (27/10/2026)
+
+Escopo aprovado: RS, SR e SS no espaço de estados; RR permanece como referência da T02.
+
+- SS: `refineTwoShockMiddle` resolve localmente as quatro componentes de Rankine–Hugoniot em `(u_M,v_M,s_1,s_2)`, por Newton amortecido e limite de deslocamento a partir da interseção poligonal. `twoShockCandidates` mantém candidatos geométricos para diagnóstico, mas a seleção do perfil físico exige `refinement.status === 'refined-candidate'`. O corretor não garante preservação de ramo global, unicidade nem completude.
+- RS/SR: `mixedSelfSimilarCandidate` reintegra o prefixo da curva característica desde a âncora, verificando a compatibilidade numérica dos vértices com o ramo fornecido. A junção continua proveniente do corretor misto local; ainda não há corretor conjunto ancorado equivalente ao RR nem estimativa rigorosa do erro de integração.
+- Busca: `searchTwoShockCandidates` e `searchMixedWaveCandidates` devolvem candidatos e relatórios de interseções amostradas, correções, rejeições e limite de busca. Ausência de candidato não prova inexistência. Os relatórios estão disponíveis na camada matemática; sua exposição integral na interface ainda não foi implementada.
+- Regressões: adicionados testes para correção SS, dados inválidos, diagnósticos e reconstrução do leque. **Ainda não foram executados nesta sessão**: não declarar lint, testes ou build aprovados até execução real e revisão de eventuais falhas.
+
+Estado da T03: **implementação preliminar no GitHub, validação pendente**. Não há certificação entrópica geral, completude global nem encerramento formal.
