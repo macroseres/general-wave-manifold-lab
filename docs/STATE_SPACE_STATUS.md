@@ -130,3 +130,16 @@ Escopo aprovado: RS, SR e SS no espaço de estados; RR permanece como referênci
 **Validação:** captura do GitHub Actions apresentada pelo responsável em 27/10/2026 confirma **CI #26 aprovado** para o commit `766c498` (regressões dos cinco padrões) e **CI #27 aprovado** para o commit `0d66684` (registro documental), ambos em `main`. O pipeline passou; não se reivindica prova matemática global nem completude dos contatos.
 
 **Encerramento GWML-T04 — 27/10/2026:** os cinco padrões RC, SC, CR, CS e CC possuem fixtures reproduzíveis no modelo restrito de direção e velocidade constantes, testes de fechamento, ordenação, conservação e rejeição de casos fora do modelo. **Estado: encerrada no escopo aprovado.** Permanecem fora deste marco contatos de direção variável, certificação entrópica geral e cobertura global. Nenhuma tarefa posterior foi iniciada.
+
+
+## GWML-T05 — consolidação das cadeias com compostas (27/10/2026)
+
+**Autorização:** iniciar a T05 do plano finito GWML-T01–T08. Não iniciar a T06 antes de concluir e registrar a T05.
+
+**Escopo:** RK, KR, SK, KS, CK, KC e KK, com as orientações atualmente suportadas pelo construtor `src/math/solution/compositeBlockChainCandidates.js`: K lenta à esquerda como rarefação–choque e K rápida à direita como choque–rarefação. O algoritmo opera sobre estados e curvas amostradas, com interseções corrigidas localmente e verificação das equações de parceiros sônicos. A busca é limitada e não certifica completude.
+
+**Disponibilidade observada antes desta tarefa:** RK/KR e SK/KS possuem fixtures quadráticas positivas em `tests/compositeBlockChainCandidates.test.js`; CK/KC/KK têm entradas implementadas, mas **nenhuma fixture quadrática positiva validada**. Não transformar ausência de exemplo em inexistência matemática nem considerar uma entrada implementada automaticamente validada.
+
+**Primeira entrega:** commit `03c6adc` acrescenta regressões para KR (estados e junção sônica explícitos, RH do salto interno, ordenação das velocidades, distinção de Liu e ausência de certificação entrópica) e para o catálogo finito de sete padrões com blocos K e busca limitada. Preservados os testes existentes de RK, KR, SK, KS e casos negativos.
+
+**Estado:** **em execução, validação CI pendente**. O encerramento exige confirmar os testes, registrar a disponibilidade e as limitações dos sete padrões e manter explícita a distinção entre conservação, teste sônico não estrito e admissibilidade física. Não há obrigação de produzir fixtures positivas artificiais para CK/KC/KK.
