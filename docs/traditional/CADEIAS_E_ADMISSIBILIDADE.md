@@ -177,3 +177,25 @@ O catálogo acima amplia a documentação, não o algoritmo de busca do aplicati
 As regras de colagem e as contas dos exemplos foram deduzidas neste texto, sem reivindicar originalidade. As definições de Lax, Liu, entropia e perfis usam as convenções do texto-base. Na formulação não clássica, consultar LeFloch, revisão de 2010, definição 2.3 e equações (2.7)–(2.8): a relação cinética é imposta aos choques subcompressivos indicados pelo modelo, não a todas as ondas indiscriminadamente. A passagem para outros regimes exige verificar as hipóteses da fonte. [Referência consultada](https://arxiv.org/html/1002.2950v1).
 
 A existência das curvas admissíveis e os teoremas de unicidade local não são substituídos pela tabela de padrões. A referência localizada e a distinção dos padrões por regime estão em [Resultados locais e regimes](RESULTADOS_E_REGIMES.md). A revisão por resultado das referências permanece registrada no [mapa bibliográfico](../BIBLIOGRAPHY.md).
+
+
+## 8. Matriz operacional de evidências — GWML-T06
+
+Para cada salto orientado, a implementação deve registrar **canais independentes**, sem derivar uma certificação de outro canal:
+
+| Canal | Implementação / fonte de evidência | Resultado autorizado | Resultado proibido sem dados adicionais |
+|---|---|---|---|
+| RH | `directShockDiagnostic` | Resíduo relativo e compatibilidade numérica | Admissibilidade |
+| Nove assinaturas | `classifyShockConfiguration` | Interior espectral, incidência, fronteira sônica, não hiperbolicidade | Existência de perfil |
+| Lax estrito | `classifyLaxShock` | Candidato estrito por desigualdades de extremos | Entropia certificada |
+| Lax fraco sônico | `sonicShockAdmissibility` | Compatibilidade de desigualdades e junção sônica por tolerância | Prova de sonicidade exata ou seleção |
+| Liu | Diagnósticos finitos existentes quando fornecido ramo orientado | Evidência amostrada, nunca prova contínua | Aprovação sem arco completo e desigualdade global |
+| Entropia | Par compatível `(η,q)` especificado e domínio | Sinal de `[q]-s[η]` naquele par | Seleção para todos os pares ou sistemas |
+| Perfil viscoso | Regularização `B,C` e órbita heteroclínica verificada | Existência do perfil no modelo e domínio declarados | Perfil inferido de RH ou Lax |
+| Cinética | Relação e domínio do modelo especificados | Compatibilidade com a lei fornecida | Lei universal para fluxo quadrático |
+
+**Estados de evidência:** `not-applicable` quando o critério não cabe ao objeto, `not-evaluated` quando não há dados ou rotina, `inconclusive` quando a evidência é insuficiente, `violation-detected` quando se verifica falha de condição necessária e `numerically-compatible` quando apenas as verificações numéricas especificadas passaram. `proved-in-scope` exige argumento matemático com hipóteses e domínio declarados; não decorre da aprovação do CI.
+
+A suíte `traditionalShockSignatures.test.js` cobre nove exemplos algébricos RH e a separação Lax estrito versus não Lax; **não** cobre Liu contínuo, entropia universal, perfis de regularização ou relação cinética. Os modelos de difusão–dispersão permanecem parametrizáveis conforme `RESULTADOS_E_REGIMES.md`, seção 6. Essas ausências são limites científicos documentados, não critérios de CI omitidos.
+
+**Critério de encerramento da T06:** manter a classificação espectral e os diagnósticos de Lax testados, explicitar os oito canais e seus limites, não promover nenhuma evidência parcial a admissibilidade física. A T07 cuidará da reconstrução física, não da determinação de uma cinética geral.
