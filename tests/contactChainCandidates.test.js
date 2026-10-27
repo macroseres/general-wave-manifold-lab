@@ -104,3 +104,36 @@ test('contact search accepts integrated rarefactions but rejects reversed fans a
   assert.deepEqual(contactChainCandidates(null,[],{},linear),[])
   assert.deepEqual(contactChainCandidates(states,branches,{},fastContact,{speedTolerance:-1}),[])
 })
+
+test('T04: all five contact patterns preserve closure, ordered speeds and coefficient-level contact evidence',()=>{
+  const fixtures=[
+    {pattern:'RC',p:fastContact,states:{left:[1,0],right:[2,1]},rare:[{side:'left',family:'slow',sign:1,points:[[1,0],[1.5,0],[2.5,0]]}]},
+    {pattern:'SC',p:fastContact,states:{left:[2,0],right:[1,1]},rare:[]},
+    {pattern:'CR',p:slowContact,states:{left:[0,0],right:[1,1]},rare:[{side:'right',family:'fast',sign:-1,points:[[1,1],[1,.5],[1,-.5]]}]},
+    {pattern:'CS',p:slowContact,states:{left:[0,1],right:[1,0]},rare:[]},
+    {pattern:'CC',p:linear,states:{left:[0,0],right:[1,1]},rare:[]}
+  ]
+  for(const {pattern,p,states,rare} of fixtures){
+    const candidate=contactChainCandidates(states,rare,{},p).find(q=>q.pattern===pattern)
+    assert.ok(candidate,`missing ${pattern}`)
+    assert.deepEqual(candidate.segments[0].from,states.left)
+    assert.deepEqual(candidate.segments[0].to,candidate.middle)
+    assert.deepEqual(candidate.segments[1].from,candidate.middle)
+    assert.deepEqual(candidate.segments[1].to,states.right)
+    const end=s=>s.type==='rarefaction'?s.speeds.at(-1):s.speed
+    const start=s=>s.type==='rarefaction'?s.speeds[0]:s.speed
+    assert.ok(end(candidate.segments[0])<start(candidate.segments[1]),`unordered ${pattern}`)
+    for(const contact of candidate.contacts){
+      assert.ok(constantContactConnection(contact.from,contact.to,p,contact.family),`invalid contact ${pattern}`)
+      assert.ok(Number.isFinite(contact.relativeResidual))
+    }
+    assert.equal(candidate.entropyCertified,false)
+    assert.equal(candidate.search.complete,false)
+  }
+})
+
+test('T04: a general curved flux is not misrepresented as a constant-direction contact model',()=>{
+  const curved={...zero,a20:.5,a02:.5,b20:.5,b02:.5}
+  assert.deepEqual(constantContactDirections(curved),[])
+  assert.deepEqual(contactChainCandidates({left:[0,0],right:[1,1]},[],{},curved),[])
+})
