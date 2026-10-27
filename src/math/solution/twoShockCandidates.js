@@ -48,7 +48,7 @@ export function refineTwoShockMiddle(left,right,seed,p,{
       const middle=x.slice(0,2),a=directShockDiagnostic(left,middle,p),b=directShockDiagnostic(middle,right,p)
       if(!a.rankineHugoniot||!b.rankineHugoniot)return {status:'rh-unverified',residual:size}
       return {status:'refined-candidate',middle,speeds:[a.speed,b.speed],residual:size,
-        iterations,displacement:distance(middle,seed),entropyCertified:false}
+        iterations:iteration,displacement:distance(middle,seed),entropyCertified:false}
     }
     if(iteration===maxIterations)return {status:'iteration-limit',residual:size}
     const J=Array.from({length:4},()=>Array(4))
