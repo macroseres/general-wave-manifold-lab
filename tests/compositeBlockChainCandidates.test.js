@@ -84,3 +84,39 @@ test('SK and KS retain strict ordinary shocks separately from sonic shocks insid
   assert.ok(ks);assert.deepEqual(ks.segments.map(s=>s.type),['rarefaction','shock','shock'])
   assert.ok(ks.segments[1].speed<ks.segments[2].speed)
 })
+
+test('T05: KR composite has an explicit sonic junction, conserved jump and ordered elementary speeds',()=>{
+  const {states,branches}=krFixture()
+  const q=compositeBlockChainCandidates(states,branches,{},p,{maxSourceSamples:48}).find(x=>x.pattern==='KR')
+  assert.ok(q)
+  assert.deepEqual(q.segments[0].from,states.left)
+  assert.deepEqual(q.segments.at(-1).to,states.right)
+  assert.deepEqual(q.segments[0].to,q.blocks[0].sonicJunction)
+  assert.deepEqual(q.segments[1].from,q.blocks[0].sonicJunction)
+  assert.deepEqual(q.segments[1].to,q.middle)
+  assert.deepEqual(q.segments[2].from,q.middle)
+  const jump=q.segments[1],leftFlux=flux(jump.from,p),rightFlux=flux(jump.to,p)
+  for(let i=0;i<2;i++)close(rightFlux[i]-leftFlux[i],jump.speed*(jump.to[i]-jump.from[i]))
+  assert.ok(q.segments[0].speeds.at(-1)<=jump.speed+1e-6)
+  assert.ok(jump.speed<q.segments[2].speeds[0])
+  assert.equal(q.blocks[0].construction,'rarefaction-shock')
+  assert.equal(q.evidence.liu,'not-evaluated')
+  assert.equal(q.entropyCertified,false)
+})
+
+test('T05: the seven formal K patterns remain distinct from evidence of positive fixtures',()=>{
+  const catalog=['RK','KR','SK','KS','CK','KC','KK']
+  assert.equal(new Set(catalog).size,7)
+  const {states,branches}=krFixture()
+  const found=compositeBlockChainCandidates(states,branches,{},p,{maxSourceSamples:48})
+  assert.ok(found.some(q=>q.pattern==='KR'))
+  for(const q of found){
+    assert.ok(catalog.includes(q.pattern))
+    assert.equal(q.blocks.length,2)
+    assert.equal(q.blocks.map(b=>b.type).join(''),q.pattern)
+    assert.ok(q.blocks.some(b=>b.type==='K'))
+    assert.equal(q.search.complete,false)
+    assert.equal(q.entropyCertified,false)
+  }
+  // This bounded fixture is not a completeness test for CK, KC or KK.
+})
