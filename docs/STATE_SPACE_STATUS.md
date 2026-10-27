@@ -181,4 +181,4 @@ Escopo aprovado: RS, SR e SS no espaço de estados; RR permanece como referênci
 
 **Limites:** CK, KC e KK permanecem sem exemplos positivos quadráticos validados; não são reconstruídos artificialmente. Perfis amostrados não certificam admissibilidade entrópica.
 
-**Estado:** em execução; aprovação CI pendente. A T08 não foi iniciada.
+**Validação e encerramento — 27/10/2026:** captura do GitHub Actions fornecida pelo responsável confirma **CI #42 aprovado** (commit `3667c5d`) e **CI #43 aprovado** (commit `d48e207`), ambos na branch `main`. A regressão de reconstrução KR, os traços de salto, a autossimilaridade e a rejeição de entradas inconclusivas passaram no pipeline. **Estado: GWML-T07 formalmente encerrada no escopo numérico aprovado.** Não há certificação geral de admissibilidade nem exemplos positivos validados para CK/KC/KK. **A T08 não foi iniciada.**
