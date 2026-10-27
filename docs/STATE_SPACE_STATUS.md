@@ -164,3 +164,8 @@ Escopo aprovado: RS, SR e SS no espaço de estados; RR permanece como referênci
 **Validação da primeira entrega:** captura do GitHub Actions apresentada pelo responsável em 27/10/2026 confirma **CI #36 aprovado** para `bf9f681` e **CI #37 aprovado** para `33443f7`, ambos em `main`. A regressão dos nove interiores, RH e Lax passou; isso **não valida** Liu contínuo, desigualdades de entropia para pares especificados, existência de perfil viscoso ou relação cinética.
 
 **Estado:** **em execução; primeira entrega validada pelo CI**. A T06 não está encerrada: falta consolidar a rastreabilidade dos diagnósticos de admissibilidade e os seus limites no escopo previsto. A T07 não foi iniciada.
+
+
+**Consolidação final da GWML-T06 — 27/10/2026:** commit `1fe3dc8` acrescenta em `traditional/CADEIAS_E_ADMISSIBILIDADE.md` a matriz operacional dos oito canais de evidência (RH, configuração espectral, Lax estrito, Lax sônico fraco, Liu, entropia, perfil regularizado e cinética), estados de avaliação e limites. A regressão de nove assinaturas RH/Lax foi validada nos CI #36–37. Não foi implementado certificador universal de admissibilidade, pois Liu contínuo, pares de entropia, regularização e cinética requerem dados/hipóteses que o fluxo quadrático isolado não fixa.
+
+**Estado:** **T06 concluída no escopo delimitado de diagnóstico e documentação**, condicionada à aprovação do CI do commit documental `1fe3dc8`. A T07 ainda não foi iniciada.
