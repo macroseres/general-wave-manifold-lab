@@ -120,3 +120,41 @@ test('T05: the seven formal K patterns remain distinct from evidence of positive
   }
   // This bounded fixture is not a completeness test for CK, KC or KK.
 })
+
+test('T07: KR physical reconstruction uses the same elementary states, sonic junction and jump traces',()=>{
+  const {states,branches}=krFixture()
+  const q=compositeBlockChainCandidates(states,branches,{},p,{maxSourceSamples:48}).find(c=>c.pattern==='KR')
+  assert.ok(q)
+  const geometry=candidatePhysicalGeometry(q)
+  assert.equal(geometry.fans.length,2)
+  assert.equal(geometry.shocks.length,1)
+  for(const time of [.5,2]){
+    const profile=candidatePhysicalProfiles(q,{time,count:128})
+    assert.ok(profile)
+    assert.equal(profile.shockTraces.length,1)
+    assert.equal(profile.contactTraces.length,0)
+    const trace=profile.shockTraces[0]
+    close(trace.speed,q.segments[1].speed)
+    close(trace.x,trace.speed*time)
+    trace.left.forEach((v,i)=>close(v,q.segments[1].from[i]))
+    trace.right.forEach((v,i)=>close(v,q.segments[1].to[i]))
+    for(const xi of [geometry.fans[0].left-.5,geometry.fans[0].right,
+      q.segments[1].speed,geometry.fans[1].left+.05,geometry.fans[1].right+.5]){
+      const actual=evaluateSelfSimilarCandidate(q,xi)
+      const scaled=evaluateSelfSimilarCandidate(q,(xi*time)/time)
+      assert.ok(actual)
+      actual.forEach((v,i)=>close(v,scaled[i]))
+    }
+  }
+  assert.equal(q.entropyCertified,false)
+})
+
+test('T07: malformed or unsupported physical profiles are not invented',()=>{
+  assert.equal(candidatePhysicalProfiles({status:'inconclusive',kind:'composite-chain',segments:[]}),null)
+  assert.equal(candidatePhysicalGeometry({status:'inconclusive',kind:'composite-chain',segments:[]}),null)
+  const {states,branches}=krFixture()
+  const q=compositeBlockChainCandidates(states,branches,{},p,{maxSourceSamples:48}).find(c=>c.pattern==='KR')
+  assert.ok(q)
+  assert.equal(candidatePhysicalProfiles(q,{time:0}),null)
+  assert.equal(evaluateSelfSimilarCandidate(q,Number.NaN),null)
+})
