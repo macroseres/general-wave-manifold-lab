@@ -75,13 +75,13 @@ export function refineTwoShockMiddle(left,right,seed,p,{
  * Geometric candidates only: mesh sampling may miss intersections and no
  * entropy, wave-family or viscous-profile admissibility is asserted.
  */
-export function twoShockCandidates(left,right,forward=[],backward=[],p,{tolerance=1e-8,maxCandidates=40}={}){
-  if(!left?.every?.(Number.isFinite)||!right?.every?.(Number.isFinite))return []
+function collectTwoShockCandidates(left,right,forward=[],backward=[],p,{tolerance=1e-8,maxCandidates=40}={}){
+  if(!left?.every?.(Number.isFinite)||!right?.every?.(Number.isFinite))return {candidates:[],report:{status:'invalid-input',complete:false}}
   const found=[]
   const report={status:'no-candidates-found',sampledIntersections:0,refined:0,
     rejected:[],maxCandidates,complete:false}
   const finish=()=>{report.status=found.some(q=>q.refinement?.status==='refined-candidate')?'candidates-found':
-    report.sampledIntersections?'inconclusive':'no-candidates-found';found.report=report;return found}
+    report.sampledIntersections?'inconclusive':'no-candidates-found';return {candidates:found,report}}
   for(const f of forward){
     for(let i=1;i<(f.points?.length??0);i++){
       const a=f.points[i-1],b=f.points[i];if(!finitePoint(a)||!finitePoint(b))continue
@@ -116,8 +116,12 @@ export function twoShockCandidates(left,right,forward=[],backward=[],p,{toleranc
   return finish()
 }
 
+/** Backward-compatible array-only API. */
+export function twoShockCandidates(...args){
+  return collectTwoShockCandidates(...args).candidates
+}
+
 /** Bounded search with explicit diagnostics; absence is not a nonexistence proof. */
 export function searchTwoShockCandidates(...args){
-  const candidates=twoShockCandidates(...args)
-  return {candidates,report:candidates.report??{status:'invalid-input',complete:false}}
+  return collectTwoShockCandidates(...args)
 }
