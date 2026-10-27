@@ -24,3 +24,14 @@ test('sampled intersections do not assert entropy certification',()=>{
  const found=mixedWaveCandidates({left:[0,0],right:[1,-1]},branches,hug,p)
  assert.equal(found.length,1);assert.equal(found[0].entropyCertified,false)
 })
+
+
+test('mixed search exposes bounded numerical diagnostics',async()=>{
+ const {searchMixedWaveCandidates}=await import('../src/math/solution/mixedWaveChains.js')
+ const branches=[{side:'left',family:'slow',sign:1,points:[[0,0],[1,0]]}]
+ const hug={right:[{id:'h',points:[{u:.5,v:-1},{u:.5,v:1}]}],left:[]}
+ const result=searchMixedWaveCandidates({left:[0,0],right:[1,-1]},branches,hug,p)
+ assert.equal(result.report.sampledIntersections,1)
+ assert.equal(result.report.complete,false)
+ assert.ok(Array.isArray(result.report.rejected))
+})
