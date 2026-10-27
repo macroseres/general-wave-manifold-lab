@@ -169,3 +169,16 @@ Escopo aprovado: RS, SR e SS no espaço de estados; RR permanece como referênci
 **Consolidação final da GWML-T06 — 27/10/2026:** commit `1fe3dc8` acrescenta em `traditional/CADEIAS_E_ADMISSIBILIDADE.md` a matriz operacional dos oito canais de evidência (RH, configuração espectral, Lax estrito, Lax sônico fraco, Liu, entropia, perfil regularizado e cinética), estados de avaliação e limites. A regressão de nove assinaturas RH/Lax foi validada nos CI #36–37. Não foi implementado certificador universal de admissibilidade, pois Liu contínuo, pares de entropia, regularização e cinética requerem dados/hipóteses que o fluxo quadrático isolado não fixa.
 
 **Validação final:** captura do GitHub Actions fornecida pelo responsável em 27/10/2026 confirma **CI #39 aprovado** (commit `1fe3dc8`) e **CI #40 aprovado** (commit `cb8fb92`), ambos em `main`. Somam-se aos CI #36–38 já aprovados. **Estado: GWML-T06 formalmente encerrada no escopo delimitado de diagnóstico e documentação.** A aprovação do pipeline não constitui certificação entrópica, Liu contínuo, perfil viscoso ou relação cinética geral. **A T07 não foi iniciada.**
+
+
+## GWML-T07 — reconstrução no espaço físico (27/10/2026)
+
+**Autorização:** T07 iniciada; T08 não iniciada.
+
+**Escopo:** a mesma cadeia selecionada nos estados determina o perfil autossimilar `U(x,t)=W(x/t)`. `riemannSelfSimilarCandidate.js` avalia o candidato e `riemannCandidatePhysical.js` produz leques, traços de choques e contatos, raios e amostras. Compostas são desdobradas em segmentos elementares. A convenção no salto é o traço direito.
+
+**Primeira entrega:** commit `3667c5d` acrescenta regressões KR com dois tempos, verificação de `x=s t`, traços do salto interno, dois leques, invariância autossimilar e rejeição de dados inconclusivos ou tempo inválido.
+
+**Limites:** CK, KC e KK permanecem sem exemplos positivos quadráticos validados; não são reconstruídos artificialmente. Perfis amostrados não certificam admissibilidade entrópica.
+
+**Estado:** em execução; aprovação CI pendente. A T08 não foi iniciada.
