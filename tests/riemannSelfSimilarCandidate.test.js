@@ -31,3 +31,15 @@ test('invalid xi or incomplete candidates cannot be evaluated',()=>{
  assert.equal(evaluateSelfSimilarCandidate(null,0),null)
  assert.equal(evaluateSelfSimilarCandidate({status:'sampled-candidate',kind:'two-shock',states:[[0,0],[1,1],[2,2]],speeds:[0,1]},NaN),null)
 })
+
+
+test('mixed profile uses anchored reintegration metadata',()=>{
+ const candidate={kind:'rarefaction-shock',family:'slow',branchSign:1,branchIndex:.5,
+  middle:[1,0],refinement:{status:'refined-candidate',middle:[1,0]},
+  evidence:{status:'mixed-ordered-lax-candidate'},fanArc:{passes:true}}
+ const q=mixedSelfSimilarCandidate([0,0],[1,-1],candidate,
+   [{side:'left',family:'slow',sign:1,points:[[0,0],[2,0]]}],p)
+ assert.equal(q.status,'sampled-candidate')
+ assert.equal(q.fanReconstruction,'anchored-rk4-prefix')
+ assert.ok(q.sourceDeviation<1e-8)
+})
