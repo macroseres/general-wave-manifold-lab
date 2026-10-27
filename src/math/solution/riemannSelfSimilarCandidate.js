@@ -2,6 +2,7 @@ import {directShockDiagnostic} from './directShockDiagnostic.js'
 import {stateCharacteristicDirection} from '../rarefaction/stateIntegralCurves.js'
 import {evaluateRarefactionPair} from './rarefactionPairCandidates.js'
 import {evaluateContactChain} from './contactChainCandidates.js'
+import {integrateCharacteristicLength,sampledArcLength} from './rarefactionJointCorrector.js'
 
 const valid=U=>Array.isArray(U)&&U.length===2&&U.every(Number.isFinite)
 const point=U=>[U[0],U[1]]
@@ -33,8 +34,21 @@ export function mixedSelfSimilarCandidate(left,right,candidate,branches,p,{speed
   const branch=(branches??[]).find(b=>b.side===side&&b.family===candidate.family&&b.sign===candidate.branchSign)
   const index=Math.floor(candidate.branchIndex)
   if(!branch||!Number.isInteger(index)||index<0||index+1>=branch.points.length)return {status:'missing-fan',entropyCertified:false}
-  const raw=branch.points.slice(0,index+1).map(coords)
-  if(!raw.every(valid))return {status:'invalid-fan',entropyCertified:false}
+  // Reintegrate the sampled prefix from the original anchored characteristic state.
+  // The corrected junction remains the endpoint; this is a numerical consistency check.
+  const raw=branch.points.slice(0,index+1).map((_,i)=>{
+    const length=sampledArcLength(branch,i)
+    return length===null?null:integrateCharacteristicLength(branch,p,length)
+  })
+  if(!raw.every(valid))return {status:'fan-integration-failed',entropyCertified:false}
+  const sampledStart=coords(branch.points[0])
+  if(Math.hypot(raw[0][0]-sampledStart[0],raw[0][1]-sampledStart[1])>1e-9)
+    return {status:'fan-anchor-mismatch',entropyCertified:false}
+  const sourceDeviation=raw.reduce((max,U,i)=>{
+    const q=coords(branch.points[i])
+    return Math.max(max,Math.hypot(U[0]-q[0],U[1]-q[1])/(1+Math.hypot(...q)))
+  },0)
+  if(sourceDeviation>2e-4)return {status:'source-branch-mismatch',sourceDeviation,entropyCertified:false}
   const a=coords(branch.points[index]),b=coords(branch.points[index+1])
   const d=[b[0]-a[0],b[1]-a[1]],den=d[0]**2+d[1]**2
   if(!(den>1e-20))return {status:'degenerate-fan',entropyCertified:false}
@@ -49,7 +63,8 @@ export function mixedSelfSimilarCandidate(left,right,candidate,branches,p,{speed
   const s=shock.speed,eps=speedTolerance*(1+Math.max(Math.abs(s),...lambdas.map(Math.abs)))
   if(fromLeft?!(s>lambdas.at(-1)+eps):!(lambdas[0]>s+eps))return {status:'unordered-speeds',entropyCertified:false}
   return {status:'sampled-candidate',kind,fanStates:ordered.map(point),fanSpeeds:lambdas,shockSpeed:s,
-    left:point(left),middle:point(middle),right:point(right),entropyCertified:false}
+    left:point(left),middle:point(middle),right:point(right),sourceDeviation,
+    fanReconstruction:'anchored-rk4-prefix',entropyCertified:false}
 }
 
 /** Evaluate a piecewise candidate U(x/t). Values at shocks use the right trace. */
