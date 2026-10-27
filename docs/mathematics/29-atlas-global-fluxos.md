@@ -208,3 +208,102 @@ Com os setores do atlas explicitados, investigar a regularidade da variedade pro
 ## 11. Referência e procedência
 
 A decomposição de uma multiplicação comutativa bidimensional em traço e cúbico binário torcido é conhecida: Rausch de Traubenberg e Slupinski, *Polynomial invariants and moduli of generic two-dimensional commutative algebras*, [arXiv:1612.05737, proposição 3.5](https://arxiv.org/html/1612.05737). A parametrização real usada aqui e a redução da matriz linear são deduzidas nas seções anteriores; não atribuímos a esse artigo a classificação do fluxo não homogêneo ou das ondas. O grupo e os fatores de normalização devem ser conferidos ao comparar convenções.
+
+## 12. Continuidade do estudo e integração em Parâmetros — 27/10/2026
+
+O painel Parâmetros passou a apresentar três camadas independentes: geometria
+espectral da cônica, estrato de estados escalares/homogeneização e raízes
+projetivas do cúbico da parte quadrática. O resumo do fluxo atual e o resumo
+expansível do ponto inspecionado usam o mesmo adaptador
+`src/math/flux/parameterClassification.js`, sem modificar os classificadores.
+A apresentação está em `src/components/ParameterClassification.jsx`.
+
+A geometria da cônica usa ponto flutuante e tolerância relativa de 1e-9.
+`classifyScalarStratum` e `quadraticAtlasData` usam aritmética racional dos
+decimais fornecidos. A interface declara essa procedência e não converte
+exatidão dos dados fornecidos em certificação de dados físicos arredondados.
+Direções incluem a reta projetiva inteira; uma raiz no infinito não é omitida.
+Uma direção cúbica não equivale automaticamente a um equilíbrio, e nenhum
+resultado dessas camadas certifica admissibilidade ou conexões globais.
+
+O mapa colorido continua representando tipos de cônicas. Não foram adicionadas
+curvas de bifurcação, classes de singularidades ou mudanças no construtor RR.
+As funções de arraste, zoom, inspeção e aplicação explícita continuam separadas.
+
+### Resultados gerais obtidos na análise, para prosseguimento
+
+Para os dez coeficientes livres, escreva
+
+$$
+\alpha=(2a_{20}-b_{11},a_{11}-2b_{02},a_{10}-b_{01}),\quad
+\beta=(a_{11},2a_{02},a_{01}),\quad
+\gamma=(2b_{20},b_{11},b_{10}).
+$$
+
+Então a matriz homogênea da cônica é
+`C_Delta = alpha alpha^T + 2(beta gamma^T + gamma beta^T)` e
+
+$$
+\det C_\Delta=-4\det[\alpha;\beta;\gamma]^2.
+$$
+
+A identidade decorre de `C_Delta = S^T K S`, com linhas de S iguais a
+alpha, beta, gamma e `K=[[1,0,0],[0,0,2],[0,2,0]]`, cujo determinante é -4.
+O sistema escalar aumentado do capítulo 27 tem as mesmas linhas, a menos de
+permutação. Portanto cônica não degenerada equivale ao estrato de postos
+(2,3), não homogeneizável pelo grupo declarado.
+
+Na carta finita, use os P,Q,R de `charts/zChart.js`, `D=P²+Q²>0` e
+`(u0,v0)=-R(P,Q)/D`. O campo levantado de `rarefaction/field.js` tem a forma
+
+$$
+\dot\tau=a(z)\tau+b(z),\qquad\dot z=g(z),\qquad
+a=zP'+Q',\quad b=zv_0'-u_0',\quad g=-Q-zP=-\Psi(z,1).
+$$
+
+Para raiz real de g em carta regular: se a não se anula, o equilíbrio é
+`tau=-b/a`; se a=0 e b diferente de zero, não há equilíbrio nessa direção;
+se a=b=0, há uma linha de equilíbrios. No equilíbrio isolado a linearização
+é triangular com autovalores a e g'. Isso fornece critérios locais de sela,
+nó, perda de hiperbolicidade e autovalor repetido. Não se inferem focos ou
+Hopf desse campo; os campos sônicos do laboratório são outros objetos.
+Essas condições gerais ainda não foram implementadas neste painel.
+
+As falhas D=0 exigem distinguir P=Q=0,R diferente de zero (fibra ausente) de
+P=Q=R=0 (plano de estados na direção). Falha da parametrização não prova
+singularidade da superfície de incidência; verificar seu diferencial.
+A carta Z=1/z é obrigatória: passagem pelo infinito pode ser apenas troca
+de carta, sem bifurcação geométrica.
+
+Entre raízes de g, as folhas satisfazem a equação linear
+`d tau/dz = (a/g) tau + b/g`. O estudo global deve analisar as soluções,
+conexões entre separatrizes, transições entre cartas e setores excepcionais.
+Não foi demonstrado que as condições locais esgotam as fronteiras globais.
+
+Verificação transitória da análise geral: 160 fluxos inteiros com dez
+coeficientes variados; identidade dos determinantes com erro observado zero;
+3336 avaliações do campo com erro normalizado máximo 2.97e-15; 240 equilíbrios
+com resíduo escalado máximo 9.64e-14; 30 avaliações na direção infinita com erro
+máximo 3.56e-15. São evidências numéricas de consistência, não a prova das
+identidades nem certificação de completude. Os ensaios foram executados sem
+criar arquivos de produção adicionais.
+
+### Ponto de retomada no ChatGPT
+
+Partir dos dez coeficientes e das equivalências dos capítulos 27–29. Não
+substituir o problema geral pela família (B,c), que serve apenas como exemplo.
+Próximas entregas científicas: auditar simbolicamente os critérios locais
+acima; cobrir raízes múltiplas e fibras excepcionais nas duas cartas;
+estudar as condições globais de conexão; só depois determinar quais
+fronteiras podem ser sobrepostas aos cortes bidimensionais do mapa.
+O setor homogêneo clássico deve ter suas hipóteses verificadas antes de
+importar classificações de Schaeffer–Shearer. Preservar a distinção entre
+órbitas algébricas, tipos locais, folheações globais e admissibilidade física.
+A integração visual desta seção não inicia a GWML-T03.
+
+Verificação da integração visual: `npm run lint`, `npm run test` (822 testes,
+zero falhas) e `npm run build` passaram. Permanece o aviso de tamanho do bundle.
+Cinco regressões novas verificam cônicas iguais com direções diferentes,
+homogeneização, setores de raízes múltiplas/cúbico nulo, coeficientes gerais e
+entrada inválida. A interface foi conferida no navegador para o fluxo atual e
+a seleção inspecionada, incluindo a expansão dos critérios e das ressalvas.
