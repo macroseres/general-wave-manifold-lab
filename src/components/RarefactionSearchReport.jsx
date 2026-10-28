@@ -1,4 +1,5 @@
 const labels={
+  'not-requested':'Aguardando solicitação de construção',
   'invalid-input':'Dados ou parâmetros inválidos',
   'incompatible-branches':'Sem par de ramos elegível para RR',
   'no-candidates-found':'Nenhum candidato encontrado na busca limitada',
@@ -21,15 +22,15 @@ const labels={
 }
 
 export default function RarefactionSearchReport({report}){
-  const rejected=report.diagnostics.filter(d=>!['numerically-compatible','duplicate','seed-warning'].includes(d.classification))
-  const warnings=report.diagnostics.filter(d=>d.classification==='seed-warning').length
-  const pending=report.pairs.filter(q=>q.status!=='examined').length
+  const rejected=(report.diagnostics??[]).filter(d=>!['numerically-compatible','duplicate','seed-warning'].includes(d.classification))
+  const warnings=(report.diagnostics??[]).filter(d=>d.classification==='seed-warning').length
+  const pending=(report.pairs??[]).filter(q=>q.status!=='examined').length
   return <div className="stateProjectionControls" role="status"><div><b>Diagnóstico da busca RR</b>
-    <small>{labels[report.status]}. Candidatos: {report.candidateCount}; pares de ramos com exame pendente: {pending}.</small>
+    <small>{labels[report.status]??'Busca não concluída'}. Candidatos: {report.candidateCount??0}; pares de ramos com exame pendente: {pending}.</small>
     {report.candidateLimitReached&&<small>Limite de candidatos atingido. {report.seedSearchExhausted?'Todas as sementes dos pares fornecidos foram examinadas.':'Há sementes ou pares de ramos não examinados.'}</small>}
     <small>Falhas e casos inconclusivos: {rejected.filter(d=>['numerical-failure','inconclusive','invalid-input'].includes(d.classification)).length}. Ausência de candidatos não demonstra inexistência de solução.</small>
     {warnings>0&&<small>Sementes com ressalvas poligonais: {warnings}. A decisão usa a correção e os leques reintegrados.</small>}
     {rejected.length>0&&<details><summary>Motivos por tentativa ({rejected.length})</summary>{rejected.map((d,i)=><small key={i}>Par {d.pairIndex+1}: {labels[d.status]??'Tentativa não concluída'}{Number.isFinite(d.refinement?.residual)?` · resíduo ${d.refinement.residual.toExponential(3)}`:''}.</small>)}</details>}
-    {report.branches.some(b=>b.relevant&&b.stop==='integration-tolerance')&&<small>Há ramos interrompidos porque a integração não satisfez a tolerância.</small>}
+    {(report.branches??[]).some(b=>b.relevant&&b.stop==='integration-tolerance')&&<small>Há ramos interrompidos porque a integração não satisfez a tolerância.</small>}
   </div></div>
 }

@@ -1,4 +1,34 @@
-# Situação do espaço de estados — 20/10/2026
+# Situação do espaço de estados — 27/10/2026
+
+## Fluxo interativo tradicional — integração de 27/10/2026
+
+A Entrega 1 foi aprovada pelo responsável. A Entrega 2 integra os construtores existentes à ação explícita de construção, com arcos de choque separados das Hugoniot projetadas por π, conforme orientação do responsável. O encerramento histórico T01–T08 permanece delimitado e não é usado como prova de uma interface completa.
+
+**Como usar:** em Parâmetros, defina os dez coeficientes. Em Estados, use **Posicionar no gráfico** para U_L e U_R, clique no plano e ajuste por arrasto ou coordenadas. Escolha **Construir candidatos**, selecione uma cadeia em **Cadeias** e use **Ajustar à geometria**. O painel lista ondas, famílias, estados, velocidades, resíduos RH, junções sônicas e critérios retornados pelo construtor. Quando houver mais de um resultado, **Comparar com** permite inspecionar outra cadeia. **Diagnósticos das buscas e limites** permanece disponível mesmo sem candidatos.
+
+**Camadas independentes:** o desenho da cadeia usa os segmentos do candidato; os arcos de choque são reconstruídos pela continuação característica RH já existente, com validação numérica do extremo e da tangente. Mostram-se os dois choques de SS simultaneamente, além dos saltos internos de K. Essa camada tem controle de visibilidade próprio e não depende da projeção π selecionada nem da visibilidade das Hugoniot da variedade. As Hugoniot projetadas mantêm sua associação por π e os controles anteriores. Um arco não conectado pela continuação é identificado como inconclusivo: seus extremos são assinalados sem inventar uma corda como arco.
+
+**Construção e atualização:** resultados só ficam disponíveis após a solicitação. Mudanças nos coeficientes ou estados invalidam a construção e a seleção anteriores; é preciso reconstruir. Zoom, pan, projeção, U* e controles de visibilidade não alteram os dados do problema nem invalidam seus candidatos. A seleção continua compartilhada com o espaço físico. O enquadramento inclui todos os leques, arcos e junções internos da cadeia.
+
+**Busca:** `stateConstructionSearch.js` reutiliza RR, SS, RS/SR, contatos e compostas; expõe os relatórios existentes e isola falhas por grupo. Além das sementes das curvas projetadas, `stateShockBranches.js` reutiliza a continuação RH para fornecer ramos no espaço de estados, incluindo fluxos em que a carta regular não fornece curvas úteis. São até 240 passos por sentido e família, passo de 0,025 vezes a escala dos estados e raio máximo de duas vezes essa escala; as paradas são apresentadas no painel. Esses limites não são uma prova de completude. Contatos e compostas ainda não fornecem relatórios individuais de todas as tentativas; a interface declara essa limitação.
+
+**Limitações científicas:** mantidos os 13 padrões com exemplos quadráticos positivos documentados, sem promover CK/KC/KK a padrões validados. Contatos continuam restritos à direção e velocidade constantes; K lenta usa R–S e K rápida S–R. Compatibilidade com testes necessários, violações amostradas e admissibilidade entrópica inconclusiva são apresentadas separadamente. A geometria amostrada não certifica unicidade de ramo, monotonicidade contínua, Liu global, entropia ou cinética.
+
+**Verificação de integração:** `npm run check` passou com lint sem avisos, 837 testes aprovados e build; permanece o aviso preexistente de tamanho do bundle. As regressões novas cobrem a solicitação explícita, entradas ausentes, RR/RS/SR/SS sem curvas projetadas, conservação das amostras de choque, fechamento dos segmentos, junção sônica de KR, pontos necessários ao enquadramento e contatos separados. A renderização real do componente verifica KR com arco de choque e junção sônica, além de ausência de cadeia antes da solicitação. A inspeção interativa no navegador foi realizada para SS, RR, CC e KR, conforme os casos e evidências abaixo. Essa verificação de integração não amplia a validação matemática global.
+
+**Inspeção gráfica reproduzível:**
+
+| Caso | Fluxo e estados | Resultado observado | Evidência |
+|---|---|---|---|
+| SS | F=(u²/2, v²/2+5v), U_L=(2,2), U_R=(0,0) | U_M≈(0,2), dois arcos de choque simultâneos, velocidades 1 e 6, resíduos RH compatíveis | [SS independente](evidence/state-construction/ss-independent.png) |
+| RR | Mesmo fluxo, U_L=(0,0), U_R=(2,2) | U_M≈(2,0), dois arcos separados, leques de velocidades [0,2] e [5,7], legenda R1–R2 | [RR](evidence/state-construction/rr-fans.png) |
+| CC | F=(u,2v), U_L=(0,0), U_R=(1,1) | U_M=(1,0), dois contatos roxos, famílias 1/2, velocidades 1/2, resíduos RH nulos | [CC](evidence/state-construction/cc-contacts.png) |
+| KR | `oldWavePreset({B2:0})`, U_L=(0.9776785705503095,-1.1634795636533988), U_R=(1.1608741742799409,1.0366448287612047) | Dois leques e arco de choque, junção sônica ≈(0.99994,-0.999948), U_M≈(0.999946,0.999896); construção inteira enquadrada | [KR](evidence/state-construction/kr-sonic.png) |
+
+Em SS, a troca π₊→π₋ preservou exatamente os atributos SVG `d` dos dois arcos; as Hugoniot projetadas estavam ocultas. O posicionamento por botão e clique foi verificado, e o arrasto alterou U_L de (2,2) para aproximadamente (1.8791545667,1.8978932234), invalidando a cadeia. O espaço físico deixou de exibir o perfil antigo e ofereceu reconstrução em Estados. A alteração dos coeficientes também invalidou a realização física. Ao navegar entre Estados e Físico sem mudar o problema, a cadeia KR permaneceu selecionada e o diagrama físico utilizou o mesmo salto e os dois leques.
+
+Os marcadores de possíveis perdas de não linearidade genuína agora têm controle próprio em **Rarefações → Eventos infinitesimais**, inicialmente oculto. Em campos linearmente degenerados, esses eventos podem preencher toda a curva; ocultá-los não remove seus diagnósticos matemáticos. As capturas registram a inspeção, não certificação científica. Não foi feita inspeção manual de todos os 13 padrões nem de um problema com múltiplos candidatos; o controle de comparação está integrado aos mesmos dados de segmentos. Permanece uma limitação preexistente fora do desenho nos estados: o painel de expressões físicas ainda não fornece expressão por trechos para KR, embora o diagrama e os perfis amostrados sejam exibidos. Não foi acrescentada funcionalidade na Variedade de Ondas.
+
 
 ## Resultado da inspeção
 

@@ -14,7 +14,7 @@ const unit=a=>norm(a)>1e-14?a.map(x=>x/norm(a)):null
 export function traceSeededForwardHugoniot(left,target,p,{
   family=null,step=0.025,maxSteps=1600,maxNewton=18,
   targetTolerance=0.025,minStep=1e-5,maxRadius=8,
-  seedRadius=0.001,incidenceTolerance=1e-10,
+  seedRadius=0.001,incidenceTolerance=1e-10,includeAttempts=false,
 }={}){
   if(!finite(left)||!finite(target)||norm(sub(target,left))<1e-8||
     ![step,targetTolerance,minStep,maxRadius,seedRadius,incidenceTolerance].every(x=>Number.isFinite(x)&&x>0)||
@@ -23,7 +23,7 @@ export function traceSeededForwardHugoniot(left,target,p,{
   const seedResult=characteristicForwardHugoniotSeeds(left,p,{radius:seedRadius})
   if(seedResult.status!=='seeded')return {status:seedResult.status,arc:null}
   const scale=1+Math.max(norm(left),norm(target))
-  const candidates=[]
+  const candidates=[],attempts=[]
   for(const seed of seedResult.seeds.filter(q=>!family||q.family===family)){
     let current=[...seed.point],tangent=unit(sub(current,left))
     const arc=[left,current]
@@ -65,12 +65,13 @@ export function traceSeededForwardHugoniot(left,target,p,{
       current=accepted
       arc.push(current)
     }
+    if(includeAttempts)attempts.push({family:seed.family,sign:seed.sign,arc,closest,reason})
     if(reached)candidates.push({family:seed.family,sign:seed.sign,arc,closest,reason})
   }
-  if(!candidates.length)return {status:'target-not-reached',arc:null}
+  if(!candidates.length)return {status:'target-not-reached',arc:null,...(includeAttempts?{attempts}:{})}
   candidates.sort((a,b)=>a.closest-b.closest)
   if(candidates.length>1&&Math.abs(candidates[1].closest-candidates[0].closest)<1e-8*scale)
-    return {status:'ambiguous-branch',arc:null}
+    return {status:'ambiguous-branch',arc:null,...(includeAttempts?{attempts}:{})}
   const best=candidates[0]
-  return {status:'seeded-target-approach',...best,qualification:'unconstrained numerical continuation; endpoint proximity is not an exact connection or Liu certificate'}
+  return {status:'seeded-target-approach',...best,...(includeAttempts?{attempts}:{}),qualification:'unconstrained numerical continuation; endpoint proximity is not an exact connection or Liu certificate'}
 }

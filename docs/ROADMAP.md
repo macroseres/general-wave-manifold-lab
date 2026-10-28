@@ -12,6 +12,17 @@ As versões abaixo registram etapas históricas e planos; não são um inventár
 
 Prioridade atual: consolidar a documentação e sua rastreabilidade; registrar referências e hipóteses das construções no espaço de estados; desenvolver e validar seus levantamentos à variedade e a correspondência física; ampliar a classificação por parâmetros. A migração dos textos exibidos está concluída nas 26 seções; permanecem a revisão bibliográfica, a inspeção visual e as validações científicas indicadas na rastreabilidade.
 
+## Integração interativa tradicional — quatro entregas (27/10/2026)
+
+Conjunto fechado solicitado pelo responsável, posterior ao ciclo histórico T01–T08. A prioridade é escolher estados no gráfico, construir candidatos, selecionar e inspecionar a cadeia completa, independentemente da visualização da Variedade de Ondas.
+
+- **Entrega 1 — auditoria:** concluída e aprovada; constatadas lacunas na construção explícita, seleção, relatórios e representação completa dos segmentos.
+- **Entrega 2 — integração:** ação Construir/reconstruir, posicionamento gráfico explícito, invalidação por dados do problema, inspeção e comparação por ondas, relatórios disponíveis sem candidatos, enquadramento de todos os segmentos e camada independente de arcos de choque. Reutiliza os construtores e a continuação RH existentes. Hugoniot da variedade permanecem associadas às projeções π e têm visibilidade separada.
+- **Entrega 3 — validação funcional e matemática:** preserva os casos positivos e negativos existentes; a verificação de integração passou com lint, 837 testes e build. Não equivale a certificação matemática global nem validação positiva de CK/KC/KK.
+- **Entrega 4 — documentação e encerramento:** instruções de uso, arquitetura da integração, evidências e limites registrados em `STATE_SPACE_STATUS.md`. O encerramento deve refletir o alcance efetivamente verificado; nenhuma nova tarefa ou funcionalidade da variedade foi aberta.
+
+Consulte [o registro da integração](STATE_SPACE_STATUS.md) para uso, evidências e limitações.
+
 ## Plano finito de encerramento da construção tradicional — GWML-T01 a T08 (27/10/2026)
 
 **Finalidade:** encerrar a fase de construção tradicional das soluções de Riemann para o fluxo quadrático geral de dois estados, nos espaços de estados e físico, em **escopo numérico e matemático explicitamente delimitado**. A investigação topológica na Variedade de Ondas constitui uma fase posterior, não uma condição para fechar este plano. Esta seção prevalece como controle das tarefas GWML; não substitui as especificações matemáticas de `traditional/`.

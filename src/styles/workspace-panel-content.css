@@ -1,4 +1,13 @@
 /* Shared drawer controls. Structural geometry belongs to workspace-layout.css. */
+.stateConstructionActions,.stateConstructionReports,.stateChainInspection{padding:10px;min-width:0;overflow-wrap:anywhere;font-size:12px;line-height:1.5}
+.stateConstructionActions small,.stateConstructionReports small,.stateChainInspection small{display:block;margin:6px 0;color:var(--gwml-text-secondary)}
+.stateConstructionReports details,.stateChainInspection details{border-top:1px solid var(--workspace-stroke);padding:8px 0}
+.stateConstructionReports summary,.stateChainInspection summary{cursor:pointer;line-height:1.5}
+.stateChainInspection p{margin:6px 0}
+.workspaceLayout .stateChainVisibility{display:flex;flex-direction:row;align-items:center;gap:8px;font-size:12px;line-height:1.5}
+.workspaceLayout .stateChainVisibility input{width:auto;flex:0 0 auto}
+.stateConstructionActions button{width:100%;padding:8px;border:1px solid var(--workspace-stroke);border-radius:5px;background:var(--drawer-control-bg);color:var(--drawer-control-text);cursor:pointer}
+.stateConstructionActions button:disabled{opacity:.5;cursor:default}
 .workspaceLayout {
  --drawer-control-bg:#191e25;
  --drawer-control-border:#303944;
