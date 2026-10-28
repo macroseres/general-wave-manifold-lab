@@ -1,6 +1,16 @@
 # Situação do espaço de estados — 27/10/2026
 
 
+
+## Continuidade dos arcos de choque — 28/10/2026
+
+A revisão anterior filtrava cada amostra por Lax e retomava o desenho quando o teste voltava a passar. Isso podia exibir um trecho isolado com o mesmo rótulo do arco que parte do estado de referência. O acompanhamento agora conserva somente o prefixo ancorado na semente característica: a primeira falha de RH, hiperbolicidade estrita ou Lax termina aquele arco, sem procurar outro trecho aceitável adiante. Uma semente inicialmente rejeitada não admite um componente remoto. Não se introduziu uma corda para unir regiões excluídas nem se alteraram as equações ou os testes matemáticos.
+
+O painel **Choques** informa, para cada arco, o motivo de parada e as coordenadas da última amostra verificada. Quando há uma amostra rejeitada seguinte, suas coordenadas também são apresentadas como intervalo de localização ainda não refinado da transição. Um quadrado vazio marca o extremo numérico do arco. Limite de raio/passos e falhas do corretor são identificados como paradas numéricas; nenhuma parada é promovida automaticamente a uma fronteira sônica certificada. Um corte pela borda da janela apenas esconde a parte externa do arco.
+
+No caso relatado anteriormente, o resultado passa de dois trechos lentos e um rápido para **um arco lento ancorado em U_L e um rápido ancorado em U_R**, ambos limitados pelo raio numérico. O componente vermelho remoto não é reaproveitado. As regressões conferem a ancoragem de todos os arcos, ausência de retomada após rejeição e ausência de admissão tardia após semente rejeitada, além da identificação dos términos no componente real. A evidência está em [arcos conectados e motivos de término](evidence/state-construction/connected-shock-arcs.jpg). A inspeção no navegador confirmou dois traçados e dois marcadores de término, sem cadeia selecionada e com as Hugoniot projetadas ocultas. `npm run check` passou com lint, 842 testes (zero falhas) e build; permanece o aviso preexistente de tamanho do bundle.
+
+
 ## Correção da exploração dos choques — 28/10/2026
 
 O relato do responsável após a Entrega 2 revelou uma lacuna: os arcos de choque apareciam somente dentro de uma cadeia selecionada. Ativar as Hugoniot projetadas não supria a ausência dos ramos de choque na exploração tradicional. A correção acrescenta **Choques** ao painel lateral, com visibilidade própria para **S₁(U_L)** (vermelho) e **S₂ retrospectiva(U_R)** (violeta), inicialmente ativadas. Esses ramos são calculados assim que o estado correspondente é definido, sem exigir o outro estado, solicitação de construção ou seleção de cadeia. As Hugoniot da variedade continuam associadas a π e aos controles anteriores.

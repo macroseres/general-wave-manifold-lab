@@ -23,7 +23,7 @@ Conjunto fechado solicitado pelo responsável, posterior ao ciclo histórico T01
 
 Consulte [o registro da integração](STATE_SPACE_STATUS.md) para uso, evidências e limitações.
 
-**Correção após retorno do responsável (28/10/2026):** a exploração agora mostra os ramos de choque de U_L e U_R antes da construção de candidatos, com controles próprios em Choques. O desenho continua independente das Hugoniot projetadas e usa RH e Lax de extremos, sem certificação entrópica. A regressão reproduz os estados e coeficientes da captura que revelou a lacuna.
+**Correção após retorno do responsável (28/10/2026):** a exploração agora mostra os ramos de choque de U_L e U_R antes da construção de candidatos, com controles próprios em Choques. O desenho continua independente das Hugoniot projetadas e usa RH e Lax de extremos, sem certificação entrópica. A regressão reproduz os estados e coeficientes da captura que revelou a lacuna. A revisão de continuidade conserva somente o prefixo ligado à semente, termina na primeira verificação rejeitada e identifica os extremos numéricos; componentes isolados posteriores deixam de ser rotulados como continuação do mesmo arco.
 
 ## Plano finito de encerramento da construção tradicional — GWML-T01 a T08 (27/10/2026)
 

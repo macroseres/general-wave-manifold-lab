@@ -14,7 +14,9 @@ test('reported graph case has independent slow and backward fast shock branches'
   const curves=stateShockGeometry(states,stateShockBranches(states,p),p)
   for(const side of ['left','right']){
     const found=curves.filter(c=>c.side===side)
-    assert.ok(found.length,side)
+    assert.equal(found.length,1,side)
+    assert.deepEqual([found[0].points[0].u,found[0].points[0].v],states[side])
+    assert.equal(found[0].termination.reason,'radius-limit')
     for(const c of found)for(const q of c.points){
       const U=[q.u,q.v],fixed=states[side]
       if(Math.hypot(U[0]-fixed[0],U[1]-fixed[1])<1e-12)continue
@@ -34,14 +36,17 @@ test('one selected state suffices; no opposite state or Riemann construction is 
   assert.deepEqual(stateShockGeometry({},stateShockBranches({},p),p),[])
 })
 
-test('Lax failures split paths instead of drawing across rejected samples',()=>{
+test('the first failed Lax check ends the anchored arc without restarting on later compatible samples',()=>{
   const b={a20:.5,a11:0,a02:0,a10:0,a01:0,b20:0,b11:0,b02:.5,b10:0,b01:5}
   const s={left:[2,2]}
   const curves=stateShockGeometry(s,{curves:{left:[{id:'split',family:'slow',points:
     [[2,2],[1.9,2],[1.8,2],[2.2,2],[1.6,2],[1.5,2]].map(([u,v])=>({u,v}))}],right:[]}},b)
-  assert.equal(curves.length,2)
+  assert.equal(curves.length,1)
   assert.equal(curves[0].points.at(-1).u,1.8)
-  assert.equal(curves[1].points[0].u,1.6)
+  assert.equal(curves[0].points[0].u,2)
+  assert.equal(curves[0].termination.reason,'lax-endpoint-boundary')
+  assert.deepEqual(curves[0].termination.firstRejected,[2.2,2])
+  assert.deepEqual(curves[0].termination.lastVerified,[1.8,2])
 })
 
 test('actual workspace renders shock branches with both projected Hugoniot curves hidden and no selected chain',async()=>{
@@ -53,8 +58,17 @@ test('actual workspace renders shock branches with both projected Hugoniot curve
       selectedCandidateIndex:-1,showLeftRiemannHugoniot:false,showRightRiemannHugoniot:false}))
     assert.match(html,/aria-label="Ramo de choque lento de U L"/)
     assert.match(html,/aria-label="Ramo de choque rápido para U R"/)
+    assert.match(html,/Término do arco de choque/)
+    assert.match(html,/Limite numérico de raio/)
     assert.match(html,/Choques nos estados|Ramos de choque nos estados/)
     assert.doesNotMatch(html,/aria-label="Cadeia candidata selecionada"/)
     assert.doesNotMatch(html,/NaN|Infinity/)
   }finally{await server.close()}
+})
+
+test('a rejected initial seed never admits a detached later Lax segment',()=>{
+  const b={a20:.5,a11:0,a02:0,a10:0,a01:0,b20:0,b11:0,b02:.5,b10:0,b01:5}
+  const curves=stateShockGeometry({left:[2,2]},{curves:{left:[{id:'detached',family:'slow',
+    points:[[2,2],[2.1,2],[1.9,2],[1.8,2]].map(([u,v])=>({u,v}))}],right:[]}},b)
+  assert.deepEqual(curves,[])
 })

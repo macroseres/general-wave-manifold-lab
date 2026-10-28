@@ -59,6 +59,17 @@ import {projectHugoniotLaxGeometryToState} from '../geometry/state/hugoniotState
 
 // Viewport retangular: escalas visuais independentes nos eixos u e v.
 // As coordenadas de estado e as equações não são alteradas.
+const shockStopLabel=reason=>({
+  'radius-limit':'Limite numérico de raio',
+  'max-steps':'Limite numérico de passos',
+  'sample-limit':'Fim da amostragem disponível',
+  'lax-endpoint-boundary':'Lax estrito deixou de ser verificado; fronteira não refinada',
+  'hyperbolicity-unverified':'Hiperbolicidade estrita deixou de ser verificada',
+  'rh-unverified':'Rankine–Hugoniot deixou de ser verificado',
+  'singular-gradient':'Gradiente singular na continuação numérica',
+  'corrector-failed':'Falha do corretor numérico',
+  'loop-detected':'Retorno numérico a um trecho já visitado',
+}[reason]??`Continuação interrompida: ${reason}`)
 const W=1040,H=680,P=64
 const sx=(q,g)=>P+statePointToUnit(q,g).x*(W-2*P)
 const sy=(q,g)=>H-P-statePointToUnit(q,g).y*(H-2*P)
@@ -604,8 +615,11 @@ function StatePlot({constructionRevision=0,constructionRequested=true,onBuildCan
     <details className="statePanelSection workspaceDisclosure" data-activity-section="shocks" open><summary>Ramos de choque nos estados</summary><div className="statePanelSectionBody">
       <div className="stateVisibilityRow" style={{'--visibility-color':'#ff453a'}}><span className="stateSwitchCopy"><strong>S₁(U_L)</strong><small>Choques lentos a partir do estado esquerdo</small></span><VisibilityEye checked={showLeftStateShock} onChange={()=>setShowLeftStateShock(v=>!v)} aria-label="Choques lentos de U L"/></div>
       <div className="stateVisibilityRow" style={{'--visibility-color':'#bf5af2'}}><span className="stateSwitchCopy"><strong>S₂ retrospectiva(U_R)</strong><small>Choques rápidos que chegam ao estado direito</small></span><VisibilityEye checked={showRightStateShock} onChange={()=>setShowRightStateShock(v=>!v)} aria-label="Choques rápidos para U R"/></div>
-      <small>Continuação RH no espaço de estados, independente de π e da seleção de uma cadeia. Os trechos exibidos satisfazem Lax estrito nos extremos; Liu e entropia não são certificados. Fronteiras sônicas e trechos inconclusivos não são prolongados como choques estritos.</small>
+      <small>Continuação RH no espaço de estados, independente de π e da seleção de uma cadeia. Cada arco começa no estado de referência e termina na primeira falha de verificação ou parada da continuação; trechos isolados posteriores são omitidos. RH e Lax são verificados nas amostras; Liu e entropia não são certificados.</small>
       <p>{shockCurves.filter(c=>c.side==='left').length} trecho(s) lento(s); {shockCurves.filter(c=>c.side==='right').length} trecho(s) rápido(s). Busca limitada a 240 passos e raio de duas vezes a escala dos estados.</p>
+      {shockCurves.map(c=><p key={c.id}><b>{c.side==='left'?'S₁(U_L)':'S₂ retrospectiva(U_R)'}</b>: {shockStopLabel(c.termination.reason)}. Última amostra verificada: ({c.termination.lastVerified.map(v=>v.toPrecision(6)).join(', ')}).{c.termination.firstRejected&&<> Primeira amostra rejeitada: ({c.termination.firstRejected.map(v=>v.toPrecision(6)).join(', ')}); a fronteira fica por localizar nesse intervalo.</>}</p>)}
+      {!shockCurves.length&&<p>Nenhum arco conectado ao estado de referência foi verificado na busca limitada.</p>}
+      <small>O quadrado vazio marca a última amostra verificada, não uma fronteira sônica certificada. Cortes na borda da janela apenas ocultam a continuação do arco.</small>
     </div></details>
     <details className="statePanelSection workspaceDisclosure" data-activity-section="arcs" open><summary>Rarefações</summary><div className="statePanelSectionBody">
       <div className="stateVisualizationOption" role="group" aria-label="Rarefações dos estados de Riemann">
@@ -741,6 +755,10 @@ function StatePlot({constructionRevision=0,constructionRequested=true,onBuildCan
       <g clipPath="url(#sharedLociClip)" aria-label="Projeções das curvas da variedade"><defs><clipPath id="sharedLociClip"><rect x={P} y={P} width={W-2*P} height={H-2*P}/></clipPath></defs>{sharedLoci.flatMap(item=>item.projected[stateProjection].map((path,i)=><path key={`${item.id}:${stateProjection}:${i}`} d={pathData(path,view)} stroke={item.color} {...scientificCurveStyle(scientificLocusKind(item.id),'2d')} fill="none" pointerEvents="none" aria-label={`${item.label} projetada por pi ${stateProjection}`}/>))}</g>
       <g clipPath="url(#sharedLociClip)" aria-label="Ramos de choque independentes nos estados" pointerEvents="none">
         {shockCurves.filter(c=>c.side==='left'?showLeftStateShock:showRightStateShock).map(c=><path key={c.id} d={pathData(c.points,view)} fill="none" stroke={c.side==='left'?'#ff453a':'#bf5af2'} strokeWidth="2.4" aria-label={c.side==='left'?'Ramo de choque lento de U L':'Ramo de choque rápido para U R'}><title>{`${c.side==='left'?'S₁(U_L)':'S₂ retrospectiva(U_R)'} · RH e Lax de extremos numericamente compatíveis; entropia não certificada.`}</title></path>)}
+        {shockCurves.filter(c=>c.side==='left'?showLeftStateShock:showRightStateShock).map(c=>{
+          const [u,v]=c.termination.lastVerified
+          return <rect key={`stop-${c.id}`} x={sx({u,v},view)-4} y={sy({u,v},view)-4} width="8" height="8" fill="#0b1016" stroke={c.side==='left'?'#ff453a':'#bf5af2'} strokeWidth="1.8" aria-label="Término do arco de choque"><title>{`${shockStopLabel(c.termination.reason)} · última amostra verificada (${u.toPrecision(6)}, ${v.toPrecision(6)}); fronteira matemática não certificada.`}</title></rect>
+        })}
       </g>
       {showRarefactionField&&visibleCurves.map(c=><path key={`${c.id}:${c.clipId}`} d={pathData(c.points,view)} fill="none" className={c.branch==='slow'?'stateRareSlow':'stateRareFast'}/>) }
       {visibleRiemannHugoniot.map(c=><path data-riemann-side={stateProjection==='plus'?'left':'right'} key={`riemann:${stateProjection}:${c.id}:${c.clipId}`} d={pathData(c.points,view)} fill="none" stroke={stateProjection==='plus'?'#ff9f0a':'#30d158'} {...scientificCurveStyle(stateProjection==='minus'?'auxiliary':'primary','2d')} pointerEvents="none"/>)}
