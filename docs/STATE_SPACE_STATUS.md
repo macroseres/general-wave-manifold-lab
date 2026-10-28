@@ -3,6 +3,16 @@
 
 
 
+
+## Diagnóstico de lista de cadeias vazia — 28/10/2026
+
+Corrigida a ambiguidade do resumo **SS: Candidatos encontrados · 0**: o estado vinha da busca geométrica, mas o número era o de perfis selecionáveis. O relatório agora separa essas duas contagens e usa **Candidatos geométricos sem perfil selecionável** quando há candidatos geométricos e nenhum perfil aprovado pelos requisitos de reconstrução. A lista Cadeia continua contendo apenas perfis selecionáveis. Não foram relaxados RH, Lax, ordenação, refinamento ou requisitos dos leques para preencher a lista.
+
+Os candidatos SS descartados antes de reconstruir o perfil agora conservam seus motivos: refinamento, RH, ordenação das velocidades, famílias e Lax de cada salto, incluindo U_M e a diferença s₂−s₁ quando disponível. A interface traduz os motivos frequentes de falha da correção e mostra também as verificações que impediram a reconstrução RS/SR; falhas de busca permanecem inconclusivas, sem prova de inexistência.
+
+Caso reproduzido a partir do navegador: mesmos coeficientes do relato anterior (`a20=3.3977518519014067`, `b20=-0.09349436579634296`, `a02=0.5`, `b11=1`, `b02=-0.1`, `b10=1`, demais zero), U_L=(0.4895020103438119,-0.31089946517864675), U_R=(0.7062767944010204,0.7984334701516398). Com as sementes projetadas e as continuações nos estados, SS encontra seis candidatos geométricos: os dois refinados falham, respectivamente, em Lax do segundo salto e na ordenação das velocidades; os outros quatro não concluem a correção. RS/SR não fornece perfil selecionável: há ordenação de famílias não verificada, correções fora do arco amostrado ou raiz não delimitada. A lista permanece vazia com motivos explícitos. Isso não demonstra que o problema não tenha solução, nem que não haja outra cadeia fora da busca delimitada. A inspeção interativa confirmou seis candidatos geométricos e zero perfis selecionáveis, com os detalhes de Lax e s₂−s₁ acessíveis em cada candidato. Evidência: [motivos dos candidatos não selecionáveis](evidence/state-construction/geometric-candidate-rejections.jpg). `npm run check` passou com lint, 849 testes (zero falhas) e build; permanece o aviso preexistente de tamanho do bundle.
+
+
 ## Seleção dos arcos de rarefação — 28/10/2026
 
 A exploração tradicional agora desenha somente **R₁(U_L)** e **R₂ retrospectiva(U_R)**, em correspondência com a escolha clássica feita para os choques. O primeiro arco sai de U_L com λ₁ crescente; o segundo é armazenado saindo de U_R com λ₂ decrescente, de modo que na orientação física U_M→U_R a velocidade cresce. Famílias adicionais e sentidos compressivos não são apresentados como arcos selecionados nessa camada.

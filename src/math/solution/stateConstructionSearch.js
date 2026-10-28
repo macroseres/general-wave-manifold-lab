@@ -43,15 +43,25 @@ export function stateConstructionSearch(states,branches,hugoniot,p,requested,rev
   // Profile reconstruction is part of its group's search, including numerical failures.
   for(const [key,sources] of [['twoShock',shockCandidates],['mixed',mixedLiuCandidates]]){
     const report=reports.find(r=>r.patterns===(key==='twoShock'?'SS':'RS, SR'))
-    for(const source of sources){
-      if(key==='twoShock'&&!(source.refinement?.status==='refined-candidate'&&source.familyEvidence.status==='ordered-lax-endpoint-candidate'))continue
+    report.profileAssessments=[]
+    for(const [index,source] of sources.entries()){
+      const assessment={index,middle:source.middle,refinement:source.refinement?.status,
+        chain:source.chainEvidence?.status,family:source.familyEvidence?.status??source.evidence?.status,
+        firstShock:source.familyEvidence?.first?.status,secondShock:source.familyEvidence?.second?.status,
+        speedGap:source.familyEvidence?.speedGap,fan:source.fanArc?.status}
+      report.profileAssessments.push(assessment)
+      if(key==='twoShock'&&!(source.refinement?.status==='refined-candidate'&&source.familyEvidence.status==='ordered-lax-endpoint-candidate')){
+        assessment.profileStatus=source.refinement?.status!=='refined-candidate'?'unrefined-middle':source.familyEvidence.status
+        continue
+      }
       try{
         const profile=key==='twoShock'?twoShockSelfSimilarCandidate(states.left,source.middle,states.right,p):mixedSelfSimilarCandidate(states.left,states.right,source,branches,p)
+        assessment.profileStatus=profile.status
         if(profile.status==='sampled-candidate')profileCandidates[key].push({...profile,
           pattern:profile.kind==='two-shock'?'SS':profile.kind==='rarefaction-shock'?'RS':'SR',
           evidence:physicalChainEvidence(profile,source),provenance:candidateProvenance(profile,source)})
         else (report.profileRejections??=[]).push(profile.status)
-      }catch(error){(report.profileRejections??=[]).push(error.message)}
+      }catch(error){assessment.profileStatus='numerical-failure';(report.profileRejections??=[]).push(error.message)}
     }
     report.selectable=profileCandidates[key].length
   }

@@ -6,16 +6,46 @@ const names={shock:'Choque',contact:'Contato',rarefaction:'Rarefação'}
 const statuses={'not-requested':'Aguardando construção','invalid-input':'Defina os dois estados',
   'candidates-found':'Candidatos encontrados','no-candidates-found':'Nenhum candidato encontrado na busca limitada',
   'numerical-failure':'Falha numérica',inconclusive:'Busca inconclusiva','incompatible-branches':'Sem ramos elegíveis neste domínio'}
+const reasons={
+  'family-lax-unverified':'Famílias lenta → rápida ou Lax de extremos não verificados',
+  'family-order-unverified':'Ordenação das famílias não verificada',
+  'speed-ordering-unverified':'Ordenação das velocidades não verificada',
+  'strict-lax-failed':'Lax estrito de extremos não satisfeito',
+  'strict-lax-endpoint-candidate':'Lax estrito de extremos compatível numericamente',
+  'rankine-hugoniot-unverified':'Rankine–Hugoniot não verificado',
+  'ordered-rh-candidate':'RH e ordenação de velocidades compatíveis numericamente',
+  'line-search-failed':'O corretor não conseguiu reduzir o resíduo',
+  'off-sampled-arc':'A raiz corrigida ficou fora do arco amostrado',
+  unbracketed:'A busca não delimitou a raiz no intervalo',
+  'unrefined-middle':'Estado intermediário sem refinamento concluído',
+  'unverified-chain':'A cadeia não passou nos requisitos para reconstruir o perfil',
+  'refined-candidate':'Refinamento concluído numericamente',
+  'sampled-fan-ordered':'Velocidades do leque ordenadas nas amostras',
+}
+const reason=value=>reasons[value]??statuses[value]??value
+const reportSummary=report=>report.status==='candidates-found'&&report.selectable===0&&report.count>0?
+  'Candidatos geométricos sem perfil selecionável':statuses[report.status]??report.status
 
 export function StateConstructionReports({reports,stateBranches}){
   return <div className="stateConstructionReports" aria-label="Resultados das buscas de cadeias">
-    {reports.map(report=><details key={report.patterns}><summary>{report.patterns}: {statuses[report.status]??report.status} · {report.selectable??report.count}</summary>
+    {reports.map(report=><details key={report.patterns}><summary>{report.patterns}: {reportSummary(report)} · {report.selectable??report.count} selecionável(is)</summary>
       <small>Busca limitada; ausência de candidatos não demonstra inexistência.</small>
+      {report.selectable!==undefined&&<p>Candidatos geométricos: {report.count}; perfis selecionáveis: {report.selectable}. A lista Cadeia contém apenas os perfis selecionáveis.</p>}
       {report.reason&&<p>{report.reason}</p>}{report.qualification&&<p>{report.qualification}</p>}
       {report.limitReached&&<p>Limite de candidatos atingido; há partes não examinadas.</p>}
       {report.sampledIntersections!==undefined&&<p>Interseções amostradas: {report.sampledIntersections}; refinadas: {report.refined??0}.</p>}
-      {(report.rejected??[]).map((r,i)=><small key={i}>Tentativa {i+1}: {r.status??r.reason??'inconclusiva'}</small>)}
-      {(report.profileRejections??[]).map((reason,i)=><small key={`profile-${i}`}>Perfil não selecionável: {reason}</small>)}
+      {(report.rejected??[]).map((r,i)=><small key={i}>Tentativa {i+1}: {reason(r.status??r.reason??'inconclusive')}</small>)}
+      {(report.profileAssessments??[]).filter(a=>a.profileStatus!=='sampled-candidate').map(a=><details key={`assessment-${a.index}`}><summary>Candidato geométrico {a.index+1}: {reason(a.profileStatus)}</summary>
+        <p>U_M: {state(a.middle)}</p>
+        {a.refinement&&<p>Correção: {reason(a.refinement)}.</p>}
+        {a.chain&&<p>Conservação e velocidades: {reason(a.chain)}.</p>}
+        {a.family&&<p>Famílias: {reason(a.family)}.</p>}
+        {a.firstShock&&<p>Primeiro salto: {reason(a.firstShock)}.</p>}
+        {a.secondShock&&<p>Segundo salto: {reason(a.secondShock)}.</p>}
+        {Number.isFinite(a.speedGap)&&<p>Diferença s₂ − s₁: {number(a.speedGap)}.</p>}
+        {a.fan&&<p>Leque: {reason(a.fan)}.</p>}
+      </details>)}
+      {(report.profileRejections??[]).map((value,i)=><small key={`profile-${i}`}>Perfil não selecionável: {reason(value)}</small>)}
     </details>)}
     {stateBranches&&<details><summary>Domínio e paradas dos ramos de choque</summary>
       <small>Continuação característica nos estados: até {stateBranches.limits.maxSteps} passos por ramo, passo {stateBranches.limits.step} vezes a escala dos estados, raio máximo {stateBranches.limits.maxRadius} vezes a mesma escala. Curvas projetadas disponíveis também fornecem sementes. Busca sem completude global.</small>
