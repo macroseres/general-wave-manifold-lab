@@ -7,9 +7,11 @@ import {traceSeededForwardHugoniot} from './seededForwardHugoniot.js'
 export function stateShockBranches(states,p){
   const curves={left:[],right:[]},stops=[]
   for(const side of ['left','right']){
-    const fixed=states?.[side],target=states?.[side==='left'?'right':'left']
+    const fixed=states?.[side],other=states?.[side==='left'?'right':'left']
+    // Exploration is anchored to one state; no opposite state or chain is needed.
+    const target=other??fixed
     const family=side==='left'?'slow':'fast'
-    const traced=traceSeededForwardHugoniot(fixed,target,p,{family,includeAttempts:true,
+    const traced=traceSeededForwardHugoniot(fixed,target,p,{family,includeAttempts:true,stopAtTarget:false,
       maxSteps:240,maxRadius:2,step:.025,targetTolerance:.005})
     for(const attempt of traced.attempts??[]){
       stops.push({side,family,sign:attempt.sign,reason:attempt.reason})

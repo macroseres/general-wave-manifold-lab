@@ -23,6 +23,8 @@ Conjunto fechado solicitado pelo responsável, posterior ao ciclo histórico T01
 
 Consulte [o registro da integração](STATE_SPACE_STATUS.md) para uso, evidências e limitações.
 
+**Correção após retorno do responsável (28/10/2026):** a exploração agora mostra os ramos de choque de U_L e U_R antes da construção de candidatos, com controles próprios em Choques. O desenho continua independente das Hugoniot projetadas e usa RH e Lax de extremos, sem certificação entrópica. A regressão reproduz os estados e coeficientes da captura que revelou a lacuna.
+
 ## Plano finito de encerramento da construção tradicional — GWML-T01 a T08 (27/10/2026)
 
 **Finalidade:** encerrar a fase de construção tradicional das soluções de Riemann para o fluxo quadrático geral de dois estados, nos espaços de estados e físico, em **escopo numérico e matemático explicitamente delimitado**. A investigação topológica na Variedade de Ondas constitui uma fase posterior, não uma condição para fechar este plano. Esta seção prevalece como controle das tarefas GWML; não substitui as especificações matemáticas de `traditional/`.

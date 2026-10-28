@@ -1,3 +1,5 @@
+import {stateShockBranches} from '../math/solution/stateShockBranches.js'
+import {stateShockGeometry} from '../geometry/state/stateShockGeometry.js'
 import {stateConstructionSearch} from '../math/solution/stateConstructionSearch.js'
 import {candidateStateGeometry} from '../geometry/state/candidateStateGeometry.js'
 import StateChainInspection,{StateConstructionReports} from './StateChainInspection.jsx'
@@ -137,7 +139,11 @@ export default function StateSpaceDialog({constructionRevision=0,constructionReq
 function StatePlot({constructionRevision=0,constructionRequested=true,onBuildCandidates,sharedLoci=[],geometry:g,hugoniot,riemannHugoniot,fixedState,onSelectState,onClearState,riemannStates,onChangeRiemannState,onProfileCandidates,p,selectedCandidateIndex=-1,onSelectCandidate,projectionRequest=null,onInspectFibres3D,onInspectWavePoint3D,pointVisibility={left:true,right:true,fixed:true,middle:true},onTogglePointVisibility,showLeftRiemannHugoniot=true,setShowLeftRiemannHugoniot,showRightRiemannHugoniot=true,setShowRightRiemannHugoniot,showMinusStateFibre=true,setShowMinusStateFibre,showPlusStateFibre=true,setShowPlusStateFibre}){
   const stateRarefactions=useMemo(()=>riemannMonotoneRarefactions(riemannStates,p).map(branch=>annotateGenuineNonlinearityContact(refineGenuineNonlinearityEvents(genuineNonlinearityEvents(branch,p),p),p)),[riemannStates,p])
   const directJump=useMemo(()=>directShockDiagnostic(riemannStates?.left,riemannStates?.right,p),[riemannStates,p])
-  const construction=useMemo(()=>stateConstructionSearch(riemannStates,stateRarefactions,riemannHugoniot,p,constructionRequested,constructionRevision),[riemannStates,stateRarefactions,riemannHugoniot,p,constructionRequested,constructionRevision])
+  const shockBranches=useMemo(()=>stateShockBranches(riemannStates,p),[riemannStates,p])
+  const shockCurves=useMemo(()=>stateShockGeometry(riemannStates,shockBranches,p),[riemannStates,shockBranches,p])
+  const [showLeftStateShock,setShowLeftStateShock]=useWorkspacePreference('states.showLeftStateShock',true)
+  const [showRightStateShock,setShowRightStateShock]=useWorkspacePreference('states.showRightStateShock',true)
+  const construction=useMemo(()=>stateConstructionSearch(riemannStates,stateRarefactions,riemannHugoniot,p,constructionRequested,constructionRevision,shockBranches),[riemannStates,stateRarefactions,riemannHugoniot,p,constructionRequested,constructionRevision,shockBranches])
   const {shockCandidates,mixedCandidates,mixedLiuCandidates,profileCandidates,rarefactionSearch,rarefactionPairs,contactChains,compositeChains,allProfiles,reports}=construction
   useEffect(()=>{if(constructionRequested)onProfileCandidates?.(allProfiles)},[allProfiles,constructionRequested,onProfileCandidates])
   const activeProfile=allProfiles[selectedCandidateIndex]??null
@@ -536,6 +542,7 @@ function StatePlot({constructionRevision=0,constructionRequested=true,onBuildCan
       items={[{id:'states',label:'Estados',group:'Dados',description:'Estados de Riemann e U*'},
         {id:'points',label:'Pontos',group:'Dados',description:'Marcadores e estados no plano'},
         {id:'curves',label:'Curvas',group:'Ondas',description:'Hugoniot e hiperbolicidade'},
+        {id:'shocks',label:'Choques',group:'Ondas',description:'Ramos de choque nos estados'},
         {id:'arcs',label:'Rarefações',group:'Ondas',description:'Curvas integrais dos estados de Riemann'},
         {id:'fields',label:'Campos',group:'Ondas',description:'Campos vetoriais e trajetórias integrais'},
         {id:'chains',label:'Cadeias',group:'Ondas',description:'Construir e inspecionar cadeias'},
@@ -544,7 +551,7 @@ function StatePlot({constructionRevision=0,constructionRequested=true,onBuildCan
       onSelect={id=>{if(activity===id)setActivityPanelOpen(v=>!v);else{setActivity(id);setActivityPanelOpen(true)}}}
       onCollapse={()=>setActivityPanelOpen(v=>!v)}/>
     <WorkspaceDrawer className="stateToolsDrawer" data-activity={activity} data-expanded={activityPanelOpen} aria-label="Ferramentas do espaço de estados">
-      <WorkspacePanelHeader title={{states:'Estados',curves:'Curvas e projeções',points:'Pontos',arcs:'Rarefações',fields:'Campos',view:'Visualização',chains:'Cadeias candidatas',inspection:'Inspeção científica'}[activity]} onCollapse={()=>setActivityPanelOpen(false)}/>
+      <WorkspacePanelHeader title={{states:'Estados',curves:'Curvas e projeções',points:'Pontos',arcs:'Rarefações',shocks:'Choques nos estados',fields:'Campos',view:'Visualização',chains:'Cadeias candidatas',inspection:'Inspeção científica'}[activity]} onCollapse={()=>setActivityPanelOpen(false)}/>
       <div className="stateToolsDrawerContent">
     <details className="statePanelSection workspaceDisclosure" data-activity-section="states" open><summary>Estados de Riemann</summary><div className="statePanelSectionBody"><p className="statePanelHint" title="L/R posiciona o estado; clique fixa; Esc cancela; arraste para mover.">L/R: posicionar · arrastar: mover</p><div className="stateSelectionControls" aria-label="Estados iniciais do problema de Riemann">
     {['left','right'].map(side=><div className="riemannStateEditor" key={side}>
@@ -593,6 +600,12 @@ function StatePlot({constructionRevision=0,constructionRequested=true,onBuildCan
         <strong>Projeção de U* na variedade</strong>
         <small>{stateProjection==='minus'?'π₋(ℋᶠᵒʳʷ(U*))={U*}; π₋(ℋᵇᵃᶜᵏ(U*)) é a curva U₋.':'π₊(ℋᶠᵒʳʷ(U*)) é a curva U₊; π₊(ℋᵇᵃᶜᵏ(U*))={U*}.'}</small>
       </div>}
+    </div></details>
+    <details className="statePanelSection workspaceDisclosure" data-activity-section="shocks" open><summary>Ramos de choque nos estados</summary><div className="statePanelSectionBody">
+      <div className="stateVisibilityRow" style={{'--visibility-color':'#ff453a'}}><span className="stateSwitchCopy"><strong>S₁(U_L)</strong><small>Choques lentos a partir do estado esquerdo</small></span><VisibilityEye checked={showLeftStateShock} onChange={()=>setShowLeftStateShock(v=>!v)} aria-label="Choques lentos de U L"/></div>
+      <div className="stateVisibilityRow" style={{'--visibility-color':'#bf5af2'}}><span className="stateSwitchCopy"><strong>S₂ retrospectiva(U_R)</strong><small>Choques rápidos que chegam ao estado direito</small></span><VisibilityEye checked={showRightStateShock} onChange={()=>setShowRightStateShock(v=>!v)} aria-label="Choques rápidos para U R"/></div>
+      <small>Continuação RH no espaço de estados, independente de π e da seleção de uma cadeia. Os trechos exibidos satisfazem Lax estrito nos extremos; Liu e entropia não são certificados. Fronteiras sônicas e trechos inconclusivos não são prolongados como choques estritos.</small>
+      <p>{shockCurves.filter(c=>c.side==='left').length} trecho(s) lento(s); {shockCurves.filter(c=>c.side==='right').length} trecho(s) rápido(s). Busca limitada a 240 passos e raio de duas vezes a escala dos estados.</p>
     </div></details>
     <details className="statePanelSection workspaceDisclosure" data-activity-section="arcs" open><summary>Rarefações</summary><div className="statePanelSectionBody">
       <div className="stateVisualizationOption" role="group" aria-label="Rarefações dos estados de Riemann">
@@ -726,6 +739,9 @@ function StatePlot({constructionRevision=0,constructionRequested=true,onBuildCan
       {axisTicks(view.vMin,view.vMax,6).map(v=><g key={`v-${v}`}><line x1={P-6} x2={P} y1={sy({u:view.uMin,v},view)} y2={sy({u:view.uMin,v},view)} className="stateAxisTick"/><text x={P-10} y={sy({u:view.uMin,v},view)+4} textAnchor="end" className="stateAxisTickLabel">{axisLabel(v)}</text></g>)}
       </g>{x0!==null&&<line x1={x0} x2={x0} y1={P} y2={H-P} className="chartAxis"/>}{y0!==null&&<line x1={P} x2={W-P} y1={y0} y2={y0} className="chartAxis"/>}
       <g clipPath="url(#sharedLociClip)" aria-label="Projeções das curvas da variedade"><defs><clipPath id="sharedLociClip"><rect x={P} y={P} width={W-2*P} height={H-2*P}/></clipPath></defs>{sharedLoci.flatMap(item=>item.projected[stateProjection].map((path,i)=><path key={`${item.id}:${stateProjection}:${i}`} d={pathData(path,view)} stroke={item.color} {...scientificCurveStyle(scientificLocusKind(item.id),'2d')} fill="none" pointerEvents="none" aria-label={`${item.label} projetada por pi ${stateProjection}`}/>))}</g>
+      <g clipPath="url(#sharedLociClip)" aria-label="Ramos de choque independentes nos estados" pointerEvents="none">
+        {shockCurves.filter(c=>c.side==='left'?showLeftStateShock:showRightStateShock).map(c=><path key={c.id} d={pathData(c.points,view)} fill="none" stroke={c.side==='left'?'#ff453a':'#bf5af2'} strokeWidth="2.4" aria-label={c.side==='left'?'Ramo de choque lento de U L':'Ramo de choque rápido para U R'}><title>{`${c.side==='left'?'S₁(U_L)':'S₂ retrospectiva(U_R)'} · RH e Lax de extremos numericamente compatíveis; entropia não certificada.`}</title></path>)}
+      </g>
       {showRarefactionField&&visibleCurves.map(c=><path key={`${c.id}:${c.clipId}`} d={pathData(c.points,view)} fill="none" className={c.branch==='slow'?'stateRareSlow':'stateRareFast'}/>) }
       {visibleRiemannHugoniot.map(c=><path data-riemann-side={stateProjection==='plus'?'left':'right'} key={`riemann:${stateProjection}:${c.id}:${c.clipId}`} d={pathData(c.points,view)} fill="none" stroke={stateProjection==='plus'?'#ff9f0a':'#30d158'} {...scientificCurveStyle(stateProjection==='minus'?'auxiliary':'primary','2d')} pointerEvents="none"/>)}
       {/* Marcadores científicos são desenhados na camada superior, após todas as curvas. */}
@@ -773,6 +789,8 @@ function StatePlot({constructionRevision=0,constructionRequested=true,onBuildCan
         {id:'middle',tex:String.raw`U_{M_i}`,color:'#bf5af2',shape:'ring',visible:Boolean(activeProfile&&pointVisibility.middle)},
         {id:'hugoniot',tex:stateProjection==='plus'?String.raw`\mathcal H^{\mathrm{forw}}(U_L)`:String.raw`\mathcal H^{\mathrm{back}}(U_R)`,color:stateProjection==='plus'?'#ff9f0a':'#30d158',shape:'line',visible:stateProjection==='plus'?showLeftRiemannHugoniot:showRightRiemannHugoniot},
         {id:'rarefaction',tex:String.raw`\mathcal R`,color:'#64d2ff',shape:'line',visible:showRarefactionField},
+        {id:'slow-shocks',tex:'S_1(U_L)',color:'#ff453a',shape:'line',visible:showLeftStateShock&&shockCurves.some(c=>c.side==='left')},
+        {id:'fast-shocks',tex:'S_2^{back}(U_R)',color:'#bf5af2',shape:'line',visible:showRightStateShock&&shockCurves.some(c=>c.side==='right')},
         {id:'chain-shock',tex:'S',color:'#ff9f0a',shape:'line',visible:Boolean(showChain&&chainGeometry.segments.some(s=>s.type==='shock'))},
         {id:'chain-contact',tex:'C',color:'#bf5af2',shape:'line',visible:Boolean(showChain&&chainGeometry.segments.some(s=>s.type==='contact'))},
         {id:'chain-fan',tex:'R',color:'#0a84ff',shape:'line',visible:Boolean(showChain&&chainGeometry.segments.some(s=>s.type==='rarefaction'))},

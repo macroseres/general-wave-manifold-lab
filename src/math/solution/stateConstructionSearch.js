@@ -16,12 +16,12 @@ const pending=()=>({candidates:[],report:{status:'not-requested',complete:false}
 /** UI orchestration only: reuse the existing bounded constructors and evidence.
  * Keep failures local to each search; never upgrade numerical tests to entropy.
  */
-export function stateConstructionSearch(states,branches,hugoniot,p,requested,revision=0){
+export function stateConstructionSearch(states,branches,hugoniot,p,requested,revision=0,availableStateBranches=null){
   const reports=[]
   let stateBranches=null
   if(requested&&valid(states?.left)&&valid(states?.right)){
     try{
-      stateBranches=stateShockBranches(states,p)
+      stateBranches=availableStateBranches??stateShockBranches(states,p)
       hugoniot={left:[...(hugoniot?.left??[]),...stateBranches.curves.left],right:[...(hugoniot?.right??[]),...stateBranches.curves.right]}
     }catch(error){reports.push({patterns:'Continuação RH',status:'numerical-failure',count:0,reason:error.message})}
   }

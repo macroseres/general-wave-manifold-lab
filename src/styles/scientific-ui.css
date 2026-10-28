@@ -687,6 +687,7 @@ background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/sv
 .stateToolsDrawer[data-activity="curves"] .statePanelSection[data-activity-section="curves"],
 .stateToolsDrawer[data-activity="points"] .statePanelSection[data-activity-section="points"],
 .stateToolsDrawer[data-activity="arcs"] .statePanelSection[data-activity-section="arcs"],
+.stateToolsDrawer[data-activity="shocks"] .statePanelSection[data-activity-section="shocks"],
 .stateToolsDrawer[data-activity="fields"] .statePanelSection[data-activity-section="fields"],
 .stateToolsDrawer[data-activity="view"] .statePanelSection[data-activity-section="view"],
 .stateToolsDrawer[data-activity="chains"] .statePanelSection[data-activity-section="chains"] {display:block}

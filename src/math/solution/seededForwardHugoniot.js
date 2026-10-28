@@ -14,9 +14,9 @@ const unit=a=>norm(a)>1e-14?a.map(x=>x/norm(a)):null
 export function traceSeededForwardHugoniot(left,target,p,{
   family=null,step=0.025,maxSteps=1600,maxNewton=18,
   targetTolerance=0.025,minStep=1e-5,maxRadius=8,
-  seedRadius=0.001,incidenceTolerance=1e-10,includeAttempts=false,
+  seedRadius=0.001,incidenceTolerance=1e-10,includeAttempts=false,stopAtTarget=true,
 }={}){
-  if(!finite(left)||!finite(target)||norm(sub(target,left))<1e-8||
+  if(!finite(left)||!finite(target)||(stopAtTarget&&norm(sub(target,left))<1e-8)||
     ![step,targetTolerance,minStep,maxRadius,seedRadius,incidenceTolerance].every(x=>Number.isFinite(x)&&x>0)||
     !Number.isInteger(maxSteps)||maxSteps<1||!Number.isInteger(maxNewton)||maxNewton<1)
     return {status:'invalid-input',arc:null}
@@ -31,7 +31,7 @@ export function traceSeededForwardHugoniot(left,target,p,{
     for(let k=0;k<maxSteps;k++){
       const error=norm(sub(current,target))
       if(error<closest)closest=error
-      if(error<=targetTolerance*scale){reached=true;reason='target-reached';break}
+      if(stopAtTarget&&error<=targetTolerance*scale){reached=true;reason='target-reached';break}
       if(norm(sub(current,left))>maxRadius*scale){reason='radius-limit';break}
       const gradient=forwardHugoniotGradient(left,current,p)
       let direction=unit([-gradient[1],gradient[0]])

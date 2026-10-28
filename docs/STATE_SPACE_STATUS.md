@@ -1,5 +1,15 @@
 # Situação do espaço de estados — 27/10/2026
 
+
+## Correção da exploração dos choques — 28/10/2026
+
+O relato do responsável após a Entrega 2 revelou uma lacuna: os arcos de choque apareciam somente dentro de uma cadeia selecionada. Ativar as Hugoniot projetadas não supria a ausência dos ramos de choque na exploração tradicional. A correção acrescenta **Choques** ao painel lateral, com visibilidade própria para **S₁(U_L)** (vermelho) e **S₂ retrospectiva(U_R)** (violeta), inicialmente ativadas. Esses ramos são calculados assim que o estado correspondente é definido, sem exigir o outro estado, solicitação de construção ou seleção de cadeia. As Hugoniot da variedade continuam associadas a π e aos controles anteriores.
+
+A continuação RH característica existente fornece os ramos. Para o desenho exploratório, a parada não depende de alcançar o outro estado; permanecem os limites de 240 passos e raio de duas vezes a escala. `stateShockGeometry.js` conserva apenas trechos contíguos cujas amostras satisfazem RH e Lax estrito da família nos extremos, com orientação U_L→U para o choque lento e U→U_R para o rápido retrospectivo. Amostras rejeitadas interrompem o traçado; nenhuma corda atravessa lacunas. Não há certificação de Liu, entropia ou completude. Choques sônicos internos de K continuam na camada da cadeia selecionada.
+
+Regressão reproduzível do caso relatado: `a20=3.3977518519014067`, `a02=0.5`, `b20=-0.09349436579634296`, `b11=1`, `b02=-0.1`, `b10=1`, demais coeficientes zero; U_L=(0.24980173142209872,-1.1058589181489928), U_R=(0.2324975347029804,0.15172581931988416). Os testes conferem os dois lados, RH e Lax das amostras, seleção de apenas um estado, separação em amostras rejeitadas e renderização do componente real sem cadeia selecionada e com as Hugoniot projetadas ocultas. A evidência visual está em [ramos de choque no caso relatado](evidence/state-construction/reported-shock-branches.png). No navegador, com as Hugoniot projetadas ocultas e nenhuma cadeia selecionada, foram observados dois trechos lentos e um rápido na busca. Na janela próxima à captura original, o ramo lento vermelho e o rápido violeta ficaram visíveis. A troca π₊→π₋ preservou os atributos SVG dos três trechos; ocultar somente os lentos deixou o rápido visível. `npm run check` passou com lint, 841 testes (zero falhas) e build; permanece o aviso preexistente de tamanho do bundle.
+
+
 ## Fluxo interativo tradicional — integração de 27/10/2026
 
 A Entrega 1 foi aprovada pelo responsável. A Entrega 2 integra os construtores existentes à ação explícita de construção, com arcos de choque separados das Hugoniot projetadas por π, conforme orientação do responsável. O encerramento histórico T01–T08 permanece delimitado e não é usado como prova de uma interface completa.
