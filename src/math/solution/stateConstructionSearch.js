@@ -6,8 +6,8 @@ import {twoShockSelfSimilarCandidate,mixedSelfSimilarCandidate} from './riemannS
 import {physicalChainEvidence} from './physicalChainEvidence.js'
 import {candidateProvenance} from './riemannCandidateProvenance.js'
 import {searchRarefactionPairs} from './rarefactionPairCandidates.js'
-import {contactChainCandidates} from './contactChainCandidates.js'
-import {compositeBlockChainCandidates} from './compositeBlockChainCandidates.js'
+import {searchContactChains} from './contactChainCandidates.js'
+import {searchCompositeBlockChains} from './compositeBlockChainCandidates.js'
 import {stateShockBranches} from './stateShockBranches.js'
 
 const valid=U=>Array.isArray(U)&&U.length===2&&U.every(Number.isFinite)
@@ -66,13 +66,8 @@ export function stateConstructionSearch(states,branches,hugoniot,p,requested,rev
     report.selectable=profileCandidates[key].length
   }
   const rarefactionSearch=run('RR',()=>searchRarefactionPairs(states,branches,p))
-  const arraySearch=fn=>{
-    const candidates=fn()
-    return {candidates,report:{status:candidates.length?'candidates-found':'no-candidates-found',complete:false,
-      qualification:'Busca limitada; o construtor não fornece motivos por tentativa. Nenhum resultado não prova inexistência.'}}
-  }
-  const contactChains=run('RC, SC, CR, CS, CC',()=>arraySearch(()=>contactChainCandidates(states,branches,hugoniot,p))).candidates
-  const compositeChains=run('RK, SK, CK, KR, KS, KC, KK',()=>arraySearch(()=>compositeBlockChainCandidates(states,branches,hugoniot,p))).candidates
+  const contactChains=run('RC, SC, CR, CS, CC',()=>searchContactChains(states,branches,hugoniot,p)).candidates
+  const compositeChains=run('RK, SK, CK, KR, KS, KC, KK',()=>searchCompositeBlockChains(states,branches,hugoniot,p)).candidates
   const allProfiles=[...profileCandidates.twoShock,...profileCandidates.mixed,...rarefactionSearch.candidates,...contactChains,...compositeChains]
   return {shockCandidates,mixedCandidates,mixedLiuCandidates,profileCandidates,rarefactionSearch,
     rarefactionPairs:rarefactionSearch.candidates,contactChains,compositeChains,allProfiles,reports,stateBranches,revision}

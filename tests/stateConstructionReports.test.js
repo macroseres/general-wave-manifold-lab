@@ -30,7 +30,7 @@ test('selectable SS profiles are still offered after adding report assessments',
   assert.ok(result.allProfiles.some(q=>q.pattern==='SS'))
 })
 
-test('UI distinguishes raw candidates from selectable profiles and explains the empty list',async()=>{
+test('UI retains rejection diagnostics and offers the recovered SR profile with refined sampling',async()=>{
   const server=await createServer({server:{middlewareMode:true,watch:null,hmr:false},appType:'custom'})
   try{
     const {StateConstructionReports}=await server.ssrLoadModule('/src/components/StateChainInspection.jsx')
@@ -52,7 +52,16 @@ test('UI distinguishes raw candidates from selectable profiles and explains the 
     assert.doesNotMatch(defaultView,/aria-label="Arco de rarefação (lenta|rápida)/)
     assert.doesNotMatch(defaultView,/aria-label="Cadeia candidata selecionada"/)
     assert.match(defaultView,/Resultados das buscas de cadeias/)
-    assert.doesNotMatch(defaultView,/Cadeia candidata para inspeção|Inspeção conjunta da cadeia candidata|Mostrar construção selecionada/)
+    assert.match(defaultView,/Cadeia candidata para inspeção/)
+    assert.match(defaultView,/Cadeia 1 · SR/)
+    const selectedView=renderToStaticMarkup(createElement(Workspace,{...props,selectedCandidateIndex:0}))
+    assert.match(selectedView,/aria-label="Cadeia candidata selecionada"/)
+    assert.match(selectedView,/Arco de choque da cadeia/)
+    const emptyView=renderToStaticMarkup(createElement(Workspace,{...props,
+      p:{a20:0,a11:0,a02:0,a10:0,a01:-1,b20:0,b11:0,b02:0,b10:1,b01:0}}))
+    assert.doesNotMatch(emptyView,/Cadeia candidata para inspeção|Inspeção conjunta da cadeia candidata|Mostrar construção selecionada/)
+    assert.match(emptyView,/Nenhum candidato selecionável encontrado/)
+    assert.match(emptyView,/Resultados das buscas de cadeias/)
     const exploring=renderToStaticMarkup(createElement(Workspace,{...props,exploreWaveBranches:true}))
     assert.match(exploring,/aria-label="Ramo de choque lento de U L"/)
     assert.match(exploring,/aria-label="Arco de rarefação rápida retrospectiva de U R"/)

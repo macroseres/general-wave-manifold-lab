@@ -7,6 +7,20 @@ const statuses={'not-requested':'Aguardando construção','invalid-input':'Defin
   'candidates-found':'Candidatos encontrados','no-candidates-found':'Nenhum candidato encontrado na busca limitada',
   'numerical-failure':'Falha numérica',inconclusive:'Busca inconclusiva','incompatible-branches':'Sem ramos elegíveis neste domínio'}
 const reasons={
+  'sampled-candidate':'Perfil candidato reconstruído',
+  'no-constant-contact-model':'Nenhum modelo de contato com direção e velocidade constantes nos coeficientes',
+  'contact-family-mismatch':'Modelo de contato incompatível com a família no estado de referência',
+  'parallel-contact-lines':'Direções de contato paralelas; interseção isolada não obtida',
+  'contact-connection-unverified':'Conexão de contato não verificada (amplitude, direção, família ou RH)',
+  'no-isolated-affine-root':'Equação RH na reta de contato sem raiz isolada',
+  'unanchored-curve':'Curva não ancorada no estado de referência',
+  'no-sampled-intersection':'Nenhuma interseção nos segmentos amostrados',
+  'fan-prefix-unverified':'Prefixo do leque não passou nas verificações de velocidade e tangente',
+  'no-sampled-composite-curve':'Nenhuma curva composta com pelo menos duas amostras obtida',
+  'intersection-refinement-failed':'Refinamento local da interseção não concluído',
+  'sonic-endpoint-unverified':'Extremo do salto sônico não coincide com a conexão',
+  'sonic-shock-unverified':'RH, condição sônica ou Lax não estrito não verificados no salto interno',
+  'duplicate-middle':'Conexão duplicada já registrada',
   'family-lax-unverified':'Famílias lenta → rápida ou Lax de extremos não verificados',
   'family-order-unverified':'Ordenação das famílias não verificada',
   'speed-ordering-unverified':'Ordenação das velocidades não verificada',
@@ -33,6 +47,13 @@ export function StateConstructionReports({reports,stateBranches}){
       {report.selectable!==undefined&&<p>Candidatos geométricos: {report.count}; perfis selecionáveis: {report.selectable}. A lista Cadeia contém apenas os perfis selecionáveis.</p>}
       {report.reason&&<p>{report.reason}</p>}{report.qualification&&<p>{report.qualification}</p>}
       {report.limitReached&&<p>Limite de candidatos atingido; há partes não examinadas.</p>}
+      {report.branchLimitReached&&<p>Limite de ramos sônicos atingido; outros ramos podem não ter sido acompanhados.</p>}
+      {report.attemptCount!==undefined&&<>
+        <p>{report.attemptCount} tentativa(s) registrada(s). Detalhes: {report.attempts.length} de {report.attemptCount}.</p>
+        <ul>{Object.entries(report.reasonCounts).map(([status,count])=><li key={status}>{reason(status)}: {count}</li>)}</ul>
+        {report.detailsTruncated&&<p>Lista de detalhes limitada a {report.detailsLimit}; as contagens incluem todas as tentativas registradas.</p>}
+        <details><summary>Tentativas de contatos e compostas</summary>{report.attempts.map((attempt,i)=><p key={i}>{i+1}. {attempt.pattern}: {reason(attempt.status)}{attempt.middle?` · U_M = ${state(attempt.middle)}`:''}{Number.isFinite(attempt.speedGap)?` · diferença de velocidades = ${number(attempt.speedGap)}`:''}</p>)}</details>
+      </>}
       {report.sampledIntersections!==undefined&&<p>Interseções amostradas: {report.sampledIntersections}; refinadas: {report.refined??0}.</p>}
       {(report.rejected??[]).map((r,i)=><small key={i}>Tentativa {i+1}: {reason(r.status??r.reason??'inconclusive')}</small>)}
       {(report.profileAssessments??[]).filter(a=>a.profileStatus!=='sampled-candidate').map(a=><details key={`assessment-${a.index}`}><summary>Candidato geométrico {a.index+1}: {reason(a.profileStatus)}</summary>

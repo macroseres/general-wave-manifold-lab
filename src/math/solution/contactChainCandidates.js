@@ -1,3 +1,4 @@
+import {boundedSearchReport,recordSearchAttempt,finishSearchReport} from './boundedSearchReport.js'
 import {flux,jacobian} from '../flux/quadraticFlux.js'
 import {stateCharacteristicDirection} from '../rarefaction/stateIntegralCurves.js'
 import {sampledRarefactionPrefix} from './rarefactionPairCandidates.js'
@@ -109,29 +110,35 @@ function assemble(pattern,left,middle,right,segments,options){
 }
 
 /** RC, SC, CR, CS and CC in constant-direction LD families. Finite search only. */
-export function contactChainCandidates(states,rarefactions,hugoniot,p,options={}){
+export function contactChainCandidates(states,rarefactions,hugoniot,p,options={},report=null){
+  const note=(pattern,status,detail)=>recordSearchAttempt(report,pattern,status,detail)
   const {left,right}=states??{},opts={...defaults,...options}
   if(!valid(left)||!valid(right)||!Number.isInteger(opts.maxCandidates)||opts.maxCandidates<1||
-    !['stateTolerance','speedTolerance','tangentTolerance','coefficientTolerance'].every(k=>Number.isFinite(opts[k])&&opts[k]>=0))return []
+    !['stateTolerance','speedTolerance','tangentTolerance','coefficientTolerance'].every(k=>Number.isFinite(opts[k])&&opts[k]>=0)){note('Entradas','invalid-input');return []}
   const models=constantContactDirections(p,opts),result=[]
+  if(report)report.contactModels=models.length
+  if(!models.length)note('RC, SC, CR, CS, CC','no-constant-contact-model')
   const add=q=>{
-    if(q&&!result.some(r=>r.pattern===q.pattern&&norm(sub(r.middle,q.middle))<=opts.stateTolerance))result.push(q)
+    if(!q)return
+    if(result.some(r=>r.pattern===q.pattern&&norm(sub(r.middle,q.middle))<=opts.stateTolerance)){note(q.pattern,'duplicate-middle',{middle:q.middle});return}
+    result.push(q);note(q.pattern,'sampled-candidate',{middle:q.middle})
   }
   for(const first of models)for(const second of models){
-    if(familyAt(left,first,p,opts)!=='slow'||familyAt(right,second,p,opts)!=='fast')continue
+    if(familyAt(left,first,p,opts)!=='slow'||familyAt(right,second,p,opts)!=='fast'){note('CC','contact-family-mismatch');continue}
     const den=cross(first.direction,second.direction)
-    if(Math.abs(den)<=opts.stateTolerance)continue
+    if(Math.abs(den)<=opts.stateTolerance){note('CC','parallel-contact-lines');continue}
     const a=cross(sub(right,left),second.direction)/den
     const middle=left.map((v,i)=>v+a*first.direction[i])
     const c1=constantContactConnection(left,middle,p,'slow',opts),c2=constantContactConnection(middle,right,p,'fast',opts)
-    if(c1&&c2)add(assemble('CC',left,middle,right,[c1,c2],opts))
+    if(c1&&c2){const q=assemble('CC',left,middle,right,[c1,c2],opts);if(!q)note('CC','speed-ordering-unverified',{middle});add(q)}
+    else note('CC','contact-connection-unverified',{middle})
   }
   for(const contactSide of ['right','left']){
     const contactLast=contactSide==='right',anchor=contactLast?right:left
     const contactFamily=contactLast?'fast':'slow',otherFamily=contactLast?'slow':'fast'
     const rareSide=contactLast?'left':'right',otherAnchor=contactLast?left:right
     for(const model of models){
-      if(familyAt(anchor,model,p,opts)!==contactFamily)continue
+      if(familyAt(anchor,model,p,opts)!==contactFamily){note(contactLast?'RC, SC':'CR, CS','contact-family-mismatch');continue}
       const exactMiddle=isolatedShockMiddle(anchor,otherAnchor,model,p,opts)
       if(exactMiddle){
         const contact=constantContactConnection(contactLast?exactMiddle:left,contactLast?right:exactMiddle,p,contactFamily,opts)
@@ -142,16 +149,20 @@ export function contactChainCandidates(states,rarefactions,hugoniot,p,options={}
             speed:check.shock.speed,relativeResidual:check.shock.relativeResidual}
           const q=assemble(contactLast?'SC':'CS',left,exactMiddle,right,contactLast?[shock,contact]:[contact,shock],opts)
           if(q){q.provenance.intersection='affine-rh-on-contact-line';add(q)}
-        }
-      }
+          else note(contactLast?'SC':'CS','speed-ordering-unverified',{middle:exactMiddle})
+        }else note(contactLast?'SC':'CS',!contact?'contact-connection-unverified':'strict-lax-failed',{middle:exactMiddle})
+      }else note(contactLast?'SC':'CS','no-isolated-affine-root')
       const curves=[...(rarefactions??[]).filter(b=>b.side===rareSide&&b.family===otherFamily).map(b=>({...b,type:'R'})),
         ...(hugoniot?.[rareSide]??[]).map(b=>({...b,type:'S'}))]
       for(const curve of curves){
-        if(curve.type==='R'&&(!valid(coords(curve.points?.[0]))||norm(sub(coords(curve.points[0]),otherAnchor))>opts.stateTolerance))continue
-        for(const hit of lineHits(curve.points,anchor,model.direction,opts.stateTolerance)){
+        const pattern=contactLast?`${curve.type}C`:`C${curve.type}`
+        if(curve.type==='R'&&(!valid(coords(curve.points?.[0]))||norm(sub(coords(curve.points[0]),otherAnchor))>opts.stateTolerance)){note(pattern,'unanchored-curve');continue}
+        const hits=lineHits(curve.points,anchor,model.direction,opts.stateTolerance)
+        if(!hits.length)note(pattern,'no-sampled-intersection')
+        for(const hit of hits){
           const middle=hit.point
           const contact=constantContactConnection(contactLast?middle:left,contactLast?right:middle,p,contactFamily,opts)
-          if(!contact)continue
+          if(!contact){note(pattern,'contact-connection-unverified',{middle});continue}
           let other
           if(curve.type==='R'){
             const fan=sampledRarefactionPrefix(curve,hit.index,middle,p,!contactLast,opts)
@@ -162,14 +173,21 @@ export function contactChainCandidates(states,rarefactions,hugoniot,p,options={}
             if(check.families.includes(otherFamily))other={type:'shock',family:otherFamily,from:[...from],to:[...to],
               states:[[...from],[...to]],speed:check.shock.speed,relativeResidual:check.shock.relativeResidual}
           }
-          if(other)add(assemble(contactLast?`${curve.type}C`:`C${curve.type}`,left,middle,right,
-            contactLast?[other,contact]:[contact,other],opts))
-          if(result.length>=opts.maxCandidates)return result.slice(0,opts.maxCandidates)
+          if(other){const q=assemble(pattern,left,middle,right,contactLast?[other,contact]:[contact,other],opts)
+            if(!q)note(pattern,'speed-ordering-unverified',{middle});add(q)
+          }else note(pattern,curve.type==='R'?'fan-prefix-unverified':'strict-lax-failed',{middle})
+          if(result.length>=opts.maxCandidates){if(report)report.limitReached=true;return result.slice(0,opts.maxCandidates)}
         }
       }
     }
   }
+  if(report&&result.length>=opts.maxCandidates)report.limitReached=true
   return result.slice(0,opts.maxCandidates)
+}
+
+export function searchContactChains(states,rarefactions,hugoniot,p,options={}){
+  const report=boundedSearchReport()
+  return finishSearchReport(report,contactChainCandidates(states,rarefactions,hugoniot,p,options,report))
 }
 
 export function evaluateContactChain(candidate,xi){

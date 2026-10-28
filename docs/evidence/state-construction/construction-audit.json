@@ -1,0 +1,1529 @@
+{
+  "empty": [
+    {
+      "name": "default",
+      "limits": {
+        "step": 0.025,
+        "maxRadius": 2,
+        "maxSteps": 240
+      },
+      "rare": {},
+      "profiles": [],
+      "stops": [
+        {
+          "side": "left",
+          "sign": -1,
+          "reason": "radius-limit",
+          "points": 125
+        },
+        {
+          "side": "left",
+          "sign": 1,
+          "reason": "radius-limit",
+          "points": 117
+        },
+        {
+          "side": "right",
+          "sign": -1,
+          "reason": "radius-limit",
+          "points": 221
+        },
+        {
+          "side": "right",
+          "sign": 1,
+          "reason": "radius-limit",
+          "points": 83
+        }
+      ],
+      "reports": [
+        {
+          "patterns": "SS",
+          "status": "candidates-found",
+          "sampledIntersections": 2,
+          "refined": 2,
+          "rejected": [],
+          "maxCandidates": 40,
+          "complete": false,
+          "count": 2,
+          "profileAssessments": [
+            {
+              "index": 0,
+              "middle": [
+                0.7707840659658665,
+                -0.2637173232191927
+              ],
+              "refinement": "refined-candidate",
+              "chain": "speed-ordering-unverified",
+              "family": "speed-ordering-unverified",
+              "firstShock": "strict-lax-failed",
+              "secondShock": "strict-lax-endpoint-candidate",
+              "speedGap": -3.6174706037685422,
+              "profileStatus": "speed-ordering-unverified"
+            },
+            {
+              "index": 1,
+              "middle": [
+                0.4242580950120405,
+                0.675570734302749
+              ],
+              "refinement": "refined-candidate",
+              "chain": "ordered-rh-candidate",
+              "family": "family-lax-unverified",
+              "firstShock": "strict-lax-endpoint-candidate",
+              "secondShock": "strict-lax-failed",
+              "speedGap": 3.8144903079702455,
+              "profileStatus": "family-lax-unverified"
+            }
+          ],
+          "selectable": 0
+        },
+        {
+          "patterns": "RS, SR",
+          "status": "inconclusive",
+          "sampledIntersections": 2,
+          "refined": 1,
+          "rejected": [
+            {
+              "kind": "shock-rarefaction",
+              "branchFamily": "fast",
+              "branchIndex": 4.604297808350909,
+              "status": "off-sampled-arc"
+            }
+          ],
+          "maxCandidates": 80,
+          "complete": false,
+          "count": 2,
+          "profileAssessments": [
+            {
+              "index": 0,
+              "middle": [
+                0.7707906693333978,
+                -0.26271501604856723
+              ],
+              "refinement": "refined-candidate",
+              "family": "family-order-unverified",
+              "fan": "sampled-fan-ordered",
+              "profileStatus": "unverified-chain"
+            },
+            {
+              "index": 1,
+              "middle": [
+                0.4246954167819848,
+                0.6735100731380681
+              ],
+              "refinement": "off-sampled-arc",
+              "family": "rankine-hugoniot-unverified",
+              "fan": "sampled-fan-ordered",
+              "profileStatus": "unverified-chain"
+            }
+          ],
+          "profileRejections": [
+            "unverified-chain",
+            "unverified-chain"
+          ],
+          "selectable": 0
+        },
+        {
+          "patterns": "RR",
+          "status": "no-candidates-found",
+          "stopReason": "supplied-branches-exhausted",
+          "complete": false,
+          "limitedTo": "supplied-sampled-branches",
+          "seedSearchExhausted": true,
+          "candidateLimitReached": false,
+          "candidateCount": 0,
+          "branches": [
+            {
+              "index": 0,
+              "side": "left",
+              "family": "slow",
+              "sign": -1,
+              "stop": "max-length",
+              "status": "speed-order-reversal",
+              "pointCount": 4,
+              "parameterExtent": 0.18,
+              "relevant": true,
+              "eligible": true,
+              "rejectionReason": null
+            },
+            {
+              "index": 1,
+              "side": "left",
+              "family": "slow",
+              "sign": 1,
+              "stop": "max-length",
+              "status": "not-expansive",
+              "pointCount": 1,
+              "parameterExtent": 0,
+              "relevant": true,
+              "eligible": false,
+              "rejectionReason": "insufficient-points"
+            },
+            {
+              "index": 2,
+              "side": "left",
+              "family": "fast",
+              "sign": -1,
+              "stop": "hyperbolicity-boundary",
+              "status": "not-expansive",
+              "pointCount": 1,
+              "parameterExtent": 0,
+              "relevant": false,
+              "eligible": false,
+              "rejectionReason": "not-rr-family"
+            },
+            {
+              "index": 3,
+              "side": "left",
+              "family": "fast",
+              "sign": 1,
+              "stop": "max-length",
+              "status": "complete-local-trace",
+              "pointCount": 152,
+              "parameterExtent": 12.020000000000008,
+              "relevant": false,
+              "eligible": false,
+              "rejectionReason": "not-rr-family"
+            },
+            {
+              "index": 4,
+              "side": "right",
+              "family": "slow",
+              "sign": -1,
+              "stop": "max-length",
+              "status": "complete-local-trace",
+              "pointCount": 152,
+              "parameterExtent": 12.020000000000008,
+              "relevant": false,
+              "eligible": false,
+              "rejectionReason": "not-rr-family"
+            },
+            {
+              "index": 5,
+              "side": "right",
+              "family": "slow",
+              "sign": 1,
+              "stop": "max-length",
+              "status": "not-expansive",
+              "pointCount": 1,
+              "parameterExtent": 0,
+              "relevant": false,
+              "eligible": false,
+              "rejectionReason": "not-rr-family"
+            },
+            {
+              "index": 6,
+              "side": "right",
+              "family": "fast",
+              "sign": -1,
+              "stop": "hyperbolicity-boundary",
+              "status": "complete-local-trace",
+              "pointCount": 23,
+              "parameterExtent": 1.219386215209961,
+              "relevant": true,
+              "eligible": true,
+              "rejectionReason": null
+            },
+            {
+              "index": 7,
+              "side": "right",
+              "family": "fast",
+              "sign": 1,
+              "stop": "max-length",
+              "status": "not-expansive",
+              "pointCount": 1,
+              "parameterExtent": 0,
+              "relevant": true,
+              "eligible": false,
+              "rejectionReason": "insufficient-points"
+            }
+          ],
+          "pairs": [
+            {
+              "leftBranch": 0,
+              "rightBranch": 6,
+              "status": "examined",
+              "seedsFound": 0,
+              "seedsVisited": 0,
+              "unexaminedSeeds": []
+            }
+          ],
+          "diagnostics": [],
+          "tolerances": {
+            "stateTolerance": 1e-7,
+            "speedTolerance": 1e-9,
+            "tangentTolerance": 0.15,
+            "maxCandidates": 24,
+            "corrector": {
+              "integrationStep": 0.01,
+              "residualTolerance": 1e-10,
+              "parameterTolerance": 1e-12,
+              "conditioningTolerance": 1e-8,
+              "maxIterations": 24,
+              "sourceBranchTolerance": 0.0002,
+              "joinStateTolerance": null
+            }
+          },
+          "count": 0
+        },
+        {
+          "patterns": "RC, SC, CR, CS, CC",
+          "complete": false,
+          "attempts": [
+            {
+              "pattern": "RC, SC, CR, CS, CC",
+              "status": "no-constant-contact-model"
+            }
+          ],
+          "attemptCount": 1,
+          "reasonCounts": {
+            "no-constant-contact-model": 1
+          },
+          "detailsLimit": 128,
+          "detailsTruncated": false,
+          "contactModels": 0,
+          "status": "no-candidates-found",
+          "selectable": 0,
+          "qualification": "Busca limitada; os motivos descrevem apenas as tentativas examinadas. Ausência de candidatos não demonstra inexistência.",
+          "count": 0
+        },
+        {
+          "patterns": "RK, SK, CK, KR, KS, KC, KK",
+          "complete": false,
+          "attempts": [
+            {
+              "pattern": "KR",
+              "status": "no-sampled-intersection"
+            },
+            {
+              "pattern": "KS",
+              "status": "no-sampled-intersection"
+            },
+            {
+              "pattern": "KS",
+              "status": "no-sampled-intersection"
+            }
+          ],
+          "attemptCount": 3,
+          "reasonCounts": {
+            "no-sampled-intersection": 3
+          },
+          "detailsLimit": 128,
+          "detailsTruncated": false,
+          "sonicCurves": 1,
+          "status": "no-candidates-found",
+          "selectable": 0,
+          "qualification": "Busca limitada; os motivos descrevem apenas as tentativas examinadas. Ausência de candidatos não demonstra inexistência.",
+          "count": 0
+        }
+      ]
+    },
+    {
+      "name": "half-step",
+      "limits": {
+        "step": 0.0125,
+        "maxRadius": 2,
+        "maxSteps": 480
+      },
+      "rare": {
+        "step": 0.02,
+        "maxSteps": 640,
+        "maxLength": 12
+      },
+      "profiles": [
+        {
+          "pattern": "SR",
+          "middle": [
+            0.42465325397354003,
+            0.6740149802825497
+          ]
+        }
+      ],
+      "stops": [
+        {
+          "side": "left",
+          "sign": -1,
+          "reason": "radius-limit",
+          "points": 248
+        },
+        {
+          "side": "left",
+          "sign": 1,
+          "reason": "radius-limit",
+          "points": 231
+        },
+        {
+          "side": "right",
+          "sign": -1,
+          "reason": "radius-limit",
+          "points": 439
+        },
+        {
+          "side": "right",
+          "sign": 1,
+          "reason": "radius-limit",
+          "points": 163
+        }
+      ],
+      "reports": [
+        {
+          "patterns": "SS",
+          "status": "candidates-found",
+          "sampledIntersections": 2,
+          "refined": 2,
+          "rejected": [],
+          "maxCandidates": 40,
+          "complete": false,
+          "count": 2,
+          "profileAssessments": [
+            {
+              "index": 0,
+              "middle": [
+                0.7707840659658663,
+                -0.2637173232191928
+              ],
+              "refinement": "refined-candidate",
+              "chain": "speed-ordering-unverified",
+              "family": "speed-ordering-unverified",
+              "firstShock": "strict-lax-failed",
+              "secondShock": "strict-lax-endpoint-candidate",
+              "speedGap": -3.6174706037685405,
+              "profileStatus": "speed-ordering-unverified"
+            },
+            {
+              "index": 1,
+              "middle": [
+                0.4242580950120405,
+                0.675570734302749
+              ],
+              "refinement": "refined-candidate",
+              "chain": "ordered-rh-candidate",
+              "family": "family-lax-unverified",
+              "firstShock": "strict-lax-endpoint-candidate",
+              "secondShock": "strict-lax-failed",
+              "speedGap": 3.8144903079702455,
+              "profileStatus": "family-lax-unverified"
+            }
+          ],
+          "selectable": 0
+        },
+        {
+          "patterns": "RS, SR",
+          "status": "candidates-found",
+          "sampledIntersections": 2,
+          "refined": 2,
+          "rejected": [],
+          "maxCandidates": 80,
+          "complete": false,
+          "count": 2,
+          "profileAssessments": [
+            {
+              "index": 0,
+              "middle": [
+                0.7708285435645731,
+                -0.2625959681401739
+              ],
+              "refinement": "refined-candidate",
+              "family": "family-order-unverified",
+              "fan": "sampled-fan-ordered",
+              "profileStatus": "unverified-chain"
+            },
+            {
+              "index": 1,
+              "middle": [
+                0.4246543892977349,
+                0.673877058885586
+              ],
+              "refinement": "refined-candidate",
+              "family": "mixed-ordered-lax-candidate",
+              "fan": "sampled-fan-ordered",
+              "profileStatus": "sampled-candidate"
+            }
+          ],
+          "profileRejections": [
+            "unverified-chain"
+          ],
+          "selectable": 1
+        },
+        {
+          "patterns": "RR",
+          "status": "no-candidates-found",
+          "stopReason": "supplied-branches-exhausted",
+          "complete": false,
+          "limitedTo": "supplied-sampled-branches",
+          "seedSearchExhausted": true,
+          "candidateLimitReached": false,
+          "candidateCount": 0,
+          "branches": [
+            {
+              "index": 0,
+              "side": "left",
+              "family": "slow",
+              "sign": -1,
+              "stop": "max-length",
+              "status": "speed-order-reversal",
+              "pointCount": 7,
+              "parameterExtent": 0.21000000000000002,
+              "relevant": true,
+              "eligible": true,
+              "rejectionReason": null
+            },
+            {
+              "index": 1,
+              "side": "left",
+              "family": "slow",
+              "sign": 1,
+              "stop": "max-length",
+              "status": "not-expansive",
+              "pointCount": 1,
+              "parameterExtent": 0,
+              "relevant": true,
+              "eligible": false,
+              "rejectionReason": "insufficient-points"
+            },
+            {
+              "index": 2,
+              "side": "left",
+              "family": "fast",
+              "sign": -1,
+              "stop": "hyperbolicity-boundary",
+              "status": "not-expansive",
+              "pointCount": 1,
+              "parameterExtent": 0,
+              "relevant": false,
+              "eligible": false,
+              "rejectionReason": "not-rr-family"
+            },
+            {
+              "index": 3,
+              "side": "left",
+              "family": "fast",
+              "sign": 1,
+              "stop": "max-length",
+              "status": "complete-local-trace",
+              "pointCount": 302,
+              "parameterExtent": 12.00999999999992,
+              "relevant": false,
+              "eligible": false,
+              "rejectionReason": "not-rr-family"
+            },
+            {
+              "index": 4,
+              "side": "right",
+              "family": "slow",
+              "sign": -1,
+              "stop": "max-length",
+              "status": "complete-local-trace",
+              "pointCount": 302,
+              "parameterExtent": 12.00999999999992,
+              "relevant": false,
+              "eligible": false,
+              "rejectionReason": "not-rr-family"
+            },
+            {
+              "index": 5,
+              "side": "right",
+              "family": "slow",
+              "sign": 1,
+              "stop": "max-length",
+              "status": "not-expansive",
+              "pointCount": 1,
+              "parameterExtent": 0,
+              "relevant": false,
+              "eligible": false,
+              "rejectionReason": "not-rr-family"
+            },
+            {
+              "index": 6,
+              "side": "right",
+              "family": "fast",
+              "sign": -1,
+              "stop": "hyperbolicity-boundary",
+              "status": "complete-local-trace",
+              "pointCount": 37,
+              "parameterExtent": 1.2193775939941407,
+              "relevant": true,
+              "eligible": true,
+              "rejectionReason": null
+            },
+            {
+              "index": 7,
+              "side": "right",
+              "family": "fast",
+              "sign": 1,
+              "stop": "max-length",
+              "status": "not-expansive",
+              "pointCount": 1,
+              "parameterExtent": 0,
+              "relevant": true,
+              "eligible": false,
+              "rejectionReason": "insufficient-points"
+            }
+          ],
+          "pairs": [
+            {
+              "leftBranch": 0,
+              "rightBranch": 6,
+              "status": "examined",
+              "seedsFound": 0,
+              "seedsVisited": 0,
+              "unexaminedSeeds": []
+            }
+          ],
+          "diagnostics": [],
+          "tolerances": {
+            "stateTolerance": 1e-7,
+            "speedTolerance": 1e-9,
+            "tangentTolerance": 0.15,
+            "maxCandidates": 24,
+            "corrector": {
+              "integrationStep": 0.01,
+              "residualTolerance": 1e-10,
+              "parameterTolerance": 1e-12,
+              "conditioningTolerance": 1e-8,
+              "maxIterations": 24,
+              "sourceBranchTolerance": 0.0002,
+              "joinStateTolerance": null
+            }
+          },
+          "count": 0
+        },
+        {
+          "patterns": "RC, SC, CR, CS, CC",
+          "complete": false,
+          "attempts": [
+            {
+              "pattern": "RC, SC, CR, CS, CC",
+              "status": "no-constant-contact-model"
+            }
+          ],
+          "attemptCount": 1,
+          "reasonCounts": {
+            "no-constant-contact-model": 1
+          },
+          "detailsLimit": 128,
+          "detailsTruncated": false,
+          "contactModels": 0,
+          "status": "no-candidates-found",
+          "selectable": 0,
+          "qualification": "Busca limitada; os motivos descrevem apenas as tentativas examinadas. Ausência de candidatos não demonstra inexistência.",
+          "count": 0
+        },
+        {
+          "patterns": "RK, SK, CK, KR, KS, KC, KK",
+          "complete": false,
+          "attempts": [
+            {
+              "pattern": "KR",
+              "status": "no-sampled-intersection"
+            },
+            {
+              "pattern": "KS",
+              "status": "no-sampled-intersection"
+            },
+            {
+              "pattern": "KS",
+              "status": "no-sampled-intersection"
+            }
+          ],
+          "attemptCount": 3,
+          "reasonCounts": {
+            "no-sampled-intersection": 3
+          },
+          "detailsLimit": 128,
+          "detailsTruncated": false,
+          "sonicCurves": 1,
+          "status": "no-candidates-found",
+          "selectable": 0,
+          "qualification": "Busca limitada; os motivos descrevem apenas as tentativas examinadas. Ausência de candidatos não demonstra inexistência.",
+          "count": 0
+        }
+      ]
+    },
+    {
+      "name": "extended",
+      "limits": {
+        "step": 0.0125,
+        "maxRadius": 4,
+        "maxSteps": 960
+      },
+      "rare": {
+        "step": 0.02,
+        "maxSteps": 800,
+        "maxLength": 16
+      },
+      "profiles": [
+        {
+          "pattern": "SR",
+          "middle": [
+            0.42465325397354003,
+            0.6740149802825497
+          ]
+        }
+      ],
+      "stops": [
+        {
+          "side": "left",
+          "sign": -1,
+          "reason": "radius-limit",
+          "points": 408
+        },
+        {
+          "side": "left",
+          "sign": 1,
+          "reason": "radius-limit",
+          "points": 392
+        },
+        {
+          "side": "right",
+          "sign": -1,
+          "reason": "radius-limit",
+          "points": 606
+        },
+        {
+          "side": "right",
+          "sign": 1,
+          "reason": "radius-limit",
+          "points": 324
+        }
+      ],
+      "reports": [
+        {
+          "patterns": "SS",
+          "status": "candidates-found",
+          "sampledIntersections": 2,
+          "refined": 2,
+          "rejected": [],
+          "maxCandidates": 40,
+          "complete": false,
+          "count": 2,
+          "profileAssessments": [
+            {
+              "index": 0,
+              "middle": [
+                0.7707840659658663,
+                -0.2637173232191928
+              ],
+              "refinement": "refined-candidate",
+              "chain": "speed-ordering-unverified",
+              "family": "speed-ordering-unverified",
+              "firstShock": "strict-lax-failed",
+              "secondShock": "strict-lax-endpoint-candidate",
+              "speedGap": -3.6174706037685405,
+              "profileStatus": "speed-ordering-unverified"
+            },
+            {
+              "index": 1,
+              "middle": [
+                0.4242580950120405,
+                0.675570734302749
+              ],
+              "refinement": "refined-candidate",
+              "chain": "ordered-rh-candidate",
+              "family": "family-lax-unverified",
+              "firstShock": "strict-lax-endpoint-candidate",
+              "secondShock": "strict-lax-failed",
+              "speedGap": 3.8144903079702455,
+              "profileStatus": "family-lax-unverified"
+            }
+          ],
+          "selectable": 0
+        },
+        {
+          "patterns": "RS, SR",
+          "status": "candidates-found",
+          "sampledIntersections": 2,
+          "refined": 2,
+          "rejected": [],
+          "maxCandidates": 80,
+          "complete": false,
+          "count": 2,
+          "profileAssessments": [
+            {
+              "index": 0,
+              "middle": [
+                0.7708285435645731,
+                -0.2625959681401739
+              ],
+              "refinement": "refined-candidate",
+              "family": "family-order-unverified",
+              "fan": "sampled-fan-ordered",
+              "profileStatus": "unverified-chain"
+            },
+            {
+              "index": 1,
+              "middle": [
+                0.4246543892977349,
+                0.673877058885586
+              ],
+              "refinement": "refined-candidate",
+              "family": "mixed-ordered-lax-candidate",
+              "fan": "sampled-fan-ordered",
+              "profileStatus": "sampled-candidate"
+            }
+          ],
+          "profileRejections": [
+            "unverified-chain"
+          ],
+          "selectable": 1
+        },
+        {
+          "patterns": "RR",
+          "status": "no-candidates-found",
+          "stopReason": "supplied-branches-exhausted",
+          "complete": false,
+          "limitedTo": "supplied-sampled-branches",
+          "seedSearchExhausted": true,
+          "candidateLimitReached": false,
+          "candidateCount": 0,
+          "branches": [
+            {
+              "index": 0,
+              "side": "left",
+              "family": "slow",
+              "sign": -1,
+              "stop": "max-length",
+              "status": "speed-order-reversal",
+              "pointCount": 7,
+              "parameterExtent": 0.21000000000000002,
+              "relevant": true,
+              "eligible": true,
+              "rejectionReason": null
+            },
+            {
+              "index": 1,
+              "side": "left",
+              "family": "slow",
+              "sign": 1,
+              "stop": "max-length",
+              "status": "not-expansive",
+              "pointCount": 1,
+              "parameterExtent": 0,
+              "relevant": true,
+              "eligible": false,
+              "rejectionReason": "insufficient-points"
+            },
+            {
+              "index": 2,
+              "side": "left",
+              "family": "fast",
+              "sign": -1,
+              "stop": "hyperbolicity-boundary",
+              "status": "not-expansive",
+              "pointCount": 1,
+              "parameterExtent": 0,
+              "relevant": false,
+              "eligible": false,
+              "rejectionReason": "not-rr-family"
+            },
+            {
+              "index": 3,
+              "side": "left",
+              "family": "fast",
+              "sign": 1,
+              "stop": "max-length",
+              "status": "complete-local-trace",
+              "pointCount": 402,
+              "parameterExtent": 16.009999999999835,
+              "relevant": false,
+              "eligible": false,
+              "rejectionReason": "not-rr-family"
+            },
+            {
+              "index": 4,
+              "side": "right",
+              "family": "slow",
+              "sign": -1,
+              "stop": "max-length",
+              "status": "complete-local-trace",
+              "pointCount": 402,
+              "parameterExtent": 16.009999999999835,
+              "relevant": false,
+              "eligible": false,
+              "rejectionReason": "not-rr-family"
+            },
+            {
+              "index": 5,
+              "side": "right",
+              "family": "slow",
+              "sign": 1,
+              "stop": "max-length",
+              "status": "not-expansive",
+              "pointCount": 1,
+              "parameterExtent": 0,
+              "relevant": false,
+              "eligible": false,
+              "rejectionReason": "not-rr-family"
+            },
+            {
+              "index": 6,
+              "side": "right",
+              "family": "fast",
+              "sign": -1,
+              "stop": "hyperbolicity-boundary",
+              "status": "complete-local-trace",
+              "pointCount": 37,
+              "parameterExtent": 1.2193775939941407,
+              "relevant": true,
+              "eligible": true,
+              "rejectionReason": null
+            },
+            {
+              "index": 7,
+              "side": "right",
+              "family": "fast",
+              "sign": 1,
+              "stop": "max-length",
+              "status": "not-expansive",
+              "pointCount": 1,
+              "parameterExtent": 0,
+              "relevant": true,
+              "eligible": false,
+              "rejectionReason": "insufficient-points"
+            }
+          ],
+          "pairs": [
+            {
+              "leftBranch": 0,
+              "rightBranch": 6,
+              "status": "examined",
+              "seedsFound": 0,
+              "seedsVisited": 0,
+              "unexaminedSeeds": []
+            }
+          ],
+          "diagnostics": [],
+          "tolerances": {
+            "stateTolerance": 1e-7,
+            "speedTolerance": 1e-9,
+            "tangentTolerance": 0.15,
+            "maxCandidates": 24,
+            "corrector": {
+              "integrationStep": 0.01,
+              "residualTolerance": 1e-10,
+              "parameterTolerance": 1e-12,
+              "conditioningTolerance": 1e-8,
+              "maxIterations": 24,
+              "sourceBranchTolerance": 0.0002,
+              "joinStateTolerance": null
+            }
+          },
+          "count": 0
+        },
+        {
+          "patterns": "RC, SC, CR, CS, CC",
+          "complete": false,
+          "attempts": [
+            {
+              "pattern": "RC, SC, CR, CS, CC",
+              "status": "no-constant-contact-model"
+            }
+          ],
+          "attemptCount": 1,
+          "reasonCounts": {
+            "no-constant-contact-model": 1
+          },
+          "detailsLimit": 128,
+          "detailsTruncated": false,
+          "contactModels": 0,
+          "status": "no-candidates-found",
+          "selectable": 0,
+          "qualification": "Busca limitada; os motivos descrevem apenas as tentativas examinadas. Ausência de candidatos não demonstra inexistência.",
+          "count": 0
+        },
+        {
+          "patterns": "RK, SK, CK, KR, KS, KC, KK",
+          "complete": false,
+          "attempts": [
+            {
+              "pattern": "KR",
+              "status": "no-sampled-intersection"
+            },
+            {
+              "pattern": "KS",
+              "status": "no-sampled-intersection"
+            },
+            {
+              "pattern": "KS",
+              "status": "no-sampled-intersection"
+            }
+          ],
+          "attemptCount": 3,
+          "reasonCounts": {
+            "no-sampled-intersection": 3
+          },
+          "detailsLimit": 128,
+          "detailsTruncated": false,
+          "sonicCurves": 1,
+          "status": "no-candidates-found",
+          "selectable": 0,
+          "qualification": "Busca limitada; os motivos descrevem apenas as tentativas examinadas. Ausência de candidatos não demonstra inexistência.",
+          "count": 0
+        }
+      ]
+    }
+  ],
+  "workspace": [
+    {
+      "pattern": "RR",
+      "p": {
+        "a20": 0.5,
+        "a11": 0,
+        "a02": 0,
+        "a10": 0,
+        "a01": 0,
+        "b20": 0,
+        "b11": 0,
+        "b02": 0.5,
+        "b10": 0,
+        "b01": 5
+      },
+      "states": {
+        "left": [
+          0,
+          0
+        ],
+        "right": [
+          2,
+          2
+        ]
+      },
+      "index": 0,
+      "available": [
+        "RR"
+      ],
+      "selectedGroup": true,
+      "inspection": true,
+      "incomplete": false,
+      "shocks": 0,
+      "fans": 2,
+      "contacts": 0,
+      "comparisonAvailable": false,
+      "finite": true
+    },
+    {
+      "pattern": "RS",
+      "p": {
+        "a20": 0.5,
+        "a11": 0,
+        "a02": 0,
+        "a10": 0,
+        "a01": 0,
+        "b20": 0,
+        "b11": 0,
+        "b02": 0.5,
+        "b10": 0,
+        "b01": 5
+      },
+      "states": {
+        "left": [
+          0,
+          2
+        ],
+        "right": [
+          2,
+          0
+        ]
+      },
+      "index": 0,
+      "available": [
+        "RS"
+      ],
+      "selectedGroup": true,
+      "inspection": true,
+      "incomplete": false,
+      "shocks": 1,
+      "fans": 1,
+      "contacts": 0,
+      "comparisonAvailable": false,
+      "finite": true
+    },
+    {
+      "pattern": "SR",
+      "p": {
+        "a20": 0.5,
+        "a11": 0,
+        "a02": 0,
+        "a10": 0,
+        "a01": 0,
+        "b20": 0,
+        "b11": 0,
+        "b02": 0.5,
+        "b10": 0,
+        "b01": 5
+      },
+      "states": {
+        "left": [
+          2,
+          0
+        ],
+        "right": [
+          0,
+          2
+        ]
+      },
+      "index": 0,
+      "available": [
+        "SR"
+      ],
+      "selectedGroup": true,
+      "inspection": true,
+      "incomplete": false,
+      "shocks": 1,
+      "fans": 1,
+      "contacts": 0,
+      "comparisonAvailable": false,
+      "finite": true
+    },
+    {
+      "pattern": "SS",
+      "p": {
+        "a20": 0.5,
+        "a11": 0,
+        "a02": 0,
+        "a10": 0,
+        "a01": 0,
+        "b20": 0,
+        "b11": 0,
+        "b02": 0.5,
+        "b10": 0,
+        "b01": 5
+      },
+      "states": {
+        "left": [
+          2,
+          2
+        ],
+        "right": [
+          0,
+          0
+        ]
+      },
+      "index": 0,
+      "available": [
+        "SS"
+      ],
+      "selectedGroup": true,
+      "inspection": true,
+      "incomplete": false,
+      "shocks": 2,
+      "fans": 0,
+      "contacts": 0,
+      "comparisonAvailable": false,
+      "finite": true
+    },
+    {
+      "pattern": "RC",
+      "p": {
+        "a20": 0.5,
+        "a11": 0,
+        "a02": 0,
+        "a10": 0,
+        "a01": 0,
+        "b20": 0,
+        "b11": 0,
+        "b02": 0,
+        "b10": 0,
+        "b01": 3
+      },
+      "states": {
+        "left": [
+          1,
+          0
+        ],
+        "right": [
+          2,
+          1
+        ]
+      },
+      "index": 0,
+      "available": [
+        "RC"
+      ],
+      "selectedGroup": true,
+      "inspection": true,
+      "incomplete": false,
+      "shocks": 0,
+      "fans": 1,
+      "contacts": 1,
+      "comparisonAvailable": false,
+      "finite": true
+    },
+    {
+      "pattern": "SC",
+      "p": {
+        "a20": 0.5,
+        "a11": 0,
+        "a02": 0,
+        "a10": 0,
+        "a01": 0,
+        "b20": 0,
+        "b11": 0,
+        "b02": 0,
+        "b10": 0,
+        "b01": 3
+      },
+      "states": {
+        "left": [
+          2,
+          0
+        ],
+        "right": [
+          1,
+          1
+        ]
+      },
+      "index": 0,
+      "available": [
+        "SC"
+      ],
+      "selectedGroup": true,
+      "inspection": true,
+      "incomplete": false,
+      "shocks": 1,
+      "fans": 0,
+      "contacts": 1,
+      "comparisonAvailable": false,
+      "finite": true
+    },
+    {
+      "pattern": "CR",
+      "p": {
+        "a20": 0,
+        "a11": 0,
+        "a02": 0,
+        "a10": 1,
+        "a01": 0,
+        "b20": 0,
+        "b11": 0,
+        "b02": 0.5,
+        "b10": 0,
+        "b01": 3
+      },
+      "states": {
+        "left": [
+          0,
+          0
+        ],
+        "right": [
+          1,
+          1
+        ]
+      },
+      "index": 0,
+      "available": [
+        "CR"
+      ],
+      "selectedGroup": true,
+      "inspection": true,
+      "incomplete": false,
+      "shocks": 0,
+      "fans": 1,
+      "contacts": 1,
+      "comparisonAvailable": false,
+      "finite": true
+    },
+    {
+      "pattern": "CS",
+      "p": {
+        "a20": 0,
+        "a11": 0,
+        "a02": 0,
+        "a10": 1,
+        "a01": 0,
+        "b20": 0,
+        "b11": 0,
+        "b02": 0.5,
+        "b10": 0,
+        "b01": 3
+      },
+      "states": {
+        "left": [
+          0,
+          1
+        ],
+        "right": [
+          1,
+          0
+        ]
+      },
+      "index": 0,
+      "available": [
+        "CS"
+      ],
+      "selectedGroup": true,
+      "inspection": true,
+      "incomplete": false,
+      "shocks": 1,
+      "fans": 0,
+      "contacts": 1,
+      "comparisonAvailable": false,
+      "finite": true
+    },
+    {
+      "pattern": "CC",
+      "p": {
+        "a20": 0,
+        "a11": 0,
+        "a02": 0,
+        "a10": 1,
+        "a01": 0,
+        "b20": 0,
+        "b11": 0,
+        "b02": 0,
+        "b10": 0,
+        "b01": 2
+      },
+      "states": {
+        "left": [
+          0,
+          0
+        ],
+        "right": [
+          1,
+          1
+        ]
+      },
+      "index": 0,
+      "available": [
+        "CC"
+      ],
+      "selectedGroup": true,
+      "inspection": true,
+      "incomplete": false,
+      "shocks": 0,
+      "fans": 0,
+      "contacts": 2,
+      "comparisonAvailable": false,
+      "finite": true
+    },
+    {
+      "pattern": "RK",
+      "p": {
+        "a20": 4.5,
+        "a11": 0,
+        "a02": 0.5,
+        "a10": 0,
+        "a01": 0,
+        "b20": 0,
+        "b11": 1,
+        "b02": 0,
+        "b10": 1,
+        "b01": 0
+      },
+      "states": {
+        "left": [
+          -1.165,
+          -1
+        ],
+        "right": [
+          -1.0592763587750538,
+          0.1649896298949678
+        ]
+      },
+      "index": 0,
+      "available": [
+        "RK"
+      ],
+      "selectedGroup": true,
+      "inspection": true,
+      "incomplete": false,
+      "shocks": 1,
+      "fans": 2,
+      "contacts": 0,
+      "comparisonAvailable": false,
+      "finite": true
+    },
+    {
+      "pattern": "SK",
+      "p": {
+        "a20": 4.5,
+        "a11": 0,
+        "a02": 0.5,
+        "a10": 0,
+        "a01": 0,
+        "b20": 0,
+        "b11": 1,
+        "b02": 0,
+        "b10": 1,
+        "b01": 0
+      },
+      "states": {
+        "left": [
+          -0.8,
+          -1
+        ],
+        "right": [
+          -1.0592763587750538,
+          0.1649896298949678
+        ]
+      },
+      "index": 0,
+      "available": [
+        "SK"
+      ],
+      "selectedGroup": true,
+      "inspection": true,
+      "incomplete": false,
+      "shocks": 2,
+      "fans": 1,
+      "contacts": 0,
+      "comparisonAvailable": false,
+      "finite": true
+    },
+    {
+      "pattern": "KR",
+      "p": {
+        "a20": 4.5,
+        "a11": 0,
+        "a02": 0.5,
+        "a10": 0,
+        "a01": 0,
+        "b20": 0,
+        "b11": 1,
+        "b02": 0,
+        "b10": 1,
+        "b01": 0
+      },
+      "states": {
+        "left": [
+          0.9776785705503095,
+          -1.1634795636533988
+        ],
+        "right": [
+          1.1608741742799409,
+          1.0366448287612047
+        ]
+      },
+      "index": 0,
+      "available": [
+        "KR"
+      ],
+      "selectedGroup": true,
+      "inspection": true,
+      "incomplete": false,
+      "shocks": 1,
+      "fans": 2,
+      "contacts": 0,
+      "comparisonAvailable": false,
+      "finite": true
+    },
+    {
+      "pattern": "KS",
+      "p": {
+        "a20": 4.5,
+        "a11": 0,
+        "a02": 0.5,
+        "a10": 0,
+        "a01": 0,
+        "b20": 0,
+        "b11": 1,
+        "b02": 0,
+        "b10": 1,
+        "b01": 0
+      },
+      "states": {
+        "left": [
+          0.9776785705503095,
+          -1.1634795636533988
+        ],
+        "right": [
+          0.9292035398230089,
+          0.9823008849557522
+        ]
+      },
+      "index": 0,
+      "available": [
+        "KS"
+      ],
+      "selectedGroup": true,
+      "inspection": true,
+      "incomplete": false,
+      "shocks": 2,
+      "fans": 1,
+      "contacts": 0,
+      "comparisonAvailable": false,
+      "finite": true
+    }
+  ],
+  "comparison": [
+    {
+      "p": {
+        "a20": 4.5,
+        "a11": 0,
+        "a02": 0.5,
+        "a10": 0,
+        "a01": 0,
+        "b20": 0,
+        "b11": 1,
+        "b02": 0,
+        "b10": 1,
+        "b01": 0
+      },
+      "states": {
+        "left": [
+          0.27324218675494194,
+          -0.6048198388889432
+        ],
+        "right": [
+          -0.7980547267943621,
+          -1.0998454941436648
+        ]
+      },
+      "pattern": "SR",
+      "index": 0,
+      "available": [
+        "SR",
+        "SR",
+        "SK"
+      ],
+      "selectedGroup": true,
+      "inspection": true,
+      "incomplete": false,
+      "shocks": 1,
+      "fans": 1,
+      "contacts": 0,
+      "comparisonAvailable": true,
+      "finite": true
+    },
+    {
+      "p": {
+        "a20": 4.5,
+        "a11": 0,
+        "a02": 0.5,
+        "a10": 0,
+        "a01": 0,
+        "b20": 0,
+        "b11": 1,
+        "b02": 0,
+        "b10": 1,
+        "b01": 0
+      },
+      "states": {
+        "left": [
+          0.27324218675494194,
+          -0.6048198388889432
+        ],
+        "right": [
+          -0.7980547267943621,
+          -1.0998454941436648
+        ]
+      },
+      "pattern": "SK",
+      "index": 2,
+      "available": [
+        "SR",
+        "SR",
+        "SK"
+      ],
+      "selectedGroup": true,
+      "inspection": true,
+      "incomplete": true,
+      "shocks": 1,
+      "fans": 1,
+      "contacts": 0,
+      "comparisonAvailable": true,
+      "finite": true
+    }
+  ]
+}

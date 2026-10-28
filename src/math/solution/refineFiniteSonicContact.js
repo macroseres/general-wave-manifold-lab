@@ -5,6 +5,7 @@ import { directShockDiagnostic } from './directShockDiagnostic.js'
  */
 export function refineFiniteSonicContact(fixed, seed, p, orientation, family, {
   tolerance = 1e-9, maxIterations = 32, minimumJump = 1e-5,
+  requireIsolated = false, isolationTolerance = 1e-8,
 } = {}) {
   if (!Array.isArray(fixed) || !Array.isArray(seed) || !fixed.every(Number.isFinite) ||
       !seed.every(Number.isFinite) || !['forward', 'backward'].includes(orientation) ||
@@ -29,6 +30,18 @@ export function refineFiniteSonicContact(fixed, seed, p, orientation, family, {
   if (!current) return { status: 'outside-domain', point: U }
   for (let iteration = 0; iteration <= maxIterations; iteration++) {
     if (current.norm <= tolerance && current.shock.relativeResidual <= tolerance) {
+      if(requireIsolated){
+        const columns=[0,1].map(axis=>{
+          const h=1e-5*(1+Math.abs(U[axis])),plus=[...U],minus=[...U]
+          plus[axis]+=h;minus[axis]-=h
+          const a=evaluate(plus),b=evaluate(minus)
+          return a&&b?a.residuals.map((v,i)=>(v-b.residuals[i])/(2*h)):null
+        })
+        if(!columns.every(Boolean))return {status:'isolation-unverified',point:U,residual:current.norm}
+        const [[a,c],[b,d]]=columns,det=a*d-b*c
+        if(Math.abs(det)<isolationTolerance*(1+Math.hypot(a,b)*Math.hypot(c,d)))
+          return {status:'non-isolated-or-singular-root',point:U,residual:current.norm,rhResidual:current.shock.relativeResidual}
+      }
       return { status: 'converged', point: U, iterations: iteration, residual: current.norm,
         rhResidual: current.shock.relativeResidual, sonicResidual: Math.abs(current.residuals[1]),
         speed: current.shock.speed, orientation, family }
@@ -64,6 +77,7 @@ export function refineFiniteSonicContact(fixed, seed, p, orientation, family, {
 
 export function refineFiniteSonicContacts(fixed, events, p, orientation, options) {
   return (events ?? []).map(event => ({ ...event,
-    refinement: refineFiniteSonicContact(fixed, event.point, p, orientation, event.family, options),
+    refinement: event.kind==='constant-contact-continuum'?{status:'non-isolated-contact-continuum'}:
+      refineFiniteSonicContact(fixed, event.point, p, orientation, event.family, {...options,requireIsolated:true}),
   }))
 }

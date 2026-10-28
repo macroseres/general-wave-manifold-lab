@@ -1,9 +1,11 @@
+import {boundedSearchReport,recordSearchAttempt,finishSearchReport} from './boundedSearchReport.js'
 import {quadraticSonicPartners} from './sonicPartners.js'
 import {sampledRarefactionPrefix} from './rarefactionPairCandidates.js'
 import {intersectWavePolylines} from './mixedWaveChains.js'
 import {constantContactDirections,constantContactConnection} from './contactChainCandidates.js'
 import {classifyLaxShock} from './twoShockFamilyEvidence.js'
 import {sonicShockAdmissibility} from './sonicShockAdmissibility.js'
+import {correctForwardHugoniotPoint} from './forwardHugoniotContinuation.js'
 
 const coords=q=>Array.isArray(q)?q:[q?.u,q?.v]
 const valid=q=>Array.isArray(q)&&q.length===2&&q.every(Number.isFinite)
@@ -18,7 +20,7 @@ function sourceAt(branch,index){
   return a.map((v,j)=>v+t*(b[j]-v))
 }
 
-function compositeCurves(branch,p,options){
+function compositeCurves(branch,p,options,report){
   const curves=[],stride=Math.max(1,Math.ceil((branch.points.length-1)/(options.maxSourceSamples-1)))
   let active=[]
   for(let index=0;index<branch.points.length;index=Math.min(branch.points.length-1,index+stride)){
@@ -38,12 +40,20 @@ function compositeCurves(branch,p,options){
     active=next
     if(index===branch.points.length-1)break
   }
+  if(report){report.sonicCurves=(report.sonicCurves??0)+curves.filter(c=>c.nodes.length>=2).length
+    if(curves.length>=options.maxBranchCount)report.branchLimitReached=true}
   return curves.filter(c=>c.nodes.length>=2).map(c=>({...c,points:c.nodes.map(q=>q.point)}))
 }
 
 function pointOn(curve,x,p){
   const i=Math.min(curve.points.length-2,Math.max(0,Math.floor(x))),t=x-i
   const a=coords(curve.points[i]),b=coords(curve.points[i+1]),linear=a.map((v,j)=>v+t*(b[j]-v))
+  if(curve.type==='S'){
+    const scale=1+Math.hypot(...curve.anchor)+Math.hypot(...linear)
+    const correction=correctForwardHugoniotPoint(curve.anchor,linear,p,
+      {maxCorrection:Math.max(1e-8,distance(a,b)/4)/scale,tolerance:1e-12})
+    return correction.point?{point:correction.point,index:x}:null
+  }
   if(curve.type!=='K')return {point:linear,index:x}
   const index=curve.nodes[i].index+t*(curve.nodes[i+1].index-curve.nodes[i].index)
   const sonic=sourceAt(curve.source,index)
@@ -59,7 +69,10 @@ function refineIntersection(a,b,hit,p,options){
     const A=pointOn(a,x,p),B=pointOn(b,y,p)
     if(!A||!B)return null
     const f=A.point.map((v,i)=>v-B.point[i])
-    if(Math.hypot(...f)<=options.stateTolerance)return {A,B,middle:A.point}
+    // An ordinary shock is checked against RH at the shared middle state;
+    // its junction needs tighter closure than the geometric fan matching.
+    const junctionTolerance=a.type==='S'||b.type==='S'?Math.min(options.stateTolerance,1e-10):options.stateTolerance
+    if(Math.hypot(...f)<=junctionTolerance)return {A,B,middle:A.point}
     if(step===options.maxIterations)return null
     const column=(curve,t,lo)=>{
       const h=1e-4,l=Math.max(lo,t-h),r=Math.min(lo+1,t+h),L=pointOn(curve,l,p),R=pointOn(curve,r,p)
@@ -82,30 +95,32 @@ function refineIntersection(a,b,hit,p,options){
   return null
 }
 
-function blockAt(curve,evaluation,middle,anchor,p,options){
+function blockAt(curve,evaluation,middle,anchor,p,options,reject=()=>{}){
   const left=curve.side==='left',from=left?anchor:middle,to=left?middle:anchor
   if(curve.type==='C'){
     const contact=constantContactConnection(from,to,p,curve.family,options)
+    if(!contact)reject('contact-connection-unverified')
     return contact?{type:'C',segments:[contact]}:null
   }
   if(curve.type==='S'){
     const q=classifyLaxShock(from,to,p)
+    if(!q.families.includes(curve.family))reject('strict-lax-failed')
     return q.families.includes(curve.family)?{type:'S',segments:[{type:'shock',family:curve.family,from:[...from],to:[...to],
       states:[[...from],[...to]],speed:q.shock.speed,relativeResidual:q.shock.relativeResidual}]}:null
   }
   const source=curve.type==='K'?curve.source:curve
   const junction=curve.type==='K'?evaluation.sonic:middle
   const fan=sampledRarefactionPrefix(source,evaluation.index,junction,p,!left,options)
-  if(!fan)return null
+  if(!fan){reject('fan-prefix-unverified');return null}
   const rare={type:'rarefaction',...fan,from:[...fan.states[0]],to:[...fan.states.at(-1)]}
   if(curve.type==='R')return {type:'R',segments:[rare]}
   const shock=evaluation.shock
-  if(!shock||distance(shock.point,middle)>options.stateTolerance)return null
+  if(!shock||distance(shock.point,middle)>options.stateTolerance){reject('sonic-endpoint-unverified');return null}
   const jump={type:'shock',family:curve.family,from:left?[...junction]:[...middle],to:left?[...middle]:[...junction],
     speed:shock.speed,relativeResidual:shock.relativeResidual,sonicSide:shock.sonicSide,weakLax:shock.evidence}
   const check=sonicShockAdmissibility(jump.from,jump.to,p,curve.family,shock.sonicSide,
     {tolerance:options.stateTolerance,rhTolerance:options.stateTolerance})
-  if(!check.passes||Math.abs(check.speed-jump.speed)>options.stateTolerance*(1+Math.abs(jump.speed)))return null
+  if(!check.passes||Math.abs(check.speed-jump.speed)>options.stateTolerance*(1+Math.abs(jump.speed))){reject('sonic-shock-unverified');return null}
   jump.relativeResidual=check.rhResidual;jump.weakLax=check
   return {type:'K',family:curve.family,segments:left?[rare,jump]:[jump,rare],
     sonicJunction:[...junction],construction:left?'rarefaction-shock':'shock-rarefaction'}
@@ -114,22 +129,23 @@ function blockAt(curve,evaluation,middle,anchor,p,options){
 /** Search the seven pairs containing K. Supported K orientations are R-S on
  * the slow left family and S-R on the fast right family. No entropy assertion.
  */
-export function compositeBlockChainCandidates(states,rarefactions,hugoniot,p,options={}){
+export function compositeBlockChainCandidates(states,rarefactions,hugoniot,p,options={},report=null){
+  const note=(pattern,status,detail)=>recordSearchAttempt(report,pattern,status,detail)
   const {left,right}=states??{},opts={...defaults,...options}
   if(!valid(left)||!valid(right)||!Number.isInteger(opts.maxSourceSamples)||opts.maxSourceSamples<2||
     !Number.isInteger(opts.maxCandidates)||opts.maxCandidates<1||
     !['stateTolerance','speedTolerance','tangentTolerance','matchTolerance'].every(k=>Number.isFinite(opts[k])&&opts[k]>0)||
-    !Number.isInteger(opts.maxBranchCount)||opts.maxBranchCount<1||!Number.isInteger(opts.maxIterations)||opts.maxIterations<1)return []
+    !Number.isInteger(opts.maxBranchCount)||opts.maxBranchCount<1||!Number.isInteger(opts.maxIterations)||opts.maxIterations<1){note('Entradas','invalid-input');return []}
   const sides={left:[],right:[]}
   for(const side of ['left','right']){
     const family=side==='left'?'slow':'fast',anchor=states[side]
     for(const branch of rarefactions??[])if(branch.side===side&&branch.family===family&&branch.points?.length>1&&
       valid(coords(branch.points[0]))&&distance(coords(branch.points[0]),anchor)<=opts.stateTolerance){
-      sides[side].push({...branch,type:'R'},...compositeCurves(branch,p,opts))
+      sides[side].push({...branch,type:'R'},...compositeCurves(branch,p,opts,report))
     }
-    sides[side].push(...(hugoniot?.[side]??[]).filter(q=>q.points?.length>1).map(q=>({...q,type:'S',side,family})))
+    sides[side].push(...(hugoniot?.[side]??[]).filter(q=>q.points?.length>1).map(q=>({...q,type:'S',side,family,anchor})))
   }
-  if(![...sides.left,...sides.right].some(q=>q.type==='K'))return []
+  if(![...sides.left,...sides.right].some(q=>q.type==='K')){note('RK, SK, CK, KR, KS, KC, KK','no-sampled-composite-curve');return []}
   const allPoints=[...sides.left,...sides.right].flatMap(q=>q.points.map(coords)).filter(valid)
   for(const side of ['left','right'])for(const model of constantContactDirections(p)){
     const anchor=states[side],span=1+Math.max(...allPoints.map(q=>distance(q,anchor)))
@@ -139,16 +155,20 @@ export function compositeBlockChainCandidates(states,rarefactions,hugoniot,p,opt
   const result=[]
   for(const a of sides.left)for(const b of sides.right){
     if(a.type!=='K'&&b.type!=='K')continue
-    for(const hit of intersectWavePolylines(a.points,b.points)){
+    const pattern=a.type+b.type,hits=intersectWavePolylines(a.points,b.points)
+    if(!hits.length)note(pattern,'no-sampled-intersection')
+    for(const hit of hits){
       const refined=refineIntersection(a,b,hit,p,opts)
-      if(!refined)continue
-      const {middle}=refined,A=blockAt(a,refined.A,middle,left,p,opts),B=blockAt(b,refined.B,middle,right,p,opts)
-      if(!A||!B)continue
+      if(!refined){note(pattern,'intersection-refinement-failed',{middle:hit.point});continue}
+      const {middle}=refined
+      let failure=null
+      const reject=status=>{failure??=status}
+      const A=blockAt(a,refined.A,middle,left,p,opts,reject),B=blockAt(b,refined.B,middle,right,p,opts,reject)
+      if(!A||!B){note(pattern,failure??'block-unverified',{middle});continue}
       const gap=interval(B.segments[0])[0]-interval(A.segments.at(-1))[1]
-      if(!(gap>opts.speedTolerance*(1+Math.abs(interval(A.segments.at(-1))[1]))))continue
-      const pattern=A.type+B.type
+      if(!(gap>opts.speedTolerance*(1+Math.abs(interval(A.segments.at(-1))[1])))){note(pattern,'speed-ordering-unverified',{middle,speedGap:gap});continue}
       if(result.some(q=>q.pattern===pattern&&distance(q.middle,middle)<=opts.stateTolerance&&
-        q.blocks.every((block,i)=>block.type!=='K'||distance(block.sonicJunction,[A,B][i].sonicJunction)<=opts.stateTolerance)))continue
+        q.blocks.every((block,i)=>block.type!=='K'||distance(block.sonicJunction,[A,B][i].sonicJunction)<=opts.stateTolerance))){note(pattern,'duplicate-middle',{middle});continue}
       const segments=[...A.segments,...B.segments],fans=segments.filter(q=>q.type==='rarefaction')
       result.push({kind:'composite-chain',status:'sampled-candidate',pattern,left:[...left],middle:[...middle],right:[...right],
         blocks:[A,B],segments,fans,shocks:segments.filter(q=>q.type==='shock'),contacts:segments.filter(q=>q.type==='contact'),
@@ -160,8 +180,14 @@ export function compositeBlockChainCandidates(states,rarefactions,hugoniot,p,opt
             speedStart:q.speeds?.[0],speedEnd:q.speeds?.at(-1),
             origin:q.type==='shock'?'state-sonic-or-hugoniot':'sampled-characteristic-branch'})),entropyCertified:false},
         search:{complete:false,options:{...opts},orientations:['slow-RS','fast-SR']},entropyCertified:false})
-      if(result.length>=opts.maxCandidates)return result
+      note(pattern,'sampled-candidate',{middle,speedGap:gap})
+      if(result.length>=opts.maxCandidates){if(report)report.limitReached=true;return result}
     }
   }
   return result
+}
+
+export function searchCompositeBlockChains(states,rarefactions,hugoniot,p,options={}){
+  const report=boundedSearchReport()
+  return finishSearchReport(report,compositeBlockChainCandidates(states,rarefactions,hugoniot,p,options,report))
 }

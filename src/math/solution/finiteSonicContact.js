@@ -1,4 +1,5 @@
 import { directShockDiagnostic } from './directShockDiagnostic.js'
+import {constantContactConnection,constantContactDirections} from './contactChainCandidates.js'
 
 /** Sampled, finite-amplitude sonic contacts on a fixed-state Hugoniot fibre.
  * forward: U_- fixed and s = lambda_i(U_+) (S+).
@@ -8,6 +9,7 @@ import { directShockDiagnostic } from './directShockDiagnostic.js'
 export function finiteSonicContacts(fixed, segments, p, orientation, { tolerance = 1e-6 } = {}) {
   if (!fixed || !['forward', 'backward'].includes(orientation)) return []
   const events = []
+  const hasContactModel=constantContactDirections(p).length>0
   for (const [segmentIndex, segment] of (segments ?? []).entries()) {
     let previous = null
     for (const [pointIndex, point] of (segment.points ?? []).entries()) {
@@ -25,6 +27,15 @@ export function finiteSonicContacts(fixed, segments, p, orientation, { tolerance
       for (let family = 0; family < 2; family++) {
         const scale = 1 + Math.abs(shock.speed) + Math.abs(spectrum[family])
         if (Math.abs(values[family]) <= tolerance * scale) {
+          // An LD contact line is a continuum, not hundreds of isolated sonic roots.
+          const name=family===0?'slow':'fast'
+          if(hasContactModel&&constantContactConnection(left,right,p,name)){
+            const existing=events.find(q=>q.kind==='constant-contact-continuum'&&q.segmentIndex===segmentIndex&&q.family===name)
+            if(existing){existing.sampleCount++;existing.lastPoint=variable}
+            else events.push({kind:'constant-contact-continuum',orientation,sonicSide:orientation==='forward'?'plus':'minus',family:name,
+              segmentIndex,point:variable,lastPoint:variable,speed:shock.speed,sampleCount:1})
+            continue
+          }
           events.push({kind:'sample-near-zero', orientation, sonicSide:orientation==='forward'?'plus':'minus', family:family===0?'slow':'fast', segmentIndex, pointIndex, point:variable, speed:shock.speed, sonicResidual:Math.abs(values[family]), rhResidual:shock.relativeResidual})
         } else if (previous && previous.values[family] * values[family] < 0) {
           const alpha = Math.abs(previous.values[family])/(Math.abs(previous.values[family])+Math.abs(values[family]))

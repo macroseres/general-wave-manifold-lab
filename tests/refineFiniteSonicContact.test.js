@@ -17,5 +17,5 @@ test('nonsonic Burgers jump cannot be certified as finite contact',()=>assert.no
 test('batch preserves event and appends refinement',()=>{
  const events=[{point:[2,0],family:'slow',kind:'sample-near-zero'}]
  const result=refineFiniteSonicContacts([0,0],events,linear,'forward')
- assert.equal(result[0].kind,'sample-near-zero'); assert.equal(result[0].refinement.status,'converged')
+ assert.equal(result[0].kind,'sample-near-zero'); assert.equal(result[0].refinement.status,'non-isolated-or-singular-root')
 })

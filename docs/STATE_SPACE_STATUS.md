@@ -1,4 +1,54 @@
-# Situação do espaço de estados — 27/10/2026
+# Situação do espaço de estados — 28/10/2026
+
+## Consolidação dos quatro pontos solicitados — 28/10/2026
+
+Registro vigente: investigação do caso vazio, revisão dos 13 padrões positivos e da comparação, relatórios de contatos/compostas e consolidação documental. As seções posteriores preservam o histórico; os estados intermediários de tarefas antigas não substituem este registro nem o encerramento T01–T08 já confirmado em 27/10.
+
+### Caso relatado: SR recuperada por resolução mais fina
+
+O resultado vazio não era evidência de inexistência. A investigação reproduzível em `scripts/audit-state-construction.js` comparou o passo anterior de rarefação 0,04 com 0,02, além de refinar a continuação RH de 0,025 para 0,0125 e ampliar seu raio de 2 para 4 escalas dos estados. O passo de rarefação 0,02, mesmo mantendo o passo RH original, recupera SR. Passos de rarefação 0,01 e 0,005 confirmam o estado intermediário até diferença menor que 1e-7. Os casos ampliados também recuperam SR; não constituem prova de completude global.
+
+A interface usa agora `stateConstructionSampling.js`: passo inicial 0,02, até 640 passos e comprimento máximo 12. Foram preservados os integradores, a parada na fronteira hiperbólica e os critérios de aceitação. Para os coeficientes e estados do relato, U_M ≈ (0,42465325; 0,67401498): choque lento U_L→U_M seguido de rarefação rápida U_M→U_R. As regressões verificam RH com resíduo relativo menor que 1e-8, Lax lento de extremos, choque anterior ao início do leque e velocidades crescentes. A interface confirmou o choque conectado e o leque completo: [SR recuperada](evidence/state-construction/reported-case-recovered-sr.jpg). Diferentes sementes podem gerar candidatos numericamente próximos; a contagem não demonstra multiplicidade de soluções físicas.
+
+SS continua rejeitada pelos critérios anteriores: uma raiz tem velocidades invertidas; outra falha em Lax do segundo salto. Não foram afrouxados RH, Lax ou ordenação para preencher a lista. Casos realmente sem perfis selecionáveis continuam ocultando o seletor e os controles de construção, com relatórios acessíveis.
+
+### Revisão dos 13 padrões na interface
+
+Os 13 exemplos positivos foram construídos, selecionados, enquadrados e inspecionados no navegador. A regressão renderiza o componente real com os mesmos coeficientes e estados, confere a disponibilidade no seletor, a inspeção, coordenadas finitas e a quantidade de segmentos. Os coeficientes e estados completos estão no [relatório reproduzível](evidence/state-construction/construction-audit.json).
+
+| Padrão | Choques / rarefações / contatos desenhados | Evidência |
+|---|---|---|
+| RR | 0 / 2 / 0 | [RR](evidence/state-construction/audit-rr.jpg) |
+| RS | 1 / 1 / 0 | [RS](evidence/state-construction/audit-rs.jpg) |
+| SR | 1 / 1 / 0 | [SR](evidence/state-construction/audit-sr.jpg) |
+| SS | 2 / 0 / 0 | [SS](evidence/state-construction/audit-ss.jpg) |
+| RC | 0 / 1 / 1 | [RC](evidence/state-construction/audit-rc.jpg) |
+| SC | 1 / 0 / 1 | [SC](evidence/state-construction/audit-sc.jpg) |
+| CR | 0 / 1 / 1 | [CR](evidence/state-construction/audit-cr.jpg) |
+| CS | 1 / 0 / 1 | [CS](evidence/state-construction/audit-cs.jpg) |
+| CC | 0 / 0 / 2 | [CC](evidence/state-construction/audit-cc.jpg) |
+| RK | 1 / 2 / 0 | [RK](evidence/state-construction/audit-rk.jpg) |
+| SK | 2 / 1 / 0 | [SK](evidence/state-construction/audit-sk.jpg) |
+| KR | 1 / 2 / 0 | [KR](evidence/state-construction/audit-kr.jpg) |
+| KS | 2 / 1 / 0 | [KS](evidence/state-construction/audit-ks.jpg) |
+
+A revisão detectou e corrigiu a ausência de KS na busca integrada. A interseção de K com S utilizava a interpolação linear do segmento de Hugoniot, cujo extremo podia falhar em RH. `pointOn` agora reutiliza `correctForwardHugoniotPoint` com deslocamento limitado a um quarto do segmento; as junções com S exigem fechamento até 1e-10 (ou tolerância solicitada mais estrita), antes das mesmas verificações de RH e Lax. A tolerância geométrica preexistente dos pares sem S foi preservada para manter os exemplos KR/RK. Nenhuma corda substitui o arco de choque desenhado.
+
+### Comparação e raízes degeneradas
+
+A comparação foi exercitada com U_L=(0,27324218675494194; −0,6048198388889432), U_R=(−0,7980547267943621; −1,0998454941436648), no `oldWavePreset({B2:0})`. Há candidatos SR e SK. Selecionar SR e comparar com SK mostra a decomposição própria de cada candidato; trocar a seleção para SK oculta a comparação consigo mesma e permite comparar com SR. Reconstruir ou invalidar os dados limpa a comparação anterior. Evidência: [inspeção SR/SK](evidence/state-construction/audit-comparison-sr-sk.jpg).
+
+Nesse exemplo adicional, o pequeno salto sônico interno de SK permanece com continuação gráfica inconclusiva: a inspeção informa construção parcial e conserva apenas seus extremos, enquanto o choque externo e o leque têm seus segmentos próprios. Esse caso testa o tratamento de uma limitação; não é promovido a arco conectado nem a solução entrópica. Nos 13 exemplos da tabela, as geometrias selecionadas ficaram completas.
+
+A inspeção de RC revelou custo excessivo em contatos sônicos degenerados. Um resíduo nulo não garante uma raiz isolada: no fluxo triangular, curvas inteiras de candidatos sônicos alimentavam repetidamente projeções e continuações. Contatos constantes verificados nos coeficientes agora são agrupados como contínuos. A avaliação em lote das outras raízes verifica numericamente o Jacobiano das duas equações sônicas, com diferenças centrais e limiar relativo 1e-8, antes de permitir as continuações de raízes isoladas. Casos singulares ficam inconclusivos (`non-isolated-or-singular-root`), com contagens visíveis. Esse diagnóstico numérico não demonstra não isolamento nem inexistência; o avaliador direto de resíduo permanece disponível. Há regressões para contínuos de contato e para a degenerescência triangular entre famílias espectrais.
+
+### Relatórios e encerramento técnico
+
+`searchContactChains` e `searchCompositeBlockChains` preservam as APIs anteriores de listas e fornecem relatórios estruturados. Registram resultados por tentativa examinada: modelo de contato ausente, família incompatível, retas paralelas, conexão de contato não verificada, ausência de raiz afim isolada, curva sem ancoragem, ausência de interseção amostrada, refinamento local malsucedido, leque não verificado, Lax, condição sônica, ordenação, duplicatas e perfis construídos. O painel mostra totais por motivo, padrão, U_M e diferença de velocidades quando disponível. Guarda até 128 detalhes para limitar o volume; as contagens continuam incluindo todas as tentativas registradas e o truncamento é explícito. Os limites de candidatos e ramos permanecem indicados. Não se afirma que foram examinadas todas as conexões possíveis.
+
+Os quatro pontos ficam concluídos no escopo de integração e validação numérica descrito. CK/KC/KK continuam sem exemplo quadrático positivo validado; contatos variáveis, completude, unicidade e certificação entrópica/cinética permanecem fora desse encerramento. O exemplo de comparação com arco interno inconclusivo permanece documentado. A atualização não abre uma nova tarefa GWML-T nem implementa recursos na Variedade de Ondas.
+
+Validação final: `npm run check` aprovado com lint, **858 testes (zero falhas)** e build; permanece somente o aviso preexistente de bundle maior que 500 kB. A interface confirmou a limpeza da comparação na reconstrução e os [relatórios detalhados](evidence/state-construction/audit-detailed-reports.jpg). Auditoria reproduzível: `node scripts/audit-state-construction.js docs/evidence/state-construction/construction-audit.json`. Regressões principais em `stateConstructionAudit.test.js`, `boundedChainReports.test.js`, `finiteSonicContact.test.js` e `stateConstructionReports.test.js`.
 
 
 
