@@ -52,6 +52,7 @@ test('UI distinguishes raw candidates from selectable profiles and explains the 
     assert.doesNotMatch(defaultView,/aria-label="Arco de rarefação (lenta|rápida)/)
     assert.doesNotMatch(defaultView,/aria-label="Cadeia candidata selecionada"/)
     assert.match(defaultView,/Resultados das buscas de cadeias/)
+    assert.doesNotMatch(defaultView,/Cadeia candidata para inspeção|Inspeção conjunta da cadeia candidata|Mostrar construção selecionada/)
     const exploring=renderToStaticMarkup(createElement(Workspace,{...props,exploreWaveBranches:true}))
     assert.match(exploring,/aria-label="Ramo de choque lento de U L"/)
     assert.match(exploring,/aria-label="Arco de rarefação rápida retrospectiva de U R"/)

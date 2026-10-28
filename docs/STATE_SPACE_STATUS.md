@@ -7,6 +7,8 @@
 
 ## Vista de construção e exploração opcional — 28/10/2026
 
+O seletor Cadeia, a apresentação da inspeção conjunta e o controle de visibilidade da construção agora só aparecem quando existem perfis selecionáveis. Antes de construir, após invalidar os dados ou quando a busca não encontra perfis selecionáveis, permanecem a mensagem de estado, a ação de construção e os diagnósticos. Regressões cobrem a construção pendente e o resultado vazio, preservando o seletor quando há candidatos disponíveis.
+
 Por solicitação do responsável, o comportamento padrão agora é a **vista de construção**. Sem uma cadeia selecionada — antes de construir, após mudar os dados, depois de uma busca vazia ou ao escolher Nenhuma — os arcos individuais de choque e rarefação ficam ocultos. Quando há uma cadeia selecionada, somente os segmentos efetivamente usados por ela são mostrados nessa vista, conforme seu controle de visibilidade. Estados e diagnósticos permanecem disponíveis; resultados geométricos inconclusivos não são promovidos a cadeias.
 
 A opção **Explorar ramos individuais de ondas**, no topo do painel lateral de Estados, é explícita e começa desativada a cada sessão do aplicativo. Ativá-la libera os controles individuais em Choques, Rarefações e Campo de rarefação, incluindo os eventos opcionais. Os ramos exploratórios e suas legendas ficam subordinados a essa opção; as preferências de cada ramo são preservadas. A exploração é uma preferência de apresentação e não altera os dados do problema, candidatos, critérios ou seleção. As Hugoniot projetadas por π mantêm os controles independentes anteriores.

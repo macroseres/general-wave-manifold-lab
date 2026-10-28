@@ -82,6 +82,8 @@ test('RR and contact components render fans and distinct contact interfaces',asy
     assert.match(pending,/Construir candidatos/)
     assert.match(pending,/Aguardando construção/)
     assert.doesNotMatch(pending,/aria-label="Cadeia candidata selecionada"/)
+    assert.doesNotMatch(pending,/Cadeia candidata para inspeção|Inspeção conjunta da cadeia candidata|Mostrar construção selecionada/)
+    assert.match(list,/Cadeia candidata para inspeção/)
     for(const markup of [list,pending,selected]){
       assert.doesNotMatch(markup,/aria-label="Ramo de choque (lento|rápido)/)
       assert.doesNotMatch(markup,/aria-label="Arco de rarefação (lenta|rápida)/)
