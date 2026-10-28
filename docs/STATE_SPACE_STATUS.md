@@ -2,6 +2,16 @@
 
 
 
+
+## Seleção dos arcos de rarefação — 28/10/2026
+
+A exploração tradicional agora desenha somente **R₁(U_L)** e **R₂ retrospectiva(U_R)**, em correspondência com a escolha clássica feita para os choques. O primeiro arco sai de U_L com λ₁ crescente; o segundo é armazenado saindo de U_R com λ₂ decrescente, de modo que na orientação física U_M→U_R a velocidade cresce. Famílias adicionais e sentidos compressivos não são apresentados como arcos selecionados nessa camada.
+
+`stateRarefactionGeometry.js` reutiliza as curvas e velocidades calculadas pelo integrador e pelo filtro monotônico existentes. Mantém apenas prefixos ancorados com crescimento estrito amostrado na orientação física, com tolerância relativa de 1e-7. A primeira amostra inválida, reversão ou incremento indistinguível de zero na tolerância encerra o prefixo, sem retomar segmentos posteriores. Contatos com velocidade constante não são desenhados como rarefações. Eventos infinitesimais opcionais acompanham apenas os arcos selecionados e seus prefixos. As curvas completas anteriores permanecem como entrada dos construtores de candidatos, contatos e compostas; não foram alteradas suas equações, disponibilidade ou regras de ordenação.
+
+O painel **Rarefações** identifica famílias, sentidos, velocidades características e motivos de parada; a legenda acompanha a seleção e os controles de visibilidade continuam separados por estado. A seleção é numérica e amostrada, sem certificado contínuo de monotonicidade ou entropia. A regressão utiliza F=(u²/2,v²/2+5v), U_L=(0,0), U_R=(2,2): somente a lenta crescente e a rápida retrospectiva decrescente são desenhadas; no fluxo linear F=(u,2v), nenhum desses arcos é indevidamente chamado rarefação. A evidência de interface está em [seleção dos arcos de rarefação](evidence/state-construction/selected-rarefaction-arcs.jpg). A inspeção no navegador, com os coeficientes e estados do caso relatado, confirmou um arco lento com λ₁ de 0.346126 a 0.670719 e um rápido retrospectivo com λ₂ de 1.69275 a 0.290798 ao sair de U_R. Os traçados foram preservados ao trocar π₊ por π₋. `npm run check` passou com lint, 846 testes (zero falhas) e build; permanece o aviso preexistente de tamanho do bundle.
+
+
 ## Continuidade dos arcos de choque — 28/10/2026
 
 A revisão anterior filtrava cada amostra por Lax e retomava o desenho quando o teste voltava a passar. Isso podia exibir um trecho isolado com o mesmo rótulo do arco que parte do estado de referência. O acompanhamento agora conserva somente o prefixo ancorado na semente característica: a primeira falha de RH, hiperbolicidade estrita ou Lax termina aquele arco, sem procurar outro trecho aceitável adiante. Uma semente inicialmente rejeitada não admite um componente remoto. Não se introduziu uma corda para unir regiões excluídas nem se alteraram as equações ou os testes matemáticos.
