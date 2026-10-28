@@ -4,6 +4,18 @@
 
 
 
+
+## Vista de construção e exploração opcional — 28/10/2026
+
+Por solicitação do responsável, o comportamento padrão agora é a **vista de construção**. Sem uma cadeia selecionada — antes de construir, após mudar os dados, depois de uma busca vazia ou ao escolher Nenhuma — os arcos individuais de choque e rarefação ficam ocultos. Quando há uma cadeia selecionada, somente os segmentos efetivamente usados por ela são mostrados nessa vista, conforme seu controle de visibilidade. Estados e diagnósticos permanecem disponíveis; resultados geométricos inconclusivos não são promovidos a cadeias.
+
+A opção **Explorar ramos individuais de ondas**, no topo do painel lateral de Estados, é explícita e começa desativada a cada sessão do aplicativo. Ativá-la libera os controles individuais em Choques, Rarefações e Campo de rarefação, incluindo os eventos opcionais. Os ramos exploratórios e suas legendas ficam subordinados a essa opção; as preferências de cada ramo são preservadas. A exploração é uma preferência de apresentação e não altera os dados do problema, candidatos, critérios ou seleção. As Hugoniot projetadas por π mantêm os controles independentes anteriores.
+
+As regressões conferem a ausência de ramos individuais sem seleção, após busca sem perfil selecionável e ao selecionar uma cadeia KR; os segmentos e a junção sônica de KR continuam desenhados. A ativação explícita da exploração mantém os testes anteriores de ramos de choque e rarefação. Uma regressão adicional verifica que a Hugoniot projetada pode continuar visível com os ramos exploratórios ocultos.
+
+Validação: `npm run check` passou com lint, 849 testes e build. Na interface, o caso relatado sem perfil selecionável mantém os estados e oculta os arcos; ativar a exploração mostra os ramos, e desativá-la volta a ocultá-los. Evidência: [vista sem cadeia selecionável](evidence/state-construction/construction-view-empty.jpg). Permanece o aviso preexistente de tamanho do bundle.
+
+
 ## Diagnóstico de lista de cadeias vazia — 28/10/2026
 
 Corrigida a ambiguidade do resumo **SS: Candidatos encontrados · 0**: o estado vinha da busca geométrica, mas o número era o de perfis selecionáveis. O relatório agora separa essas duas contagens e usa **Candidatos geométricos sem perfil selecionável** quando há candidatos geométricos e nenhum perfil aprovado pelos requisitos de reconstrução. A lista Cadeia continua contendo apenas perfis selecionáveis. Não foram relaxados RH, Lax, ordenação, refinamento ou requisitos dos leques para preencher a lista.

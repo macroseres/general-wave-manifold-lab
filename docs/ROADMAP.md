@@ -14,6 +14,8 @@ Prioridade atual: consolidar a documentação e sua rastreabilidade; registrar r
 
 ## Integração interativa tradicional — quatro entregas (27/10/2026)
 
+**Apresentação vigente (28/10/2026):** a vista de construção mostra apenas segmentos de uma cadeia selecionada. Sem seleção, os arcos individuais ficam ocultos. A exploração de ramos tem opção própria, inicialmente desativada; as Hugoniot projetadas por π mantêm seus controles independentes.
+
 Conjunto fechado solicitado pelo responsável, posterior ao ciclo histórico T01–T08. A prioridade é escolher estados no gráfico, construir candidatos, selecionar e inspecionar a cadeia completa, independentemente da visualização da Variedade de Ondas.
 
 - **Entrega 1 — auditoria:** concluída e aprovada; constatadas lacunas na construção explícita, seleção, relatórios e representação completa dos segmentos.

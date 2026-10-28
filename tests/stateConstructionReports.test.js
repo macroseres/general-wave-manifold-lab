@@ -42,5 +42,22 @@ test('UI distinguishes raw candidates from selectable profiles and explains the 
     assert.match(html,/Lax estrito de extremos não satisfeito/)
     assert.match(html,/Ordenação das velocidades não verificada/)
     assert.doesNotMatch(html,/SS: Candidatos encontrados · 0/)
+    const {default:Workspace}=await server.ssrLoadModule('/src/components/StateSpaceDialog.jsx')
+    const props={open:true,inline:true,state:{kind:'degenerate'},p,tauMin:-1,tauMax:1,
+      showRarefaction:false,riemannStates:states,constructionRequested:true,selectedCandidateIndex:-1,
+      showLeftRiemannHugoniot:false,showRightRiemannHugoniot:false}
+    const defaultView=renderToStaticMarkup(createElement(Workspace,props))
+    assert.match(defaultView,/Nenhuma cadeia selecionada: arcos de choque e rarefação ocultos/)
+    assert.doesNotMatch(defaultView,/aria-label="Ramo de choque (lento|rápido)/)
+    assert.doesNotMatch(defaultView,/aria-label="Arco de rarefação (lenta|rápida)/)
+    assert.doesNotMatch(defaultView,/aria-label="Cadeia candidata selecionada"/)
+    assert.match(defaultView,/Resultados das buscas de cadeias/)
+    const exploring=renderToStaticMarkup(createElement(Workspace,{...props,exploreWaveBranches:true}))
+    assert.match(exploring,/aria-label="Ramo de choque lento de U L"/)
+    assert.match(exploring,/aria-label="Arco de rarefação rápida retrospectiva de U R"/)
+    const projected=renderToStaticMarkup(createElement(Workspace,{...props,showLeftRiemannHugoniot:true}))
+    assert.match(projected,/data-riemann-side="left"/)
+    assert.doesNotMatch(projected,/aria-label="Ramo de choque lento de U L"/)
+
   }finally{await server.close()}
 })

@@ -82,6 +82,12 @@ test('RR and contact components render fans and distinct contact interfaces',asy
     assert.match(pending,/Construir candidatos/)
     assert.match(pending,/Aguardando construção/)
     assert.doesNotMatch(pending,/aria-label="Cadeia candidata selecionada"/)
+    for(const markup of [list,pending,selected]){
+      assert.doesNotMatch(markup,/aria-label="Ramo de choque (lento|rápido)/)
+      assert.doesNotMatch(markup,/aria-label="Arco de rarefação (lenta|rápida)/)
+    }
+    assert.match(list,/Nenhuma cadeia selecionada: arcos de choque e rarefação ocultos/)
+    assert.match(selected,/apenas os segmentos da cadeia selecionada/)
     assert.doesNotMatch(selected,/NaN|Infinity/)
     const {default:SearchReport}=await server.ssrLoadModule('/src/components/RarefactionSearchReport.jsx')
     const branchPair=[

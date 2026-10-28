@@ -40,12 +40,12 @@ test('selection stops at the first plateau or reversal without restarting or ret
   }
 })
 
-test('workspace draws only the selected family and orientation before any chain is built',async()=>{
+test('explicit exploration draws only the selected family and orientation before any chain is built',async()=>{
   const server=await createServer({server:{middlewareMode:true,watch:null,hmr:false},appType:'custom'})
   try{
     const {default:Workspace}=await server.ssrLoadModule('/src/components/StateSpaceDialog.jsx')
     const props={open:true,inline:true,state:{kind:'degenerate'},p,tauMin:-1,tauMax:1,
-      showRarefaction:false,riemannStates:states,constructionRequested:false,selectedCandidateIndex:-1}
+      showRarefaction:false,riemannStates:states,constructionRequested:false,selectedCandidateIndex:-1,exploreWaveBranches:true}
     const html=renderToStaticMarkup(createElement(Workspace,props))
     assert.equal((html.match(/aria-label="Arco de rarefação lenta de U L"/g)??[]).length,1)
     assert.equal((html.match(/aria-label="Arco de rarefação rápida retrospectiva de U R"/g)??[]).length,1)

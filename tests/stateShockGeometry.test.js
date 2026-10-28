@@ -49,13 +49,13 @@ test('the first failed Lax check ends the anchored arc without restarting on lat
   assert.deepEqual(curves[0].termination.lastVerified,[1.8,2])
 })
 
-test('actual workspace renders shock branches with both projected Hugoniot curves hidden and no selected chain',async()=>{
+test('explicit exploration renders shock branches with both projected Hugoniot curves hidden and no selected chain',async()=>{
   const server=await createServer({server:{middlewareMode:true,watch:null,hmr:false},appType:'custom'})
   try{
     const {default:Workspace}=await server.ssrLoadModule('/src/components/StateSpaceDialog.jsx')
     const html=renderToStaticMarkup(createElement(Workspace,{open:true,inline:true,state:{kind:'degenerate'},p,
       tauMin:-1,tauMax:1,showRarefaction:false,riemannStates:states,constructionRequested:false,
-      selectedCandidateIndex:-1,showLeftRiemannHugoniot:false,showRightRiemannHugoniot:false}))
+      selectedCandidateIndex:-1,exploreWaveBranches:true,showLeftRiemannHugoniot:false,showRightRiemannHugoniot:false}))
     assert.match(html,/aria-label="Ramo de choque lento de U L"/)
     assert.match(html,/aria-label="Ramo de choque rápido para U R"/)
     assert.match(html,/Término do arco de choque/)
