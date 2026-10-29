@@ -30,3 +30,15 @@ export function StateHugoniotVisibility({showLeftRiemannHugoniot,setShowLeftRiem
     <small>Visibilidade compartilhada entre Estados e Variedade 3D.</small>
   </div>
 }
+
+export function SeededRarefactionVisibility({slowArc,showSeededKs,setShowSeededKs,showFullPsRarefaction,setShowFullPsRarefaction,showLeftSeededRarefaction,setShowLeftSeededRarefaction,showRightSeededRarefaction,setShowRightSeededRarefaction}){
+  return <fieldset className="workspaceControlGroup"><legend>Rarefações pelos pontos de referência</legend>
+    {[[String.raw`\mathcal K_s`,'Composta lenta pela rarefação de P s','#c084fc',showSeededKs,setShowSeededKs],
+      [String.raw`\mathcal R(P_s)`,'Curva integral por P s','#ffcf76',showFullPsRarefaction,setShowFullPsRarefaction],
+      [String.raw`\mathcal R_s(P_s\to\mathcal J)`,'Rarefação por P s','#ff9f0a',showLeftSeededRarefaction,setShowLeftSeededRarefaction],
+      [String.raw`\mathcal R(P_f)`,'Rarefação por P f','#30d158',showRightSeededRarefaction,setShowRightSeededRarefaction]].map(([tex,label,color,checked,setChecked])=>
+      <div key={label} className="stateVisibilityRow" style={{'--visibility-color':color}}><span className="stateSwitchCopy"><strong><MathLabel>{tex}</MathLabel></strong><small>{label}</small></span><VisibilityEye checked={checked} onChange={event=>setChecked(event.target.checked)} aria-label={label}/></div>)}
+    <small>Curvas integrais por P_s e P_f nos dois sentidos; arco crescente de P_s até a primeira inflexão com visibilidade independente.</small>
+    {slowArc&&<small role="status">{slowArc.complete?'Primeira inflexão atingida.':`Arco interrompido antes da inflexão (${({'window-limit':'limite da janela','step-limit':'limite de passos','characteristic-boundary':'fronteira característica','speed-stopped':'crescimento não verificado','integration-stopped':'parada do integrador'})[slowArc.status]??'refinamento inconclusivo'}).`} λ_s: {slowArc.speeds[0].toPrecision(6)} → {slowArc.speeds.at(-1).toPrecision(6)}.</small>}
+  </fieldset>
+}

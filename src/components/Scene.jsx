@@ -1,3 +1,5 @@
+import {seededRarefactionCurves} from '../geometry/state/seededRarefactionCurves.js'
+import {rarefactionPhaseArrow,rarefactionPhasePoints} from '../geometry/state/rarefactionPhaseArrow.js'
 import ScientificLegend from './ScientificLegend.jsx'
 import { MathLabel } from './math/MathLabel.jsx'
 import WorkspaceToolbar from './WorkspaceToolbar.jsx'
@@ -317,12 +319,28 @@ function SonicSurfaces({p,tauMin,tauMax,YMin,YMax,showBTMinus=true,showBTPlus=tr
   </group>
 }
 
-function RarefactionField({p,tauMin,tauMax,visible=true}){
+function SeededRarefactions({curves,p,showLeft,showRight,showFull,axisScale}){
+  return <group>{curves.filter(q=>q.kind!=='composite').filter(q=>q.kind==='full'?showFull:q.family==='slow'?showLeft:showRight).map(curve=>{
+    const color=curve.kind==='full'?'#ffcf76':curve.family==='slow'?'#ff9f0a':'#30d158',slow=curve.family==='slow'&&curve.kind!=='full'
+    const length=curve.points.slice(1).reduce((sum,q,i)=>sum+Math.hypot(q.tau-curve.points[i].tau,q.zc-curve.points[i].zc),0)
+    const end=curve.points.at(-1)
+    return <group key={`${curve.family}-${curve.kind??'arc'}`} userData={{kind:'seeded-rarefaction',family:curve.family,seed:curve.seed}}>
+      {slow&&<Line points={rarefactionPhasePoints(curve.points)} color="#f5f7fb" lineWidth={4.5} transparent opacity={1} depthWrite={false} depthTest={false} renderOrder={50}/>}
+      <Line points={rarefactionPhasePoints(curve.points)} color={color}
+        {...scientificCurveStyle(slow?'primary':'integralFast','3d')}
+        lineWidth={2.5} transparent opacity={1} depthWrite={false} depthTest={false} renderOrder={slow?51:25}/>
+      {(!slow||length>.07)&&<ArrowOnCurve axisScale={axisScale} points={curve.points} index={Math.floor(curve.points.length*.6)} color={color} p={p} size={.8} directionSign={curve.timeDirection??1}/>}
+      {slow&&curve.complete&&<mesh position={[end.tau,0,end.zc]} renderOrder={52}><sphereGeometry args={[Math.min(.012,length/5),16,12]}/><meshBasicMaterial color="#ffffff" transparent opacity={1} depthTest={false} depthWrite={false}/></mesh>}
+    </group>
+  })}</group>
+}
+
+function RarefactionField({p,tauMin,tauMax,visible=true,axisScale}){
   const curves=useMemo(()=>visible?rarefactionOrbits(p,tauMin,tauMax):[],[p,tauMin,tauMax,visible])
   if(!visible)return null
   return <group>{curves.map((curve,i)=>{
-    const pts=curvePoints3D(curve.map(q=>({...q,Y:0})),'tauYzc',{yOffset:0.026})
-    return pts.length>1?<Line key={i} points={pts} color={waveColors.rarefactionFast} {...scientificCurveStyle('integralFast','3d')} depthTest={false} renderOrder={12}/>:null
+    const pts=rarefactionPhasePoints(curve,.026)
+    return pts.length>1?<group key={i}><Line points={pts} color={waveColors.rarefactionFast} {...scientificCurveStyle('integralFast','3d')} depthTest={false} renderOrder={12}/><ArrowOnCurve axisScale={axisScale} points={curve} index={Math.floor(curve.length*.55)} color={waveColors.rarefactionFast} p={p} size={.65}/></group>:null
   })}</group>
 }
 
@@ -368,22 +386,34 @@ function RarefactionSingularities({p,tauMin,tauMax,visible=true,showStable=true,
   if(!visible)return null
   const selectedFinite=selectedSingularity?.kind==='finite'?selectedSingularity.index:null
   return <group>
-    {data.separatrices.filter(c=>(c.stable?showStable:showUnstable)).map((curve,i)=>{const color=curve.stable?waveColors.rarefactionSlow:waveColors.rarefactionFast,pts=curvePoints3D(curve.points,'tauYzc',{yOffset:0.043});return <group key={'s'+i}><Line points={pts} color={color} {...scientificCurveStyle('separatrix','3d')} depthTest={false} renderOrder={18} onClick={e=>{e.stopPropagation();onSelectCurve?.({kind:"separatrix",origin:"finite",stable:curve.stable,singularityIndex:curve.singularityIndex,branch:i,point:{tau:e.point.x,zc:e.point.z}})}}/><CurvePickTarget points={curve.points} onPick={e=>onSelectCurve?.({kind:"separatrix",origin:"finite",stable:curve.stable,singularityIndex:curve.singularityIndex,branch:i,point:{tau:e.point.x,zc:e.point.z}})}/><ArrowOnCurve points={curve.points} index={Math.floor(curve.points.length*.45)} color={color}/></group>})}
+    {data.separatrices.filter(c=>(c.stable?showStable:showUnstable)).map((curve,i)=>{const color=curve.stable?waveColors.rarefactionSlow:waveColors.rarefactionFast,pts=rarefactionPhasePoints(curve.points,.043);return <group key={'s'+i}><Line points={pts} color={color} {...scientificCurveStyle('separatrix','3d')} depthTest={false} renderOrder={18} onClick={e=>{e.stopPropagation();onSelectCurve?.({kind:"separatrix",origin:"finite",stable:curve.stable,singularityIndex:curve.singularityIndex,branch:i,point:{tau:e.point.x,zc:e.point.z}})}}/><CurvePickTarget points={curve.points} onPick={e=>onSelectCurve?.({kind:"separatrix",origin:"finite",stable:curve.stable,singularityIndex:curve.singularityIndex,branch:i,point:{tau:e.point.x,zc:e.point.z}})}/><ArrowOnCurve axisScale={axisScale} p={p} points={curve.points} index={Math.floor(curve.points.length*.45)} color={color}/></group>})}
     {data.singularities.map((q,i)=>{const selected=selectedFinite===i;return <group key={i}><SingularityMarker position={[q.tau,0,q.zc]} selected={selected} axisScale={axisScale} onSelect={()=>setSelectedSingularity?.({kind:'finite',index:i})}/></group>})}
   </group>
 }
 
 
-function ArrowOnCurve({points,index,color}){
-  if(points.length<4)return null
-  const i=Math.max(1,Math.min(points.length-2,index))
-  const a=points[i-1],b=points[i+1],p=points[i]
-  const dx=b.tau-a.tau,dz=b.zc-a.zc,L=Math.hypot(dx,dz)
-  if(L<1e-10)return null
-  // coneGeometry points along +Y; rotate it onto the tangent in the tau-zc plane.
-  const dir=new THREE.Vector3(dx/L,0,dz/L),q=new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0,1,0),dir)
-  return <mesh position={[p.tau,.078,p.zc]} quaternion={q}><coneGeometry args={[.025,.10,12]}/><meshStandardMaterial color={color}/></mesh>
+function ArrowOnCurve({points,index,color,p,size=1,directionSign=1,directionOverride,positionOverride,axisScale={tau:1,Y:1,zc:1}}){
+  const arrow=directionOverride?{direction:directionOverride}:rarefactionPhaseArrow(points,index,p)
+  if(!arrow)return null
+  const scales=[axisScale.tau,axisScale.Y,axisScale.zc].map(v=>Math.max(Math.abs(v||1),1e-8))
+  // Orient in displayed coordinates, then cancel axis distortion before rotating
+  // the solid arrow. The shaft and head keep circular cross-sections at any scale.
+  const direction=new THREE.Vector3(...arrow.direction).multiply(new THREE.Vector3(...scales)).multiplyScalar(directionSign).normalize()
+  const q=new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0,1,0),direction)
+  return <group position={positionOverride??[arrow.point.tau,0,arrow.point.zc]} scale={scales.map(v=>1/v)}>
+    <group quaternion={q} scale={size}>
+      <mesh position={[0,-.022,0]} renderOrder={53}>
+        <cylinderGeometry args={[.007,.007,.072,24]}/>
+        <meshStandardMaterial color={color} metalness={.22} roughness={.28} emissive={color} emissiveIntensity={.12} depthWrite={false} depthTest={false}/>
+      </mesh>
+      <mesh position={[0,.031,0]} renderOrder={54}>
+        <coneGeometry args={[.024,.058,32]}/>
+        <meshStandardMaterial color={color} metalness={.22} roughness={.28} emissive={color} emissiveIntensity={.12} depthWrite={false} depthTest={false}/>
+      </mesh>
+    </group>
+  </group>
 }
+
 
 function InfinityRarefactionSingularity({p,tauMin,tauMax,visible=true,showStable=true,showUnstable=true,selectedSingularity,setSelectedSingularity,onSelectCurve,axisScale}){
   const qs=useMemo(()=>infinityRarefactionSingularities(p),[p])
@@ -391,7 +421,7 @@ function InfinityRarefactionSingularity({p,tauMin,tauMax,visible=true,showStable
   if(!visible||!qs.length)return null
   const selected=selectedSingularity?.kind==='infinity'
   return <group>
-    {separatrices.filter(c=>c.visibleInFiniteChart&&(c.stable?showStable:showUnstable)).map((curve,i)=>{const color=curve.stable?waveColors.rarefactionSlow:waveColors.rarefactionFast,pts=curvePoints3D(curve.points,'tauYzc',{yOffset:0.062});return <group key={'infsep'+i}><Line points={pts} color={color} {...scientificCurveStyle('separatrix','3d')} depthTest={false} renderOrder={18} onClick={e=>{e.stopPropagation();onSelectCurve?.({kind:"separatrix",origin:"infinity",stable:curve.stable,branch:i,point:{tau:e.point.x,zc:e.point.z}})}}/><CurvePickTarget points={curve.points} onPick={e=>onSelectCurve?.({kind:"separatrix",origin:"infinity",stable:curve.stable,branch:i,point:{tau:e.point.x,zc:e.point.z}})}/><ArrowOnCurve points={curve.points} index={Math.floor(curve.points.length*.38)} color={color}/></group>})}
+    {separatrices.filter(c=>c.visibleInFiniteChart&&(c.stable?showStable:showUnstable)).map((curve,i)=>{const color=curve.stable?waveColors.rarefactionSlow:waveColors.rarefactionFast,pts=rarefactionPhasePoints(curve.points,.062);return <group key={'infsep'+i}><Line points={pts} color={color} {...scientificCurveStyle('separatrix','3d')} depthTest={false} renderOrder={18} onClick={e=>{e.stopPropagation();onSelectCurve?.({kind:"separatrix",origin:"infinity",stable:curve.stable,branch:i,point:{tau:e.point.x,zc:e.point.z}})}}/><CurvePickTarget points={curve.points} onPick={e=>onSelectCurve?.({kind:"separatrix",origin:"infinity",stable:curve.stable,branch:i,point:{tau:e.point.x,zc:e.point.z}})}/><ArrowOnCurve axisScale={axisScale} p={p} points={curve.points} index={Math.floor(curve.points.length*.38)} color={color}/></group>})}
     {[-1,1].map((zh,i)=><group key={i}><SingularityMarker position={[0,0,zh*.998]} selected={selected} axisScale={axisScale} onSelect={()=>setSelectedSingularity?.({kind:'infinity'})}/></group>)}
   </group>
 }
@@ -523,7 +553,7 @@ const CameraRig=forwardRef(function CameraRig(_,ref){
   return <OrbitControls ref={controls} makeDefault enableDamping dampingFactor={0.08} />
 })
 
-function SceneContent({sharedLoci=[],tauMin,tauMax,YMin,YMax,p,point,setPoint,cameraRef,compositeGeometry,fixedState,riemannStates,showForwardCharacteristicPoint,showBackwardCharacteristicPoint,showForwardFastCharacteristicPoint,showBackwardSlowCharacteristicPoint,showLeftRiemannFibre,showRightRiemannFibre,showMinusStateFibre,showPlusStateFibre,showSMinus,showSPlus,showDS,showJ,showKMinus,showKPlus,showRarefaction,showRareCurves,showCharacteristicSlow,showCharacteristicFast,showCoincidence,showFiniteStable,showFiniteUnstable,showInfinityStable,showInfinityUnstable,selectedSingularity,setSelectedSingularity,onSelectCurve,axisScale,sonicMeshMode,btCurveMode,sonicRenderMode,surfaceOpacity,surfaceIsolation,showBTMinus,showBTPlus,showHopfMinus,showHopfPlus,onSelectExceptional,selectedExceptional,onInspectPoint,onInspectSonic,liftedInspection,onAxisPositions}){
+function SceneContent({seededCurves=[],sharedLoci=[],tauMin,tauMax,YMin,YMax,p,point,setPoint,cameraRef,compositeGeometry,fixedState,riemannStates,showSeededKs,showFullPsRarefaction,showLeftSeededRarefaction,showRightSeededRarefaction,showForwardCharacteristicPoint,showBackwardCharacteristicPoint,showForwardFastCharacteristicPoint,showBackwardSlowCharacteristicPoint,showLeftRiemannFibre,showRightRiemannFibre,showMinusStateFibre,showPlusStateFibre,showSMinus,showSPlus,showDS,showJ,showKMinus,showKPlus,showRarefaction,showRareCurves,showCharacteristicSlow,showCharacteristicFast,showCoincidence,showFiniteStable,showFiniteUnstable,showInfinityStable,showInfinityUnstable,selectedSingularity,setSelectedSingularity,onSelectCurve,axisScale,sonicMeshMode,btCurveMode,sonicRenderMode,surfaceOpacity,surfaceIsolation,showBTMinus,showBTPlus,showHopfMinus,showHopfPlus,onSelectExceptional,selectedExceptional,onInspectPoint,onInspectSonic,liftedInspection,onAxisPositions}){
   const inspectIntersection=q=>{setPoint(q);onInspectPoint?.(q)}
   return <>
     <group scale={[axisScale.tau,axisScale.Y,axisScale.zc]}>
@@ -531,7 +561,12 @@ function SceneContent({sharedLoci=[],tauMin,tauMax,YMin,YMax,p,point,setPoint,ca
     <CharacteristicSurface sharedLoci={sharedLoci} {...{tauMin,tauMax,p,point,setPoint}} showSlow={showCharacteristicSlow&&(surfaceIsolation==='all'||surfaceIsolation==='characteristic')} showFast={showCharacteristicFast&&(surfaceIsolation==='all'||surfaceIsolation==='characteristic')} showCoincidence={showCoincidence} surfaceOpacity={surfaceOpacity} onInspectPoint={onInspectPoint}/>
     <StateFibres U={fixedState} p={p} showMinus={showMinusStateFibre} showPlus={showPlusStateFibre}/><StateFibres U={riemannStates?.left} p={p} showMinus={showLeftRiemannFibre} showPlus={false} colorOverride="#ff9f0a"/><StateFibres U={riemannStates?.right} p={p} showMinus={false} showPlus={showRightRiemannFibre} colorOverride="#30d158"/>
     <CharacteristicHugoniotPoints states={riemannStates} p={p} axisScale={axisScale} showForward={showForwardCharacteristicPoint} showBackward={showBackwardCharacteristicPoint} showForwardFast={showForwardFastCharacteristicPoint} showBackwardSlow={showBackwardSlowCharacteristicPoint} onSelect={inspectIntersection}/>
-    <RarefactionField {...{p,tauMin,tauMax}} visible={showRarefaction&&showRareCurves}/>
+    {showSeededKs&&seededCurves.filter(q=>q.kind==='composite').map((curve,i)=>{
+      const index=Math.floor(curve.points.length/2),a=curve.points[Math.max(0,index-1)],b=curve.points[Math.min(curve.points.length-1,index+1)],q=curve.points[index]
+      return <group key={`ks-${i}`}><Line points={curve.points.map(q=>[q.tau,q.Y,q.zc])} color="#c084fc" lineWidth={2.5} depthTest={false} renderOrder={48}/><ArrowOnCurve points={curve.points} index={index} p={p} color="#c084fc" axisScale={axisScale} size={.8} directionOverride={[b.tau-a.tau,b.Y-a.Y,b.zc-a.zc]} positionOverride={[q.tau,q.Y,q.zc]}/></group>
+    })}
+    <SeededRarefactions axisScale={axisScale} curves={seededCurves} p={p} showFull={showFullPsRarefaction} showLeft={showLeftSeededRarefaction} showRight={showRightSeededRarefaction}/>
+    <RarefactionField {...{p,tauMin,tauMax,axisScale}} visible={showRarefaction&&showRareCurves}/>
     <CompositeFields geometry={compositeGeometry} showMinus={showKMinus} showPlus={showKPlus}/>
     <RarefactionSingularities {...{p,tauMin,tauMax,selectedSingularity,setSelectedSingularity,onSelectCurve,axisScale}} visible={showRarefaction} showStable={showFiniteStable} showUnstable={showFiniteUnstable}/>
     <InfinityRarefactionSingularity {...{p,tauMin,tauMax,selectedSingularity,setSelectedSingularity,onSelectCurve,axisScale}} visible={showRarefaction} showStable={showInfinityStable} showUnstable={showInfinityUnstable}/>
@@ -546,7 +581,7 @@ function SceneContent({sharedLoci=[],tauMin,tauMax,YMin,YMax,p,point,setPoint,ca
   </>
 }
 
-export default function Scene({sharedLoci=[],tauMin,tauMax,YMin=-2,YMax=2,p,point,setPoint,compositeGeometry={minus:[],plus:[]},fixedState=null,riemannStates=null,showForwardCharacteristicPoint=true,showBackwardCharacteristicPoint=true,showForwardFastCharacteristicPoint=false,showBackwardSlowCharacteristicPoint=false,showLeftRiemannFibre=true,showRightRiemannFibre=true,showMinusStateFibre=true,showPlusStateFibre=true,showSMinus=true,showSPlus=true,sonicMeshMode='original',btCurveMode='continuation',sonicRenderMode='transparent',showDS=true,showJ=true,showKMinus=false,showKPlus=false,showRarefaction=true,showRareCurves=true,showCharacteristicSlow=true,showCharacteristicFast=true,showCoincidence=true,showFiniteStable=true,showFiniteUnstable=true,showInfinityStable=true,showInfinityUnstable=true,showBTMinus=true,showBTPlus=true,showHopfMinus=true,showHopfPlus=true,selectedSingularity=null,setSelectedSingularity,onSelectCurve,liftedInspection=null,axisScale={tau:1,Y:1,zc:1}}){
+export default function Scene({seededCurvesData=null,sharedLoci=[],tauMin,tauMax,YMin=-2,YMax=2,p,point,setPoint,compositeGeometry={minus:[],plus:[]},fixedState=null,riemannStates=null,showSeededKs=true,showFullPsRarefaction=true,showLeftSeededRarefaction=true,showRightSeededRarefaction=true,showForwardCharacteristicPoint=true,showBackwardCharacteristicPoint=true,showForwardFastCharacteristicPoint=false,showBackwardSlowCharacteristicPoint=false,showLeftRiemannFibre=true,showRightRiemannFibre=true,showMinusStateFibre=true,showPlusStateFibre=true,showSMinus=true,showSPlus=true,sonicMeshMode='original',btCurveMode='continuation',sonicRenderMode='transparent',showDS=true,showJ=true,showKMinus=false,showKPlus=false,showRarefaction=true,showRareCurves=true,showCharacteristicSlow=true,showCharacteristicFast=true,showCoincidence=true,showFiniteStable=true,showFiniteUnstable=true,showInfinityStable=true,showInfinityUnstable=true,showBTMinus=true,showBTPlus=true,showHopfMinus=true,showHopfPlus=true,selectedSingularity=null,setSelectedSingularity,onSelectCurve,liftedInspection=null,axisScale={tau:1,Y:1,zc:1}}){
   const cameraRef=useRef()
   const [axisScreenPositions,setAxisScreenPositions]=useState(null)
   useEffect(()=>{
@@ -567,6 +602,7 @@ export default function Scene({sharedLoci=[],tauMin,tauMax,YMin=-2,YMax=2,p,poin
     : null,[showFiberInspection,inspectInfinity,point.zc,p])
   const exceptional=useMemo(()=>showFiberInspection?exceptionalDirections(p):null,[showFiberInspection,p])
   const onSelectExceptional=marker=>{setSelectedExceptional(marker);setShowFiberInspection(true);setInspectInfinity(Boolean(marker.infinity));setPoint(current=>({...current,zc:marker.zc,Y:0}))}
+  const seededCurves=useMemo(()=>seededCurvesData??seededRarefactionCurves(riemannStates,p,tauMin,tauMax),[seededCurvesData,riemannStates,p,tauMin,tauMax])
   const intersectionCounts=useMemo(()=>selectedHugoniotCharacteristicMarkers(riemannStates,p,{includeForwardFast:true,includeBackwardSlow:true}),[riemannStates,p])
   const characteristicInspection=useMemo(()=>inspectedCharacteristic
     ? characteristicSpectrum(inspectedCharacteristic.tau,projectiveZ(inspectedCharacteristic.zc),p)
@@ -581,6 +617,10 @@ export default function Scene({sharedLoci=[],tauMin,tauMax,YMin=-2,YMax=2,p,poin
       {id:'backward-characteristic-points',tex:String.raw`\mathcal C_f\cap\mathcal H^{\mathrm{back}}(U_R)`,color:'#30d158',shape:'diamond',visible:Boolean(intersectionCounts.backward.some(q=>q.branch==='fast')&&showBackwardCharacteristicPoint)},
       {id:'forward-fast-characteristic-point',tex:String.raw`\mathcal C_f\cap\mathcal H^{\mathrm{forw}}(U_L)`,color:'#ff9f0a',shape:'circle',visible:Boolean(intersectionCounts.forward.some(q=>q.branch==='fast')&&showForwardFastCharacteristicPoint)},
       {id:'backward-slow-characteristic-point',tex:String.raw`\mathcal C_s\cap\mathcal H^{\mathrm{back}}(U_R)`,color:'#30d158',shape:'diamond',visible:Boolean(intersectionCounts.backward.some(q=>q.branch==='slow')&&showBackwardSlowCharacteristicPoint)},
+      {id:'seeded-slow-rarefaction',tex:String.raw`\mathcal R_s(P_s\to\mathcal J)`,description:seededCurves.find(q=>q.family==='slow')?.complete?'Primeira inflexão atingida':'Arco interrompido antes da inflexão',color:'#ff9f0a',shape:'line',visible:showLeftSeededRarefaction&&seededCurves.some(q=>q.family==='slow')},
+      {id:'seeded-ks',tex:String.raw`\mathcal K_s`,color:'#c084fc',shape:'line',visible:showSeededKs&&seededCurves.some(q=>q.kind==='composite')},
+      {id:'seeded-full-ps-rarefaction',tex:String.raw`\mathcal R(P_s)`,color:'#ffcf76',shape:'line',visible:showFullPsRarefaction&&seededCurves.some(q=>q.kind==='full')},
+      {id:'seeded-fast-rarefaction',tex:String.raw`\mathcal R(P_f)`,color:'#30d158',shape:'line',visible:showRightSeededRarefaction&&seededCurves.some(q=>q.family==='fast')},
       {id:'sonic-minus',tex:String.raw`\mathcal S^-`,color:'#64a5ff',shape:'line',visible:showSMinus},
       {id:'sonic-plus',tex:String.raw`\mathcal S^+`,color:'#45bc86',shape:'line',visible:showSPlus},
       {id:'coincidence',tex:String.raw`\mathcal E`,color:'#bd95b0',shape:'line',visible:showCoincidence},
@@ -589,7 +629,7 @@ export default function Scene({sharedLoci=[],tauMin,tauMax,YMin=-2,YMax=2,p,poin
       {id:'bt-minus',tex:String.raw`\mathcal{BT}^-`,color:'#8da5b5',shape:'line',visible:showBTMinus},
       {id:'bt-plus',tex:String.raw`\mathcal{BT}^+`,color:'#8da5b5',shape:'line',visible:showBTPlus},
     ]}/>
-    <Canvas dpr={[1,1.5]} gl={{powerPreference:'high-performance'}} camera={{position:[3,3,3],fov:45}}><SceneContent sharedLoci={sharedLoci} {...{tauMin,tauMax,p,point,setPoint,cameraRef,compositeGeometry,fixedState,riemannStates,showForwardCharacteristicPoint,showBackwardCharacteristicPoint,showForwardFastCharacteristicPoint,showBackwardSlowCharacteristicPoint,showLeftRiemannFibre,showRightRiemannFibre,showMinusStateFibre,showPlusStateFibre,showSMinus,showSPlus,showDS,showJ,showKMinus,showKPlus,showRarefaction,showRareCurves,showCharacteristicSlow,showCharacteristicFast,showCoincidence,showFiniteStable,showFiniteUnstable,showInfinityStable,showInfinityUnstable,selectedSingularity,setSelectedSingularity,onSelectCurve,YMin,YMax,axisScale,sonicMeshMode,btCurveMode,sonicRenderMode,surfaceOpacity,surfaceIsolation,showBTMinus,showBTPlus,showHopfMinus,showHopfPlus,onSelectExceptional,selectedExceptional:showFiberInspection?selectedExceptional:null,onInspectPoint:selected=>{setInspectedSonic(null);setInspectedCharacteristic(selected)},onInspectSonic:selected=>{setInspectedCharacteristic(null);setInspectedSonic(selected)},liftedInspection,onAxisPositions:setAxisScreenPositions}}/></Canvas>
+    <Canvas dpr={[1,1.5]} gl={{powerPreference:'high-performance'}} camera={{position:[3,3,3],fov:45}}><SceneContent seededCurves={seededCurves} sharedLoci={sharedLoci} {...{tauMin,tauMax,p,point,setPoint,cameraRef,compositeGeometry,fixedState,riemannStates,showSeededKs,showFullPsRarefaction,showLeftSeededRarefaction,showRightSeededRarefaction,showForwardCharacteristicPoint,showBackwardCharacteristicPoint,showForwardFastCharacteristicPoint,showBackwardSlowCharacteristicPoint,showLeftRiemannFibre,showRightRiemannFibre,showMinusStateFibre,showPlusStateFibre,showSMinus,showSPlus,showDS,showJ,showKMinus,showKPlus,showRarefaction,showRareCurves,showCharacteristicSlow,showCharacteristicFast,showCoincidence,showFiniteStable,showFiniteUnstable,showInfinityStable,showInfinityUnstable,selectedSingularity,setSelectedSingularity,onSelectCurve,YMin,YMax,axisScale,sonicMeshMode,btCurveMode,sonicRenderMode,surfaceOpacity,surfaceIsolation,showBTMinus,showBTPlus,showHopfMinus,showHopfPlus,onSelectExceptional,selectedExceptional:showFiberInspection?selectedExceptional:null,onInspectPoint:selected=>{setInspectedSonic(null);setInspectedCharacteristic(selected)},onInspectSonic:selected=>{setInspectedCharacteristic(null);setInspectedSonic(selected)},liftedInspection,onAxisPositions:setAxisScreenPositions}}/></Canvas>
     {axisScreenPositions&&[
       {id:'tau',tex:String.raw`\tau`,name:'Eixo tau'},
       {id:'Y',tex:String.raw`Y`,name:'Eixo Y'},

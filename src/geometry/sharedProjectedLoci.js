@@ -46,3 +46,22 @@ export function sharedProjectedLoci(p,{tauMin,tauMax,YMin,YMax}) {
     plus:item.paths.flatMap(path=>splitProjection(path,'plus',p)),
   }}))
 }
+
+/** Bound canonical fibre coordinates using the state viewport, not the 3D window. */
+export function stateInflectionProjection(p,window){
+  const corners=[[window.uMin,window.vMin],[window.uMin,window.vMax],[window.uMax,window.vMin],[window.uMax,window.vMax]]
+  let tauMin=Infinity,tauMax=-Infinity
+  for(let i=0;i<=1440;i++){
+    const f=waveState(0,0,zFromZc(-.999999+1.999998*i/1440),p)
+    if(f.kind!=='regular')continue
+    const [a,b]=f.tangent,den=a*a+b*b
+    for(const [u,v] of corners){
+      const tau=((u-f.base[0])*a+(v-f.base[1])*b)/den
+      tauMin=Math.min(tauMin,tau);tauMax=Math.max(tauMax,tau)
+    }
+  }
+  if(!Number.isFinite(tauMin+tauMax))return []
+  const margin=Math.max(.1,(tauMax-tauMin)*.15)
+  const paths=inflectionGeometry(p,{tauMin:tauMin-margin,tauMax:tauMax+margin,nTau:240,nZ:720,zcMin:-.999999,zcMax:.999999})
+  return paths.flatMap(path=>splitProjection(path,'plus',p))
+}

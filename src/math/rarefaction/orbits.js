@@ -16,6 +16,7 @@ export function rarefactionOrbits(p, tauMin, tauMax, {
   stagnationTolerance=N.orbitStagnationTolerance,
   fieldFloor=N.normalizedFieldFloor,
   onIntegrationDiagnostic=null,
+  seeds=null,
 }={}) {
   const inside=q=>q.tau>=tauMin&&q.tau<=tauMax&&Math.abs(q.zc)<zcLimit
   const vf=q=>{
@@ -41,12 +42,19 @@ export function rarefactionOrbits(p, tauMin, tauMax, {
     return points
   }
   const result=[]
-  for(let j=1;j<nZ;j+=2)for(let i=1;i<nTau;i+=2){
-    const seed={tau:tauMin+i*(tauMax-tauMin)/nTau,zc:-.9+1.8*j/nZ}
+  const initialSeeds=seeds??Array.from({length:nZ-1},(_,j)=>j+1).filter(j=>j%2===1).flatMap(j=>
+    Array.from({length:nTau-1},(_,i)=>i+1).filter(i=>i%2===1).map(i=>({tau:tauMin+i*(tauMax-tauMin)/nTau,zc:-.9+1.8*j/nZ})))
+  for(const seed of initialSeeds){
+    if(![seed?.tau,seed?.zc].every(Number.isFinite)||!inside(seed))continue
     const joined=integrate(seed,-1).reverse().concat(integrate(seed,1).slice(1))
     if(joined.length>4)result.push(joined)
   }
   return result
+}
+
+/** Both time directions of the existing field, retaining the exact seed once. */
+export function rarefactionOrbitThrough(seed,p,tauMin,tauMax,options={}){
+  return rarefactionOrbits(p,tauMin,tauMax,{...options,seeds:[seed]})[0]??[]
 }
 
 function projectedPoint(tau,zc,p){
