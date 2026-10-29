@@ -9,3 +9,9 @@ export function fibreCharacteristicMarkers(U,p){
     ...q,Y:0,position:[q.tau,0,q.zc],
   }))
 }
+
+/** Classical endpoint roles: slow forward at U_L, fast backward at U_R. */
+export function selectedHugoniotCharacteristicMarkers(states,p){
+  return {forward:fibreCharacteristicMarkers(states?.left,p).filter(q=>q.branch==='slow'),
+    backward:fibreCharacteristicMarkers(states?.right,p).filter(q=>q.branch==='fast')}
+}
