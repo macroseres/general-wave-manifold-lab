@@ -7,9 +7,11 @@ export function StatePointVisibility({pointVisibility,onTogglePointVisibility}) 
   return <div className="sharedStateVisibility" role="group" aria-label="Pontos compartilhados entre painéis">{points.map(([id,tex,label,color])=><div className="stateVisibilityRow" key={id} style={{'--visibility-color':color}}><span className="stateSwitchCopy"><strong><MathLabel>{tex}</MathLabel></strong><small>{label} · 2D</small></span><VisibilityEye checked={pointVisibility[id]} onChange={()=>onTogglePointVisibility?.(id)} aria-label={label}/></div>)}</div>
 }
 
-export function HugoniotCharacteristicPointVisibility({showForwardCharacteristicPoint,setShowForwardCharacteristicPoint,showBackwardCharacteristicPoint,setShowBackwardCharacteristicPoint}){
+export function HugoniotCharacteristicPointVisibility({showForwardFastCharacteristicPoint=false,setShowForwardFastCharacteristicPoint,showBackwardSlowCharacteristicPoint=false,setShowBackwardSlowCharacteristicPoint,showForwardCharacteristicPoint,setShowForwardCharacteristicPoint,showBackwardCharacteristicPoint,setShowBackwardCharacteristicPoint}){
   const rows=[['forward',String.raw`\mathcal H^{\mathrm{forw}}(U_L)\cap\mathcal C_s`,'Interseção forward lenta','#ff9f0a',showForwardCharacteristicPoint,setShowForwardCharacteristicPoint],
-    ['backward',String.raw`\mathcal H^{\mathrm{back}}(U_R)\cap\mathcal C_f`,'Interseção backward rápida','#30d158',showBackwardCharacteristicPoint,setShowBackwardCharacteristicPoint]]
+    ['backward',String.raw`\mathcal H^{\mathrm{back}}(U_R)\cap\mathcal C_f`,'Interseção backward rápida','#30d158',showBackwardCharacteristicPoint,setShowBackwardCharacteristicPoint],
+    ['forward-fast',String.raw`\mathcal H^{\mathrm{forw}}(U_L)\cap\mathcal C_f`,'Interseção forward rápida','#ff9f0a',showForwardFastCharacteristicPoint,setShowForwardFastCharacteristicPoint],
+    ['backward-slow',String.raw`\mathcal H^{\mathrm{back}}(U_R)\cap\mathcal C_s`,'Interseção backward lenta','#30d158',showBackwardSlowCharacteristicPoint,setShowBackwardSlowCharacteristicPoint]]
   return <fieldset className="workspaceControlGroup"><legend>Interseções com a característica · 3D</legend>
     {rows.map(([id,tex,label,color,checked,setChecked])=><div key={id} className="stateVisibilityRow" style={{'--visibility-color':color}}>
       <span className="stateSwitchCopy"><strong><MathLabel>{tex}</MathLabel></strong><small>{label}</small></span>

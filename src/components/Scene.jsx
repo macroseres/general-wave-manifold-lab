@@ -59,12 +59,12 @@ function StateFibres({U,p,showMinus=true,showPlus=true,colorOverride=null}){
 }
 
 
-function CharacteristicHugoniotPoints({states,p,showForward,showBackward,axisScale,onSelect}){
-  const points=useMemo(()=>selectedHugoniotCharacteristicMarkers(states,p),[states,p])
-  const selected=[...(showForward?points.forward.map(q=>({...q,side:'left',color:'#ff9f0a'})):[]),
-    ...(showBackward?points.backward.map(q=>({...q,side:'right',color:'#30d158'})):[])]
+function CharacteristicHugoniotPoints({states,p,showForward,showBackward,showForwardFast,showBackwardSlow,axisScale,onSelect}){
+  const points=useMemo(()=>selectedHugoniotCharacteristicMarkers(states,p,{includeForwardFast:true,includeBackwardSlow:true}),[states,p])
+  const selected=[...points.forward.filter(q=>q.branch==='slow'?showForward:showForwardFast).map(q=>({...q,side:'left',color:'#ff9f0a'})),
+    ...points.backward.filter(q=>q.branch==='fast'?showBackward:showBackwardSlow).map(q=>({...q,side:'right',color:'#30d158'}))]
   const shape=side=>side==='right'?<octahedronGeometry args={[.041,0]}/>:<sphereGeometry args={[.032,24,18]}/>
-  return <group>{selected.map(q=><group key={q.side} position={q.position}
+  return <group>{selected.map(q=><group key={`${q.side}-${q.branch}`} position={q.position}
     scale={[axisScale.tau,axisScale.Y,axisScale.zc].map(v=>1/Math.max(Math.abs(v||1),1e-8))}
     renderOrder={42} userData={{kind:'hugoniot-characteristic-intersection',referenceState:q.side,branch:q.branch}}
     onClick={event=>{event.stopPropagation();onSelect?.({tau:q.tau,Y:0,zc:q.zc})}}>
@@ -523,14 +523,14 @@ const CameraRig=forwardRef(function CameraRig(_,ref){
   return <OrbitControls ref={controls} makeDefault enableDamping dampingFactor={0.08} />
 })
 
-function SceneContent({sharedLoci=[],tauMin,tauMax,YMin,YMax,p,point,setPoint,cameraRef,compositeGeometry,fixedState,riemannStates,showForwardCharacteristicPoint,showBackwardCharacteristicPoint,showLeftRiemannFibre,showRightRiemannFibre,showMinusStateFibre,showPlusStateFibre,showSMinus,showSPlus,showDS,showJ,showKMinus,showKPlus,showRarefaction,showRareCurves,showCharacteristicSlow,showCharacteristicFast,showCoincidence,showFiniteStable,showFiniteUnstable,showInfinityStable,showInfinityUnstable,selectedSingularity,setSelectedSingularity,onSelectCurve,axisScale,sonicMeshMode,btCurveMode,sonicRenderMode,surfaceOpacity,surfaceIsolation,showBTMinus,showBTPlus,showHopfMinus,showHopfPlus,onSelectExceptional,selectedExceptional,onInspectPoint,onInspectSonic,liftedInspection,onAxisPositions}){
+function SceneContent({sharedLoci=[],tauMin,tauMax,YMin,YMax,p,point,setPoint,cameraRef,compositeGeometry,fixedState,riemannStates,showForwardCharacteristicPoint,showBackwardCharacteristicPoint,showForwardFastCharacteristicPoint,showBackwardSlowCharacteristicPoint,showLeftRiemannFibre,showRightRiemannFibre,showMinusStateFibre,showPlusStateFibre,showSMinus,showSPlus,showDS,showJ,showKMinus,showKPlus,showRarefaction,showRareCurves,showCharacteristicSlow,showCharacteristicFast,showCoincidence,showFiniteStable,showFiniteUnstable,showInfinityStable,showInfinityUnstable,selectedSingularity,setSelectedSingularity,onSelectCurve,axisScale,sonicMeshMode,btCurveMode,sonicRenderMode,surfaceOpacity,surfaceIsolation,showBTMinus,showBTPlus,showHopfMinus,showHopfPlus,onSelectExceptional,selectedExceptional,onInspectPoint,onInspectSonic,liftedInspection,onAxisPositions}){
   const inspectIntersection=q=>{setPoint(q);onInspectPoint?.(q)}
   return <>
     <group scale={[axisScale.tau,axisScale.Y,axisScale.zc]}>
     <hemisphereLight args={['#dbeafe','#28364a',1.05]}/><ambientLight intensity={0.32}/><directionalLight position={[4,7,5]} intensity={2.1}/><directionalLight position={[-5,2,-4]} intensity={0.55} color="#9cc7ff"/>
     <CharacteristicSurface sharedLoci={sharedLoci} {...{tauMin,tauMax,p,point,setPoint}} showSlow={showCharacteristicSlow&&(surfaceIsolation==='all'||surfaceIsolation==='characteristic')} showFast={showCharacteristicFast&&(surfaceIsolation==='all'||surfaceIsolation==='characteristic')} showCoincidence={showCoincidence} surfaceOpacity={surfaceOpacity} onInspectPoint={onInspectPoint}/>
     <StateFibres U={fixedState} p={p} showMinus={showMinusStateFibre} showPlus={showPlusStateFibre}/><StateFibres U={riemannStates?.left} p={p} showMinus={showLeftRiemannFibre} showPlus={false} colorOverride="#ff9f0a"/><StateFibres U={riemannStates?.right} p={p} showMinus={false} showPlus={showRightRiemannFibre} colorOverride="#30d158"/>
-    <CharacteristicHugoniotPoints states={riemannStates} p={p} axisScale={axisScale} showForward={showForwardCharacteristicPoint} showBackward={showBackwardCharacteristicPoint} onSelect={inspectIntersection}/>
+    <CharacteristicHugoniotPoints states={riemannStates} p={p} axisScale={axisScale} showForward={showForwardCharacteristicPoint} showBackward={showBackwardCharacteristicPoint} showForwardFast={showForwardFastCharacteristicPoint} showBackwardSlow={showBackwardSlowCharacteristicPoint} onSelect={inspectIntersection}/>
     <RarefactionField {...{p,tauMin,tauMax}} visible={showRarefaction&&showRareCurves}/>
     <CompositeFields geometry={compositeGeometry} showMinus={showKMinus} showPlus={showKPlus}/>
     <RarefactionSingularities {...{p,tauMin,tauMax,selectedSingularity,setSelectedSingularity,onSelectCurve,axisScale}} visible={showRarefaction} showStable={showFiniteStable} showUnstable={showFiniteUnstable}/>
@@ -546,7 +546,7 @@ function SceneContent({sharedLoci=[],tauMin,tauMax,YMin,YMax,p,point,setPoint,ca
   </>
 }
 
-export default function Scene({sharedLoci=[],tauMin,tauMax,YMin=-2,YMax=2,p,point,setPoint,compositeGeometry={minus:[],plus:[]},fixedState=null,riemannStates=null,showForwardCharacteristicPoint=true,showBackwardCharacteristicPoint=true,showLeftRiemannFibre=true,showRightRiemannFibre=true,showMinusStateFibre=true,showPlusStateFibre=true,showSMinus=true,showSPlus=true,sonicMeshMode='original',btCurveMode='continuation',sonicRenderMode='transparent',showDS=true,showJ=true,showKMinus=false,showKPlus=false,showRarefaction=true,showRareCurves=true,showCharacteristicSlow=true,showCharacteristicFast=true,showCoincidence=true,showFiniteStable=true,showFiniteUnstable=true,showInfinityStable=true,showInfinityUnstable=true,showBTMinus=true,showBTPlus=true,showHopfMinus=true,showHopfPlus=true,selectedSingularity=null,setSelectedSingularity,onSelectCurve,liftedInspection=null,axisScale={tau:1,Y:1,zc:1}}){
+export default function Scene({sharedLoci=[],tauMin,tauMax,YMin=-2,YMax=2,p,point,setPoint,compositeGeometry={minus:[],plus:[]},fixedState=null,riemannStates=null,showForwardCharacteristicPoint=true,showBackwardCharacteristicPoint=true,showForwardFastCharacteristicPoint=false,showBackwardSlowCharacteristicPoint=false,showLeftRiemannFibre=true,showRightRiemannFibre=true,showMinusStateFibre=true,showPlusStateFibre=true,showSMinus=true,showSPlus=true,sonicMeshMode='original',btCurveMode='continuation',sonicRenderMode='transparent',showDS=true,showJ=true,showKMinus=false,showKPlus=false,showRarefaction=true,showRareCurves=true,showCharacteristicSlow=true,showCharacteristicFast=true,showCoincidence=true,showFiniteStable=true,showFiniteUnstable=true,showInfinityStable=true,showInfinityUnstable=true,showBTMinus=true,showBTPlus=true,showHopfMinus=true,showHopfPlus=true,selectedSingularity=null,setSelectedSingularity,onSelectCurve,liftedInspection=null,axisScale={tau:1,Y:1,zc:1}}){
   const cameraRef=useRef()
   const [axisScreenPositions,setAxisScreenPositions]=useState(null)
   useEffect(()=>{
@@ -567,7 +567,7 @@ export default function Scene({sharedLoci=[],tauMin,tauMax,YMin=-2,YMax=2,p,poin
     : null,[showFiberInspection,inspectInfinity,point.zc,p])
   const exceptional=useMemo(()=>showFiberInspection?exceptionalDirections(p):null,[showFiberInspection,p])
   const onSelectExceptional=marker=>{setSelectedExceptional(marker);setShowFiberInspection(true);setInspectInfinity(Boolean(marker.infinity));setPoint(current=>({...current,zc:marker.zc,Y:0}))}
-  const intersectionCounts=useMemo(()=>selectedHugoniotCharacteristicMarkers(riemannStates,p),[riemannStates,p])
+  const intersectionCounts=useMemo(()=>selectedHugoniotCharacteristicMarkers(riemannStates,p,{includeForwardFast:true,includeBackwardSlow:true}),[riemannStates,p])
   const characteristicInspection=useMemo(()=>inspectedCharacteristic
     ? characteristicSpectrum(inspectedCharacteristic.tau,projectiveZ(inspectedCharacteristic.zc),p)
     : null,[inspectedCharacteristic,p])
@@ -577,8 +577,10 @@ export default function Scene({sharedLoci=[],tauMin,tauMax,YMin=-2,YMax=2,p,poin
     <ScientificLegend environment="3d" items={[
       {id:'left-fibre',tex:String.raw`\mathcal H^{\mathrm{forw}}(U_L)`,color:'#ff9f0a',shape:'line',visible:Boolean(riemannStates?.left&&showLeftRiemannFibre)},
       {id:'right-fibre',tex:String.raw`\mathcal H^{\mathrm{back}}(U_R)`,color:'#30d158',shape:'line',visible:Boolean(riemannStates?.right&&showRightRiemannFibre)},
-      {id:'forward-characteristic-points',tex:String.raw`\mathcal C_s\cap\mathcal H^{\mathrm{forw}}(U_L)`,color:'#ff9f0a',shape:'circle',visible:Boolean(intersectionCounts.forward.length&&showForwardCharacteristicPoint)},
-      {id:'backward-characteristic-points',tex:String.raw`\mathcal C_f\cap\mathcal H^{\mathrm{back}}(U_R)`,color:'#30d158',shape:'diamond',visible:Boolean(intersectionCounts.backward.length&&showBackwardCharacteristicPoint)},
+      {id:'forward-characteristic-points',tex:String.raw`\mathcal C_s\cap\mathcal H^{\mathrm{forw}}(U_L)`,color:'#ff9f0a',shape:'circle',visible:Boolean(intersectionCounts.forward.some(q=>q.branch==='slow')&&showForwardCharacteristicPoint)},
+      {id:'backward-characteristic-points',tex:String.raw`\mathcal C_f\cap\mathcal H^{\mathrm{back}}(U_R)`,color:'#30d158',shape:'diamond',visible:Boolean(intersectionCounts.backward.some(q=>q.branch==='fast')&&showBackwardCharacteristicPoint)},
+      {id:'forward-fast-characteristic-point',tex:String.raw`\mathcal C_f\cap\mathcal H^{\mathrm{forw}}(U_L)`,color:'#ff9f0a',shape:'circle',visible:Boolean(intersectionCounts.forward.some(q=>q.branch==='fast')&&showForwardFastCharacteristicPoint)},
+      {id:'backward-slow-characteristic-point',tex:String.raw`\mathcal C_s\cap\mathcal H^{\mathrm{back}}(U_R)`,color:'#30d158',shape:'diamond',visible:Boolean(intersectionCounts.backward.some(q=>q.branch==='slow')&&showBackwardSlowCharacteristicPoint)},
       {id:'sonic-minus',tex:String.raw`\mathcal S^-`,color:'#64a5ff',shape:'line',visible:showSMinus},
       {id:'sonic-plus',tex:String.raw`\mathcal S^+`,color:'#45bc86',shape:'line',visible:showSPlus},
       {id:'coincidence',tex:String.raw`\mathcal E`,color:'#bd95b0',shape:'line',visible:showCoincidence},
@@ -587,7 +589,7 @@ export default function Scene({sharedLoci=[],tauMin,tauMax,YMin=-2,YMax=2,p,poin
       {id:'bt-minus',tex:String.raw`\mathcal{BT}^-`,color:'#8da5b5',shape:'line',visible:showBTMinus},
       {id:'bt-plus',tex:String.raw`\mathcal{BT}^+`,color:'#8da5b5',shape:'line',visible:showBTPlus},
     ]}/>
-    <Canvas dpr={[1,1.5]} gl={{powerPreference:'high-performance'}} camera={{position:[3,3,3],fov:45}}><SceneContent sharedLoci={sharedLoci} {...{tauMin,tauMax,p,point,setPoint,cameraRef,compositeGeometry,fixedState,riemannStates,showForwardCharacteristicPoint,showBackwardCharacteristicPoint,showLeftRiemannFibre,showRightRiemannFibre,showMinusStateFibre,showPlusStateFibre,showSMinus,showSPlus,showDS,showJ,showKMinus,showKPlus,showRarefaction,showRareCurves,showCharacteristicSlow,showCharacteristicFast,showCoincidence,showFiniteStable,showFiniteUnstable,showInfinityStable,showInfinityUnstable,selectedSingularity,setSelectedSingularity,onSelectCurve,YMin,YMax,axisScale,sonicMeshMode,btCurveMode,sonicRenderMode,surfaceOpacity,surfaceIsolation,showBTMinus,showBTPlus,showHopfMinus,showHopfPlus,onSelectExceptional,selectedExceptional:showFiberInspection?selectedExceptional:null,onInspectPoint:selected=>{setInspectedSonic(null);setInspectedCharacteristic(selected)},onInspectSonic:selected=>{setInspectedCharacteristic(null);setInspectedSonic(selected)},liftedInspection,onAxisPositions:setAxisScreenPositions}}/></Canvas>
+    <Canvas dpr={[1,1.5]} gl={{powerPreference:'high-performance'}} camera={{position:[3,3,3],fov:45}}><SceneContent sharedLoci={sharedLoci} {...{tauMin,tauMax,p,point,setPoint,cameraRef,compositeGeometry,fixedState,riemannStates,showForwardCharacteristicPoint,showBackwardCharacteristicPoint,showForwardFastCharacteristicPoint,showBackwardSlowCharacteristicPoint,showLeftRiemannFibre,showRightRiemannFibre,showMinusStateFibre,showPlusStateFibre,showSMinus,showSPlus,showDS,showJ,showKMinus,showKPlus,showRarefaction,showRareCurves,showCharacteristicSlow,showCharacteristicFast,showCoincidence,showFiniteStable,showFiniteUnstable,showInfinityStable,showInfinityUnstable,selectedSingularity,setSelectedSingularity,onSelectCurve,YMin,YMax,axisScale,sonicMeshMode,btCurveMode,sonicRenderMode,surfaceOpacity,surfaceIsolation,showBTMinus,showBTPlus,showHopfMinus,showHopfPlus,onSelectExceptional,selectedExceptional:showFiberInspection?selectedExceptional:null,onInspectPoint:selected=>{setInspectedSonic(null);setInspectedCharacteristic(selected)},onInspectSonic:selected=>{setInspectedCharacteristic(null);setInspectedSonic(selected)},liftedInspection,onAxisPositions:setAxisScreenPositions}}/></Canvas>
     {axisScreenPositions&&[
       {id:'tau',tex:String.raw`\tau`,name:'Eixo tau'},
       {id:'Y',tex:String.raw`Y`,name:'Eixo Y'},
