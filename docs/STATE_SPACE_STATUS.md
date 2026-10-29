@@ -1,5 +1,13 @@
 # Situação do espaço de estados — 28/10/2026
 
+## Interseções da característica com Hugoniot na vista 3D — 28/10/2026
+
+Por solicitação do responsável, a Variedade 3D agora marca as interseções finitas verificadas de 𝒞 com a Hugoniot forward de U_L (esferas laranja) e a backward de U_R (octaedros verdes, com silhueta de losango). Em regime estritamente hiperbólico, cada estado pode fornecer dois pontos, lento e rápido. As fibras de U* também recebem seus pontos comuns à característica em azul. Os marcadores seguem a visibilidade das respectivas fibras em **Curvas → Hugoniot e fibras** e mantêm o tamanho sob escalas independentes dos eixos. A legenda só inclui os pontos quando existem coordenadas verificadas e a fibra correspondente está visível.
+
+`fibreCharacteristicMarkers.js` reutiliza `stateFibreCharacteristicIntersections`: as coordenadas vêm das direções características algébricas, com Y=0 e verificação das duas projeções no estado fixo; não são vértices escolhidos por proximidade nas polilinhas. Pontos sem representação finita regular na carta desenhada, inclusive direções recíprocas sem coordenadas de exibição, permanecem omitidos. Isso não afirma ausência de interseção na geometria projetiva. Clicar num marcador seleciona suas coordenadas e abre a inspeção da característica.
+
+Inspeção visual com `oldWavePreset({B2:0})`, U_L=(0,4895; −0,3109), U_R=(0,7063; 0,7984): dois pontos forward e dois backward. O ponto lento forward clicado apresentou τ≈0,489696, Y=0, z_c≈0,0511588 e região 𝒞_s. As regressões conferem a incidência característica pelo resíduo de autovetor, igualdade das projeções com o estado fixo, incidência nas fibras forward/backward e ausência de coordenadas inválidas. Evidência: [interseções na variedade 3D](evidence/state-construction/characteristic-hugoniot-intersections-3d.jpg).
+
 ## Consolidação dos quatro pontos solicitados — 28/10/2026
 
 Registro vigente: investigação do caso vazio, revisão dos 13 padrões positivos e da comparação, relatórios de contatos/compostas e consolidação documental. As seções posteriores preservam o histórico; os estados intermediários de tarefas antigas não substituem este registro nem o encerramento T01–T08 já confirmado em 27/10.

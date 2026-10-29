@@ -29,6 +29,7 @@ import {characteristicMesh} from '../geometry/characteristic/mesh.js'
 import {disposeGeometry} from '../rendering/graphicsLifecycle.js'
 import {stateFibreGeometry} from '../geometry/state/fibreGeometry.js'
 import {hugoniotLaxGeometry} from '../geometry/state/hugoniotLaxGeometry.js'
+import {fibreCharacteristicMarkers} from '../geometry/state/fibreCharacteristicMarkers.js'
 
 // No invalid coordinates are allowed to enter three-stdlib LineGeometry.
 // Split at non-finite vertices instead of drawing a false connecting chord.
@@ -39,10 +40,11 @@ function Line({points,segments=false,...props}) {
 
 const clamp=(x,a,b)=>Math.max(a,Math.min(b,x))
 
-function StateFibres({U,p,showMinus=true,showPlus=true,colorOverride=null}){
+function StateFibres({U,p,showMinus=true,showPlus=true,colorOverride=null,referenceState=null,axisScale={tau:1,Y:1,zc:1},onSelectIntersection}){
   const visible=showMinus||showPlus
   const data=useMemo(()=>visible&&U?stateFibreGeometry(U,p):{minus:[],plus:[],lifts:[]},[U,p,visible])
   const lax=useMemo(()=>visible&&U?hugoniotLaxGeometry(data,U,p):{minus:[],plus:[]},[data,U,p,visible])
+  const intersections=useMemo(()=>visible&&U?fibreCharacteristicMarkers(U,p):[],[U,p,visible])
   if(!visible||!U)return null
   const appearance=c=>c?.kind==='lax'&&c.family===1?{color:'#22c55e',width:4.2}:c?.kind==='lax'&&c.family===2?{color:'#a855f7',width:4.2}:c?.kind==='non-lax'?{color:'#94a3b8',width:2.4}:{color:'#fbbf24',width:2.4}
   const curves=[
@@ -53,6 +55,14 @@ function StateFibres({U,p,showMinus=true,showPlus=true,colorOverride=null}){
   // pi_-^{-1}(U*) = forward is solid; pi_+^{-1}(U*) = backward is dashed.
   return <group>
     {curves.filter(c=>c.points.length>1).map(c=>{const a=appearance(c.laxClass);return <Line key={c.key} points={curvePoints3D(c.points,'tauYzc')} color={colorOverride??a.color} {...scientificCurveStyle(c.side==='plus'?'auxiliary':'primary','3d')} lineWidth={colorOverride?scientificCurveStyle('selected','3d').lineWidth:a.width} depthTest={false} renderOrder={7}/>})}
+    {intersections.map((q,i)=><group key={`characteristic-${i}`} position={q.position}
+      scale={[axisScale.tau,axisScale.Y,axisScale.zc].map(v=>1/Math.max(Math.abs(v||1),1e-8))}
+      renderOrder={42} userData={{kind:'hugoniot-characteristic-intersection',referenceState,branch:q.branch}}
+      onClick={event=>{event.stopPropagation();onSelectIntersection?.({tau:q.tau,Y:0,zc:q.zc})}}>
+      <mesh><sphereGeometry args={[.065,20,14]}/><meshBasicMaterial color="#111820" depthTest={false}/></mesh>
+      <mesh>{referenceState==='right'?<octahedronGeometry args={[.058,0]}/>:<sphereGeometry args={[.044,20,14]}/>}
+        <meshBasicMaterial color={colorOverride??'#64d2ff'} depthTest={false}/></mesh>
+    </group>)}
   </group>
 }
 
@@ -507,11 +517,12 @@ const CameraRig=forwardRef(function CameraRig(_,ref){
 })
 
 function SceneContent({sharedLoci=[],tauMin,tauMax,YMin,YMax,p,point,setPoint,cameraRef,compositeGeometry,fixedState,riemannStates,showLeftRiemannFibre,showRightRiemannFibre,showMinusStateFibre,showPlusStateFibre,showSMinus,showSPlus,showDS,showJ,showKMinus,showKPlus,showRarefaction,showRareCurves,showCharacteristicSlow,showCharacteristicFast,showCoincidence,showFiniteStable,showFiniteUnstable,showInfinityStable,showInfinityUnstable,selectedSingularity,setSelectedSingularity,onSelectCurve,axisScale,sonicMeshMode,btCurveMode,sonicRenderMode,surfaceOpacity,surfaceIsolation,showBTMinus,showBTPlus,showHopfMinus,showHopfPlus,onSelectExceptional,selectedExceptional,onInspectPoint,onInspectSonic,liftedInspection,onAxisPositions}){
+  const inspectIntersection=q=>{setPoint(q);onInspectPoint?.(q)}
   return <>
     <group scale={[axisScale.tau,axisScale.Y,axisScale.zc]}>
     <hemisphereLight args={['#dbeafe','#28364a',1.05]}/><ambientLight intensity={0.32}/><directionalLight position={[4,7,5]} intensity={2.1}/><directionalLight position={[-5,2,-4]} intensity={0.55} color="#9cc7ff"/>
     <CharacteristicSurface sharedLoci={sharedLoci} {...{tauMin,tauMax,p,point,setPoint}} showSlow={showCharacteristicSlow&&(surfaceIsolation==='all'||surfaceIsolation==='characteristic')} showFast={showCharacteristicFast&&(surfaceIsolation==='all'||surfaceIsolation==='characteristic')} showCoincidence={showCoincidence} surfaceOpacity={surfaceOpacity} onInspectPoint={onInspectPoint}/>
-    <StateFibres U={fixedState} p={p} showMinus={showMinusStateFibre} showPlus={showPlusStateFibre}/><StateFibres U={riemannStates?.left} p={p} showMinus={showLeftRiemannFibre} showPlus={false} colorOverride="#ff9f0a"/><StateFibres U={riemannStates?.right} p={p} showMinus={false} showPlus={showRightRiemannFibre} colorOverride="#30d158"/>
+    <StateFibres U={fixedState} p={p} showMinus={showMinusStateFibre} showPlus={showPlusStateFibre} axisScale={axisScale} onSelectIntersection={inspectIntersection}/><StateFibres U={riemannStates?.left} p={p} showMinus={showLeftRiemannFibre} showPlus={false} colorOverride="#ff9f0a" referenceState="left" axisScale={axisScale} onSelectIntersection={inspectIntersection}/><StateFibres U={riemannStates?.right} p={p} showMinus={false} showPlus={showRightRiemannFibre} colorOverride="#30d158" referenceState="right" axisScale={axisScale} onSelectIntersection={inspectIntersection}/>
     <RarefactionField {...{p,tauMin,tauMax}} visible={showRarefaction&&showRareCurves}/>
     <CompositeFields geometry={compositeGeometry} showMinus={showKMinus} showPlus={showKPlus}/>
     <RarefactionSingularities {...{p,tauMin,tauMax,selectedSingularity,setSelectedSingularity,onSelectCurve,axisScale}} visible={showRarefaction} showStable={showFiniteStable} showUnstable={showFiniteUnstable}/>
@@ -548,6 +559,7 @@ export default function Scene({sharedLoci=[],tauMin,tauMax,YMin=-2,YMax=2,p,poin
     : null,[showFiberInspection,inspectInfinity,point.zc,p])
   const exceptional=useMemo(()=>showFiberInspection?exceptionalDirections(p):null,[showFiberInspection,p])
   const onSelectExceptional=marker=>{setSelectedExceptional(marker);setShowFiberInspection(true);setInspectInfinity(Boolean(marker.infinity));setPoint(current=>({...current,zc:marker.zc,Y:0}))}
+  const intersectionCounts=useMemo(()=>({left:fibreCharacteristicMarkers(riemannStates?.left,p).length,right:fibreCharacteristicMarkers(riemannStates?.right,p).length}),[riemannStates,p])
   const characteristicInspection=useMemo(()=>inspectedCharacteristic
     ? characteristicSpectrum(inspectedCharacteristic.tau,projectiveZ(inspectedCharacteristic.zc),p)
     : null,[inspectedCharacteristic,p])
@@ -557,6 +569,8 @@ export default function Scene({sharedLoci=[],tauMin,tauMax,YMin=-2,YMax=2,p,poin
     <ScientificLegend environment="3d" items={[
       {id:'left-fibre',tex:String.raw`\mathcal H^{\mathrm{forw}}(U_L)`,color:'#ff9f0a',shape:'line',visible:Boolean(riemannStates?.left&&showLeftRiemannFibre)},
       {id:'right-fibre',tex:String.raw`\mathcal H^{\mathrm{back}}(U_R)`,color:'#30d158',shape:'line',visible:Boolean(riemannStates?.right&&showRightRiemannFibre)},
+      {id:'forward-characteristic-points',tex:String.raw`\mathcal C\cap\mathcal H^{\mathrm{forw}}(U_L)`,color:'#ff9f0a',shape:'circle',visible:Boolean(intersectionCounts.left&&showLeftRiemannFibre)},
+      {id:'backward-characteristic-points',tex:String.raw`\mathcal C\cap\mathcal H^{\mathrm{back}}(U_R)`,color:'#30d158',shape:'diamond',visible:Boolean(intersectionCounts.right&&showRightRiemannFibre)},
       {id:'sonic-minus',tex:String.raw`\mathcal S^-`,color:'#64a5ff',shape:'line',visible:showSMinus},
       {id:'sonic-plus',tex:String.raw`\mathcal S^+`,color:'#45bc86',shape:'line',visible:showSPlus},
       {id:'coincidence',tex:String.raw`\mathcal E`,color:'#bd95b0',shape:'line',visible:showCoincidence},
