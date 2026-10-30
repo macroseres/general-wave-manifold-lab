@@ -17,8 +17,9 @@ export function rarefactionOrbits(p, tauMin, tauMax, {
   fieldFloor=N.normalizedFieldFloor,
   onIntegrationDiagnostic=null,
   seeds=null,
+  clipTau=true,
 }={}) {
-  const inside=q=>q.tau>=tauMin&&q.tau<=tauMax&&Math.abs(q.zc)<zcLimit
+  const inside=q=>Number.isFinite(q.tau)&&(!clipTau||(q.tau>=tauMin&&q.tau<=tauMax))&&Math.abs(q.zc)<zcLimit
   const vf=q=>{
     const d=rarefactionField(q.tau,zFromZc(q.zc),p)
     if(d.kind!=='regular')return null

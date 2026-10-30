@@ -694,8 +694,8 @@ background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/sv
 .stateActivityRail button:focus-visible{outline:2px solid #77dca3;outline-offset:2px}
 /* Fase 15.27: navegação por atividades nos painéis restantes */
 @media(min-width:761px){
-#three-d-inspection>details[data-panel-category]{display:none}
-#three-d-inspection[data-activity=point]>details[data-panel-category=point],#three-d-inspection[data-activity=waves]>details[data-panel-category=waves],#three-d-inspection[data-activity=singular]>details[data-panel-category=singular],#three-d-inspection[data-activity=charts]>details[data-panel-category=charts]{display:block}
+#three-d-inspection>.workspaceDrawerScroll>details[data-panel-category]{display:none}
+#three-d-inspection[data-activity=point]>.workspaceDrawerScroll>details[data-panel-category=point],#three-d-inspection[data-activity=waves]>.workspaceDrawerScroll>details[data-panel-category=waves],#three-d-inspection[data-activity=singular]>.workspaceDrawerScroll>details[data-panel-category=singular],#three-d-inspection[data-activity=charts]>.workspaceDrawerScroll>details[data-panel-category=charts]{display:block}
 .physicalSidebar[data-activity=profiles] .physicalToolsDrawer,.physicalSidebar[data-activity=time] .physicalToolsDrawer{display:none}
 .physicalSidebar[data-activity=settings] .physicalVisualizationSection{display:none}
 }
@@ -998,3 +998,13 @@ background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/sv
   .app .physicalWorkspace .physicalThreeColumnLayout > .physicalProfilesArea{grid-column:1;grid-row:auto;}
   .app .physicalWorkspace .physicalThreeColumnLayout > .physicalAuxiliaryColumn{grid-column:1;grid-row:auto;}
 }
+
+/* Inspection cards start on the right, away from the activity rail. */
+.sceneWrap .sceneInspectionCompact {left:auto;right:18px;bottom:240px}
+.sceneInspectionCompact > div:first-child,
+.sceneContextCard > div:first-child,
+[aria-label="Inspeção da fibra projetiva"] > div:first-child {
+  cursor:grab;touch-action:none;user-select:none;
+}
+.sceneInspectionCompact > div:first-child:active,
+.sceneContextCard > div:first-child:active {cursor:grabbing}

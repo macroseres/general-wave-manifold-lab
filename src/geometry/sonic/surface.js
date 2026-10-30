@@ -279,7 +279,7 @@ function zeroSegments(p,field,{tauMin,tauMax,nTau=120,nZ=180,zcMin=-.999,zcMax=.
   return out
 }
 /** Inflection locus J on C: Y=0 and K=0. */
-export function inflectionGeometry(p,options={}){return zeroSegments(p,d=>d.K,options)}
+export function inflectionGeometry(p,options={}){return zeroSegments(p,d=>d.K,{nTau:180,nZ:360,...options})}
 
 /** Double sonic DS: K=det(M)=0, outside C. Each isolated base point generates a Y-line. */
 export function doubleSonicGeometry(p,{YMin=-6,YMax=6,zcMin=-.999,zcMax=.999,...options}={}){

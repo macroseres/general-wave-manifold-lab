@@ -13,7 +13,7 @@ test('botões de painéis móveis expõem relação e estado para tecnologias as
   for (const [name,id] of [['controls','three-d-controls'],['inspection','three-d-inspection']]) {
     assert.ok(app.includes(`aria-expanded={mobile3dPanel==='${name}'}`))
     assert.ok(app.includes(`aria-controls="${id}"`))
-    assert.ok(app.includes(`<aside id="${id}"`))
+    assert.ok(app.includes(`<aside id="${id}"`)||app.includes(`<WorkspaceDrawer as="aside" id="${id}"`))
   }
 })
 test('manual e documentação permanecem em superfícies distintas', () => {

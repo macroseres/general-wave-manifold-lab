@@ -4,8 +4,8 @@
  */
 export default function ScientificPoint3D({
   radius, color, material='standard', depthTest=false,
-  metalness=0, roughness=0.4, emissive='#000000', emissiveIntensity=0,
-  widthSegments=16, heightSegments=12,
+  metalness=0, roughness=0.35, emissive=color, emissiveIntensity=0.25,
+  widthSegments=28, heightSegments=20,
 }) {
   return <mesh>
     <sphereGeometry args={[radius,widthSegments,heightSegments]}/>

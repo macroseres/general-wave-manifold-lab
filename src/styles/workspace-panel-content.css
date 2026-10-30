@@ -62,7 +62,7 @@
 
 
 /* Documentation: the index is the shared drawer body, not a second layout. */
-.workspaceLayout--docs .documentationDrawer > .documentationIndex {
+.workspaceLayout--docs .documentationDrawer > .workspaceDrawerScroll > .documentationIndex {
  position:static;align-self:stretch;display:flex;flex:0 0 auto;flex-direction:column;
  gap:2px;min-height:0;max-height:none;margin:0;padding:10px;
  overflow:visible;background:transparent;border:0;
@@ -150,7 +150,7 @@
   border:1px solid var(--workspace-stroke);border-radius:7px;
   background:var(--workspace-surface);
 }
-.workspaceLayout--3d #three-d-inspection > .inspectorIntro {padding:10px 12px}
+.workspaceLayout--3d #three-d-inspection > .workspaceDrawerScroll > .inspectorIntro {padding:10px 12px}
 
 /* 3D surface controls: grouping without affecting scientific state or the rail. */
 .workspaceLayout--3d .surfaceControls{display:flex;flex-direction:column;gap:0;padding:0}
@@ -400,7 +400,7 @@
 .workspaceLayout--docs .documentationPager button{font-size:11px;padding:9px 11px;border-radius:6px}
 /* Keep the index independent from the article scroll; avoid a second scrollbar inside the drawer. */
 .workspaceLayout--docs .documentationDrawer{min-height:0;overflow-y:auto;overscroll-behavior:contain;scrollbar-width:thin}
-.workspaceLayout--docs .documentationDrawer>.documentationIndex{gap:0;padding:6px 8px 14px}
+.workspaceLayout--docs .documentationDrawer>.workspaceDrawerScroll>.documentationIndex{gap:0;padding:6px 8px 14px}
 .workspaceLayout--docs .documentationIndexGroup{gap:0}
 .workspaceLayout--docs .documentationGroupToggle{min-height:29px;padding:5px 7px;gap:6px;font-size:10.5px;line-height:1.25}
 .workspaceLayout--docs .documentationIndexGroup>a{padding:5px 7px 5px 19px;font-size:10.5px;line-height:1.35}
@@ -1027,3 +1027,13 @@
 .documentationFigure{margin:22px 0}
 .documentationFigure img{display:block;width:100%;height:auto;background:#fff;border-radius:6px}
 .documentationFigure figcaption{margin-top:8px;font-size:.85em;line-height:1.5;opacity:.8}
+
+/* Shared drawer: header spans the full width; only the body owns a scrollbar. */
+.workspaceLayout .workspacePanelDrawer:has(> .workspaceDrawerScroll) {
+  display:flex;flex-direction:column;overflow:hidden;scrollbar-gutter:auto;
+}
+.workspaceLayout .workspacePanelDrawer > .workspacePanelHeader {flex:0 0 auto;min-width:0}
+.workspaceLayout .workspacePanelDrawer > .workspaceDrawerScroll {
+  flex:1 1 auto;min-width:0;min-height:0;overflow-y:auto;overflow-x:hidden;
+  scrollbar-gutter:stable;overscroll-behavior:contain;
+}

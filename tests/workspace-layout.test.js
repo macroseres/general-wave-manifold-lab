@@ -30,7 +30,7 @@ test('inline States layout is selected by the mounted workspace, not by a missin
   assert.match(state, /<WorkspaceLayout kind="states"/)
   assert.match(layout, /\.inlineWorkspaceDialog:has\(\.workspaceLayout--states\) > \.stateExplorationBody/)
   assert.doesNotMatch(layout, /:has\(#state-space-title\)/)
-  assert.match(layout, /\.workspaceLayout--states > \.stateToolsDrawer > \.stateToolsDrawerContent/)
+  assert.match(layout, /\.workspaceLayout--states > \.stateToolsDrawer > \.workspaceDrawerScroll > \.stateToolsDrawerContent/)
 })
 
 

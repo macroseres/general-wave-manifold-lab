@@ -257,7 +257,7 @@
   flex:1 1 auto;
   max-width:none;
 }
-.workspaceLayout--states > .stateToolsDrawer > .stateToolsDrawerContent {
+.workspaceLayout--states > .stateToolsDrawer > .workspaceDrawerScroll > .stateToolsDrawerContent {
   display:block;
   flex:1 1 auto;
 }
@@ -343,13 +343,13 @@
 .workspaceLayout--3d[data-panel-expanded="false"] #three-d-controls > .continuousSidebarPanel,
 .workspaceLayout--physical[data-panel-expanded="false"] .physicalSidebar > .continuousSidebarPanel {display:none}
 /* Activity controls visibility; <details open> only controls expansion. */
-.workspaceLayout--3d #three-d-controls > .continuousSidebarPanel > details[data-panel-category] {display:none}
-.workspaceLayout--3d #three-d-controls[data-activity="geometry"] > .continuousSidebarPanel > details[data-panel-category="geometry"],
-.workspaceLayout--3d #three-d-controls[data-activity="surfaces"] > .continuousSidebarPanel > details[data-panel-category="surfaces"],
-.workspaceLayout--3d #three-d-controls[data-activity="curves"] > .continuousSidebarPanel > details[data-panel-category="curves"],
-.workspaceLayout--3d #three-d-controls[data-activity="fields"] > .continuousSidebarPanel > details[data-panel-category="fields"],
-.workspaceLayout--3d #three-d-controls[data-activity="view"] > .continuousSidebarPanel > details[data-panel-category="view"],
-.workspaceLayout--3d #three-d-controls[data-activity="states"] > .continuousSidebarPanel > details[data-panel-category="states"] {display:block}
+.workspaceLayout--3d #three-d-controls > .continuousSidebarPanel > .workspaceDrawerScroll > details[data-panel-category] {display:none}
+.workspaceLayout--3d #three-d-controls[data-activity="geometry"] > .continuousSidebarPanel > .workspaceDrawerScroll > details[data-panel-category="geometry"],
+.workspaceLayout--3d #three-d-controls[data-activity="surfaces"] > .continuousSidebarPanel > .workspaceDrawerScroll > details[data-panel-category="surfaces"],
+.workspaceLayout--3d #three-d-controls[data-activity="curves"] > .continuousSidebarPanel > .workspaceDrawerScroll > details[data-panel-category="curves"],
+.workspaceLayout--3d #three-d-controls[data-activity="fields"] > .continuousSidebarPanel > .workspaceDrawerScroll > details[data-panel-category="fields"],
+.workspaceLayout--3d #three-d-controls[data-activity="view"] > .continuousSidebarPanel > .workspaceDrawerScroll > details[data-panel-category="view"],
+.workspaceLayout--3d #three-d-controls[data-activity="states"] > .continuousSidebarPanel > .workspaceDrawerScroll > details[data-panel-category="states"] {display:block}
 
 .workspaceLayout--3d #three-d-controls > .continuousSidebarPanel::before,
 .workspaceLayout--3d #three-d-controls > .continuousSidebarPanel::after,
@@ -468,9 +468,69 @@
 }
 
 /* Shared object controls remain reachable in both workspaces. */
-.workspaceLayout--3d #three-d-controls[data-activity="points"] > .continuousSidebarPanel > details[data-panel-category="points"] {display:block}
+.workspaceLayout--3d #three-d-controls[data-activity="points"] > .continuousSidebarPanel > .workspaceDrawerScroll > details[data-panel-category="points"] {display:block}
 .sharedStateVisibility {display:flex;flex-direction:column;gap:10px;min-width:0}
 .sharedStateVisibility .stateVisibilityRow {display:flex;align-items:center;justify-content:space-between;gap:10px;border-left:3px solid var(--visibility-color);padding:6px 8px}
 .sharedStateVisibility .stateSwitchCopy {display:flex;flex-direction:column;min-width:0}
 .sharedStateVisibility .stateSwitchCopy small {line-height:1.4}
 .sharedStateVisibility button {flex-shrink:0}
+
+/* Let the 3D scene continue behind the sidebar's outer spacing. The actual
+   rail and drawer retain the same opaque surfaces as the other workspaces. */
+@media (min-width: 901px) {
+  .workspaceLayout--3d > .view {grid-column:1 / -1;grid-row:1;z-index:0}
+  .workspaceLayout--3d > #three-d-controls.unifiedSidebar {
+    grid-column:1;grid-row:1;z-index:4;background:transparent;pointer-events:none;
+  }
+  .workspaceLayout--3d > #three-d-controls.unifiedSidebar > * {pointer-events:auto}
+}
+
+/* Auto-hide the desktop 3D drawer; retain the rail as a discoverable hover target.
+   Keyboard focus keeps controls available, while touch retains explicit toggles. */
+@media (min-width:901px) and (hover:hover) and (pointer:fine) {
+  .workspaceLayout--3d #three-d-controls > .workspacePanelDrawer {
+    opacity:0;visibility:hidden;pointer-events:none;
+    transform:translateX(-10px);
+    transition:opacity .16s ease,transform .16s ease,visibility 0s linear .16s;
+  }
+  .workspaceLayout--3d #three-d-controls:hover > .workspacePanelDrawer,
+  .workspaceLayout--3d #three-d-controls:has(:focus-visible) > .workspacePanelDrawer {
+    opacity:1;visibility:visible;pointer-events:auto;transform:none;transition-delay:0s;
+  }
+}
+@media (prefers-reduced-motion:reduce) {
+  .workspaceLayout--3d #three-d-controls > .workspacePanelDrawer {transition:none}
+}
+
+/* Keep the hover bridge between rail and drawer active while the panel is open.
+   Outside that area, the transparent shell still lets the scene receive input. */
+@media (min-width:901px) and (hover:hover) and (pointer:fine) {
+  .workspaceLayout--3d > #three-d-controls.unifiedSidebar:hover {
+    pointer-events:auto;
+  }
+}
+
+/* State-space drawers overlay the plot and auto-hide like the 3D controls. */
+@media (min-width:901px) and (hover:hover) and (pointer:fine) {
+  .workspaceLayout--states > .stateGraphStage {grid-column:2 / -1;z-index:0}
+  .workspaceLayout--states > :is(.stateToolsDrawer,.stateRightPanel) {
+    position:relative;z-index:4;opacity:0;visibility:hidden;pointer-events:none;
+    width:calc(100% + var(--workspace-gap));transform:translateX(calc(-1 * var(--workspace-gap)));
+    border-left:var(--workspace-gap) solid transparent;background-clip:padding-box;
+    transition:opacity .16s ease,visibility 0s linear .16s;
+  }
+  .workspaceLayout--states:has(> .workspaceRail:hover) > :is(.stateToolsDrawer,.stateRightPanel),
+  .workspaceLayout--states > :is(.stateToolsDrawer,.stateRightPanel):hover,
+  .workspaceLayout--states:has(:focus-visible) > :is(.stateToolsDrawer,.stateRightPanel) {
+    opacity:1;visibility:visible;pointer-events:auto;transition-delay:0s;
+  }
+  .workspaceLayout--states > .stateToolsDrawer.workspacePanelDrawer:has(> .workspaceDrawerScroll),
+  .workspaceLayout--states > .stateRightPanel {overflow:visible}
+  .workspaceLayout--states > :is(.stateToolsDrawer,.stateRightPanel)::before {
+    content:'';position:absolute;left:calc(-1 * var(--workspace-gap));top:0;
+    width:var(--workspace-gap);height:100%;background:transparent;
+  }
+}
+@media (prefers-reduced-motion:reduce) {
+  .workspaceLayout--states > :is(.stateToolsDrawer,.stateRightPanel) {transition:none}
+}

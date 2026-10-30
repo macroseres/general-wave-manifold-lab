@@ -31,14 +31,36 @@ export function StateHugoniotVisibility({showLeftRiemannHugoniot,setShowLeftRiem
   </div>
 }
 
-export function SeededRarefactionVisibility({slowArc,showSeededKs,setShowSeededKs,showFullPsRarefaction,setShowFullPsRarefaction,showLeftSeededRarefaction,setShowLeftSeededRarefaction,showRightSeededRarefaction,setShowRightSeededRarefaction}){
-  return <fieldset className="workspaceControlGroup"><legend>Rarefações pelos pontos de referência</legend>
-    {[[String.raw`\mathcal K_s`,'Composta lenta pela rarefação de P s','#c084fc',showSeededKs,setShowSeededKs],
+export function SeededRarefactionVisibility({section='waves',slowArc,showNonlocalShock,setShowNonlocalShock,showSeededKs,setShowSeededKs,showFullPsRarefaction,setShowFullPsRarefaction,showLeftSeededRarefaction,setShowLeftSeededRarefaction,showRightSeededRarefaction,setShowRightSeededRarefaction}){
+  return <fieldset className="workspaceControlGroup"><legend>{section==='curves'?'Curvas integrais por P_s e P_f':'Ondas pelos pontos de referência'}</legend>
+    {[[String.raw`S_s^{\mathrm{nl}}`,'Choque não local após a composta','#fbbf24',showNonlocalShock,setShowNonlocalShock],
+      [String.raw`\mathcal K_s`,'Composta lenta pela rarefação de P s','#c084fc',showSeededKs,setShowSeededKs],
       [String.raw`\mathcal R(P_s)`,'Curva integral por P s','#ffcf76',showFullPsRarefaction,setShowFullPsRarefaction],
       [String.raw`\mathcal R_s(P_s\to\mathcal J)`,'Rarefação por P s','#ff9f0a',showLeftSeededRarefaction,setShowLeftSeededRarefaction],
-      [String.raw`\mathcal R(P_f)`,'Rarefação por P f','#30d158',showRightSeededRarefaction,setShowRightSeededRarefaction]].map(([tex,label,color,checked,setChecked])=>
+      [String.raw`\mathcal R(P_f)`,'Rarefação por P f','#30d158',showRightSeededRarefaction,setShowRightSeededRarefaction]].filter(([,label])=>section==='curves'?['Curva integral por P s','Rarefação por P f'].includes(label):!['Curva integral por P s','Rarefação por P f'].includes(label)).map(([tex,label,color,checked,setChecked])=>
       <div key={label} className="stateVisibilityRow" style={{'--visibility-color':color}}><span className="stateSwitchCopy"><strong><MathLabel>{tex}</MathLabel></strong><small>{label}</small></span><VisibilityEye checked={checked} onChange={event=>setChecked(event.target.checked)} aria-label={label}/></div>)}
-    <small>Curvas integrais por P_s e P_f nos dois sentidos; arco crescente de P_s até a primeira inflexão com visibilidade independente.</small>
-    {slowArc&&<small role="status">{slowArc.complete?'Primeira inflexão atingida.':`Arco interrompido antes da inflexão (${({'window-limit':'limite da janela','step-limit':'limite de passos','characteristic-boundary':'fronteira característica','speed-stopped':'crescimento não verificado','integration-stopped':'parada do integrador'})[slowArc.status]??'refinamento inconclusivo'}).`} λ_s: {slowArc.speeds[0].toPrecision(6)} → {slowArc.speeds.at(-1).toPrecision(6)}.</small>}
+    {section==='curves'?<small>Curvas integrais completas por P_s e P_f, nos dois sentidos.</small>:<small>Arco crescente de P_s até a inflexão, composta e choque não local com controles independentes.</small>}
+    {section!=='curves'&&slowArc&&<small role="status">{slowArc.complete?'Primeira inflexão atingida.':`Arco interrompido antes da inflexão (${({'window-limit':'limite da janela','step-limit':'limite de passos','characteristic-boundary':'fronteira característica','speed-stopped':'crescimento não verificado','integration-stopped':'parada do integrador'})[slowArc.status]??'refinamento inconclusivo'}).`} λ_s: {slowArc.speeds[0].toPrecision(6)} → {slowArc.speeds.at(-1).toPrecision(6)}.</small>}
+  </fieldset>
+}
+
+
+export function WaveJunctionPointVisibility({showFastInflectionJunction,setShowFastInflectionJunction,showBackwardMinusJunction,setShowBackwardMinusJunction,showInflectionJunction,setShowInflectionJunction,}){
+  return <fieldset className="workspaceControlGroup"><legend>Junções das ondas · 3D</legend>
+    {[[String.raw`\mathcal R_f\cap\mathcal J`,'Interseção da rarefação rápida com a inflexão','#30d158',showFastInflectionJunction,setShowFastInflectionJunction],
+      [String.raw`\mathcal H^{\mathrm{back}}(U_R)\cap\mathcal S^-`,'Interseção da Hugoniot backward com S menos','#64d2ff',showBackwardMinusJunction,setShowBackwardMinusJunction],
+      [String.raw`\mathcal R_s\cap\mathcal J`,'Junção da rarefação com a inflexão','#ffffff',showInflectionJunction,setShowInflectionJunction],
+].map(([tex,label,color,checked,setChecked])=><div key={label} className="stateVisibilityRow" style={{'--visibility-color':color}}><span className="stateSwitchCopy"><strong><MathLabel>{tex}</MathLabel></strong><small>{label}</small></span><VisibilityEye checked={checked} onChange={event=>setChecked(event.target.checked)} aria-label={label}/></div>)}
+    <small>Visibilidade independente das curvas de rarefação, composta e choque.</small>
+  </fieldset>
+}
+
+
+export function ForwardSonicPointVisibility({report,visibility,onChange,junction}){
+  const plus=report.sonicSide==='plus'
+  return <fieldset className="workspaceControlGroup"><legend>Hugoniot forward ∩ {plus?'S⁺':'S⁻'}</legend>
+    <small>{report.status==='missing-state'?'Defina U_L no espaço de estados.':report.status==='non-isolated-sonic-set'?'Interseção não isolada; não enumerada como pontos.':`${report.points.length} interseção(ões) finita(s) verificada(s).`}</small>
+    {report.points.map(q=>{const terminal=junction&&Math.hypot(q.tau-junction.tau,q.Y-junction.Y,q.zc-junction.zc)<1e-6;return <div key={q.id} className="stateVisibilityRow" style={{'--visibility-color':'#fbbf24'}}><span className="stateSwitchCopy"><strong><MathLabel>{`Q_{${q.index}}${plus?'^+':'^-'}`}</MathLabel></strong><small>{q.tangency?'Tangência':'Interseção'}{terminal?' · fim da composta':''}</small></span><VisibilityEye checked={visibility[q.id]!==false} onChange={event=>onChange(q.id,event.target.checked)} aria-label={`Interseção forward S ${plus?'mais':'menos'} ${q.index}`}/></div>})}
+    {report.infinityCount>0&&<small>Também há interseção no infinito projetivo, sem marcador finito.</small>}
   </fieldset>
 }

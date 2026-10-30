@@ -14,5 +14,5 @@ test('DS and J in 3D are independently controlled by their visibility flags', ()
 
 test('2D projection visibility uses the same flags', () => {
   assert.match(app, /item\.id==='E'\?showCoincidence:item\.id==='DS'\?showDS:showJ/)
-  assert.match(app, /<StateSpaceDialog sharedLoci=\{visibleSharedLoci\}/)
+  assert.match(app, /<StateSpaceDialog[^>]*sharedLoci=\{visibleSharedLoci\}/)
 })

@@ -8,5 +8,6 @@ test('main controls use canonical KaTeX notation for sonic and composite surface
   }
 })
 test('flux coefficient labels use MathLabel',()=>{
-  assert.match(app,/<MathLabel>\{k\.replace/)
+  const parameters=readFileSync(new URL('../src/components/ParametersWorkspace.jsx',import.meta.url),'utf8')
+  assert.match(parameters,/<MathLabel>\{coefficientLatex\(k\)\}/)
 })
