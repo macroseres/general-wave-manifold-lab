@@ -48,3 +48,27 @@ export function classifyState(U,p,tolerance=1e-10){
  const scalar=Math.abs(J[0][1])<=tolerance*scale&&Math.abs(J[1][0])<=tolerance*scale&&Math.abs(J[0][0]-J[1][1])<=tolerance*scale
  return scalar?'parabólico degenerado (matriz escalar)':'parabólico (autovalor duplo)'
 }
+
+/**
+ * Detailed local spectral diagnosis. A tolerance-based classification is a
+ * numerical observation, not a certificate of exact eigenvalue coincidence.
+ * For Delta=0 a scalar 2x2 matrix has two independent eigenvectors; a
+ * non-scalar matrix has only one.
+ */
+export function classifyStateDetailed(U,p,tolerance=1e-10){
+  const J=jacobian(U,p)
+  const delta=discriminant(U,p)
+  const scale=Math.max(1,...J.flat().map(Math.abs))
+  const threshold=tolerance*scale*scale
+  const scalarResidual=Math.max(Math.abs(J[0][1]),Math.abs(J[1][0]),Math.abs(J[0][0]-J[1][1]))
+  const scalar=scalarResidual<=tolerance*scale
+  const regime=delta>threshold?'strictly-hyperbolic':delta< -threshold?'elliptic':'coincidence-near'
+  return {
+    regime,discriminant:delta,threshold,
+    eigenvalueMultiplicity:regime==='coincidence-near'?'double-near':'distinct',
+    geometricMultiplicity:regime==='coincidence-near'?(scalar?2:1):null,
+    jacobianKind:scalar?'scalar-near':'non-scalar',
+    scalarResidual,
+    evidence:tolerance===0?'floating-point-equality':'tolerance-based',
+  }
+}
