@@ -24,9 +24,22 @@ export function transformQuadraticFlux(p,A,t=[0,0]) {
   return {coefficients,constant:zero,determinant:d}
 }
 export function discriminantPolynomial(p){
-  const D=(u,v)=>discriminant([u,v],p)
-  const c=D(0,0),up=D(1,0),um=D(-1,0),vp=D(0,1),vm=D(0,-1)
-  return {u2:(up+um-2*c)/2,uv:D(1,1)-up-vp+c,v2:(vp+vm-2*c)/2,u:(up-um)/2,v:(vp-vm)/2,c}
+  // Exact coefficient expansion of Delta=(J11-J22)^2+4 J12 J21.
+  // Avoid reconstructing coefficients by sampled discriminant values,
+  // which can suffer cancellation near degenerate parameter strata.
+  const L=[2*p.a20-p.b11,p.a11-2*p.b02,p.a10-p.b01]
+  const B=[p.a11,2*p.a02,p.a01]
+  const C=[2*p.b20,p.b11,p.b10]
+  const square=(i,j)=>L[i]*L[j]
+  const product=(i,j)=>B[i]*C[j]
+  return {
+    u2:square(0,0)+4*product(0,0),
+    uv:2*square(0,1)+4*(product(0,1)+product(1,0)),
+    v2:square(1,1)+4*product(1,1),
+    u:2*square(0,2)+4*(product(0,2)+product(2,0)),
+    v:2*square(1,2)+4*(product(1,2)+product(2,1)),
+    c:square(2,2)+4*product(2,2),
+  }
 }
 export function classifyState(U,p,tolerance=1e-10){
  const J=jacobian(U,p),D=discriminant(U,p),scale=Math.max(1,...J.flat().map(Math.abs)),eps=tolerance*scale*scale
