@@ -1,5 +1,31 @@
 # Roadmap
 
+## Aba Parâmetros — explorador de classes geométricas (decisão aprovada em 31/10/2026)
+
+**Objetivo:** manter os dez coeficientes do fluxo quadrático geral, sem eliminá-los, e permitir classificar o fluxo atual e localizar exemplos por propriedades matemáticas. O explorador permanece **no painel lateral**, em seções recolhíveis, preservando os gráficos como área principal e seguindo o padrão visual existente. Nenhuma normalização por equivalência deve substituir silenciosamente os coeficientes do usuário.
+
+### Contrato matemático e de interação
+
+- Modelo: `F=(a20 u²+a11 uv+a02 v²+a10 u+a01 v, b20 u²+b11 uv+b02 v²+b10 u+b01 v)`; todos os dez coeficientes continuam editáveis.
+- Para `DF=[[A,B],[C,D]]`, calcular exatamente `Delta(u,v)=(A-D)²+4BC`, um polinômio real de grau **no máximo dois**. A projeção da coincidência no espaço de estados é `Delta=0`; distinguir esta projeção do levantamento geométrico de `mathcal E` à superfície característica `mathcal C`.
+- Classificar separadamente (i) o grau efetivo e o tipo algébrico da equação `Delta=0`, (ii) o conjunto real (elipse real, hipérbole, parábola, ponto, retas concorrentes/paralelas/coincidentes, reta, vazio, plano inteiro e demais degenerações pertinentes), e (iii) os domínios espectrais `Delta>0`, `Delta=0`, `Delta<0`. Não equiparar “cônica de tipo elíptico” a “região elíptica do sistema”.
+- Nos pontos `Delta=0`, distinguir `DF=lambda I` (duas direções próprias) de autovalor duplo não semissimples (uma direção própria). Distinguir propriedades **globais em todo o plano** de diagnósticos **locais no estado selecionado** e de observações restritas à janela gráfica.
+- Exibir para cada afirmação o critério matemático, as condições e o nível de evidência: **exato/certificado**, **numérico**, **inconclusivo** ou **não avaliado**. Não inferir topologia global, existência de ondas ou admissibilidade de amostragem finita.
+- Painel lateral: edição dos coeficientes; seção recolhível “Explorar características” com filtros compatíveis; seção “Diagnóstico” do fluxo atual; seção “Exemplos classificados” com prévia e confirmação antes de aplicar. Filtros incompatíveis devem ser explicados, não gerar exemplos fictícios. A seleção de um exemplo só altera os coeficientes após ação explícita.
+- Presets devem conter os **dez coeficientes**, propriedades verificadas, demonstração/teste reproduzível e limites de validade. O catálogo não constitui prova de exaustividade de todas as classes possíveis.
+- Reutilizar os classificadores e o atlas algébrico já existentes quando corretos; manter o fluxo `matemática → numérica → geometria → visualização → UI`. Não introduzir cálculos científicos como lógica exclusiva do componente React.
+
+### Plano fechado de implementação (não autorizado por este registro)
+
+| Etapa | Entrega | Aceitação |
+|---|---|---|
+| **P1 — Classificação exata** | Classificador puro de `Delta`, geometria real da coincidência, degenerações, regiões espectrais e estrutura dos autovetores nos pontos de coincidência | Casos positivos/negativos e limites degenerados testados; invariantes e decisões reproduzíveis |
+| **P2 — Diagnóstico no painel** | Exibir classificação do fluxo atual, justificativas, estados locais e distinção global/local na aba Parâmetros, com seções recolhíveis | Nenhuma regressão de gráficos, coeficientes ou interação; estados inconclusivos visíveis |
+| **P3 — Busca e catálogo** | Filtros por características, exemplos certificados de dez coeficientes, prévia, validação de compatibilidade e aplicação confirmada | Exemplos testados, filtros impossíveis explicados e alterações somente após confirmação |
+
+**Regra de parada:** encerrar P1–P3 após testes, revisão e documentação das limitações; não criar P4 ou subtarefas infinitas por iniciativa própria. Cada etapa depende de autorização específica. Sônicas, rarefações, Hugoniot, choques, admissibilidade e bifurcações são **extensões científicas futuras**, sem implementação autorizada neste plano. A classificação algébrica do atlas já existente não deve ser confundida com a certificação das ondas.
+
+
 ## Direção científica e leitura do histórico
 
 A fase tradicional GWML-T01–T08 foi **encerrada no escopo aprovado em 27/10/2026**; consultar a matriz de 16 entradas em [STATE_SPACE_STATUS.md](STATE_SPACE_STATUS.md). A integração interativa posterior foi consolidada em 28/10/2026; a investigação geométrica/topológica é uma fase distinta. O catálogo das [16 combinações](traditional/IMPLEMENTACAO_16_CADEIAS.md) não implica existência de solução para todos os dados. A [classificação dos nove saltos](traditional/CLASSIFICACAO_DOS_SALTOS.md) deve ser independente da seleção e tratar fronteiras explicitamente. A disponibilidade dos construtores e a cobertura científica devem ser registradas por padrão; o catálogo não implica 16 soluções para cada dado inicial.
