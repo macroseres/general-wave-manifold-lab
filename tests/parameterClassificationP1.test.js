@@ -82,3 +82,16 @@ test('P1: fronteira numericamente ambigua nao produz conclusao global', () => {
   assert.equal(d.strictlyHyperbolicEverywhere,null)
   assert.equal(d.coincidenceExists,null)
 })
+
+test('P1: termos afins arbitrariamente pequenos impedem certificacao global', () => {
+  const cases=[
+    {u2:0,uv:0,v2:0,u:1e-12,v:0,c:1},
+    {u2:1,uv:0,v2:0,u:0,v:1e-12,c:1},
+  ]
+  for(const q of cases){
+    const d=classifyQuadraticSigns(q)
+    assert.equal(d.evidence,'numerically-inconclusive')
+    assert.equal(d.hyperbolicEverywhere,null)
+    assert.equal(d.strictlyHyperbolicEverywhere,null)
+  }
+})
