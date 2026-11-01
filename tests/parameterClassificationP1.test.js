@@ -73,3 +73,12 @@ test('P1: sinais globais no preset de coincidência elíptica', () => {
   assert.equal(d.hyperbolicEverywhere,false)
   assert.equal(d.coincidenceExists,true)
 })
+
+test('P1: fronteira numericamente ambigua nao produz conclusao global', () => {
+  const q={u2:1,v2:1e-12,uv:0,u:0,v:0,c:1}
+  const d=classifyQuadraticSigns(q)
+  assert.equal(d.evidence,'numerically-inconclusive')
+  assert.equal(d.hyperbolicEverywhere,null)
+  assert.equal(d.strictlyHyperbolicEverywhere,null)
+  assert.equal(d.coincidenceExists,null)
+})
