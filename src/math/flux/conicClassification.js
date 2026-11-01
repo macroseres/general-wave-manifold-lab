@@ -65,11 +65,14 @@ export function classifyQuadraticSigns(q, relativeTolerance = 1e-9) {
   const eigen=[(tr+gap)/2,(tr-gap)/2]
   const nonzero=eigen.filter(x=>Math.abs(x)>eps)
   const result=(positive,negative,zero,reason,ambiguous=false)=>({
-    positive,negative,zero,
-    strictlyHyperbolicEverywhere:positive&&!negative&&!zero,
-    hyperbolicEverywhere:!negative,
-    ellipticRegionExists:negative,
-    coincidenceExists:zero,
+    // Unknown is null, never silently promoted to a certified Boolean.
+    positive:ambiguous?null:positive,
+    negative:ambiguous?null:negative,
+    zero:ambiguous?null:zero,
+    strictlyHyperbolicEverywhere:ambiguous?null:positive&&!negative&&!zero,
+    hyperbolicEverywhere:ambiguous?null:!negative,
+    ellipticRegionExists:ambiguous?null:negative,
+    coincidenceExists:ambiguous?null:zero,
     evidence:ambiguous?'numerically-inconclusive':'tolerance-based-algebraic',
     reason,
   })
