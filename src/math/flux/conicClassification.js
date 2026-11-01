@@ -113,8 +113,8 @@ export function classifyQuadraticSigns(q, relativeTolerance = 1e-9) {
   const linearImage=u*e[0]+v*e[1]
   const level=c-linearImage*linearImage/(4*lambda)
   const uncertain=Math.abs(level)<=eps&&level!==0
-  if(lambda>0)return result(true,level< -eps,Math.abs(level)<=eps||level< -eps,'rank-one positive quadratic part',ambiguous||uncertain)
-  return result(level>eps,true,Math.abs(level)<=eps||level>eps,'rank-one negative quadratic part',ambiguous||uncertain)
+  if(lambda>0)return result(true,level< -eps,Math.abs(level)<=eps||level< -eps,'rank-one positive quadratic part',ambiguous||uncertain||uncertainKernel)
+  return result(level>eps,true,Math.abs(level)<=eps||level>eps,'rank-one negative quadratic part',ambiguous||uncertain||uncertainKernel)
 }
 
 export function classifyFluxSigns(p,tolerance) {
