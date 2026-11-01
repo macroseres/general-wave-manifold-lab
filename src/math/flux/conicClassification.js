@@ -79,9 +79,12 @@ export function classifyQuadraticSigns(q, relativeTolerance = 1e-9) {
   // A tiny eigenvalue can change the global sign at arbitrarily large states.
   const ambiguous=eigen.some(x=>x!==0&&Math.abs(x)<=eps)
   if(nonzero.length===0){
+    // A suppressed affine coefficient changes the sign at sufficiently large
+    // states, even when it is tiny compared with the constant term.
+    const uncertainAffine=(u!==0||v!==0)&&Math.hypot(u,v)<=eps
     if(Math.hypot(u,v)>eps)return result(true,true,true,'nonconstant affine polynomial',ambiguous)
-    if(Math.abs(c)<=eps)return result(false,false,true,'zero polynomial',ambiguous||c!==0)
-    return result(c>0,c<0,false,'nonzero constant',ambiguous)
+    if(Math.abs(c)<=eps)return result(false,false,true,'zero polynomial',ambiguous||uncertainAffine||c!==0)
+    return result(c>0,c<0,false,'nonzero constant',ambiguous||uncertainAffine)
   }
   if(nonzero.length===2){
     if(eigen[0]*eigen[1]<0)return result(true,true,true,'indefinite quadratic form',ambiguous)
@@ -104,6 +107,9 @@ export function classifyQuadraticSigns(q, relativeTolerance = 1e-9) {
   const e=direction.map(x=>x/norm), k=[-e[1],e[0]]
   const linearKernel=u*k[0]+v*k[1]
   if(Math.abs(linearKernel)>eps)return result(true,true,true,'linear drift along null direction',ambiguous)
+  // Any nonzero drift along the kernel makes q unbounded in both signs.
+  // Suppressing it by tolerance cannot certify global nonnegativity.
+  const uncertainKernel=linearKernel!==0
   const linearImage=u*e[0]+v*e[1]
   const level=c-linearImage*linearImage/(4*lambda)
   const uncertain=Math.abs(level)<=eps&&level!==0
