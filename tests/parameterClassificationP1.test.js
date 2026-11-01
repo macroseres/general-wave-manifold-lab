@@ -2,6 +2,7 @@ import test from 'node:test'
 import assert from 'node:assert/strict'
 import { discriminantPolynomial, classifyStateDetailed } from '../src/math/flux/affineClassification.js'
 import { discriminant } from '../src/math/characteristic/spectrum.js'
+import { classifyQuadraticSigns, classifyFluxSigns } from '../src/math/flux/conicClassification.js'
 
 const evaluate = (q,u,v) => q.u2*u*u+q.uv*u*v+q.v2*v*v+q.u*u+q.v*v+q.c
 
@@ -44,4 +45,31 @@ test('P1: distingue espectro real distinto e complexo', () => {
   const base={a20:0,a11:0,a02:0,a10:0,a01:1,b20:0,b11:0,b02:0,b10:1,b01:0}
   assert.equal(classifyStateDetailed([0,0],base).regime,'strictly-hyperbolic')
   assert.equal(classifyStateDetailed([0,0],{...base,b10:-1}).regime,'elliptic')
+})
+
+test('P1: sinais globais de quadráticas definidas, indefinidas e degeneradas', () => {
+  const cases=[
+    [{u2:1,uv:0,v2:1,u:0,v:0,c:1},[true,false,false]],
+    [{u2:1,uv:0,v2:1,u:0,v:0,c:0},[true,false,true]],
+    [{u2:1,uv:0,v2:1,u:0,v:0,c:-1},[true,true,true]],
+    [{u2:1,uv:0,v2:-1,u:0,v:0,c:1},[true,true,true]],
+    [{u2:1,uv:0,v2:0,u:0,v:1,c:0},[true,true,true]],
+    [{u2:1,uv:0,v2:0,u:0,v:0,c:1},[true,false,false]],
+    [{u2:1,uv:0,v2:0,u:0,v:0,c:0},[true,false,true]],
+    [{u2:0,uv:0,v2:0,u:1,v:0,c:0},[true,true,true]],
+    [{u2:0,uv:0,v2:0,u:0,v:0,c:-2},[false,true,false]],
+    [{u2:0,uv:0,v2:0,u:0,v:0,c:0},[false,false,true]],
+  ]
+  for(const [q,expected] of cases){
+    const d=classifyQuadraticSigns(q)
+    assert.deepEqual([d.positive,d.negative,d.zero],expected,JSON.stringify(q))
+  }
+})
+
+test('P1: sinais globais no preset de coincidência elíptica', () => {
+  const p={a20:4.5,a11:0,a02:0.5,a10:0,a01:0,b20:0,b11:1,b02:0,b10:1,b01:0}
+  const d=classifyFluxSigns(p)
+  assert.equal(d.ellipticRegionExists,true)
+  assert.equal(d.hyperbolicEverywhere,false)
+  assert.equal(d.coincidenceExists,true)
 })
