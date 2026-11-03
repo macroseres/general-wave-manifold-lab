@@ -19,9 +19,11 @@
 
 | Etapa | Entrega | Aceitação |
 |---|---|---|
-| **P1 — Classificação exata** | Classificador puro de `Delta`, geometria real da coincidência, degenerações, regiões espectrais e estrutura dos autovetores nos pontos de coincidência | Casos positivos/negativos e limites degenerados testados; invariantes e decisões reproduzíveis |
+| **P1 — Classificação matemática (encerrada em 03/11/2026)** | Classificador puro de `Delta`, geometria real da coincidência, degenerações, regiões espectrais e estrutura dos autovetores nos pontos de coincidência | Casos positivos/negativos e limites degenerados testados; invariantes e decisões reproduzíveis |
 | **P2 — Diagnóstico no painel** | Exibir classificação do fluxo atual, justificativas, estados locais e distinção global/local na aba Parâmetros, com seções recolhíveis | Nenhuma regressão de gráficos, coeficientes ou interação; estados inconclusivos visíveis |
 | **P3 — Busca e catálogo** | Filtros por características, exemplos certificados de dez coeficientes, prévia, validação de compatibilidade e aplicação confirmada | Exemplos testados, filtros impossíveis explicados e alterações somente após confirmação |
+
+**P1 encerrada documentalmente em 03/11/2026:** validação local `npm run check` aprovada (ESLint, 896/896 testes, 15 testes P1, build Vite). Classificação algébrica e diagnósticos numéricos validados nos casos testados, sem alegação de completude global ou certificação simbólica geral. P2/P3 não autorizadas; PR #2 não integrada à `main`.
 
 **Regra de parada:** encerrar P1–P3 após testes, revisão e documentação das limitações; não criar P4 ou subtarefas infinitas por iniciativa própria. Cada etapa depende de autorização específica. Sônicas, rarefações, Hugoniot, choques, admissibilidade e bifurcações são **extensões científicas futuras**, sem implementação autorizada neste plano. A classificação algébrica do atlas já existente não deve ser confundida com a certificação das ondas.
 
