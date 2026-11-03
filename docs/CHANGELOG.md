@@ -2,6 +2,7 @@
 
 - `src/components/Scene.jsx` (772 linhas) passa a conter apenas a composição da cena (`CameraRig`, `SceneContent`, `Scene`). Os componentes foram movidos sem alteração de código para `src/components/scene/`: `shared` (`Line`, `clamp`), `StateOverlays`, `SpecialLoci`, `HopfSurfaces`, `SonicSurfaces`, `Rarefaction`, `CharacteristicSurface` e `Annotations`.
 - Os testes de fronteira que liam `Scene.jsx` como texto usam agora `tests/helpers/sceneSource.js`, que concatena `Scene.jsx` e `scene/*.jsx`; os padrões verificados são os mesmos.
+- As funções puras do Espaço de estados (`axisTicks`, `fittedWindow`, `robustExtent`, `validWindow`, `shockStopLabel` e as constantes/projeções de viewport) saíram de `StateSpaceDialog.jsx` para `src/geometry/state/stateSpaceView.js`, sem dependência de React, com testes unitários em `tests/stateSpaceView.test.js`. `StateMathAnnotation` passou a ter arquivo próprio. O componente `StatePlot` (~690 linhas) permanece intacto: dividi-lo exige refatorar estado compartilhado entre hooks e deve ser feito com verificação visual.
 
 ## Licença — 03/11/2026
 
