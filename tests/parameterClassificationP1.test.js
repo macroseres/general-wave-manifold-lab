@@ -31,7 +31,7 @@ test('P1: coincidencia escalar possui duas direcoes proprias', () => {
   const d=classifyStateDetailed([4,-3],p)
   assert.equal(d.regime,'coincidence-near')
   assert.equal(d.geometricMultiplicity,2)
-  assert.equal(d.jacobianKind,'scalar-near')
+  assert.equal(d.jacobianKind,'scalar-computed')
 })
 
 test('P1: bloco de Jordan na coincidencia possui uma direcao propria', () => {
