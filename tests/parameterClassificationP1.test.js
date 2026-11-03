@@ -110,3 +110,26 @@ test('P1: autovalor quadratico pequeno positivo tambem exige cautela', () => {
   assert.equal(d.evidence,'numerically-inconclusive')
   assert.equal(d.coincidenceExists,null)
 })
+
+test('P1: discriminante apenas proximo de zero nao certifica multiplicidade geometrica', () => {
+  const p={a20:0,a11:0,a02:0,a10:2,a01:1,b20:0,b11:0,b02:0,b10:1e-12,b01:2}
+  const d=classifyStateDetailed([0,0],p)
+  assert.equal(d.regime,'coincidence-near')
+  assert.equal(d.eigenvalueMultiplicity,'unresolved-near')
+  assert.equal(d.geometricMultiplicity,null)
+})
+
+test('P1: matriz apenas proxima de escalar nao recebe duas direcoes proprias', () => {
+  const p={a20:0,a11:0,a02:0,a10:2,a01:1e-12,b20:0,b11:0,b02:0,b10:0,b01:2}
+  const d=classifyStateDetailed([0,0],p)
+  assert.equal(d.regime,'coincidence-near')
+  assert.equal(d.jacobianKind,'scalar-near')
+  assert.equal(d.geometricMultiplicity,null)
+})
+
+test('P1: matriz exatamente escalar mantem multiplicidade geometrica dois', () => {
+  const p={a20:0,a11:0,a02:0,a10:2,a01:0,b20:0,b11:0,b02:0,b10:0,b01:2}
+  const d=classifyStateDetailed([0,0],p)
+  assert.equal(d.jacobianKind,'scalar-computed')
+  assert.equal(d.geometricMultiplicity,2)
+})
