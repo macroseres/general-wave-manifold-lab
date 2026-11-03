@@ -1,8 +1,14 @@
+## Aba Parâmetros — P3 encerrada e plano P1–P3 concluído (03/11/2026)
+
+- **P3 — Busca e catálogo:** seis exemplos finitos com dez coeficientes, filtro geométrico, prévia verificável e substituição dos coeficientes somente após confirmação explícita. Três testes automatizados específicos da P3 aprovados.
+- **Validação:** `npm run check` local aprovado (ESLint, **899/899 testes**, build). Seleção, prévia, aplicação confirmada e atualização do mapa conferidas visualmente e confirmadas pelo responsável.
+- **Limites:** catálogo não exaustivo, diagnósticos numéricos sem certificação simbólica geral. **P1, P2 e P3 encerradas** no escopo aprovado; nenhuma P4 criada. PR #2 permanece sem integração à `main`.
+
 ## Aba Parâmetros — P1 e P2 encerradas (03/11/2026)
 
 - **P1 — Classificação matemática:** discriminante quadrático do fluxo geral, análise global de sinais e diagnóstico espectral local, distinguindo coincidência computada de mera proximidade numérica e preservando resultados inconclusivos nas fronteiras. Validação local: ESLint, 896/896 testes (15 específicos da P1) e build aprovados. Sem alegação de certificação simbólica ou completude global.
 - **P2 — Diagnóstico no painel:** seções recolhíveis de diagnóstico global e local em Parâmetros → Fluxo, com critérios, evidências e apresentação adaptada ao painel lateral. Inspeção visual e atualização ao modificar coeficientes/estado confirmadas pelo responsável; `npm run check` local aprovado com 896/896 testes e build.
-- **Limites:** P3 (busca e catálogo) não iniciada; PR #2 permanece sem integração à `main`. Avisos não bloqueantes de WebSocket e tamanho do bundle registrados na validação local.
+- **Limites à época da P2:** P3 ainda não iniciada naquele marco; posteriormente encerrada conforme registro de 03/11/2026 acima. PR #2 permanece sem integração à `main`. Avisos não bloqueantes de WebSocket e tamanho do bundle registrados na validação local.
 
 ## Correção do atlas e rastreabilidade — 21/10/2026
 
