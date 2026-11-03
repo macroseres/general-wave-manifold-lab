@@ -73,7 +73,7 @@ export function SonicSurfaces({p,tauMin,tauMax,YMin,YMax,showBTMinus=true,showBT
       fallbackTimers.add(timer)
     }
     try{
-      const worker=new Worker(new URL('../geometry/sonic/sonic.worker.js',import.meta.url),{type:'module'})
+      const worker=new Worker(new URL('../../geometry/sonic/sonic.worker.js',import.meta.url),{type:'module'})
       workerRef.current=worker
       worker.onmessage=({data})=>{
         if(!mounted||!isCurrentSonicResponse(data,requestRef.current,currentKeyRef.current))return
