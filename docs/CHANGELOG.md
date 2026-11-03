@@ -1,3 +1,9 @@
+## Aba Parâmetros — P1 e P2 encerradas (03/11/2026)
+
+- **P1 — Classificação matemática:** discriminante quadrático do fluxo geral, análise global de sinais e diagnóstico espectral local, distinguindo coincidência computada de mera proximidade numérica e preservando resultados inconclusivos nas fronteiras. Validação local: ESLint, 896/896 testes (15 específicos da P1) e build aprovados. Sem alegação de certificação simbólica ou completude global.
+- **P2 — Diagnóstico no painel:** seções recolhíveis de diagnóstico global e local em Parâmetros → Fluxo, com critérios, evidências e apresentação adaptada ao painel lateral. Inspeção visual e atualização ao modificar coeficientes/estado confirmadas pelo responsável; `npm run check` local aprovado com 896/896 testes e build.
+- **Limites:** P3 (busca e catálogo) não iniciada; PR #2 permanece sem integração à `main`. Avisos não bloqueantes de WebSocket e tamanho do bundle registrados na validação local.
+
 ## Correção do atlas e rastreabilidade — 21/10/2026
 
 - Corrigida a classificação dos quocientes lineares excepcionais: coordenadas pequenas não nulas não são mais tratadas como eixos exatos por um limiar absoluto. Decisões ambíguas retornam `ill-conditioned` sem classe residual; regressões cobrem reescala positiva, eixos resolvidos e os setores de posto um. A avaliação do produto residual evita perda de sinal por subfluxo do produto direto.
