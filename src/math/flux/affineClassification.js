@@ -62,13 +62,22 @@ export function classifyStateDetailed(U,p,tolerance=1e-10){
   const threshold=tolerance*scale*scale
   const scalarResidual=Math.max(Math.abs(J[0][1]),Math.abs(J[1][0]),Math.abs(J[0][0]-J[1][1]))
   const scalar=scalarResidual<=tolerance*scale
+  const exactScalar=J[0][1]===0&&J[1][0]===0&&J[0][0]===J[1][1]
   const regime=delta>threshold?'strictly-hyperbolic':delta< -threshold?'elliptic':'coincidence-near'
+  // A tolerance window does not establish algebraic or geometric multiplicity.
+  // Only an exactly zero computed discriminant supports a floating-point
+  // equality diagnosis; this is not a symbolic proof of coincidence.
+  const computedCoincidence=delta===0
   return {
     regime,discriminant:delta,threshold,
-    eigenvalueMultiplicity:regime==='coincidence-near'?'double-near':'distinct',
-    geometricMultiplicity:regime==='coincidence-near'?(scalar?2:1):null,
-    jacobianKind:scalar?'scalar-near':'non-scalar',
+    eigenvalueMultiplicity:regime==='coincidence-near'
+      ?(computedCoincidence?'double-computed':'unresolved-near')
+      :'distinct',
+    geometricMultiplicity:regime==='coincidence-near'&&computedCoincidence
+      ?(exactScalar?2:scalar?null:1)
+      :null,
+    jacobianKind:exactScalar?'scalar-computed':scalar?'scalar-near':'non-scalar',
     scalarResidual,
-    evidence:tolerance===0?'floating-point-equality':'tolerance-based',
+    evidence:computedCoincidence?'floating-point-equality':'tolerance-based',
   }
 }
