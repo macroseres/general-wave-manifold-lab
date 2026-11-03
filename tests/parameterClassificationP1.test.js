@@ -95,3 +95,18 @@ test('P1: termos afins arbitrariamente pequenos impedem certificacao global', ()
     assert.equal(d.strictlyHyperbolicEverywhere,null)
   }
 })
+
+test('P1: autovalor quadratico negativo muito pequeno nao desaparece por cancelamento', () => {
+  const q={u2:1,uv:0,v2:-1e-20,u:0,v:0,c:1}
+  const d=classifyQuadraticSigns(q)
+  assert.equal(d.evidence,'numerically-inconclusive')
+  assert.equal(d.hyperbolicEverywhere,null)
+  assert.equal(d.strictlyHyperbolicEverywhere,null)
+})
+
+test('P1: autovalor quadratico pequeno positivo tambem exige cautela', () => {
+  const q={u2:1,uv:0,v2:1e-20,u:0,v:0,c:1}
+  const d=classifyQuadraticSigns(q)
+  assert.equal(d.evidence,'numerically-inconclusive')
+  assert.equal(d.coincidenceExists,null)
+})
