@@ -15,17 +15,19 @@
 - Presets devem conter os **dez coeficientes**, propriedades verificadas, demonstração/teste reproduzível e limites de validade. O catálogo não constitui prova de exaustividade de todas as classes possíveis.
 - Reutilizar os classificadores e o atlas algébrico já existentes quando corretos; manter o fluxo `matemática → numérica → geometria → visualização → UI`. Não introduzir cálculos científicos como lógica exclusiva do componente React.
 
-### Plano fechado de implementação (não autorizado por este registro)
+### Plano fechado de implementação (P1–P3 encerradas em 03/11/2026)
 
 | Etapa | Entrega | Aceitação |
 |---|---|---|
 | **P1 — Classificação matemática (encerrada em 03/11/2026)** | Classificador puro de `Delta`, geometria real da coincidência, degenerações, regiões espectrais e estrutura dos autovetores nos pontos de coincidência | Casos positivos/negativos e limites degenerados testados; invariantes e decisões reproduzíveis |
 | **P2 — Diagnóstico no painel (encerrada em 03/11/2026)** | Exibir classificação do fluxo atual, justificativas, estados locais e distinção global/local na aba Parâmetros, com seções recolhíveis | Nenhuma regressão de gráficos, coeficientes ou interação; estados inconclusivos visíveis |
-| **P3 — Busca e catálogo** | Filtros por características, exemplos certificados de dez coeficientes, prévia, validação de compatibilidade e aplicação confirmada | Exemplos testados, filtros impossíveis explicados e alterações somente após confirmação |
+| **P3 — Busca e catálogo (encerrada em 03/11/2026)** | Filtros por características, exemplos certificados de dez coeficientes, prévia, validação de compatibilidade e aplicação confirmada | Exemplos testados, filtros impossíveis explicados e alterações somente após confirmação |
 
 **P1 encerrada documentalmente em 03/11/2026:** validação local `npm run check` aprovada (ESLint, 896/896 testes, 15 testes P1, build Vite). Classificação algébrica e diagnósticos numéricos validados nos casos testados, sem alegação de completude global ou certificação simbólica geral. P2 posteriormente autorizada e encerrada conforme registro abaixo; P3 não iniciada; PR #2 não integrada à `main`.
 
 **P2 encerrada documentalmente em 03/11/2026 (autorização expressa):** diagnósticos global e local integrados à aba Parâmetros → Fluxo, recolhidos por padrão, com resultados, critérios e evidências; sem alteração do núcleo matemático da P1. Inspeção visual aprovada e atualização reativa dos diagnósticos confirmada pelo responsável após modificar coeficientes e estado. Validação local reportada: `npm run check` com ESLint, **896/896 testes** e build de produção aprovados. Os testes e a inspeção não constituem certificação matemática global. P3 permanece pendente de autorização; PR #2 não integrada à `main`.
+
+**P3 encerrada documentalmente em 03/11/2026 (autorização expressa):** catálogo finito de seis exemplos com dez coeficientes, filtro por geometria, prévia e aplicação somente mediante confirmação. Três testes específicos da P3 aprovados; validação local reportada com ESLint, **899/899 testes** e build de produção aprovados. Inspeção visual e confirmação funcional do responsável: seleção, prévia, aplicação e atualização do mapa. O catálogo é demonstrativo, não exaustivo; a classificação numérica não equivale à certificação simbólica universal. P1–P3 encerradas no escopo delimitado, sem P4. PR #2 permanece sem integração à `main`.
 
 **Regra de parada:** encerrar P1–P3 após testes, revisão e documentação das limitações; não criar P4 ou subtarefas infinitas por iniciativa própria. Cada etapa depende de autorização específica. Sônicas, rarefações, Hugoniot, choques, admissibilidade e bifurcações são **extensões científicas futuras**, sem implementação autorizada neste plano. A classificação algébrica do atlas já existente não deve ser confundida com a certificação das ondas.
 
