@@ -1,6 +1,6 @@
 import process from 'node:process'
 import { performance } from 'node:perf_hooks'
-import { defaultCoefficients } from '../src/math/quadraticFlux.js'
+import { defaultCoefficients } from '../src/math/flux/quadraticFlux.js'
 import { sonicSurfaceTriangles } from '../src/geometry/sonic/surface.js'
 
 const args = process.argv.slice(2)

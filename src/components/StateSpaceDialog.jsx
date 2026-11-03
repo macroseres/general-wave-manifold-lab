@@ -4,33 +4,33 @@ import {stateShockBranches} from '../math/solution/stateShockBranches.js'
 import {stateShockGeometry} from '../geometry/state/stateShockGeometry.js'
 import {stateConstructionSearch} from '../math/solution/stateConstructionSearch.js'
 import {candidateStateGeometry} from '../geometry/state/candidateStateGeometry.js'
-import StateChainInspection,{StateConstructionReports} from './StateChainInspection.jsx'
-import {StatePointVisibility,StateHugoniotVisibility} from './SharedStateVisibility.jsx'
+import StateChainInspection, {StateConstructionReports} from './StateChainInspection.jsx'
+import {StatePointVisibility, StateHugoniotVisibility} from './SharedStateVisibility.jsx'
 import ScientificLegend from './ScientificLegend.jsx'
-import { fastHugoniotPreviewPath } from '../math/state/fastHugoniotPreview.js'
+import {fastHugoniotPreviewPath} from '../math/state/fastHugoniotPreview.js'
 import VisibilityEye from './VisibilityEye.jsx'
 import WorkspaceToolbar from './WorkspaceToolbar.jsx'
 import WorkspaceLayout from './WorkspaceLayout.jsx'
-import { MathLabel } from './math/MathLabel.jsx'
+import {MathLabel} from './math/MathLabel.jsx'
 import WorkspaceRail from './WorkspaceRail.jsx'
 import WorkspaceDrawer from './WorkspaceDrawer.jsx'
 import WorkspacePanelHeader from './WorkspacePanelHeader.jsx'
-import { zoomWindow, panWindow } from '../math/state/viewportNavigation.js'
-import { chooseStateLabelPosition } from '../math/state/labelPlacement.js'
+import {zoomWindow, panWindow} from '../math/state/viewportNavigation.js'
+import {chooseStateLabelPosition} from '../math/state/labelPlacement.js'
 import {liftHugoniotSample} from '../math/state/hugoniotWaveLift.js'
-import {nearestProjectedSample,projectedHugoniotEndpoints} from '../math/state/projectedCurveSamples.js'
-import {projectedCurveHits,nextProjectedCurveHit} from '../math/state/projectedCurvePicking.js'
+import {nearestProjectedSample, projectedHugoniotEndpoints} from '../math/state/projectedCurveSamples.js'
+import {projectedCurveHits, nextProjectedCurveHit} from '../math/state/projectedCurvePicking.js'
 import ScientificStateMarker from './ScientificStateMarker.jsx'
 import ScientificPointMarker from './ScientificPointMarker.jsx'
 import {STATE_MARKER_SIZE_2D} from '../config/scientificMarkerRules.js'
-import { scientificCurveStyle, scientificLocusKind } from '../config/scientificCurveRules.js'
+import {scientificCurveStyle, scientificLocusKind} from '../config/scientificCurveRules.js'
 import {implicitTwoShockMiddleSensitivity} from '../math/solution/riemannImplicitMiddleSensitivity.js'
 import {mixedMiddleReconstructionSensitivity} from '../math/solution/riemannMixedMiddleSensitivity.js'
-import {compareHugoniotSensitivity,compareHugoniotCoordinateSensitivity} from '../math/solution/riemannSensitivityComparison.js'
+import {compareHugoniotSensitivity, compareHugoniotCoordinateSensitivity} from '../math/solution/riemannSensitivityComparison.js'
 import RiemannSensitivityPlot from './RiemannSensitivityPlot.jsx'
 import {selectedCandidateHugoniotArc} from '../math/solution/riemannBranchHighlight.js'
 import RarefactionSearchReport from './RarefactionSearchReport.jsx'
-import {useEffect,useMemo,useRef,useState} from 'react'
+import {useEffect, useMemo, useRef, useState} from 'react'
 import {useWorkspacePreference} from '../hooks/useWorkspacePreference.js'
 import {constructionRarefactionBranches} from '../math/solution/stateConstructionSampling.js'
 import {genuineNonlinearityEvents} from '../math/rarefaction/genuineNonlinearity.js'
@@ -44,7 +44,7 @@ import {classifyCompositeLiu} from '../math/solution/compositeLiuSelection.js'
 import {classifyCompositeEvidence} from '../math/solution/compositeEvidence.js'
 import {traceSeededBackwardHugoniot} from '../math/solution/seededBackwardHugoniot.js'
 import {seededLiuAtBackwardContact} from '../math/solution/backwardLiu.js'
-import {sampledLiuAtForwardContact,seededLiuAtForwardContact} from '../math/solution/orientedLiuArc.js'
+import {sampledLiuAtForwardContact, seededLiuAtForwardContact} from '../math/solution/orientedLiuArc.js'
 import {riemannBoundaryRegularity} from '../math/manifold/riemannBoundaryRegularity.js'
 import {sampleDiscriminantRegions} from '../math/characteristic/discriminantRegions.js'
 import {auditCoincidenceProjection} from '../math/characteristic/coincidenceProjectionAudit.js'
@@ -53,75 +53,14 @@ import {auditCoincidenceDegeneracies} from '../math/characteristic/coincidenceDe
 import {auditCoincidenceLifts} from '../math/characteristic/coincidenceLiftAudit.js'
 import {auditCoincidenceIncidence} from '../math/characteristic/coincidenceIncidenceAudit.js'
 import {stateSpaceProjection} from '../math/state/projections.js'
-import {projectRarefactionOrbitToState,rarefactionOrbits,splitProjectedRarefactionByBranch} from '../math/rarefaction/orbits.js'
-import {clipStatePolyline,statePointToUnit,stateSpaceGeometry} from '../geometry/state/stateSpace.js'
+import {projectRarefactionOrbitToState, rarefactionOrbits, splitProjectedRarefactionByBranch} from '../math/rarefaction/orbits.js'
+import {clipStatePolyline, stateSpaceGeometry} from '../geometry/state/stateSpace.js'
 import {stateFibreGeometry} from '../geometry/state/fibreGeometry.js'
 import {hugoniotLaxGeometry} from '../geometry/state/hugoniotLaxGeometry.js'
 import {projectHugoniotLaxGeometryToState} from '../geometry/state/hugoniotStateProjection.js'
+import {shockStopLabel, W, H, P, sx, sy, pathData, axisTicks, axisLabel, finiteNumber, validWindow, fittedWindow} from '../geometry/state/stateSpaceView.js'
+import {StateMathAnnotation} from './StateMathAnnotation.jsx'
 
-// Viewport retangular: escalas visuais independentes nos eixos u e v.
-// As coordenadas de estado e as equações não são alteradas.
-const shockStopLabel=reason=>({
-  'radius-limit':'Limite numérico de raio',
-  'max-steps':'Limite numérico de passos',
-  'sample-limit':'Fim da amostragem disponível',
-  'lax-endpoint-boundary':'Lax estrito deixou de ser verificado; fronteira não refinada',
-  'hyperbolicity-unverified':'Hiperbolicidade estrita deixou de ser verificada',
-  'rh-unverified':'Rankine–Hugoniot deixou de ser verificado',
-  'singular-gradient':'Gradiente singular na continuação numérica',
-  'corrector-failed':'Falha do corretor numérico',
-  'loop-detected':'Retorno numérico a um trecho já visitado',
-}[reason]??`Continuação interrompida: ${reason}`)
-const W=1040,H=680,P=64
-const sx=(q,g)=>P+statePointToUnit(q,g).x*(W-2*P)
-const sy=(q,g)=>H-P-statePointToUnit(q,g).y*(H-2*P)
-const pathData=(points,g)=>points.map((q,i)=>`${i?'L':'M'} ${sx(q,g).toFixed(2)} ${sy(q,g).toFixed(2)}`).join(' ')
-// Graduação independente dos eixos: números legíveis mesmo após zoom/pan.
-const axisTicks=(min,max,target=8)=>{
-  const span=max-min
-  if(!Number.isFinite(span)||span<=0)return []
-  const rough=span/target,base=10**Math.floor(Math.log10(rough))
-  const step=[1,2,2.5,5,10].map(n=>n*base).find(n=>n>=rough)??10*base
-  const start=Math.ceil((min-1e-10*span)/step)*step
-  const count=Math.min(100,Math.ceil((max-start)/step)+1)
-  return Array.from({length:count},(_,i)=>Number((start+i*step).toPrecision(12))).filter(v=>v>=min-1e-10*span&&v<=max+1e-10*span)
-}
-const axisLabel=value=>Math.abs(value)<1e-10?'0':Number(value.toPrecision(5)).toString()
-const finiteNumber=value=>Number.isFinite(Number(value))?Number(value):null
-const validWindow=w=>w&&[w.uMin,w.uMax,w.vMin,w.vMax].every(Number.isFinite)&&w.uMin<w.uMax&&w.vMin<w.vMax
-const robustExtent=values=>{
-  const a=values.filter(Number.isFinite).sort((x,y)=>x-y)
-  if(!a.length)return null
-  const pick=q=>a[Math.min(a.length-1,Math.max(0,Math.floor(q*(a.length-1))))]
-  return a.length<20?[a[0],a[a.length-1]]:[pick(.05),pick(.95)]
-}
-const fittedWindow=(g,fixedState=null,requiredStates=[])=>{
-  // The viewport follows the rarefaction geometry, not the currently inspected point P in the wave manifold.
-  // This keeps state selection independent from 3D inspection, even when P is near projective infinity.
-  const curvePts=g.curves.flatMap(c=>c.points??[])
-  const pts=curvePts.length?curvePts:g.projection?[g.projection.minus,g.projection.plus,g.projection.mean]:g.anchorPoints
-  let ue=robustExtent(pts.map(q=>q.u)),ve=robustExtent(pts.map(q=>q.v))
-  if(!ue||!ve)return {uMin:g.uMin,uMax:g.uMax,vMin:g.vMin,vMax:g.vMax}
-  // Keep the scientific geometry central, but always include the selected state U*.
-  if(fixedState?.every(Number.isFinite)){ue=[Math.min(ue[0],fixedState[0]),Math.max(ue[1],fixedState[0])];ve=[Math.min(ve[0],fixedState[1]),Math.max(ve[1],fixedState[1])]}
-  // Candidate states and arcs must never be trimmed by the geometry quantiles.
-  for(const U of requiredStates)if(Array.isArray(U)&&U.length===2&&U.every(Number.isFinite)){
-    ue=[Math.min(ue[0],U[0]),Math.max(ue[1],U[0])]
-    ve=[Math.min(ve[0],U[1]),Math.max(ve[1],U[1])]
-  }
-  const uSpan=Math.max(.12,ue[1]-ue[0]),vSpan=Math.max(.12,ve[1]-ve[0]),span=Math.max(uSpan,vSpan)
-  const pad=.12, uMid=(ue[0]+ue[1])/2, vMid=(ve[0]+ve[1])/2,half=span*(.5+pad)
-  return {uMin:uMid-half,uMax:uMid+half,vMin:vMid-half,vMax:vMid+half}
-}
-
-
-// Render mathematical annotations with the same KaTeX component used by the panels.
-// SVG foreignObject keeps annotations attached to graph coordinates during zoom/pan.
-function StateMathAnnotation({x,y,tex,width=96,textAnchor='start'}) {
-  return <foreignObject x={x} y={y-17} width={width} height="29" pointerEvents="none" style={{overflow:'visible'}}>
-    <span xmlns="http://www.w3.org/1999/xhtml" className="stateMathAnnotation" style={{display:'inline-block',whiteSpace:'nowrap',transform:textAnchor==='end'?'translateX(-100%)':undefined}}><MathLabel>{tex}</MathLabel></span>
-  </foreignObject>
-}
 export default function StateSpaceDialog({exploreWaveBranches=false,onChangeExploreWaveBranches,constructionRevision=0,constructionRequested=true,onBuildCandidates,showJ=false,setShowJ,sharedLoci=[],open,onClose,inline=false,state,p,tauMin,tauMax,showRarefaction=true,fixedState=null,onSelectState,onClearState,riemannStates,onChangeRiemannState,onProfileCandidates,selectedCandidateIndex=-1,onSelectCandidate,projectionRequest=null,onInspectFibres3D,onInspectWavePoint3D,pointVisibility={left:true,right:true,fixed:true,middle:true},onTogglePointVisibility,showLeftRiemannHugoniot=true,setShowLeftRiemannHugoniot,showRightRiemannHugoniot=true,setShowRightRiemannHugoniot,showMinusStateFibre=true,setShowMinusStateFibre,showPlusStateFibre=true,setShowPlusStateFibre}){
   useEffect(()=>{if(!open||inline)return undefined;const key=e=>{if(e.key==='Escape'&&!e.defaultPrevented)onClose()};window.addEventListener('keydown',key);return()=>window.removeEventListener('keydown',key)},[open,onClose,inline])
   const data=useMemo(()=>{

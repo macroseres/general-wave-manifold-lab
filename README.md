@@ -42,8 +42,13 @@ The [notation guide](docs/NOTACAO.md) distinguishes state roles, chart coordinat
 - `docs/mathematics/` — canonical LaTeX mathematical reference for the validated pre-Hugoniot core.
 - `docs/architecture/` — software and numerical architecture.
 - `docs/decisions/` — architecture/mathematics decision records.
+- `docs/fases/` — historical notes for each development and audit phase ([index](docs/fases/README.md)).
 - `docs/ROADMAP.md` — planned milestones.
 - `docs/CHANGELOG.md` — version history.
 - `CONTRIBUTING.md` — Git and contribution workflow.
 
 The existing `docs/MATHEMATICS.md` is retained as legacy/reference material only; canonical pre-Hugoniot formulas live in `docs/mathematics/`.
+
+## License
+
+Released under the [MIT License](LICENSE). Copyright (c) 2026 Edwin López.

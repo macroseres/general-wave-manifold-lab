@@ -1,7 +1,7 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
-import {readFileSync} from 'node:fs'
-const scene=readFileSync(new URL('../src/components/Scene.jsx',import.meta.url),'utf8')
+import { readSceneSource } from './helpers/sceneSource.js'
+const scene=readSceneSource()
 test('surface isolation offers all five independent families',()=>{
   for(const mode of ['all','characteristic','sonic-minus','sonic-plus','hopf-minus','hopf-plus'])assert.match(scene,new RegExp(`value="${mode}"`))
 })

@@ -1,6 +1,6 @@
 /** Manual J outlier localization. Not imported by the 3D application. */
 import process from 'node:process'
-import { defaultCoefficients } from '../src/math/quadraticFlux.js'
+import { defaultCoefficients } from '../src/math/flux/quadraticFlux.js'
 import { sonicSurfaceTriangles, doubleSonicGeometry, inflectionGeometry } from '../src/geometry/sonic/surface.js'
 import { intersectSonicTriangleMeshes } from '../src/geometry/sonic/triangleIntersection.js'
 import { pointSegmentDistance } from '../src/geometry/sonic/commonIntersectionAudit.js'

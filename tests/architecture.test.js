@@ -55,13 +55,14 @@ test('numerical policy snapshot is serializable and detached',()=>{
 })
 
 test('Scene renderer does not integrate ODEs or evaluate sonic equations directly',()=>{
-  const scene=fs.readFileSync(path.join(root,'src','components','Scene.jsx'),'utf8')
+  const scene=readSceneSource()
   for(const forbidden of ['rarefactionField(', 'sonicData(', 'rk4Step(', 'zFromZc(']){
     assert.equal(scene.includes(forbidden),false,`Scene.jsx still contains scientific operation ${forbidden}`)
   }
 })
 
 import { createExperiment, parseExperiment, validateExperiment, numericalPolicyMatchesCurrent } from '../src/experiment/schema.js'
+import { readSceneSource } from './helpers/sceneSource.js'
 
 test('experiment schema round-trips scientific and presentation state',()=>{
   const experiment=createExperiment({appVersion:'0.7.0-dev.17',coefficients:{a20:1,a11:2,a02:3,a10:4,a01:5,b20:6,b11:7,b02:8,b10:9,b01:10},samplingDomain:{tauMin:-2,tauMax:3,YMin:-4,YMax:5},point:{tau:.2,Y:-.3,zc:.4},visibility:{showSMinus:true,showSPlus:false,showRarefaction:true,showRareCurves:true,showFiniteStable:false,showFiniteUnstable:true,showInfinityStable:true,showInfinityUnstable:false},axisScale:{tau:1,Y:.5,zc:2}})

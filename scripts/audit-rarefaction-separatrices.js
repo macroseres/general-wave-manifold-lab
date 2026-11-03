@@ -1,5 +1,5 @@
 import { readFileSync } from 'node:fs'
-import { defaultCoefficients } from '../src/math/quadraticFlux.js'
+import { defaultCoefficients } from '../src/math/flux/quadraticFlux.js'
 import { finiteRarefactionSeparatrices } from '../src/math/rarefaction/finiteSeparatrices.js'
 import { infinityRarefactionSeparatrices } from '../src/math/rarefaction/separatrices.js'
 

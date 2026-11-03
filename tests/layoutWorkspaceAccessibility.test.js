@@ -17,6 +17,7 @@ test('botões de painéis móveis expõem relação e estado para tecnologias as
   }
 })
 test('manual e documentação permanecem em superfícies distintas', () => {
-  assert.match(app, /activeWorkspace==='docs'&&<DocumentationWorkspace\/>/)
+  // The documentation workspace is lazy-loaded, so it sits inside a Suspense boundary.
+  assert.match(app, /activeWorkspace==='docs'&&<Suspense[\s\S]{0,60}?<DocumentationWorkspace\/>/)
   assert.match(app, /<UserManualDialog open=\{manualOpen\}/)
 })

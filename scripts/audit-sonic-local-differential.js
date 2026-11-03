@@ -1,4 +1,4 @@
-import { defaultCoefficients } from '../src/math/quadraticFlux.js'
+import { defaultCoefficients } from '../src/math/flux/quadraticFlux.js'
 import { sonicData } from '../src/math/sonic/sonic.js'
 import { sonicSurfaceTriangles } from '../src/geometry/sonic/surface.js'
 import { zFromZc } from '../src/math/charts/zChart.js'

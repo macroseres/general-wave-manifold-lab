@@ -10,6 +10,28 @@
 - **P2 — Diagnóstico no painel:** seções recolhíveis de diagnóstico global e local em Parâmetros → Fluxo, com critérios, evidências e apresentação adaptada ao painel lateral. Inspeção visual e atualização ao modificar coeficientes/estado confirmadas pelo responsável; `npm run check` local aprovado com 896/896 testes e build.
 - **Limites à época da P2:** P3 ainda não iniciada naquele marco; posteriormente encerrada conforme registro de 03/11/2026 acima. PR #2 permanece sem integração à `main`. Avisos não bloqueantes de WebSocket e tamanho do bundle registrados na validação local.
 
+## Divisão do Scene.jsx — 03/11/2026
+
+- `src/components/Scene.jsx` (772 linhas) passa a conter apenas a composição da cena (`CameraRig`, `SceneContent`, `Scene`). Os componentes foram movidos sem alteração de código para `src/components/scene/`: `shared` (`Line`, `clamp`), `StateOverlays`, `SpecialLoci`, `HopfSurfaces`, `SonicSurfaces`, `Rarefaction`, `CharacteristicSurface` e `Annotations`.
+- Os testes de fronteira que liam `Scene.jsx` como texto usam agora `tests/helpers/sceneSource.js`, que concatena `Scene.jsx` e `scene/*.jsx`; os padrões verificados são os mesmos.
+- As funções puras do Espaço de estados (`axisTicks`, `fittedWindow`, `robustExtent`, `validWindow`, `shockStopLabel` e as constantes/projeções de viewport) saíram de `StateSpaceDialog.jsx` para `src/geometry/state/stateSpaceView.js`, sem dependência de React, com testes unitários em `tests/stateSpaceView.test.js`. `StateMathAnnotation` passou a ter arquivo próprio. O componente `StatePlot` (~690 linhas) permanece intacto: dividi-lo exige refatorar estado compartilhado entre hooks e deve ser feito com verificação visual.
+
+## Licença — 03/11/2026
+
+- Adicionada a licença MIT (`LICENSE`, titular Edwin López, 2026), com os campos `license` e `author` em `package.json` e uma seção no README.
+
+## Organização do código e da documentação — 03/11/2026
+
+- Código de produção, scripts e testes (exceto `tests/math.test.js`, que cobre a própria fachada) passam a importar dos módulos de domínio em vez de `src/math/quadraticFlux.js`. A fachada de compatibilidade permanece e continua testada.
+- As 137 notas `FASE_*` (135 `.md` e 2 `.json`) foram movidas de `docs/` para `docs/fases/`, com um `README.md` de índice gerado a partir dos títulos. Nenhum código, teste ou capítulo referenciava esses caminhos.
+
+## Infraestrutura de build — 02/11/2026
+
+- Adicionado `vite.config.js` aplicando `@vitejs/plugin-react` (Fast Refresh) e `base` configurável por `VITE_BASE` para implantação em subcaminho.
+- A cena 3D (Three.js), o Espaço físico, a Documentação e os diálogos (manual, regiões espectrais, carta local) passam a ser carregados sob demanda com `React.lazy`; o ambiente inicial (Estados) não carrega mais Three.js. Os diálogos permanecem montados após a primeira abertura, preservando o estado interno.
+- Removido `src/math/manifold/coincidence.js`, sem importadores; a implementação em uso é `src/math/characteristic/coincidence.js`.
+- Adicionados `.nvmrc` (Node 22) e `engines` em `package.json`, alinhados ao requisito do Vite.
+
 ## Correção do atlas e rastreabilidade — 21/10/2026
 
 - Corrigida a classificação dos quocientes lineares excepcionais: coordenadas pequenas não nulas não são mais tratadas como eixos exatos por um limiar absoluto. Decisões ambíguas retornam `ill-conditioned` sem classe residual; regressões cobrem reescala positiva, eixos resolvidos e os setores de posto um. A avaliação do produto residual evita perda de sinal por subfluxo do produto direto.

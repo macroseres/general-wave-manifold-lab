@@ -1,7 +1,7 @@
 import test from "node:test"
 import assert from "node:assert/strict"
 import { certifyCompositeBranches, certifyCompositePoint, compositeLeafIntersections, decomposeCompositeBranches } from "../src/math/state/compositeTrace.js"
-import { defaultCoefficients } from "../src/math/quadraticFlux.js"
+import { defaultCoefficients } from "../src/math/flux/quadraticFlux.js"
 
 test("composite certification API is pure and reports invalid malformed points",()=>{
   const result=certifyCompositePoint(null,null,{},"minus")

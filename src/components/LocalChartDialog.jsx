@@ -1,5 +1,6 @@
 import {useEffect,useMemo} from 'react'
-import {infinityRarefactionSeparatrices,infinityRarefactionSingularities} from '../math/quadraticFlux.js'
+import {infinityRarefactionSeparatrices} from '../math/rarefaction/separatrices.js'
+import {infinityRarefactionSingularities} from '../math/rarefaction/singularities.js'
 import {reciprocalChartGeometry,reciprocalChartToUnit} from '../geometry/rarefaction/localChart.js'
 
 const W=760,H=520,P=54

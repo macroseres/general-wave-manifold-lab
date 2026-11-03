@@ -1,7 +1,7 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
-import {readFileSync} from 'node:fs'
 import {curvePoints3D} from '../src/rendering/curvePoints.js'
+import { readSceneSource } from './helpers/sceneSource.js'
 
 test('curve adapter maps tau/Y/zc without mutating input',()=>{
   const points=[{tau:1,Y:2,zc:-0.5},{tau:3,Y:4,zc:0.7}]
@@ -15,7 +15,7 @@ test('curve adapter rejects unknown coordinates',()=>{
   assert.throws(()=>curvePoints3D([],'unknown'),RangeError)
 })
 test('scene does not allocate BufferGeometry for curves during render',()=>{
-  const scene=readFileSync(new URL('../src/components/Scene.jsx',import.meta.url),'utf8')
+  const scene=readSceneSource()
   assert.doesNotMatch(scene,/new THREE\.BufferGeometry\(\)\.setFromPoints/)
   assert.match(scene,/curvePoints3D/)
 })
