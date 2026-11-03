@@ -1,7 +1,8 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
 import {readFileSync} from 'node:fs'
-const scene=readFileSync(new URL('../src/components/Scene.jsx',import.meta.url),'utf8')
+import { readSceneSource } from './helpers/sceneSource.js'
+const scene=readSceneSource()
 test('surface transparency has interactive range and applies to all three surface families',()=>{
   assert.match(scene,/const \[surfaceOpacity,setSurfaceOpacity\]=useState\((?:0\.38|0\.85)\)/)
   assert.match(scene,/<input type="range" min="0" max="1" step="0\.01"/)

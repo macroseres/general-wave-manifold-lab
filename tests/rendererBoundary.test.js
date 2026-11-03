@@ -1,13 +1,14 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
 import {readFileSync} from 'node:fs'
+import { readSceneSource } from './helpers/sceneSource.js'
 
-const scene=readFileSync(new URL('../src/components/Scene.jsx',import.meta.url),'utf8')
+const scene=readSceneSource()
 const adapter=readFileSync(new URL('../src/rendering/sonicBufferGeometry.js',import.meta.url),'utf8')
 const source=readFileSync(new URL('../src/geometry/sonic/surface.js',import.meta.url),'utf8')
 
 test('sonic mesh Three.js adapter is isolated from the scientific surface generator',()=>{
-  assert.match(scene,/from ['"]\.\.\/rendering\/sonicBufferGeometry\.js['"]/) 
+  assert.match(scene,/from ['"](?:\.\.\/)+rendering\/sonicBufferGeometry\.js['"]/)
   assert.doesNotMatch(scene,/function makeSonicBufferGeometry\(/)
   assert.match(adapter,/export function makeSonicBufferGeometry\(/)
   assert.match(adapter,/orientTrianglesConsistently\(data\.indices\)/)

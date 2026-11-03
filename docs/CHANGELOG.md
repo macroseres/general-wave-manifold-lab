@@ -1,3 +1,8 @@
+## Divisão do Scene.jsx — 03/11/2026
+
+- `src/components/Scene.jsx` (772 linhas) passa a conter apenas a composição da cena (`CameraRig`, `SceneContent`, `Scene`). Os componentes foram movidos sem alteração de código para `src/components/scene/`: `shared` (`Line`, `clamp`), `StateOverlays`, `SpecialLoci`, `HopfSurfaces`, `SonicSurfaces`, `Rarefaction`, `CharacteristicSurface` e `Annotations`.
+- Os testes de fronteira que liam `Scene.jsx` como texto usam agora `tests/helpers/sceneSource.js`, que concatena `Scene.jsx` e `scene/*.jsx`; os padrões verificados são os mesmos.
+
 ## Licença — 03/11/2026
 
 - Adicionada a licença MIT (`LICENSE`, titular Edwin López, 2026), com os campos `license` e `author` em `package.json` e uma seção no README.

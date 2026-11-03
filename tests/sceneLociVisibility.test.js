@@ -1,8 +1,9 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
 import {readFileSync} from 'node:fs'
+import { readSceneSource } from './helpers/sceneSource.js'
 
-const scene = readFileSync(new URL('../src/components/Scene.jsx', import.meta.url), 'utf8')
+const scene = readSceneSource()
 const app = readFileSync(new URL('../src/App.jsx', import.meta.url), 'utf8')
 
 test('DS and J in 3D are independently controlled by their visibility flags', () => {
