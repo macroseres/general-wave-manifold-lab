@@ -1,3 +1,8 @@
+## Organização do código e da documentação — 03/11/2026
+
+- Código de produção, scripts e testes (exceto `tests/math.test.js`, que cobre a própria fachada) passam a importar dos módulos de domínio em vez de `src/math/quadraticFlux.js`. A fachada de compatibilidade permanece e continua testada.
+- As 137 notas `FASE_*` (135 `.md` e 2 `.json`) foram movidas de `docs/` para `docs/fases/`, com um `README.md` de índice gerado a partir dos títulos. Nenhum código, teste ou capítulo referenciava esses caminhos.
+
 ## Infraestrutura de build — 02/11/2026
 
 - Adicionado `vite.config.js` aplicando `@vitejs/plugin-react` (Fast Refresh) e `base` configurável por `VITE_BASE` para implantação em subcaminho.
