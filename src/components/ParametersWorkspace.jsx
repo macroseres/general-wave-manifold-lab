@@ -1,12 +1,12 @@
 import {useEffect,useMemo,useRef,useState} from 'react'
 import TablerNavIcon from './TablerNavIcon.jsx'
-import {coefficientKeys,transformQuadraticFlux,discriminantPolynomial,classifyState} from '../math/flux/affineClassification.js'
+import {coefficientKeys,transformQuadraticFlux,discriminantPolynomial,classifyState,classifyStateDetailed} from '../math/flux/affineClassification.js'
 import {discriminant} from '../math/characteristic/spectrum.js'
 import WorkspaceRail from './WorkspaceRail.jsx'
 import WorkspaceDrawer from './WorkspaceDrawer.jsx'
 import WorkspacePanelBody from './WorkspacePanelBody.jsx'
 import { MathLabel, MathBlock } from './math/MathLabel.jsx'
-import {classifyConic} from '../math/flux/conicClassification.js'
+import {classifyConic,classifyQuadraticSigns} from '../math/flux/conicClassification.js'
 import ParameterClassification from './ParameterClassification.jsx'
 import {parameterClassification} from '../math/flux/parameterClassification.js'
 import {sampleParameterDiagram} from '../math/flux/parameterDiagram.js'
@@ -128,6 +128,10 @@ export default function ParametersWorkspace({p,setP}){
   `${latexNumber(q.u)}u`, `${latexNumber(q.v)}v`, latexNumber(q.c)
  ].map((term,i)=>i===0?term:term.startsWith('-')?` - ${term.slice(1)}`:` + ${term}`).join('')
  const conic=useMemo(()=>classifyConic(polynomial),[polynomial])
+ const globalSigns=useMemo(()=>classifyQuadraticSigns(polynomial),[polynomial])
+ const localSpectral=useMemo(()=>classifyStateDetailed(sample,p),[sample,p])
+ const truth=value=>value===null?'Inconclusivo':value?'Sim':'Não'
+ const spectralLabel={'strictly-hyperbolic':'Hiperbólico estrito',elliptic:'Elíptico','coincidence-near':'Próximo da coincidência'}
  return <div className="parametersWorkspace parametersWorkspace--unified workspaceLayout workspaceLayout--parameters">
   <div className="parametersUnifiedLayout">
    <WorkspaceRail
@@ -144,6 +148,21 @@ export default function ParametersWorkspace({p,setP}){
      {activePanel==='flux'&&<>
       {['a','b'].map((prefix,i)=><details className="workspaceDisclosure" open key={prefix}><summary><span>Componente {i+1} · <MathLabel>{i===0?'f(u,v)':'g(u,v)'}</MathLabel></span></summary><div className="statePanelSectionBody"><div className="parametersCoefficients">{coefficientKeys.filter(k=>k.startsWith(prefix)).map(k=><label key={k}><MathLabel>{coefficientLatex(k)}</MathLabel><input type="number" aria-label={`Coeficiente ${k}`} step="any" value={p[k]} onChange={e=>setP({...p,[k]:Number(e.target.value)})}/></label>)}</div></div></details>)}
       <p className="parametersSidebarHint">Coeficientes compartilhados entre os ambientes.</p>
+      <details className="workspaceDisclosure" open><summary>Diagnóstico do fluxo atual</summary><div className="statePanelSectionBody">
+       <p><strong>Geometria de Δ=0:</strong> {conic.type} — {conic.realLocus}.</p>
+       <p><strong>Regiões globais em ℝ²:</strong></p>
+       <p>Δ &gt; 0: {truth(globalSigns.positive)} · Δ = 0: {truth(globalSigns.zero)} · Δ &lt; 0: {truth(globalSigns.negative)}</p>
+       <p>Hiperbólico em todo ℝ²: {truth(globalSigns.hyperbolicEverywhere)} · Estritamente hiperbólico em todo ℝ²: {truth(globalSigns.strictlyHyperbolicEverywhere)}</p>
+       <small>Critério: análise algébrica dos sinais do polinômio quadrático Δ; {globalSigns.reason}. Evidência: {globalSigns.evidence==='numerically-inconclusive'?'inconclusiva perto de degenerações':'algébrica com tolerância numérica, não certificação simbólica'}.</small>
+      </div></details>
+      <details className="workspaceDisclosure"><summary>Diagnóstico local · estado de teste</summary><div className="statePanelSectionBody">
+       <p>Estado (u,v) = ({sample.join(', ')}). Altere suas coordenadas na área de análise.</p>
+       <p><strong>Regime:</strong> {spectralLabel[localSpectral.regime]}.</p>
+       <p><strong>Δ:</strong> {Number.isFinite(localSpectral.discriminant)?localSpectral.discriminant.toPrecision(7):'Não finito'} · limiar: {localSpectral.threshold.toExponential(2)}.</p>
+       <p><strong>Multiplicidade algébrica:</strong> {localSpectral.eigenvalueMultiplicity==='distinct'?'autovalores distintos':localSpectral.eigenvalueMultiplicity==='double-computed'?'duplo no cálculo numérico':'inconclusiva'}.</p>
+       <p><strong>Multiplicidade geométrica:</strong> {localSpectral.geometricMultiplicity??'inconclusiva'}.</p>
+       <small>Evidência: {localSpectral.evidence==='floating-point-equality'?'igualdade em ponto flutuante, não prova simbólica':'diagnóstico numérico com tolerância'}. A proximidade de Δ=0 não certifica coincidência.</small>
+      </div></details>
      </>}
      {activePanel==='transform'&&<>
       <details className="workspaceDisclosure" open><summary>Transformação afim</summary><div className="statePanelSectionBody"><p><MathLabel>{String.raw`U=AV+U_0,\quad\det A\ne0`}</MathLabel></p><fieldset className="workspaceControlGroup"><legend>Matriz <MathLabel>A</MathLabel> · mudança de base</legend><div className="parametersMatrix">{A.map((row,i)=>row.map((x,j)=><label key={`${i}${j}`}><MathLabel>{`A_{${i+1}${j+1}}`}</MathLabel><input aria-label={`Entrada A ${i+1}, ${j+1}`} type="number" step="any" value={x} onChange={e=>setMatrix(i,j,Number(e.target.value))}/></label>))}</div></fieldset><fieldset className="workspaceControlGroup"><legend>Vetor <MathLabel>{String.raw`U_0`}</MathLabel> · translação</legend><div className="parametersMatrix">{t.map((x,i)=><label key={i}><MathLabel>{`(U_0)_{${i+1}}`}</MathLabel><input aria-label={`Componente ${i+1} da translação`} type="number" step="any" value={x} onChange={e=>setT(old=>old.map((v,j)=>i===j?Number(e.target.value):v))}/></label>)}</div></fieldset><p><MathLabel>{String.raw`\det A`}</MathLabel>: {preview?preview.determinant.toPrecision(6):'não invertível'}</p><p className="parametersSidebarHint">Confira os coeficientes abaixo antes de aplicar ao fluxo compartilhado.</p><button className="parametersPrimaryAction" disabled={!preview} onClick={apply}>Aplicar transformação</button><button onClick={()=>{setA([[1,0],[0,1]]);setT([0,0])}}>Identidade</button>{error&&<p role="status">{error}</p>}</div></details>
