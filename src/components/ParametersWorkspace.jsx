@@ -148,20 +148,32 @@ export default function ParametersWorkspace({p,setP}){
      {activePanel==='flux'&&<>
       {['a','b'].map((prefix,i)=><details className="workspaceDisclosure" open key={prefix}><summary><span>Componente {i+1} · <MathLabel>{i===0?'f(u,v)':'g(u,v)'}</MathLabel></span></summary><div className="statePanelSectionBody"><div className="parametersCoefficients">{coefficientKeys.filter(k=>k.startsWith(prefix)).map(k=><label key={k}><MathLabel>{coefficientLatex(k)}</MathLabel><input type="number" aria-label={`Coeficiente ${k}`} step="any" value={p[k]} onChange={e=>setP({...p,[k]:Number(e.target.value)})}/></label>)}</div></div></details>)}
       <p className="parametersSidebarHint">Coeficientes compartilhados entre os ambientes.</p>
-      <details className="workspaceDisclosure" open><summary>Diagnóstico do fluxo atual</summary><div className="statePanelSectionBody">
-       <p><strong>Geometria de Δ=0:</strong> {conic.type} — {conic.realLocus}.</p>
-       <p><strong>Regiões globais em ℝ²:</strong></p>
-       <p>Δ &gt; 0: {truth(globalSigns.positive)} · Δ = 0: {truth(globalSigns.zero)} · Δ &lt; 0: {truth(globalSigns.negative)}</p>
-       <p>Hiperbólico em todo ℝ²: {truth(globalSigns.hyperbolicEverywhere)} · Estritamente hiperbólico em todo ℝ²: {truth(globalSigns.strictlyHyperbolicEverywhere)}</p>
-       <small>Critério: análise algébrica dos sinais do polinômio quadrático Δ; {globalSigns.reason}. Evidência: {globalSigns.evidence==='numerically-inconclusive'?'inconclusiva perto de degenerações':'algébrica com tolerância numérica, não certificação simbólica'}.</small>
+      <details className="workspaceDisclosure"><summary>Diagnóstico global</summary><div className="statePanelSectionBody">
+       <dl className="parametersDiagnosticList">
+        <div><dt>Geometria de Δ = 0</dt><dd>{conic.type} — {conic.realLocus}</dd></div>
+        <div><dt>Existe Δ &gt; 0?</dt><dd>{truth(globalSigns.positive)}</dd></div>
+        <div><dt>Existe Δ = 0?</dt><dd>{truth(globalSigns.zero)}</dd></div>
+        <div><dt>Existe Δ &lt; 0?</dt><dd>{truth(globalSigns.negative)}</dd></div>
+        <div><dt>Hiperbólico em todo ℝ²?</dt><dd>{truth(globalSigns.hyperbolicEverywhere)}</dd></div>
+        <div><dt>Estritamente hiperbólico em todo ℝ²?</dt><dd>{truth(globalSigns.strictlyHyperbolicEverywhere)}</dd></div>
+       </dl>
+       <details className="workspaceSubsection"><summary>Critério e evidência</summary><div className="workspaceSubsectionBody">
+        <p>Análise algébrica dos sinais de Δ(u,v): {globalSigns.reason}.</p>
+        <small>{globalSigns.evidence==='numerically-inconclusive'?'Inconclusivo perto de degenerações.':'Classificação algébrica com tolerância numérica; não é certificação simbólica.'}</small>
+       </div></details>
       </div></details>
-      <details className="workspaceDisclosure"><summary>Diagnóstico local · estado de teste</summary><div className="statePanelSectionBody">
-       <p>Estado (u,v) = ({sample.join(', ')}). Altere suas coordenadas na área de análise.</p>
-       <p><strong>Regime:</strong> {spectralLabel[localSpectral.regime]}.</p>
-       <p><strong>Δ:</strong> {Number.isFinite(localSpectral.discriminant)?localSpectral.discriminant.toPrecision(7):'Não finito'} · limiar: {localSpectral.threshold.toExponential(2)}.</p>
-       <p><strong>Multiplicidade algébrica:</strong> {localSpectral.eigenvalueMultiplicity==='distinct'?'autovalores distintos':localSpectral.eigenvalueMultiplicity==='double-computed'?'duplo no cálculo numérico':'inconclusiva'}.</p>
-       <p><strong>Multiplicidade geométrica:</strong> {localSpectral.geometricMultiplicity??'inconclusiva'}.</p>
-       <small>Evidência: {localSpectral.evidence==='floating-point-equality'?'igualdade em ponto flutuante, não prova simbólica':'diagnóstico numérico com tolerância'}. A proximidade de Δ=0 não certifica coincidência.</small>
+      <details className="workspaceDisclosure"><summary>Diagnóstico local</summary><div className="statePanelSectionBody">
+       <dl className="parametersDiagnosticList">
+        <div><dt>Estado (u,v)</dt><dd>({sample.join(', ')})</dd></div>
+        <div><dt>Regime espectral</dt><dd>{spectralLabel[localSpectral.regime]}</dd></div>
+        <div><dt>Δ(u,v)</dt><dd>{Number.isFinite(localSpectral.discriminant)?localSpectral.discriminant.toPrecision(7):'Não finito'}</dd></div>
+        <div><dt>Limiar numérico</dt><dd>{localSpectral.threshold.toExponential(2)}</dd></div>
+        <div><dt>Multiplicidade algébrica</dt><dd>{localSpectral.eigenvalueMultiplicity==='distinct'?'Autovalores distintos':localSpectral.eigenvalueMultiplicity==='double-computed'?'Duplo no cálculo numérico':'Inconclusiva'}</dd></div>
+        <div><dt>Multiplicidade geométrica</dt><dd>{localSpectral.geometricMultiplicity??'Inconclusiva'}</dd></div>
+       </dl>
+       <details className="workspaceSubsection"><summary>Critério e evidência</summary><div className="workspaceSubsectionBody">
+        <small>{localSpectral.evidence==='floating-point-equality'?'Igualdade em ponto flutuante; não é prova simbólica.':'Diagnóstico numérico com tolerância.'} A proximidade de Δ=0 não certifica coincidência. Edite o estado na área de análise.</small>
+       </div></details>
       </div></details>
      </>}
      {activePanel==='transform'&&<>
