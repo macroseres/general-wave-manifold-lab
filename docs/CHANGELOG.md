@@ -1,3 +1,10 @@
+## Infraestrutura de build — 02/11/2026
+
+- Adicionado `vite.config.js` aplicando `@vitejs/plugin-react` (Fast Refresh) e `base` configurável por `VITE_BASE` para implantação em subcaminho.
+- A cena 3D (Three.js), o Espaço físico, a Documentação e os diálogos (manual, regiões espectrais, carta local) passam a ser carregados sob demanda com `React.lazy`; o ambiente inicial (Estados) não carrega mais Three.js. Os diálogos permanecem montados após a primeira abertura, preservando o estado interno.
+- Removido `src/math/manifold/coincidence.js`, sem importadores; a implementação em uso é `src/math/characteristic/coincidence.js`.
+- Adicionados `.nvmrc` (Node 22) e `engines` em `package.json`, alinhados ao requisito do Vite.
+
 ## Correção do atlas e rastreabilidade — 21/10/2026
 
 - Corrigida a classificação dos quocientes lineares excepcionais: coordenadas pequenas não nulas não são mais tratadas como eixos exatos por um limiar absoluto. Decisões ambíguas retornam `ill-conditioned` sem classe residual; regressões cobrem reescala positiva, eixos resolvidos e os setores de posto um. A avaliação do produto residual evita perda de sinal por subfluxo do produto direto.
