@@ -1,6 +1,5 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
-import {readFileSync} from 'node:fs'
 import {curvePoints3D} from '../src/rendering/curvePoints.js'
 import { readSceneSource } from './helpers/sceneSource.js'
 

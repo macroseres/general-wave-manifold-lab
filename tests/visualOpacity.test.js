@@ -1,6 +1,5 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
-import {readFileSync} from 'node:fs'
 import { readSceneSource } from './helpers/sceneSource.js'
 const scene=readSceneSource()
 test('surface transparency has interactive range and applies to all three surface families',()=>{
