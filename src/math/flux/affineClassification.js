@@ -24,9 +24,22 @@ export function transformQuadraticFlux(p,A,t=[0,0]) {
   return {coefficients,constant:zero,determinant:d}
 }
 export function discriminantPolynomial(p){
-  const D=(u,v)=>discriminant([u,v],p)
-  const c=D(0,0),up=D(1,0),um=D(-1,0),vp=D(0,1),vm=D(0,-1)
-  return {u2:(up+um-2*c)/2,uv:D(1,1)-up-vp+c,v2:(vp+vm-2*c)/2,u:(up-um)/2,v:(vp-vm)/2,c}
+  // Exact coefficient expansion of Delta=(J11-J22)^2+4 J12 J21.
+  // Avoid reconstructing coefficients by sampled discriminant values,
+  // which can suffer cancellation near degenerate parameter strata.
+  const L=[2*p.a20-p.b11,p.a11-2*p.b02,p.a10-p.b01]
+  const B=[p.a11,2*p.a02,p.a01]
+  const C=[2*p.b20,p.b11,p.b10]
+  const square=(i,j)=>L[i]*L[j]
+  const product=(i,j)=>B[i]*C[j]
+  return {
+    u2:square(0,0)+4*product(0,0),
+    uv:2*square(0,1)+4*(product(0,1)+product(1,0)),
+    v2:square(1,1)+4*product(1,1),
+    u:2*square(0,2)+4*(product(0,2)+product(2,0)),
+    v:2*square(1,2)+4*(product(1,2)+product(2,1)),
+    c:square(2,2)+4*product(2,2),
+  }
 }
 export function classifyState(U,p,tolerance=1e-10){
  const J=jacobian(U,p),D=discriminant(U,p),scale=Math.max(1,...J.flat().map(Math.abs)),eps=tolerance*scale*scale
@@ -34,4 +47,37 @@ export function classifyState(U,p,tolerance=1e-10){
  if(D< -eps)return 'elíptico'
  const scalar=Math.abs(J[0][1])<=tolerance*scale&&Math.abs(J[1][0])<=tolerance*scale&&Math.abs(J[0][0]-J[1][1])<=tolerance*scale
  return scalar?'parabólico degenerado (matriz escalar)':'parabólico (autovalor duplo)'
+}
+
+/**
+ * Detailed local spectral diagnosis. A tolerance-based classification is a
+ * numerical observation, not a certificate of exact eigenvalue coincidence.
+ * For Delta=0 a scalar 2x2 matrix has two independent eigenvectors; a
+ * non-scalar matrix has only one.
+ */
+export function classifyStateDetailed(U,p,tolerance=1e-10){
+  const J=jacobian(U,p)
+  const delta=discriminant(U,p)
+  const scale=Math.max(1,...J.flat().map(Math.abs))
+  const threshold=tolerance*scale*scale
+  const scalarResidual=Math.max(Math.abs(J[0][1]),Math.abs(J[1][0]),Math.abs(J[0][0]-J[1][1]))
+  const scalar=scalarResidual<=tolerance*scale
+  const exactScalar=J[0][1]===0&&J[1][0]===0&&J[0][0]===J[1][1]
+  const regime=delta>threshold?'strictly-hyperbolic':delta< -threshold?'elliptic':'coincidence-near'
+  // A tolerance window does not establish algebraic or geometric multiplicity.
+  // Only an exactly zero computed discriminant supports a floating-point
+  // equality diagnosis; this is not a symbolic proof of coincidence.
+  const computedCoincidence=delta===0
+  return {
+    regime,discriminant:delta,threshold,
+    eigenvalueMultiplicity:regime==='coincidence-near'
+      ?(computedCoincidence?'double-computed':'unresolved-near')
+      :'distinct',
+    geometricMultiplicity:regime==='coincidence-near'&&computedCoincidence
+      ?(exactScalar?2:scalar?null:1)
+      :null,
+    jacobianKind:exactScalar?'scalar-computed':scalar?'scalar-near':'non-scalar',
+    scalarResidual,
+    evidence:computedCoincidence?'floating-point-equality':'tolerance-based',
+  }
 }

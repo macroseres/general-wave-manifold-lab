@@ -1,21 +1,25 @@
 import {useEffect,useMemo,useRef,useState} from 'react'
 import TablerNavIcon from './TablerNavIcon.jsx'
-import {coefficientKeys,transformQuadraticFlux,discriminantPolynomial,classifyState} from '../math/flux/affineClassification.js'
+import {coefficientKeys,transformQuadraticFlux,discriminantPolynomial,classifyState,classifyStateDetailed} from '../math/flux/affineClassification.js'
 import {discriminant} from '../math/characteristic/spectrum.js'
 import WorkspaceRail from './WorkspaceRail.jsx'
 import WorkspaceDrawer from './WorkspaceDrawer.jsx'
 import WorkspacePanelBody from './WorkspacePanelBody.jsx'
 import { MathLabel, MathBlock } from './math/MathLabel.jsx'
-import {classifyConic} from '../math/flux/conicClassification.js'
+import {classifyConic,classifyQuadraticSigns} from '../math/flux/conicClassification.js'
 import ParameterClassification from './ParameterClassification.jsx'
 import {parameterClassification} from '../math/flux/parameterClassification.js'
 import {sampleParameterDiagram} from '../math/flux/parameterDiagram.js'
+import {parameterExamples,parameterFilterOptions,filterParameterExamples,diagnoseParameterExample} from '../math/flux/parameterExamples.js'
 
 const coefficientText = key => String(key).replace(/\d/g, digit => '₀₁₂₃₄₅₆₇₈₉'[Number(digit)])
 const coefficientLatex = (key) => String(key).replace(/^([ab])(\d)(\d)$/, (_, letter, i, j) => `${letter}_{${i}${j}}`)
 
 export default function ParametersWorkspace({p,setP}){
  const [activePanel,setActivePanel]=useState('flux')
+ const [exampleFilter,setExampleFilter]=useState('all')
+ const [selectedExampleId,setSelectedExampleId]=useState('')
+ const [exampleMessage,setExampleMessage]=useState('')
  const [sidebarOpen,setSidebarOpen]=useState(true)
  const [A,setA]=useState([[1,0],[0,1]])
  const [t,setT]=useState([0,0])
@@ -128,6 +132,15 @@ export default function ParametersWorkspace({p,setP}){
   `${latexNumber(q.u)}u`, `${latexNumber(q.v)}v`, latexNumber(q.c)
  ].map((term,i)=>i===0?term:term.startsWith('-')?` - ${term.slice(1)}`:` + ${term}`).join('')
  const conic=useMemo(()=>classifyConic(polynomial),[polynomial])
+ const globalSigns=useMemo(()=>classifyQuadraticSigns(polynomial),[polynomial])
+ const localSpectral=useMemo(()=>classifyStateDetailed(sample,p),[sample,p])
+ const truth=value=>value===null?'Inconclusivo':value?'Sim':'Não'
+ const matchingExamples=useMemo(()=>filterParameterExamples(exampleFilter),[exampleFilter])
+ const selectedExample=parameterExamples.find(example=>example.id===selectedExampleId)
+ const selectedExampleDiagnosis=selectedExample?diagnoseParameterExample(selectedExample):null
+ const applyExample=()=>{if(!selectedExample||!selectedExampleDiagnosis?.verified)return;setOriginal(old=>old??{...p});setP({...selectedExample.coefficients});setExampleMessage(`Exemplo aplicado: ${selectedExample.label}. Os dez coeficientes foram substituídos após confirmação.`);setSelectedExampleId('')}
+
+ const spectralLabel={'strictly-hyperbolic':'Hiperbólico estrito',elliptic:'Elíptico','coincidence-near':'Próximo da coincidência'}
  return <div className="parametersWorkspace parametersWorkspace--unified workspaceLayout workspaceLayout--parameters">
   <div className="parametersUnifiedLayout">
    <WorkspaceRail
@@ -144,6 +157,50 @@ export default function ParametersWorkspace({p,setP}){
      {activePanel==='flux'&&<>
       {['a','b'].map((prefix,i)=><details className="workspaceDisclosure" open key={prefix}><summary><span>Componente {i+1} · <MathLabel>{i===0?'f(u,v)':'g(u,v)'}</MathLabel></span></summary><div className="statePanelSectionBody"><div className="parametersCoefficients">{coefficientKeys.filter(k=>k.startsWith(prefix)).map(k=><label key={k}><MathLabel>{coefficientLatex(k)}</MathLabel><input type="number" aria-label={`Coeficiente ${k}`} step="any" value={p[k]} onChange={e=>setP({...p,[k]:Number(e.target.value)})}/></label>)}</div></div></details>)}
       <p className="parametersSidebarHint">Coeficientes compartilhados entre os ambientes.</p>
+      <details className="workspaceDisclosure"><summary>Explorar características</summary><div className="statePanelSectionBody">
+       <label>Geometria procurada<select aria-label="Filtrar exemplos por geometria" value={exampleFilter} onChange={e=>{setExampleFilter(e.target.value);setSelectedExampleId('');setExampleMessage('')}}>{parameterFilterOptions.map(option=><option key={option.id} value={option.id}>{option.label}</option>)}</select></label>
+       <p className="parametersSidebarHint">{matchingExamples.length} exemplo(s) verificado(s) no catálogo finito. A ausência de exemplos não demonstra impossibilidade matemática.</p>
+       <details className="workspaceSubsection"><summary>Exemplos classificados</summary><div className="workspaceSubsectionBody">
+        {matchingExamples.length===0?<p>Nenhum exemplo verificado para este filtro. Nenhum fluxo será aplicado.</p>:matchingExamples.map(example=><button type="button" key={example.id} onClick={()=>{setSelectedExampleId(example.id);setExampleMessage('')}} aria-pressed={selectedExampleId===example.id}>{example.label}</button>)}
+       </div></details>
+       {selectedExample&&selectedExampleDiagnosis?.verified&&<div className="parametersExamplePreview">
+        <strong>Prévia: {selectedExample.label}</strong>
+        <p>{selectedExample.description}</p>
+        <p>Geometria verificada: {selectedExampleDiagnosis.conic.type}. Evidência: classificação algébrica com tolerância numérica, não prova de completude.</p>
+        <dl className="parametersDiagnosticList">{coefficientKeys.map(key=><div key={key}><dt>{coefficientText(key)}</dt><dd>{selectedExample.coefficients[key]}</dd></div>)}</dl>
+        <p>Os dez coeficientes atuais serão substituídos. Esta prévia não altera o fluxo.</p>
+        <button type="button" className="parametersPrimaryAction" onClick={applyExample}>Confirmar e aplicar os dez coeficientes</button>
+        <button type="button" onClick={()=>setSelectedExampleId('')}>Cancelar</button>
+       </div>}
+       {exampleMessage&&<p role="status">{exampleMessage}</p>}
+      </div></details>
+      <details className="workspaceDisclosure"><summary>Diagnóstico global</summary><div className="statePanelSectionBody">
+       <dl className="parametersDiagnosticList">
+        <div><dt>Geometria de Δ = 0</dt><dd>{conic.type} — {conic.realLocus}</dd></div>
+        <div><dt>Existe Δ &gt; 0?</dt><dd>{truth(globalSigns.positive)}</dd></div>
+        <div><dt>Existe Δ = 0?</dt><dd>{truth(globalSigns.zero)}</dd></div>
+        <div><dt>Existe Δ &lt; 0?</dt><dd>{truth(globalSigns.negative)}</dd></div>
+        <div><dt>Hiperbólico em todo ℝ²?</dt><dd>{truth(globalSigns.hyperbolicEverywhere)}</dd></div>
+        <div><dt>Estritamente hiperbólico em todo ℝ²?</dt><dd>{truth(globalSigns.strictlyHyperbolicEverywhere)}</dd></div>
+       </dl>
+       <details className="workspaceSubsection"><summary>Critério e evidência</summary><div className="workspaceSubsectionBody">
+        <p>Análise algébrica dos sinais de Δ(u,v): {globalSigns.reason}.</p>
+        <small>{globalSigns.evidence==='numerically-inconclusive'?'Inconclusivo perto de degenerações.':'Classificação algébrica com tolerância numérica; não é certificação simbólica.'}</small>
+       </div></details>
+      </div></details>
+      <details className="workspaceDisclosure"><summary>Diagnóstico local</summary><div className="statePanelSectionBody">
+       <dl className="parametersDiagnosticList">
+        <div><dt>Estado (u,v)</dt><dd>({sample.join(', ')})</dd></div>
+        <div><dt>Regime espectral</dt><dd>{spectralLabel[localSpectral.regime]}</dd></div>
+        <div><dt>Δ(u,v)</dt><dd>{Number.isFinite(localSpectral.discriminant)?localSpectral.discriminant.toPrecision(7):'Não finito'}</dd></div>
+        <div><dt>Limiar numérico</dt><dd>{localSpectral.threshold.toExponential(2)}</dd></div>
+        <div><dt>Multiplicidade algébrica</dt><dd>{localSpectral.eigenvalueMultiplicity==='distinct'?'Autovalores distintos':localSpectral.eigenvalueMultiplicity==='double-computed'?'Duplo no cálculo numérico':'Inconclusiva'}</dd></div>
+        <div><dt>Multiplicidade geométrica</dt><dd>{localSpectral.geometricMultiplicity??'Inconclusiva'}</dd></div>
+       </dl>
+       <details className="workspaceSubsection"><summary>Critério e evidência</summary><div className="workspaceSubsectionBody">
+        <small>{localSpectral.evidence==='floating-point-equality'?'Igualdade em ponto flutuante; não é prova simbólica.':'Diagnóstico numérico com tolerância.'} A proximidade de Δ=0 não certifica coincidência. Edite o estado na área de análise.</small>
+       </div></details>
+      </div></details>
      </>}
      {activePanel==='transform'&&<>
       <details className="workspaceDisclosure" open><summary>Transformação afim</summary><div className="statePanelSectionBody"><p><MathLabel>{String.raw`U=AV+U_0,\quad\det A\ne0`}</MathLabel></p><fieldset className="workspaceControlGroup"><legend>Matriz <MathLabel>A</MathLabel> · mudança de base</legend><div className="parametersMatrix">{A.map((row,i)=>row.map((x,j)=><label key={`${i}${j}`}><MathLabel>{`A_{${i+1}${j+1}}`}</MathLabel><input aria-label={`Entrada A ${i+1}, ${j+1}`} type="number" step="any" value={x} onChange={e=>setMatrix(i,j,Number(e.target.value))}/></label>))}</div></fieldset><fieldset className="workspaceControlGroup"><legend>Vetor <MathLabel>{String.raw`U_0`}</MathLabel> · translação</legend><div className="parametersMatrix">{t.map((x,i)=><label key={i}><MathLabel>{`(U_0)_{${i+1}}`}</MathLabel><input aria-label={`Componente ${i+1} da translação`} type="number" step="any" value={x} onChange={e=>setT(old=>old.map((v,j)=>i===j?Number(e.target.value):v))}/></label>)}</div></fieldset><p><MathLabel>{String.raw`\det A`}</MathLabel>: {preview?preview.determinant.toPrecision(6):'não invertível'}</p><p className="parametersSidebarHint">Confira os coeficientes abaixo antes de aplicar ao fluxo compartilhado.</p><button className="parametersPrimaryAction" disabled={!preview} onClick={apply}>Aplicar transformação</button><button onClick={()=>{setA([[1,0],[0,1]]);setT([0,0])}}>Identidade</button>{error&&<p role="status">{error}</p>}</div></details>
