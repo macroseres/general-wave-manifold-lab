@@ -2,6 +2,8 @@
   "name": "general-wave-manifold-lab",
   "private": true,
   "version": "0.7.0-dev.24.47.90",
+  "license": "MIT",
+  "author": "Edwin López",
   "type": "module",
   "engines": {
     "node": "^20.19.0 || >=22.12.0"

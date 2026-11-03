@@ -48,3 +48,7 @@ The [notation guide](docs/NOTACAO.md) distinguishes state roles, chart coordinat
 - `CONTRIBUTING.md` — Git and contribution workflow.
 
 The existing `docs/MATHEMATICS.md` is retained as legacy/reference material only; canonical pre-Hugoniot formulas live in `docs/mathematics/`.
+
+## License
+
+Released under the [MIT License](LICENSE). Copyright (c) 2026 Edwin López.

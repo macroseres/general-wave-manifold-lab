@@ -1,3 +1,7 @@
+## Licença — 03/11/2026
+
+- Adicionada a licença MIT (`LICENSE`, titular Edwin López, 2026), com os campos `license` e `author` em `package.json` e uma seção no README.
+
 ## Organização do código e da documentação — 03/11/2026
 
 - Código de produção, scripts e testes (exceto `tests/math.test.js`, que cobre a própria fachada) passam a importar dos módulos de domínio em vez de `src/math/quadraticFlux.js`. A fachada de compatibilidade permanece e continua testada.
