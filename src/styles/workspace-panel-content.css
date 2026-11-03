@@ -1037,3 +1037,36 @@
   flex:1 1 auto;min-width:0;min-height:0;overflow-y:auto;overflow-x:hidden;
   scrollbar-gutter:stable;overscroll-behavior:contain;
 }
+
+
+/* P2: compact, readable diagnostics within the existing narrow parameter drawer. */
+.parametersControlSidebar .parametersDiagnosticList {
+  display:grid;
+  gap:0;
+  margin:4px 0 10px;
+  min-width:0;
+}
+.parametersControlSidebar .parametersDiagnosticList > div {
+  display:grid;
+  gap:3px;
+  min-width:0;
+  padding:8px 0;
+  border-bottom:1px solid #252e38;
+}
+.parametersControlSidebar .parametersDiagnosticList dt {
+  color:#91a2b4;
+  font-size:10px;
+  line-height:1.4;
+  overflow-wrap:anywhere;
+}
+.parametersControlSidebar .parametersDiagnosticList dd {
+  margin:0;
+  color:#d2dde7;
+  font-size:11px;
+  font-weight:600;
+  line-height:1.45;
+  overflow-wrap:anywhere;
+}
+.parametersControlSidebar .parametersDiagnosticList + .workspaceSubsection {
+  margin-top:8px;
+}
