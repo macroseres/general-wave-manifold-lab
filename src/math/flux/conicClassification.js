@@ -62,7 +62,12 @@ export function classifyQuadraticSigns(q, relativeTolerance = 1e-9) {
   const eps = relativeTolerance * scale
   const a=u2, b=uv/2, d=v2
   const tr=a+d, gap=Math.hypot(a-d,2*b)
-  const eigen=[(tr+gap)/2,(tr-gap)/2]
+  // Recover the small eigenvalue from det(Q)/largeEigenvalue.
+  // The direct subtraction (tr-gap)/2 can round a nonzero value to zero.
+  const raw=[(tr+gap)/2,(tr-gap)/2]
+  const large=Math.abs(raw[0])>=Math.abs(raw[1])?raw[0]:raw[1]
+  const small=large===0?0:(a*d-b*b)/large
+  const eigen=large===raw[0]?[large,small]:[small,large]
   const nonzero=eigen.filter(x=>Math.abs(x)>eps)
   const result=(positive,negative,zero,reason,ambiguous=false)=>({
     // Unknown is null, never silently promoted to a certified Boolean.
