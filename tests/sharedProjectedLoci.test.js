@@ -1,7 +1,7 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
 import { sharedProjectedLoci } from '../src/geometry/sharedProjectedLoci.js'
-import { defaultCoefficients } from '../src/math/quadraticFlux.js'
+import { defaultCoefficients } from '../src/math/flux/quadraticFlux.js'
 
 test('same wave-manifold loci supply both state-space projections',()=>{
   const loci=sharedProjectedLoci(defaultCoefficients,{tauMin:-1,tauMax:1,YMin:-6,YMax:6})

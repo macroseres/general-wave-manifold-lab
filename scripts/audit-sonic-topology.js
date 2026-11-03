@@ -1,4 +1,4 @@
-import { defaultCoefficients } from '../src/math/quadraticFlux.js'
+import { defaultCoefficients } from '../src/math/flux/quadraticFlux.js'
 import { sonicSurfaceTriangles } from '../src/geometry/sonic/surface.js'
 
 // Offline-only audit. The production mesh generator and its fast path are unchanged.

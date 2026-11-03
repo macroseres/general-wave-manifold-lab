@@ -1,5 +1,5 @@
 /** Manual, offline diagnostics for J outliers; never imported by the renderer. */
-import { defaultCoefficients } from '../src/math/quadraticFlux.js'
+import { defaultCoefficients } from '../src/math/flux/quadraticFlux.js'
 import { sonicData } from '../src/math/sonic/sonic.js'
 import { sonicSurfaceTriangles, inflectionGeometry, doubleSonicGeometry } from '../src/geometry/sonic/surface.js'
 import { intersectSonicTriangleMeshes } from '../src/geometry/sonic/triangleIntersection.js'

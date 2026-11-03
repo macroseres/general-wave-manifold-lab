@@ -17,7 +17,14 @@ import { MathLabel } from './components/math/MathLabel.jsx'
 import {buildCompositeSceneData,compositeSceneDiagnostics} from './geometry/composite/compositeSceneData.js';import metadata from '../package.json'
 import ContinuationAuditPanel from './components/ContinuationAuditPanel.jsx'
 import {stateFibreSuggestedWindow} from './geometry/state/fibreGeometry.js'
-import {analyzeStateFibres} from './math/state/fibreAnalysis.js';import {partitionHugoniotSpectralRegions} from './math/state/hugoniotSpectralRegions.js';import {lazy,Suspense,useEffect,useMemo,useRef,useState} from 'react';import StateSpaceDialog from './components/StateSpaceDialog';import {chartCoordinates,defaultCoefficients,discriminant,eigenResidual,fiber,oldWavePreset,rarefactionDirectionResidual,rarefactionField,rarefactionSingularities,infinityRarefactionSingularities,rhResidual,sonicData,sonicImplicit,waveState,zFromZc,hugoniotSpectralDiagnostic} from './math/quadraticFlux';import {createExperiment,numericalPolicyMatchesCurrent,parseExperiment} from './experiment/schema';import './styles/tokens.css';import './style.css';import './styles/scientific-ui.css';import './styles/workspace-layout.css';import './styles/workspace-toolbar.css';import './styles/workspace-panel-content.css'
+import {analyzeStateFibres} from './math/state/fibreAnalysis.js';import {partitionHugoniotSpectralRegions} from './math/state/hugoniotSpectralRegions.js';import {lazy,Suspense,useEffect,useMemo,useRef,useState} from 'react';import StateSpaceDialog from './components/StateSpaceDialog';import {chartCoordinates,fiber,zFromZc} from './math/charts/zChart.js';
+import {defaultCoefficients,oldWavePreset} from './math/flux/quadraticFlux.js';
+import {discriminant} from './math/characteristic/spectrum.js';
+import {eigenResidual,rhResidual,waveState} from './math/manifold/waveState.js';
+import {rarefactionDirectionResidual,rarefactionField} from './math/rarefaction/field.js';
+import {rarefactionSingularities,infinityRarefactionSingularities} from './math/rarefaction/singularities.js';
+import {sonicData,sonicImplicit} from './math/sonic/sonic.js';
+import {hugoniotSpectralDiagnostic} from './math/state/hugoniotSpectrum.js';import {createExperiment,numericalPolicyMatchesCurrent,parseExperiment} from './experiment/schema';import './styles/tokens.css';import './style.css';import './styles/scientific-ui.css';import './styles/workspace-layout.css';import './styles/workspace-toolbar.css';import './styles/workspace-panel-content.css'
 
 // Heavy or rarely used views load on demand, so the initial bundle excludes Three.js and the documentation.
 const Scene=lazy(()=>import('./components/Scene'))

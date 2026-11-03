@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict'
 import { performance } from 'node:perf_hooks'
-import { defaultCoefficients } from '../src/math/quadraticFlux.js'
+import { defaultCoefficients } from '../src/math/flux/quadraticFlux.js'
 import { sonicSurfaceTriangles } from '../src/geometry/sonic/surface.js'
 
 const domain={tauMin:-5,tauMax:5,YMin:-6,YMax:6,nTau:34,nY:28,nZ:50}

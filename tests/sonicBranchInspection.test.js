@@ -1,7 +1,7 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
 import { inspectSonicPoint } from '../src/math/sonic/pointInspection.js'
-import { defaultCoefficients } from '../src/math/quadraticFlux.js'
+import { defaultCoefficients } from '../src/math/flux/quadraticFlux.js'
 
 test('sonic inspection classifies the eigenvalue branch using signed spectral gap',()=>{
   const p=defaultCoefficients

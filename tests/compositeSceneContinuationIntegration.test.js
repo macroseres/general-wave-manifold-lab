@@ -1,7 +1,7 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
 import { buildCompositeSceneData } from '../src/geometry/composite/compositeSceneData.js'
-import { defaultCoefficients } from '../src/math/quadraticFlux.js'
+import { defaultCoefficients } from '../src/math/flux/quadraticFlux.js'
 
 test('continuation audit is opt-in and preserves disabled scene results', () => {
   const base = buildCompositeSceneData(defaultCoefficients, -0.2, 0.2, {showMinus:false,showPlus:false})
