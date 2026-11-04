@@ -76,3 +76,23 @@ test('C01: declared shock speed must satisfy RH, not only fitted endpoint speed'
   const corrected=classifyWaveChain({...candidate,segments:[{...candidate.segments[0],speed:1}]},burgers)
   assert.equal(corrected.waves[0].conservation.status,'numerically-compatible')
 })
+
+test('C01: adjacent waves diagnose continuity and global speed ordering independently',()=>{
+  const segments=[
+    {type:'shock',from:[2,0],to:[0,0],speed:1},
+    {type:'rarefaction',from:[0,0],to:[0,1],speeds:[5,6]},
+  ]
+  const classify=items=>classifyWaveChain({status:'sampled-candidate',kind:'composite-chain',segments:items},burgers)
+  const valid=classify(segments)
+  assert.equal(valid.chainGeometry.continuity.status,'numerically-compatible')
+  assert.equal(valid.chainGeometry.speedOrdering.status,'numerically-compatible')
+  const gap=classify([segments[0],{...segments[1],from:[0.1,0]}])
+  assert.equal(gap.chainGeometry.continuity.status,'violation-detected')
+  assert.equal(gap.chainGeometry.speedOrdering.status,'numerically-compatible')
+  const reversed=classify([{...segments[0],speed:7},segments[1]])
+  assert.equal(reversed.chainGeometry.continuity.status,'numerically-compatible')
+  assert.equal(reversed.chainGeometry.speedOrdering.status,'violation-detected')
+  const unknown=classify([segments[0],{...segments[1],speeds:[]}])
+  assert.equal(unknown.chainGeometry.speedOrdering.status,'unverified')
+  assert.equal(valid.entropyCertified,false)
+})
