@@ -53,7 +53,7 @@ export function classifyWaveChain(candidate,p){
   })
   const jumps=waves.filter(w=>w.type==='shock'||w.type==='contact')
   const conservation=jumps.some(w=>w.conservation.status!=='numerically-compatible')
-    ?'unverified':jumps.length?'necessary-rh-checks-passed':'not-applicable'
+    ?'unverified':jumps.length?'necessary-rh-checks-passed':waves.length?'not-applicable':'unverified'
   const construction=candidate?.status!=='sampled-candidate'?'inconclusive':
     waves.length===0?'inconclusive':'numerical-candidate'
   return {construction:{status:construction},
