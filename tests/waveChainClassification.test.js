@@ -3,6 +3,7 @@ import test from 'node:test'
 import assert from 'node:assert/strict'
 import {traditionalShockSignatures} from '../scripts/traditional-shock-signatures.mjs'
 import {classifyWaveChain} from '../src/math/solution/waveChainClassification.js'
+import {assessWaveChain} from '../src/math/solution/waveChainAssessment.js'
 
 const burgers={a20:.5,a11:0,a02:0,a10:0,a01:0,b20:0,b11:0,b02:.5,b10:0,b01:5}
 
@@ -118,4 +119,21 @@ test('C02-T02: uniform diagnostics remain individually labeled in narrow panels'
   assert.match(inspection,/overflowWrap:'anywhere'/)
   assert.match(inspection,/classification\.waves\.map/)
   assert.match(inspection,/classifyWaveChain\(candidate,p\)/)
+})
+
+test('C02-T03: inconclusive evidence does not reject a candidate',()=>{
+  const result=assessWaveChain({construction:{status:'numerical-candidate'},weakSolution:{status:'unverified'},waves:[],chainGeometry:{junctions:[]}})
+  assert.equal(result.status,'inconclusive')
+})
+test('C02-T03: detected discontinuity and sampled Liu violation are identified',()=>{
+  const result=assessWaveChain({construction:{status:'numerical-candidate'},weakSolution:{status:'necessary-rh-checks-passed'},
+    chainGeometry:{junctions:[{index:0,continuity:{status:'discontinuous'},speedOrdering:{status:'reversed'}}]},
+    waves:[{index:0,type:'shock',conservation:{status:'numerically-compatible'},admissibility:{liu:{status:'sampled-violation-detected'}}}]})
+  assert.equal(result.status,'incompatible')
+  assert.equal(result.reasons.length,3)
+})
+test('C02-T03: necessary checks may pass without entropy certification',()=>{
+  const result=assessWaveChain({construction:{status:'numerical-candidate'},weakSolution:{status:'necessary-rh-checks-passed'},
+    chainGeometry:{junctions:[]},waves:[{index:0,type:'shock',conservation:{status:'numerically-compatible'},admissibility:{liu:{status:'not-evaluated'},viscousProfile:{status:'not-evaluated'}}}]})
+  assert.equal(result.status,'numerically-compatible')
 })
