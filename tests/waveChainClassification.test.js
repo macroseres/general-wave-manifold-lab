@@ -41,9 +41,14 @@ test('C01: strict Lax labels are not inferred for contacts',()=>{
 test('C01: sonic and degenerate spectra are not forced into nine strict classes',()=>{
   const sonic={status:'sampled-candidate',kind:'composite-chain',
     segments:[{type:'shock',from:[2,0],to:[0,0],speed:1}]}
-  const result=classifyWaveChain(sonic,burgers)
-  assert.equal(result.waves[0].spectral.kind,'spectral-interior')
-  assert.equal(result.entropyCertified,false)
+  const sonicResult=classifyWaveChain(sonic,{...burgers,b01:1})
+  assert.equal(sonicResult.waves[0].spectral.kind,'sonic-boundary')
+  assert.equal(sonicResult.waves[0].admissibility.lax.status,'not-established')
+  assert.equal(sonicResult.entropyCertified,false)
+  const degenerateResult=classifyWaveChain(sonic,{...burgers,b01:0})
+  assert.equal(degenerateResult.waves[0].spectral.kind,'non-strict-hyperbolicity')
+  assert.equal(degenerateResult.waves[0].admissibility.lax.status,'not-established')
+  assert.equal(degenerateResult.entropyCertified,false)
   const empty=classifyWaveChain({status:'inconclusive'},burgers)
   assert.equal(empty.construction.status,'inconclusive')
   assert.equal(empty.weakSolution.status,'unverified')
