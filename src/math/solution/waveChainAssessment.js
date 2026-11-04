@@ -22,5 +22,11 @@ export function assessWaveChain(classification){
       (w.type==='shock'||w.type==='contact')&&w.conservation?.status!=='numerically-compatible'||
       w.type==='rarefaction'&&w.fan?.status!=='sampled-speed-ordered')
   if(unknown)return {status:'inconclusive',reasons:['Uma ou mais verificações necessárias não foram concluídas']}
+  // Liu is a separate necessary admissibility check for ordinary shocks.
+  // Missing or inconclusive sampling must not appear as a completed check.
+  const ordinaryShocks=(classification.waves??[]).filter(w=>w.type==='shock'&&
+    ['not-evaluated','inconclusive','no-sampled-violation','sampled-violation-detected'].includes(w.admissibility?.liu?.status))
+  if(ordinaryShocks.some(w=>['not-evaluated','inconclusive'].includes(w.admissibility.liu.status)))
+    return {status:'inconclusive',reasons:['Critério de Liu não avaliado ou inconclusivo em pelo menos um choque; entropia não certificada']}
   return {status:'numerically-compatible',reasons:['Verificações necessárias disponíveis compatíveis; entropia não certificada']}
 }
