@@ -1,5 +1,6 @@
 import {candidateSegments} from '../geometry/state/candidateStateGeometry.js'
 import {classifyWaveChain} from '../math/solution/waveChainClassification.js'
+import {assessWaveChain} from '../math/solution/waveChainAssessment.js'
 
 const number=x=>Number.isFinite(x)?Number(x.toPrecision(6)).toString():'—'
 const state=U=>U?`(${U.map(number).join(', ')})`:'—'
@@ -90,12 +91,14 @@ export function StateConstructionReports({reports,stateBranches}){
 
 export default function StateChainInspection({candidate,geometry,p,label='Ondas da cadeia selecionada'}){
   const classification=p?classifyWaveChain(candidate,p):null
+  const assessment=assessWaveChain(classification)
   const segments=geometry?.segments??candidateSegments(candidate)
   return <section className="stateChainInspection" aria-label={label}>
     <strong>{label}</strong>
     <p>{candidate.pattern??candidate.kind} · {candidate.evidence?.liu==='liu-violation-detected'?'violação amostrada de Liu detectada':'compatível com os testes necessários do construtor'} · admissibilidade entrópica inconclusiva</p>
     {classification&&<details><summary>Diagnóstico uniforme C01 (somente leitura)</summary>
       <div style={{display:'grid',gap:8,minWidth:0,overflowWrap:'anywhere'}}>
+        <div role="status"><strong>Síntese das verificações</strong><div>{assessment.status==='incompatible'?'Incompatibilidade detectada':assessment.status==='inconclusive'?'Diagnóstico inconclusivo':'Compatibilidade numérica (não certificada)'}</div>{assessment.reasons.map((reason,i)=><div key={i}>{reason}</div>)}</div>
         <div><strong>Conservação</strong><div>{diagnosticLabel(classification.weakSolution.status)}</div></div>
         <div><strong>Continuidade</strong><div>{diagnosticLabel(classification.chainGeometry.continuity.status)}</div></div>
         <div><strong>Velocidades globais</strong><div>{diagnosticLabel(classification.chainGeometry.speedOrdering.status)}</div></div>
