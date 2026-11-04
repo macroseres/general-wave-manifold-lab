@@ -31,7 +31,7 @@ export function classifyWaveChain(candidate,p){
       return {...base,conservation,spectral,
         incoming:spectral?.kind==='spectral-interior'?spectral.incoming:null,
         admissibility:{
-          lax:admissibility(spectral?.kind==='spectral-interior'&&
+          lax:admissibility(segment.type==='shock'&&spectral?.kind==='spectral-interior'&&
             (spectral.name==='one-shock'||spectral.name==='two-shock')
             ?'strict-endpoint-configuration':'not-established'),
           liu:admissibility(liu),viscousProfile:admissibility(),
@@ -53,7 +53,7 @@ export function classifyWaveChain(candidate,p){
   })
   const jumps=waves.filter(w=>w.type==='shock'||w.type==='contact')
   const conservation=jumps.some(w=>w.conservation.status!=='numerically-compatible')
-    ?'unverified':waves.length?'numerically-compatible':'unverified'
+    ?'unverified':jumps.length?'necessary-rh-checks-passed':'not-applicable'
   const construction=candidate?.status!=='sampled-candidate'?'inconclusive':
     waves.length===0?'inconclusive':'numerical-candidate'
   return {construction:{status:construction},
