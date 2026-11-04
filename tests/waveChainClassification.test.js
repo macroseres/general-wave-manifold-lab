@@ -1,3 +1,4 @@
+import {readFileSync} from 'node:fs'
 import test from 'node:test'
 import assert from 'node:assert/strict'
 import {traditionalShockSignatures} from '../scripts/traditional-shock-signatures.mjs'
@@ -95,4 +96,16 @@ test('C01: adjacent waves diagnose continuity and global speed ordering independ
   const unknown=classify([segments[0],{...segments[1],speeds:[]}])
   assert.equal(unknown.chainGeometry.speedOrdering.status,'unverified')
   assert.equal(valid.entropyCertified,false)
+})
+
+test('C02-T01: both inspection panels receive coefficients and display uniform diagnostics without changing selection',()=>{
+  const inspection=readFileSync(new URL('../src/components/StateChainInspection.jsx',import.meta.url),'utf8')
+  const workspace=readFileSync(new URL('../src/components/StateSpaceDialog.jsx',import.meta.url),'utf8')
+  assert.match(inspection,/classifyWaveChain\(candidate,p\)/)
+  assert.match(inspection,/classification\.chainGeometry\.continuity\.status/)
+  assert.match(inspection,/classification\.chainGeometry\.speedOrdering\.status/)
+  assert.match(inspection,/classification\.waves\.map/)
+  assert.match(inspection,/sem prova distribucional ou certificação de entropia/)
+  assert.match(workspace,/<StateChainInspection candidate=\{activeProfile\} geometry=\{chainGeometry\} p=\{p\}/)
+  assert.match(workspace,/<StateChainInspection candidate=\{comparisonProfile\} geometry=\{comparisonGeometry\} p=\{p\}/)
 })
