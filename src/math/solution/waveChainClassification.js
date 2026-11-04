@@ -1,5 +1,6 @@
 import {candidateSegments} from '../../geometry/state/candidateStateGeometry.js'
 import {directShockDiagnostic} from './directShockDiagnostic.js'
+import {flux} from '../flux/quadraticFlux.js'
 
 const point=U=>Array.isArray(U)&&U.length===2&&U.every(Number.isFinite)
 const admissibility=(status='not-evaluated')=>({status,certified:false})
@@ -22,9 +23,16 @@ export function classifyWaveChain(candidate,p){
       to:point(segment.to)?[...segment.to]:null}
     if(segment.type==='shock'||segment.type==='contact'){
       const rh=directShockDiagnostic(segment.from,segment.to,p)
-      const conservation=rh.kind==='jump'
-        ?{status:rh.rankineHugoniot?'numerically-compatible':'unverified',relativeResidual:rh.relativeResidual}
-        :{status:'unverified',relativeResidual:null}
+      const speed=segment.speed
+      const fLeft=rh.kind==='jump'&&Number.isFinite(speed)?flux(segment.from,p):null
+      const fRight=fLeft?flux(segment.to,p):null
+      const delta=fLeft?fRight.map((v,i)=>v-fLeft[i]):null
+      const residual=delta?.map((v,i)=>v-speed*rh.jump[i])
+      const relativeResidual=residual
+        ?Math.hypot(...residual)/(1+Math.hypot(...delta)+Math.abs(speed)*rh.magnitude)
+        :null
+      const conservation={status:relativeResidual!==null&&Number.isFinite(relativeResidual)&&relativeResidual<=1e-8
+        ?'numerically-compatible':'unverified',relativeResidual}
       const spectral=rh.kind==='jump'?rh.configuration:null
       const liu=segment.type==='shock'&&candidate?.kind!=='composite-chain'&&candidate?.kind!=='contact-chain'
         ?liuStatus(candidate):'not-evaluated'
