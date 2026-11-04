@@ -2,7 +2,7 @@
 
 ## Construção tradicional — auditoria finita C01–C05 (04/11/2026)
 
-- **C01 — Diagnóstico uniforme independente (validação concluída; encerramento formal pendente):** classificação por segmento e cadeia, nove configurações espectrais, fronteiras sônicas e degeneradas, RH na velocidade declarada, preservação de violações Liu amostradas, continuidade das junções e ordenação global dos intervalos de velocidades. Diagnóstico não seleciona candidatos e não certifica entropia. Validação local informada: 7/7 testes C01 e 914/914 na suíte completa; avisos não bloqueantes de WebSocket na porta 24678.
+- **C01 — Diagnóstico uniforme independente (encerrada formalmente em 04/11/2026):** classificação por segmento e cadeia, nove configurações espectrais, fronteiras sônicas e degeneradas, RH na velocidade declarada, preservação de violações Liu amostradas, continuidade das junções e ordenação global dos intervalos de velocidades. Diagnóstico não seleciona candidatos e não certifica entropia. Validação local informada: 7/7 testes C01 e 914/914 na suíte completa; avisos não bloqueantes de WebSocket na porta 24678.
 - **C02 — Integração na interface e seleção:** não iniciada; depende de autorização específica.
 - **C03 — Liu em choques ordinários:** não iniciada.
 - **C04 — Admissibilidade de compostas K:** não iniciada.
