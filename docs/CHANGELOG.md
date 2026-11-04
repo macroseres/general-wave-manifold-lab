@@ -1,3 +1,10 @@
+## C03-T04 — diagnóstico agregado SS validado e C03 encerrada (04/11/2026)
+
+- Corrigido `physicalChainEvidence`: dois choques SS só recebem `necessary-tests-passed` quando ambos apresentam `no-sampled-violation`; evidência Liu ausente, inconclusiva ou desconhecida mantém `prerequisites-unverified`. Violações detectadas têm prioridade; `entropyCertified:false` permanece inalterado.
+- Atualizado teste legado e adicionadas quatro regressões C03-T04 para ausência, inconclusão, compatibilidade amostrada independente e violação. Não alterados os construtores de ondas, RH, Lax, seleção ou variedade 3D.
+- Validação local enviada pelo responsável: `npm run check` aprovado, ESLint sem falhas, **936/936 testes** e build concluído. Avisos não bloqueantes de porta WebSocket 24678 ocupada e chunks maiores que 500 kB.
+- C03 encerrada no escopo delimitado C03-T01–T04. Nenhuma certificação entrópica global ou completude do problema de Riemann é reivindicada; C04/C05 permanecem não iniciadas.
+
 ## C02-T04 — indicadores de seleção validados (04/11/2026)
 
 - A lista de cadeias apresenta compatibilidade numérica não certificada, inconclusão ou incompatibilidade detectada, mantendo todas as opções e seus índices selecionáveis; construtores e critérios de seleção não foram alterados.
