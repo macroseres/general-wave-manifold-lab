@@ -1,12 +1,40 @@
 import {candidateSegments} from '../../geometry/state/candidateStateGeometry.js'
 import {directShockDiagnostic} from './directShockDiagnostic.js'
 import {flux} from '../flux/quadraticFlux.js'
+import {internalCompositeShockLiu} from './internalCompositeShockLiu.js'
 
 const point=U=>Array.isArray(U)&&U.length===2&&U.every(Number.isFinite)
 const admissibility=(status='not-evaluated')=>({status,certified:false})
 const normalizeLiu=status=>status==='liu-violation-detected'||status==='sampled-violation-detected'
   ?'sampled-violation-detected':status==='no-sampled-violation'||status==='no-liu-violation-detected'
     ?'no-sampled-violation':status==='not-evaluated'?'not-evaluated':'inconclusive'
+// Only an explicitly attributed numerical arc may supply internal K evidence.
+// In particular, a chain-level Liu label is never copied to a K shock.
+const internalKLiuBySegment=(candidate,p)=>{
+  const results=new Map()
+  if(candidate?.kind!=='composite-chain'||!Array.isArray(candidate.blocks))return results
+  let offset=0
+  for(const [blockIndex,block] of candidate.blocks.entries()){
+    const count=block?.segments?.length??0
+    if(block?.type==='K'){
+      const local=block.segments.findIndex(q=>q.type==='shock')
+      const index=offset+local
+      if(local>=0){
+        const record=candidate.evidence?.internalLiuArcs?.find(q=>q?.blockIndex===blockIndex&&q?.segmentIndex===index)
+        if(record){
+          const arc=record.arc
+          const evaluated=arc?.status==='numerically-connected'&&arc?.reverse===(block.construction==='shock-rarefaction')&&
+            arc?.family===block.family&&Array.isArray(arc?.points)
+            ?internalCompositeShockLiu(block,arc.points,p)
+            :{status:'inconclusive'}
+          results.set(index,normalizeLiu(evaluated.status))
+        }
+      }
+    }
+    offset+=count
+  }
+  return results
+}
 const liuStatus=(candidate,index)=>{
   // An explicit per-wave report always takes precedence. Never duplicate chain-level
   // evidence across the two distinct shocks of an SS candidate.
@@ -27,6 +55,7 @@ const liuStatus=(candidate,index)=>{
  */
 export function classifyWaveChain(candidate,p){
   const segments=candidateSegments(candidate)
+  const internalKLiu=internalKLiuBySegment(candidate,p)
   const waves=segments.map((segment,index)=>{
     const base={index,type:segment.type,family:segment.family??null,
       from:point(segment.from)?[...segment.from]:null,
@@ -44,8 +73,10 @@ export function classifyWaveChain(candidate,p){
       const conservation={status:relativeResidual!==null&&Number.isFinite(relativeResidual)&&relativeResidual<=1e-8
         ?'numerically-compatible':'unverified',relativeResidual}
       const spectral=rh.kind==='jump'?rh.configuration:null
-      const liu=segment.type==='shock'&&candidate?.kind!=='composite-chain'&&candidate?.kind!=='contact-chain'
-        ?liuStatus(candidate,index):'not-evaluated'
+      const liu=segment.type==='shock'&&candidate?.kind==='composite-chain'
+        ?internalKLiu.get(index)??'not-evaluated'
+        :segment.type==='shock'&&candidate?.kind!=='contact-chain'
+          ?liuStatus(candidate,index):'not-evaluated'
       return {...base,conservation,spectral,
         incoming:spectral?.kind==='spectral-interior'?spectral.incoming:null,
         admissibility:{
