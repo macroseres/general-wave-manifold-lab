@@ -25,3 +25,32 @@ test('backward Liu does not certify an unrefined contact',()=>{
  const q=seededLiuAtBackwardContact([0,0],null,oldWavePreset())
  assert.equal(q.passes,false)
 })
+
+test('RS orientation: right-fixed Hugoniot arc is ordered U_R to U_M and obeys backward Liu',()=>{
+ const right=[0,0],middle=[2,0],arc=[right,[0.5,0],[1,0],[1.5,0],middle]
+ const result=liuSpeedAlongBackwardFibre(right,arc,p)
+ assert.deepEqual(arc[0],right)
+ assert.deepEqual(arc.at(-1),middle)
+ assert.equal(result.status,'sampled-backward-liu-compatible')
+ assert.equal(result.checked,3)
+ assert.equal(result.targetSpeed,1)
+ assert.equal(result.maximumIntermediateSpeed,0.75)
+ assert.equal(result.violations.length,0)
+ assert.equal(result.qualification.includes('no global or entropy certification'),true)
+})
+
+test('RS orientation: reversed speed ordering is a detected backward Liu violation',()=>{
+ const right=[0,0],middle=[-2,0],arc=[right,[-0.5,0],[-1,0],[-1.5,0],middle]
+ const result=liuSpeedAlongBackwardFibre(right,arc,p)
+ assert.equal(result.status,'sampled-backward-liu-violation')
+ assert.equal(result.checked,3)
+ assert.equal(result.targetSpeed,-1)
+ assert.equal(result.maximumIntermediateSpeed,-0.25)
+ assert.equal(result.violations.length,3)
+})
+
+test('RS orientation: an unanchored or off-Hugoniot branch is not approved',()=>{
+ const right=[0,0]
+ assert.equal(liuSpeedAlongBackwardFibre(right,[[0.2,0],[1,0],[2,0]],p).status,'unanchored-arc')
+ assert.equal(liuSpeedAlongBackwardFibre(right,[right,[1,1],[2,0]],p).status,'off-hugoniot-arc')
+})
