@@ -1,8 +1,20 @@
 import {candidateSegments} from '../geometry/state/candidateStateGeometry.js'
+import {classifyWaveChain} from '../math/solution/waveChainClassification.js'
 
 const number=x=>Number.isFinite(x)?Number(x.toPrecision(6)).toString():'—'
 const state=U=>U?`(${U.map(number).join(', ')})`:'—'
 const names={shock:'Choque',contact:'Contato',rarefaction:'Rarefação'}
+const diagnosticStatus={
+  'numerically-compatible':'Compatível numericamente',
+  'violation-detected':'Violação detectada',discontinuous:'Descontinuidade detectada',
+  reversed:'Ordem invertida',unverified:'Não verificado',
+  'not-applicable':'Não aplicável','necessary-rh-checks-passed':'Verificações necessárias de RH satisfeitas',
+  'sampled-speed-ordered':'Velocidades amostradas ordenadas',
+  'strict-endpoint-configuration':'Configuração estrita de extremos',
+  'not-established':'Não estabelecido','not-evaluated':'Não avaliado',
+  'sampled-violation-detected':'Violação amostrada detectada',
+}
+const diagnosticLabel=status=>diagnosticStatus[status]??status??'Não verificado'
 const statuses={'not-requested':'Aguardando construção','invalid-input':'Defina os dois estados',
   'candidates-found':'Candidatos encontrados','no-candidates-found':'Nenhum candidato encontrado na busca limitada',
   'numerical-failure':'Falha numérica',inconclusive:'Busca inconclusiva','incompatible-branches':'Sem ramos elegíveis neste domínio'}
@@ -76,11 +88,18 @@ export function StateConstructionReports({reports,stateBranches}){
   </div>
 }
 
-export default function StateChainInspection({candidate,geometry,label='Ondas da cadeia selecionada'}){
+export default function StateChainInspection({candidate,geometry,p,label='Ondas da cadeia selecionada'}){
+  const classification=p?classifyWaveChain(candidate,p):null
   const segments=geometry?.segments??candidateSegments(candidate)
   return <section className="stateChainInspection" aria-label={label}>
     <strong>{label}</strong>
     <p>{candidate.pattern??candidate.kind} · {candidate.evidence?.liu==='liu-violation-detected'?'violação amostrada de Liu detectada':'compatível com os testes necessários do construtor'} · admissibilidade entrópica inconclusiva</p>
+    {classification&&<details><summary>Diagnóstico uniforme C01 (somente leitura)</summary>
+      <p>Conservação: {diagnosticLabel(classification.weakSolution.status)}. Continuidade: {diagnosticLabel(classification.chainGeometry.continuity.status)}. Velocidades globais: {diagnosticLabel(classification.chainGeometry.speedOrdering.status)}.</p>
+      {classification.chainGeometry.junctions.map(j=><p key={j.index}>Junção {j.index+1}: continuidade {diagnosticLabel(j.continuity.status)}; velocidades {diagnosticLabel(j.speedOrdering.status)}.</p>)}
+      {classification.waves.map(w=><p key={w.index}>Onda {w.index+1} ({names[w.type]??w.type}): RH {diagnosticLabel(w.conservation.status)}; espectro {w.spectral?.label??'Não classificado'}; Lax {diagnosticLabel(w.admissibility.lax.status)}; Liu {diagnosticLabel(w.admissibility.liu.status)}; perfil viscoso {diagnosticLabel(w.admissibility.viscousProfile.status)}.</p>)}
+      <small>Verificações numéricas necessárias, sem prova distribucional ou certificação de entropia. A seleção de candidatos não é alterada.</small>
+    </details>}
     {geometry&&!geometry.complete&&<p role="status">Construção gráfica parcial: há arco de choque inconclusivo. Os extremos estão assinalados; nenhum segmento reto substitui o arco.</p>}
     {segments.map((s,i)=><details key={i} open><summary>{i+1}. {names[s.type]} · família {s.family==='slow'?'1 (lenta)':s.family==='fast'?'2 (rápida)':'não informada'}</summary>
       <p>{state(s.from)} → {state(s.to)}</p>
