@@ -5,6 +5,7 @@ import {internalCompositeShockLiu} from '../src/math/solution/internalCompositeS
 import {quadraticSonicPartners} from '../src/math/solution/sonicPartners.js'
 import {correctForwardHugoniotPoint} from '../src/math/solution/forwardHugoniotContinuation.js'
 import {directShockDiagnostic} from '../src/math/solution/directShockDiagnostic.js'
+import {classifyWaveChain} from '../src/math/solution/waveChainClassification.js'
 
 const p=oldWavePreset({B2:0})
 const partner=quadraticSonicPartners([1,-1],p,'slow','left').find(q=>
@@ -75,4 +76,43 @@ test('C04-T03: backward Liu evaluates a corrected RH arc for the RK sonic shock'
   assert.equal(result.checked,1)
   assert.ok(['no-sampled-violation','liu-violation-detected'].includes(result.status))
   assert.equal(result.entropyCertified,false)
+})
+
+const chain=(b,records)=>({kind:'composite-chain',status:'sampled-candidate',
+  blocks:[b,{type:'R',segments:[{type:'rarefaction',family:'fast',from:[1,1],to:[2,1],
+    speeds:[3,4]}]}],
+  segments:[...b.segments,{type:'rarefaction',family:'fast',from:[1,1],to:[2,1],speeds:[3,4]}],
+  evidence:{liu:'liu-violation-detected',internalLiuArcs:records,entropyCertified:false}})
+
+test('C04-T04: chain-level Liu cannot be copied into an internal K shock',()=>{
+  const result=classifyWaveChain(chain(block()),p)
+  assert.deepEqual(result.waves.map(q=>q.admissibility.liu.status),
+    ['not-applicable','not-evaluated','not-applicable'])
+  assert.equal(result.entropyCertified,false)
+})
+
+test('C04-T04: correctly attributed forward RH arc is evaluated only for its K shock',()=>{
+  const b=block(),arc=sampledArc([1,-1],[1,1])
+  const candidate=chain(b,[{blockIndex:0,segmentIndex:1,arc:{
+    status:'numerically-connected',reverse:false,family:'slow',points:arc}}])
+  const result=classifyWaveChain(candidate,p)
+  assert.equal(result.waves[1].admissibility.liu.status,
+    internalCompositeShockLiu(b,arc,p).status==='liu-violation-detected'
+      ?'sampled-violation-detected':'no-sampled-violation')
+  assert.equal(result.waves[0].admissibility.liu.status,'not-applicable')
+  assert.equal(result.entropyCertified,false)
+})
+
+test('C04-T04: wrong index or unverified provenance cannot transfer Liu',()=>{
+  const arc=sampledArc([1,-1],[1,1]),b=block()
+  for(const record of [
+    {blockIndex:0,segmentIndex:0,arc:{status:'numerically-connected',reverse:false,family:'slow',points:arc}},
+    {blockIndex:0,segmentIndex:1,arc:{status:'continuation-inconclusive',reverse:false,family:'slow',points:arc}},
+    {blockIndex:0,segmentIndex:1,arc:{status:'numerically-connected',reverse:true,family:'slow',points:arc}},
+    {blockIndex:0,segmentIndex:1,arc:{status:'numerically-connected',reverse:false,family:'fast',points:arc}},
+  ]){
+    const result=classifyWaveChain(chain(b,[record]),p)
+    assert.ok(['not-evaluated','inconclusive'].includes(result.waves[1].admissibility.liu.status))
+    assert.equal(result.entropyCertified,false)
+  }
 })
