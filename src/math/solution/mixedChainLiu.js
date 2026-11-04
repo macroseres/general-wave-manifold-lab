@@ -51,3 +51,24 @@ export function assessMixedChainsWithLiu(candidates,states,p,{maxEvaluations=6,.
     return {...candidate,liu:mixedChainLiuAtMiddle(states?.left,middle,states?.right,p,candidate.kind,options)}
   })
 }
+
+/** C03: bounded, independent sampled Liu checks for the two ordinary SS shocks.
+ * Neither check certifies global Liu admissibility or entropy. */
+export function assessTwoShockChainsWithLiu(candidates,left,right,p,{maxEvaluations=6,...options}={}){
+  let evaluated=0
+  return (candidates??[]).map(candidate=>{
+    const unresolved=status=>({status,entropyCertified:false})
+    if(candidate.refinement?.status!=='refined-candidate'||
+      candidate.chainEvidence?.status!=='ordered-rh-candidate'||
+      candidate.familyEvidence?.status!=='ordered-lax-endpoint-candidate')
+      return {...candidate,liuByWave:[unresolved('prerequisites-not-met'),unresolved('prerequisites-not-met')]}
+    if(evaluated>=maxEvaluations)
+      return {...candidate,liuByWave:[unresolved('not-evaluated-limit'),unresolved('not-evaluated-limit')]}
+    evaluated++
+    const middle=candidate.refinement.middle
+    return {...candidate,liuByWave:[
+      mixedChainLiuAtMiddle(left,middle,right,p,'shock-rarefaction',{...options,family:'slow'}),
+      mixedChainLiuAtMiddle(left,middle,right,p,'rarefaction-shock',{...options,family:'fast'}),
+    ]}
+  })
+}
