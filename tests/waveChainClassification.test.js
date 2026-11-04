@@ -137,3 +137,13 @@ test('C02-T03: necessary checks may pass without entropy certification',()=>{
     chainGeometry:{junctions:[]},waves:[{index:0,type:'shock',conservation:{status:'numerically-compatible'},admissibility:{liu:{status:'not-evaluated'},viscousProfile:{status:'not-evaluated'}}}]})
   assert.equal(result.status,'numerically-compatible')
 })
+
+test('C02-T04: candidate selector displays triage without filtering or disabling candidates',()=>{
+  const workspace=readFileSync(new URL('../src/components/StateSpaceDialog.jsx',import.meta.url),'utf8')
+  assert.match(workspace,/candidateAssessments=useMemo\(\(\)=>allProfiles\.map\(candidate=>assessWaveChain\(classifyWaveChain\(candidate,p\)\)\)/)
+  assert.match(workspace,/candidateAssessments\[i\]\?\.status==='incompatible'/)
+  assert.match(workspace,/candidateAssessments\[i\]\?\.status==='inconclusive'/)
+  assert.match(workspace,/Compatível numericamente \(não certificada\)/)
+  assert.match(workspace,/onSelectCandidate\?\.\(Number\(e\.target\.value\)\)/)
+  assert.doesNotMatch(workspace,/allProfiles\.filter\(.*candidateAssessments/)
+})
