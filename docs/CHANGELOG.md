@@ -1,3 +1,9 @@
+## C02-T03 — síntese diagnóstica encerrada (04/11/2026)
+
+- Triagem somente informativa em três estados: incompatibilidade detectada, diagnóstico inconclusivo e compatibilidade numérica não certificada; nenhuma exclusão automática de candidatos.
+- Validação: 919/919 testes, ESLint e build aprovados conforme relatório enviado; captura confirma apresentação da compatibilidade numérica na cadeia SS. Os estados incompatível e inconclusivo foram cobertos por testes automatizados, sem conferência visual específica.
+- C02-T03 encerrada; qualquer alteração futura nos critérios de seleção exige decisão separada. C03–C05 não iniciadas.
+
 ## C02-T02 — legibilidade e validação automatizada (04/11/2026)
 
 - Diagnósticos C01 reorganizados por conservação, continuidade, velocidades globais e por onda (RH, espectro, Lax, Liu, perfil viscoso), com quebras adaptadas ao painel estreito.
