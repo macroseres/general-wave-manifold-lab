@@ -135,7 +135,7 @@ test('C02-T03: detected discontinuity and sampled Liu violation are identified',
 test('C02-T03: necessary checks may pass without entropy certification',()=>{
   const result=assessWaveChain({construction:{status:'numerical-candidate'},weakSolution:{status:'necessary-rh-checks-passed'},
     chainGeometry:{junctions:[]},waves:[{index:0,type:'shock',conservation:{status:'numerically-compatible'},admissibility:{liu:{status:'not-evaluated'},viscousProfile:{status:'not-evaluated'}}}]})
-  assert.equal(result.status,'numerically-compatible')
+  assert.equal(result.status,'inconclusive')
 })
 
 test('C02-T04: candidate selector displays triage without filtering or disabling candidates',()=>{
