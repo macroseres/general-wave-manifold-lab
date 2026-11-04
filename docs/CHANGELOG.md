@@ -1,3 +1,9 @@
+## C02-T01 — integração visual validada e encerrada (04/11/2026)
+
+- Diagnóstico uniforme C01 exibido em modo somente leitura nos painéis principal e comparativo da cadeia selecionada; construtores e critérios de seleção preservados.
+- Validação comunicada pelo responsável: 8/8 testes específicos aprovados, `npm run check` aprovado e conferência visual da cadeia SS confirmada (RH, espectro, continuidade, velocidades, Lax, Liu e perfil viscoso).
+- Limitação visual observada: texto muito condensado na largura do painel lateral. Próxima tarefa finita C02-T02: melhorar legibilidade, sem alterar matemática nem seleção. Nenhuma certificação entrópica reivindicada.
+
 ## Construção tradicional — C01 encerrada formalmente (04/11/2026)
 
 - Classificador puro de cadeias: nove configurações de salto, diagnósticos separados de RH e admissibilidade, tratamento sônico/degenerado, velocidade declarada em RH, continuidade de estados e ordenação de velocidades por junção.
