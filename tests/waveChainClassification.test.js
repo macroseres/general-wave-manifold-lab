@@ -59,3 +59,15 @@ test('C01: RR has no RH jump and remains an uncertified numerical candidate',()=
   assert.equal(result.waves[0].fan.status,'sampled-speed-ordered')
   assert.equal(result.entropyCertified,false)
 })
+
+test('C01: declared shock speed must satisfy RH, not only fitted endpoint speed',()=>{
+  const candidate={status:'sampled-candidate',kind:'composite-chain',
+    segments:[{type:'shock',family:'slow',from:[2,0],to:[0,0],speed:2}]}
+  const result=classifyWaveChain(candidate,burgers)
+  assert.equal(result.waves[0].conservation.status,'unverified')
+  assert.ok(result.waves[0].conservation.relativeResidual>1e-8)
+  assert.equal(result.weakSolution.status,'unverified')
+  assert.equal(result.entropyCertified,false)
+  const corrected=classifyWaveChain({...candidate,segments:[{...candidate.segments[0],speed:1}]},burgers)
+  assert.equal(corrected.waves[0].conservation.status,'numerically-compatible')
+})
