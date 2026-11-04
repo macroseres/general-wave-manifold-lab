@@ -4,11 +4,21 @@ import {flux} from '../flux/quadraticFlux.js'
 
 const point=U=>Array.isArray(U)&&U.length===2&&U.every(Number.isFinite)
 const admissibility=(status='not-evaluated')=>({status,certified:false})
-const liuStatus=candidate=>{
-  const value=candidate?.evidence?.liu
-  return value==='liu-violation-detected'||candidate?.evidence?.status==='liu-violation-detected'||candidate?.evidence?.checks?.liuViolation===true
-    ?'sampled-violation-detected'
-    :typeof value==='string'?value:'not-evaluated'
+const normalizeLiu=status=>status==='liu-violation-detected'||status==='sampled-violation-detected'
+  ?'sampled-violation-detected':status==='no-sampled-violation'||status==='no-liu-violation-detected'
+    ?'no-sampled-violation':status==='not-evaluated'?'not-evaluated':'inconclusive'
+const liuStatus=(candidate,index)=>{
+  // An explicit per-wave report always takes precedence. Never duplicate chain-level
+  // evidence across the two distinct shocks of an SS candidate.
+  const perWave=candidate?.evidence?.liuByWave
+  if(Array.isArray(perWave))return normalizeLiu(perWave[index]?.status)
+  if(candidate?.kind==='two-shock')return 'not-evaluated'
+  if(!['shock-rarefaction','rarefaction-shock'].includes(candidate?.kind))return 'not-evaluated'
+  const shockIndex=candidate.kind==='shock-rarefaction'?0:1
+  if(index!==shockIndex)return 'not-evaluated'
+  const evidence=candidate?.evidence
+  return normalizeLiu(evidence?.checks?.liuViolation===true||evidence?.status==='liu-violation-detected'
+    ?'liu-violation-detected':evidence?.liu??'not-evaluated')
 }
 
 /**
@@ -35,7 +45,7 @@ export function classifyWaveChain(candidate,p){
         ?'numerically-compatible':'unverified',relativeResidual}
       const spectral=rh.kind==='jump'?rh.configuration:null
       const liu=segment.type==='shock'&&candidate?.kind!=='composite-chain'&&candidate?.kind!=='contact-chain'
-        ?liuStatus(candidate):'not-evaluated'
+        ?liuStatus(candidate,index):'not-evaluated'
       return {...base,conservation,spectral,
         incoming:spectral?.kind==='spectral-interior'?spectral.incoming:null,
         admissibility:{
