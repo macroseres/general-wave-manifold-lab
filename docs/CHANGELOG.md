@@ -1,3 +1,11 @@
+## C04-T03 — Liu orientado em choques internos K (04/11/2026)
+
+- Adicionado avaliador isolado `src/math/solution/internalCompositeShockLiu.js`, com verificação de família, sentido R–S/S–R, junção sônica, pré-requisitos locais de choque e correspondência dos extremos do arco fornecido.
+- Liu direto aplicado ao choque interno de K à esquerda (sônica minus); Liu inverso ao choque interno de K à direita (sônica plus). Não reutiliza automaticamente relatórios de contatos com orientação distinta.
+- Sete testes em `tests/internalCompositeShockLiu.test.js`: cinco rejeições/inconclusões e dois casos de execução sobre arcos com amostras intermediárias corrigidas por Rankine–Hugoniot. A correção local não certifica conectividade global nem exclui outros ramos.
+- Validação local comunicada pelo responsável após commit `6b70b12`: ESLint aprovado, **946/946 testes** e build de produção concluído. Avisos não bloqueantes de porta WebSocket 24678 e chunks grandes.
+- **C04-T03 encerrada no escopo numérico testado; C04 permanece aberta.** Nenhuma integração automática à classificação uniforme, seleção de candidatos, construtores ou interface. Resultados amostrados não certificam entropia; `entropyCertified:false`.
+
 ## C04-T01–T02 — auditoria e regressões de compostas K (04/11/2026)
 
 - **C04-T01:** auditados os construtores de blocos K, as verificações de choque e conexão sônica, a seleção de Liu direto/inverso e os testes correspondentes. Há verificações numéricas de RH, Lax fraco, junção e velocidades, mas não foi demonstrada a associação completa da evidência Liu aos choques internos de `composite-chain`.
