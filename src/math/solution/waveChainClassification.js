@@ -5,7 +5,7 @@ const point=U=>Array.isArray(U)&&U.length===2&&U.every(Number.isFinite)
 const admissibility=(status='not-evaluated')=>({status,certified:false})
 const liuStatus=candidate=>{
   const value=candidate?.evidence?.liu
-  return value==='liu-violation-detected'||candidate?.evidence?.status==='liu-violation-detected'
+  return value==='liu-violation-detected'||candidate?.evidence?.status==='liu-violation-detected'||candidate?.evidence?.checks?.liuViolation===true
     ?'sampled-violation-detected'
     :typeof value==='string'?value:'not-evaluated'
 }
