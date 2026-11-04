@@ -1,3 +1,9 @@
+## Construção tradicional — C01 validada, encerramento formal pendente (04/11/2026)
+
+- Classificador puro de cadeias: nove configurações de salto, diagnósticos separados de RH e admissibilidade, tratamento sônico/degenerado, velocidade declarada em RH, continuidade de estados e ordenação de velocidades por junção.
+- Regressões específicas: **7/7 aprovadas**; suíte local completa reportada: **914/914 aprovados**, sem falhas. Avisos de porta WebSocket 24678 ocupada não bloquearam os testes.
+- A classificação preserva candidatos e motivos de inconclusão; não certifica entropia, solução fraca global ou completude. C02–C05 não iniciadas; `main` inalterada.
+
 ## Aba Parâmetros — P3 encerrada e plano P1–P3 concluído (03/11/2026)
 
 - **P3 — Busca e catálogo:** seis exemplos finitos com dez coeficientes, filtro geométrico, prévia verificável e substituição dos coeficientes somente após confirmação explícita. Três testes automatizados específicos da P3 aprovados.
