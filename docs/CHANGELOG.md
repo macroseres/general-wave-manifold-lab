@@ -1,3 +1,10 @@
+## C04-T01–T02 — auditoria e regressões de compostas K (04/11/2026)
+
+- **C04-T01:** auditados os construtores de blocos K, as verificações de choque e conexão sônica, a seleção de Liu direto/inverso e os testes correspondentes. Há verificações numéricas de RH, Lax fraco, junção e velocidades, mas não foi demonstrada a associação completa da evidência Liu aos choques internos de `composite-chain`.
+- **C04-T02:** acrescentados três testes de regressão KR: caso positivo de choque sônico com RH e Lax fraco, preservação da orientação e evidências internas e diagnóstico inconclusivo quando Liu não é avaliado. Corrigida a asserção de RH para verificar o campo público `rhResidual`.
+- Validação local comunicada pelo responsável: `npm run check` com ESLint aprovado, **939/939 testes** e build de produção concluído. Avisos não bloqueantes de WebSocket na porta 24678 e tamanho de chunks.
+- C04-T01 e C04-T02 encerradas no escopo delimitado; C04 ainda em execução. Sem mudanças em construtores, seleção, algoritmos de admissibilidade ou variedade 3D. Nenhuma certificação entrópica global reivindicada.
+
 ## C03-T04 — diagnóstico agregado SS validado e C03 encerrada (04/11/2026)
 
 - Corrigido `physicalChainEvidence`: dois choques SS só recebem `necessary-tests-passed` quando ambos apresentam `no-sampled-violation`; evidência Liu ausente, inconclusiva ou desconhecida mantém `prerequisites-unverified`. Violações detectadas têm prioridade; `entropyCertified:false` permanece inalterado.
