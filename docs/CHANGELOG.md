@@ -1,7 +1,7 @@
 ## C02-T02 — legibilidade e validação automatizada (04/11/2026)
 
 - Diagnósticos C01 reorganizados por conservação, continuidade, velocidades globais e por onda (RH, espectro, Lax, Liu, perfil viscoso), com quebras adaptadas ao painel estreito.
-- Responsável confirmou aprovação de `npm run check`; inspeção visual da nova organização ainda pendente. Nenhum construtor ou critério de seleção foi alterado.
+- Responsável confirmou aprovação de `npm run check`; inspeção visual da nova organização aprovada por captura; C02-T02 encerrada. Nenhum construtor ou critério de seleção foi alterado.
 - Próxima decisão da C02: definir separadamente a sinalização de incompatibilidades verificadas e de admissibilidade inconclusiva, sem exclusão automática por ausência de certificação.
 
 ## C02-T01 — integração visual validada e encerrada (04/11/2026)
