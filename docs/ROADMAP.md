@@ -1,5 +1,15 @@
 # Roadmap
 
+## Construção tradicional — auditoria finita C01–C05 (04/11/2026)
+
+- **C01 — Diagnóstico uniforme independente (validação concluída; encerramento formal pendente):** classificação por segmento e cadeia, nove configurações espectrais, fronteiras sônicas e degeneradas, RH na velocidade declarada, preservação de violações Liu amostradas, continuidade das junções e ordenação global dos intervalos de velocidades. Diagnóstico não seleciona candidatos e não certifica entropia. Validação local informada: 7/7 testes C01 e 914/914 na suíte completa; avisos não bloqueantes de WebSocket na porta 24678.
+- **C02 — Integração na interface e seleção:** não iniciada; depende de autorização específica.
+- **C03 — Liu em choques ordinários:** não iniciada.
+- **C04 — Admissibilidade de compostas K:** não iniciada.
+- **C05 — Regressões e limitações:** não iniciada.
+
+**Limites da C01:** verificações necessárias, numéricas e locais; não demonstram solução fraca global, completude, admissibilidade de Lax/Liu, perfil viscoso ou cinética. Nenhum merge na `main` autorizado. Não criar etapas adicionais fora de C01–C05.
+
 ## Aba Parâmetros — explorador de classes geométricas (decisão aprovada em 31/10/2026)
 
 **Objetivo:** manter os dez coeficientes do fluxo quadrático geral, sem eliminá-los, e permitir classificar o fluxo atual e localizar exemplos por propriedades matemáticas. O explorador permanece **no painel lateral**, em seções recolhíveis, preservando os gráficos como área principal e seguindo o padrão visual existente. Nenhuma normalização por equivalência deve substituir silenciosamente os coeficientes do usuário.
