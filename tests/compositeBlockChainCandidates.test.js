@@ -175,7 +175,8 @@ test('C04-T02: constructed KR sonic shock satisfies RH and weak Lax endpoint che
   assert.equal(result.sonic,true)
   assert.equal(result.compressive,true)
   assert.equal(result.transverse,true)
-  assert.equal(result.shock.rankineHugoniot,true)
+  assert.ok(Number.isFinite(result.rhResidual))
+  assert.ok(result.rhResidual<=1e-7)
   assert.equal(q.entropyCertified,false)
 })
 
