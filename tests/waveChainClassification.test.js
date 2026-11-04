@@ -147,3 +147,42 @@ test('C02-T04: candidate selector displays triage without filtering or disabling
   assert.match(workspace,/onSelectCandidate\?\.\(Number\(e\.target\.value\)\)/)
   assert.doesNotMatch(workspace,/allProfiles\.filter\(.*candidateAssessments/)
 })
+
+test('C03-T02: SS never duplicates a chain-level Liu status across two shocks',()=>{
+  const candidate={status:'sampled-candidate',kind:'two-shock',states:[[2,2],[0,2],[0,0]],speeds:[1,6],
+    evidence:{liu:'liu-violation-detected'}}
+  const result=classifyWaveChain(candidate,burgers)
+  assert.deepEqual(result.waves.map(w=>w.admissibility.liu.status),['not-evaluated','not-evaluated'])
+  assert.equal(result.entropyCertified,false)
+})
+
+test('C03-T02: explicit per-shock SS evidence remains independent',()=>{
+  const candidate={status:'sampled-candidate',kind:'two-shock',states:[[2,2],[0,2],[0,0]],speeds:[1,6],
+    evidence:{liuByWave:[{status:'no-sampled-violation'},{status:'liu-violation-detected'}]}}
+  const result=classifyWaveChain(candidate,burgers)
+  assert.deepEqual(result.waves.map(w=>w.admissibility.liu.status),['no-sampled-violation','sampled-violation-detected'])
+  assert.equal(result.admissibility.status,'sampled-violation-detected')
+  assert.equal(result.entropyCertified,false)
+})
+
+test('C03-T02: mixed Liu evidence belongs only to its ordinary shock',()=>{
+  const sr={status:'sampled-candidate',kind:'shock-rarefaction',left:[2,0],middle:[0,0],right:[0,1],
+    shockSpeed:1,fanStates:[[0,0],[0,1]],fanSpeeds:[5,6],
+    evidence:{liu:'no-sampled-violation'}}
+  const rs={status:'sampled-candidate',kind:'rarefaction-shock',left:[0,-1],middle:[0,0],right:[0,2],
+    shockSpeed:6,fanStates:[[0,-1],[0,0]],fanSpeeds:[4,5],
+    evidence:{liu:'liu-violation-detected'}}
+  assert.deepEqual(classifyWaveChain(sr,burgers).waves.map(w=>w.admissibility.liu.status),
+    ['no-sampled-violation','not-applicable'])
+  assert.deepEqual(classifyWaveChain(rs,burgers).waves.map(w=>w.admissibility.liu.status),
+    ['not-applicable','sampled-violation-detected'])
+})
+
+test('C03-T02: unresolved mixed Liu evidence remains inconclusive',()=>{
+  const candidate={status:'sampled-candidate',kind:'shock-rarefaction',left:[2,0],middle:[0,0],right:[0,1],
+    shockSpeed:1,fanStates:[[0,0],[0,1]],fanSpeeds:[5,6],
+    evidence:{liu:'arc-unresolved'}}
+  const result=classifyWaveChain(candidate,burgers)
+  assert.equal(result.waves[0].admissibility.liu.status,'inconclusive')
+  assert.equal(result.entropyCertified,false)
+})
