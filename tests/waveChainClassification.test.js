@@ -109,3 +109,13 @@ test('C02-T01: both inspection panels receive coefficients and display uniform d
   assert.match(workspace,/<StateChainInspection candidate=\{activeProfile\} geometry=\{chainGeometry\} p=\{p\}/)
   assert.match(workspace,/<StateChainInspection candidate=\{comparisonProfile\} geometry=\{comparisonGeometry\} p=\{p\}/)
 })
+
+test('C02-T02: uniform diagnostics remain individually labeled in narrow panels',()=>{
+  const inspection=readFileSync(new URL('../src/components/StateChainInspection.jsx',import.meta.url),'utf8')
+  for(const label of ['Conservação','Continuidade','Velocidades globais','Espectro:','Lax:','Liu:','Perfil viscoso:']){
+    assert.ok(inspection.includes(label),`missing diagnostic label: ${label}`)
+  }
+  assert.match(inspection,/overflowWrap:'anywhere'/)
+  assert.match(inspection,/classification\.waves\.map/)
+  assert.match(inspection,/classifyWaveChain\(candidate,p\)/)
+})
