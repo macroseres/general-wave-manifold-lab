@@ -1,3 +1,9 @@
+## C02-T04 — indicadores de seleção validados (04/11/2026)
+
+- A lista de cadeias apresenta compatibilidade numérica não certificada, inconclusão ou incompatibilidade detectada, mantendo todas as opções e seus índices selecionáveis; construtores e critérios de seleção não foram alterados.
+- Atualizados os testes de auditoria e renderização para reconhecer o sufixo informativo. Verificações isoladas aprovadas (3/3 e 1/1); responsável confirmou aprovação de lint, testes e build via `npm run check` e apresentou capturas da cadeia SS.
+- Limitação visual não bloqueante: rótulo selecionado pode ficar truncado em painel estreito. C02-T04 encerrada; C02 não encerrada automaticamente; C03–C05 não iniciadas.
+
 ## C02-T03 — síntese diagnóstica encerrada (04/11/2026)
 
 - Triagem somente informativa em três estados: incompatibilidade detectada, diagnóstico inconclusivo e compatibilidade numérica não certificada; nenhuma exclusão automática de candidatos.
