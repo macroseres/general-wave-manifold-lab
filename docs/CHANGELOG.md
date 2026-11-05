@@ -1,3 +1,12 @@
+## C05-T01 — Auditoria de regressões e limites (04/11/2026)
+
+- Auditoria somente de leitura dos classificadores, avaliador Liu de K, evidência física e testes C01–C04. Nenhuma alteração algorítmica ou execução adicional de testes; última validação local informada permanece em 949/949.
+- **L1:** para RS/SR, `necessary-tests-passed` em `physicalChainEvidence` pode ocorrer sem Liu resolvido; não interpretar como aprovação Liu nem certificação entrópica.
+- **L2:** `numerically-connected` dos arcos K é proveniência declarada, não prova independente de conectividade global; os testes só demonstram amostragem e associação.
+- **L3:** a regressão de integração C04-T04 testa KR forward, não RK backward pela classificação de cadeia (embora o avaliador isolado tenha teste backward).
+- **L4:** construtores habituais não fornecem `internalLiuArcs` automaticamente; o diagnóstico interno permanece `not-evaluated` sem registro explícito.
+- C05-T01 encerrada como auditoria; C05 continua aberta. Nenhuma mudança na seleção, construtores, interface ou `main`.
+
 ## C04 encerrada; C05 iniciada — 04/11/2026
 
 - Encerramento formal autorizado da C04 (T01–T04) após validação comunicada de **949/949 testes**, ESLint e build. A cobertura permanece numérica e local; Liu amostrado não demonstra conectividade global de Hugoniot nem admissibilidade entrópica.
