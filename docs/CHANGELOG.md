@@ -1,3 +1,8 @@
+## C04 encerrada; C05 iniciada — 04/11/2026
+
+- Encerramento formal autorizado da C04 (T01–T04) após validação comunicada de **949/949 testes**, ESLint e build. A cobertura permanece numérica e local; Liu amostrado não demonstra conectividade global de Hugoniot nem admissibilidade entrópica.
+- C05 iniciada com **T01 de auditoria somente de leitura** da cobertura de regressões C01–C04 e das limitações. Sem autorização para modificar construtores, seleção, interface ou `main`.
+
 ## C04-T04 — Associação individual de Liu aos choques internos K (04/11/2026)
 
 - Classificação uniforme aceita evidência `internalLiuArcs` explicitamente atribuída ao bloco e segmento K, com checagem de família, orientação e declaração `numerically-connected`; sem copiar diagnóstico global da cadeia para o choque interno.
