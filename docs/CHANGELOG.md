@@ -1,3 +1,10 @@
+## C05-T03 — Consolidação documental final (04/11/2026)
+
+- Consolidado no `docs/ROADMAP.md` o alcance validado das etapas C01–C05, com **951/951 testes** na última execução local informada (C05-T02), ESLint e build aprovados. A C05-T03 não executou novos testes nem alterou código científico.
+- L3 (ausência de teste de integração RK backward) resolvida pela C05-T02. Permanecem L1 (`necessary-tests-passed` RS/SR sem Liu necessariamente resolvido), L2 (sem prova global da conectividade dos arcos) e L4 (sem geração automática de `internalLiuArcs`).
+- Mantidas limitações de Liu amostrado, `entropyCertified:false`, inexistência de prova geral de admissibilidade, completude e existência/unicidade do problema de Riemann. Nenhuma alteração de construtores, seleção, interface, variedade 3D ou `main`.
+- **C05-T03 concluída documentalmente; C05 e plano C01–C05 aguardam autorização para encerramento formal.** Não abrir tarefas adicionais automaticamente.
+
 ## C05-T02 — Regressões RK e inconclusões validadas (04/11/2026)
 
 - Dois testes de integração acrescentados para Liu backward em RK e recusa de evidência interna ausente, inconclusiva ou com índice, orientação ou família incompatíveis; commit `8cc4f3a`.
