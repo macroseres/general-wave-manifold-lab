@@ -1,3 +1,9 @@
+## C04-T04 — Associação individual de Liu aos choques internos K (04/11/2026)
+
+- Classificação uniforme aceita evidência `internalLiuArcs` explicitamente atribuída ao bloco e segmento K, com checagem de família, orientação e declaração `numerically-connected`; sem copiar diagnóstico global da cadeia para o choque interno.
+- Três regressões verificam ausência de propagação, associação individual correta e recusa de índices/proveniência inadequados. Validação local comunicada: **949/949 testes**, ESLint e build aprovados; avisos não bloqueantes de WebSocket e chunks.
+- C04-T04 encerrada no escopo testado. A conectividade global não foi demonstrada; o construtor não fornece automaticamente arcos atribuídos; não há certificação entrópica, mudança de seleção ou alteração de interface. C04 aguarda decisão formal de encerramento; C05 não iniciada.
+
 ## C04-T03 — Liu orientado em choques internos K (04/11/2026)
 
 - Adicionado avaliador isolado `src/math/solution/internalCompositeShockLiu.js`, com verificação de família, sentido R–S/S–R, junção sônica, pré-requisitos locais de choque e correspondência dos extremos do arco fornecido.
