@@ -116,3 +116,48 @@ test('C04-T04: wrong index or unverified provenance cannot transfer Liu',()=>{
     assert.equal(result.entropyCertified,false)
   }
 })
+
+test('C05-T02: RK backward Liu is attributed only to its internal K shock',()=>{
+  const junction=[(1-Math.sqrt(71))/7,0],left=[-1,-1]
+  const b={type:'K',family:'fast',construction:'shock-rarefaction',
+    sonicJunction:junction,segments:[{type:'shock',family:'fast',
+      sonicSide:'plus',from:left,to:junction},{type:'rarefaction',
+      family:'fast',from:junction,to:[1,1],speeds:[2,3]}]}
+  const arc=sampledArc(junction,left)
+  const candidate={kind:'composite-chain',status:'sampled-candidate',
+    blocks:[b],segments:b.segments,
+    evidence:{internalLiuArcs:[{blockIndex:0,segmentIndex:0,arc:{
+      status:'numerically-connected',reverse:true,family:'fast',points:arc}}]}}
+  const evaluated=internalCompositeShockLiu(b,arc,p)
+  assert.equal(evaluated.direction,'backward')
+  const expected=evaluated.status==='liu-violation-detected'
+    ?'sampled-violation-detected':evaluated.status==='no-sampled-violation'
+      ?'no-sampled-violation':'inconclusive'
+  const classified=classifyWaveChain(candidate,p)
+  assert.equal(classified.waves[0].admissibility.liu.status,expected)
+  assert.equal(classified.waves[1].admissibility.liu.status,'not-applicable')
+  assert.equal(classified.entropyCertified,false)
+})
+
+test('C05-T02: RK missing or mismatched provenance never implies Liu approval',()=>{
+  const junction=[(1-Math.sqrt(71))/7,0],left=[-1,-1]
+  const b={type:'K',family:'fast',construction:'shock-rarefaction',
+    sonicJunction:junction,segments:[{type:'shock',family:'fast',
+      sonicSide:'plus',from:left,to:junction},{type:'rarefaction',
+      family:'fast',from:junction,to:[1,1],speeds:[2,3]}]}
+  const arc=sampledArc(junction,left)
+  const base={kind:'composite-chain',status:'sampled-candidate',
+    blocks:[b],segments:b.segments}
+  const missing=classifyWaveChain(base,p)
+  assert.equal(missing.waves[0].admissibility.liu.status,'not-evaluated')
+  for(const record of [
+    {blockIndex:0,segmentIndex:0,arc:{status:'continuation-inconclusive',reverse:true,family:'fast',points:arc}},
+    {blockIndex:0,segmentIndex:0,arc:{status:'numerically-connected',reverse:false,family:'fast',points:arc}},
+    {blockIndex:0,segmentIndex:0,arc:{status:'numerically-connected',reverse:true,family:'slow',points:arc}},
+    {blockIndex:0,segmentIndex:1,arc:{status:'numerically-connected',reverse:true,family:'fast',points:arc}},
+  ]){
+    const result=classifyWaveChain({...base,evidence:{internalLiuArcs:[record]}},p)
+    assert.ok(['not-evaluated','inconclusive'].includes(result.waves[0].admissibility.liu.status))
+    assert.equal(result.entropyCertified,false)
+  }
+})
