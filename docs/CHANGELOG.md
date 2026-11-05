@@ -1,3 +1,9 @@
+## C05-T02 — Regressões RK e inconclusões validadas (04/11/2026)
+
+- Dois testes de integração acrescentados para Liu backward em RK e recusa de evidência interna ausente, inconclusiva ou com índice, orientação ou família incompatíveis; commit `8cc4f3a`.
+- Validação local informada: `npm run check` com ESLint aprovado, **951/951 testes**, zero falhas e build Vite concluído. Avisos não bloqueantes de porta WebSocket 24678 e chunks acima de 500 kB.
+- C05-T02 encerrada no escopo numérico testado. Sem alterações em algoritmos, construtores, seleção, interface ou `main`; Liu amostrado não certifica admissibilidade entrópica. C05 permanece aberta para consolidação final das limitações.
+
 ## C05-T01 — Auditoria de regressões e limites (04/11/2026)
 
 - Auditoria somente de leitura dos classificadores, avaliador Liu de K, evidência física e testes C01–C04. Nenhuma alteração algorítmica ou execução adicional de testes; última validação local informada permanece em 949/949.
