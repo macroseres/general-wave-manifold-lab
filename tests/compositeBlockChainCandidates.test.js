@@ -9,6 +9,9 @@ import {candidatePhysicalGeometry,candidatePhysicalProfiles} from '../src/geomet
 import {evaluateSelfSimilarCandidate} from '../src/math/solution/riemannSelfSimilarCandidate.js'
 import {compareRiemannCandidates} from '../src/math/solution/riemannCandidateComparison.js'
 import {groupRiemannCandidates} from '../src/math/solution/riemannCandidateGroups.js'
+import {sonicShockAdmissibility} from '../src/math/solution/sonicShockAdmissibility.js'
+import {classifyWaveChain} from '../src/math/solution/waveChainClassification.js'
+import {assessWaveChain} from '../src/math/solution/waveChainAssessment.js'
 
 const p=oldWavePreset({B2:0})
 const close=(a,b)=>assert.ok(Math.abs(a-b)<1e-6,`${a} != ${b}`)
@@ -157,4 +160,49 @@ test('T07: malformed or unsupported physical profiles are not invented',()=>{
   assert.ok(q)
   assert.equal(candidatePhysicalProfiles(q,{time:0}),null)
   assert.equal(evaluateSelfSimilarCandidate(q,Number.NaN),null)
+})
+
+
+test('C04-T02: constructed KR sonic shock satisfies RH and weak Lax endpoint checks',()=>{
+  const {states,branches}=krFixture()
+  const q=compositeBlockChainCandidates(states,branches,{},p,{maxSourceSamples:48}).find(c=>c.pattern==='KR')
+  assert.ok(q)
+  const jump=q.blocks[0].segments.find(s=>s.type==='shock')
+  assert.ok(jump)
+  const result=sonicShockAdmissibility(jump.from,jump.to,p,jump.family,jump.sonicSide)
+  assert.equal(result.passes,true)
+  assert.equal(result.status,'weak-lax-endpoint-candidate')
+  assert.equal(result.sonic,true)
+  assert.equal(result.compressive,true)
+  assert.equal(result.transverse,true)
+  assert.ok(Number.isFinite(result.rhResidual))
+  assert.ok(result.rhResidual<=1e-7)
+  assert.equal(q.entropyCertified,false)
+})
+
+test('C04-T02: K preserves internal shock orientation, sonic endpoint and evidence',()=>{
+  const {states,branches}=krFixture()
+  const q=compositeBlockChainCandidates(states,branches,{},p,{maxSourceSamples:48}).find(c=>c.pattern==='KR')
+  assert.ok(q)
+  const block=q.blocks[0],jump=block.segments[1]
+  assert.equal(block.construction,'rarefaction-shock')
+  assert.equal(jump.sonicSide,'minus')
+  assert.deepEqual(jump.from,block.sonicJunction)
+  assert.deepEqual(jump.to,q.middle)
+  assert.equal(jump.weakLax.passes,true)
+  assert.equal(jump.weakLax.status,'weak-lax-endpoint-candidate')
+  assert.equal(q.evidence.liu,'not-evaluated')
+  assert.equal(q.entropyCertified,false)
+})
+
+test('C04-T02: missing composite Liu remains inconclusive in uniform triage',()=>{
+  const {states,branches}=krFixture()
+  const q=compositeBlockChainCandidates(states,branches,{},p,{maxSourceSamples:48}).find(c=>c.pattern==='KR')
+  assert.ok(q)
+  const classified=classifyWaveChain(q,p)
+  const shock=classified.waves.find(w=>w.type==='shock')
+  assert.ok(shock)
+  assert.equal(shock.admissibility.liu.status,'not-evaluated')
+  assert.equal(assessWaveChain(classified).status,'inconclusive')
+  assert.equal(classified.entropyCertified,false)
 })

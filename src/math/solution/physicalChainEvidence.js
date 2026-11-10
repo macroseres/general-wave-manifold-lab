@@ -8,13 +8,18 @@ export function physicalChainEvidence(profile, source) {
   const lax=twoShock?source?.familyEvidence?.status:source?.evidence?.status
   const fan=twoShock?'not-applicable':source?.fanArc?.status
   const liu=twoShock?'not-evaluated':source?.liu?.status??'not-evaluated'
-  const liuViolation=liu==='liu-violation-detected'
+  const liuByWave=twoShock?(source?.liuByWave??[]).map(q=>({status:q?.status??'inconclusive',
+    orientation:q?.direction??null,checked:q?.checked??0,reason:q?.reason??null,certified:false})):null
+  const liuViolation=liu==='liu-violation-detected'||liuByWave?.some(q=>q.status==='liu-violation-detected')===true
+  // SS requires independent, recognized Liu sampling results for both shocks.
+  // Unresolved, missing, or unknown reports cannot count as completed checks.
+  const ssLiuResolved=!twoShock||(liuByWave.length===2&&liuByWave.every(q=>q.status==='no-sampled-violation'))
   const geometricPass=twoShock?geometry==='ordered-rh-candidate':geometry==='mixed-ordered-lax-candidate'
   const laxPass=twoShock?lax==='ordered-lax-endpoint-candidate':lax==='mixed-ordered-lax-candidate'
   const fanPass=twoShock?true:source?.fanArc?.passes===true
   return {
-    status:liuViolation?'liu-violation-detected':geometricPass&&laxPass&&fanPass?'necessary-tests-passed':'prerequisites-unverified',
-    geometry, lax, fan, liu,
+    status:liuViolation?'liu-violation-detected':geometricPass&&laxPass&&fanPass&&ssLiuResolved?'necessary-tests-passed':'prerequisites-unverified',
+    geometry, lax, fan, liu, ...(twoShock?{liuByWave}:{}),
     checks:{geometry:geometricPass,lax:laxPass,fan:fanPass,liuViolation},
     entropyCertified:false,
   }

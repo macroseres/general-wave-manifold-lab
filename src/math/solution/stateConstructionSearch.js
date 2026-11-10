@@ -1,7 +1,7 @@
 import {searchTwoShockCandidates} from './twoShockCandidates.js'
 import {assessTwoShockCandidates} from './riemannWaveChains.js'
 import {searchMixedWaveCandidates} from './mixedWaveChains.js'
-import {assessMixedChainsWithLiu} from './mixedChainLiu.js'
+import {assessMixedChainsWithLiu,assessTwoShockChainsWithLiu} from './mixedChainLiu.js'
 import {twoShockSelfSimilarCandidate,mixedSelfSimilarCandidate} from './riemannSelfSimilarCandidate.js'
 import {physicalChainEvidence} from './physicalChainEvidence.js'
 import {candidateProvenance} from './riemannCandidateProvenance.js'
@@ -35,7 +35,7 @@ export function stateConstructionSearch(states,branches,hugoniot,p,requested,rev
     return result
   }
   const ss=run('SS',()=>searchTwoShockCandidates(states.left,states.right,hugoniot.left,hugoniot.right,p))
-  const shockCandidates=assessTwoShockCandidates(states?.left,states?.right,ss.candidates,p)
+  const shockCandidates=assessTwoShockChainsWithLiu(assessTwoShockCandidates(states?.left,states?.right,ss.candidates,p),states?.left,states?.right,p)
   const mixed=run('RS, SR',()=>searchMixedWaveCandidates(states,branches,hugoniot,p))
   const mixedCandidates=mixed.candidates
   const mixedLiuCandidates=assessMixedChainsWithLiu(mixedCandidates,states,p)

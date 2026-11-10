@@ -1,8 +1,100 @@
+## Integração C01–C05 e coerência do diagnóstico SS - 10/11/2026
+
+- Reunidos à main os 77 commits da branch de diagnósticos C01, sem squash e sem substituir as correções 3D já publicadas. Os dois históricos do changelog foram preservados.
+- Cabeçalho de inspeção e síntese detalhada compartilham a mesma avaliação agregada. Uma violação Liu SS não aparece como compatibilidade; evidência ou coeficientes ausentes mantêm inconclusão.
+- Acrescentados cinco cenários de renderização React: violação, Liu inconclusivo, compatibilidade numérica, evidência ausente e coeficientes ausentes. A integração não altera os algoritmos científicos herdados da C01 nem a seleção de candidatos.
+- Roadmap distingue o estado técnico atual dos registros históricos. Permanecem os limites de Liu amostrado, conectividade global e geração de arcos internos K; nenhuma certificação entrópica ou conclusão de um solver geral é declarada.
+
 ## Melhorias locais de interface 3D - 10/11/2026
 
 - Zoom dos botões preserva o centro de órbita após focar um ponto fora da origem; fatores inválidos não movem a câmera. Sem mudança nas equações ou no solver.
 - Experimentos no schema v4 preservam os controles de dupla sônica (DS), inflexão (J) e campos compostos K-/K+. Arquivos v1-v3 continuam importáveis; quando esses quatro controles não estavam salvos, são restaurados como ocultos. Outros controles ainda não incluídos no schema continuam fora deste escopo.
 - Regressões automatizadas cobrem foco deslocado, reversibilidade, entradas inválidas, round-trip e migração de experimentos. Inspeção visual no navegador ainda pendente.
+
+## C05-T03 — Consolidação documental final (04/11/2026)
+
+- Consolidado no `docs/ROADMAP.md` o alcance validado das etapas C01–C05, com **951/951 testes** na última execução local informada (C05-T02), ESLint e build aprovados. A C05-T03 não executou novos testes nem alterou código científico.
+- L3 (ausência de teste de integração RK backward) resolvida pela C05-T02. Permanecem L1 (`necessary-tests-passed` RS/SR sem Liu necessariamente resolvido), L2 (sem prova global da conectividade dos arcos) e L4 (sem geração automática de `internalLiuArcs`).
+- Mantidas limitações de Liu amostrado, `entropyCertified:false`, inexistência de prova geral de admissibilidade, completude e existência/unicidade do problema de Riemann. Nenhuma alteração de construtores, seleção, interface, variedade 3D ou `main`.
+- **C05-T03 concluída documentalmente; C05 e plano C01–C05 aguardam autorização para encerramento formal.** Não abrir tarefas adicionais automaticamente.
+
+## C05-T02 — Regressões RK e inconclusões validadas (04/11/2026)
+
+- Dois testes de integração acrescentados para Liu backward em RK e recusa de evidência interna ausente, inconclusiva ou com índice, orientação ou família incompatíveis; commit `8cc4f3a`.
+- Validação local informada: `npm run check` com ESLint aprovado, **951/951 testes**, zero falhas e build Vite concluído. Avisos não bloqueantes de porta WebSocket 24678 e chunks acima de 500 kB.
+- C05-T02 encerrada no escopo numérico testado. Sem alterações em algoritmos, construtores, seleção, interface ou `main`; Liu amostrado não certifica admissibilidade entrópica. C05 permanece aberta para consolidação final das limitações.
+
+## C05-T01 — Auditoria de regressões e limites (04/11/2026)
+
+- Auditoria somente de leitura dos classificadores, avaliador Liu de K, evidência física e testes C01–C04. Nenhuma alteração algorítmica ou execução adicional de testes; última validação local informada permanece em 949/949.
+- **L1:** para RS/SR, `necessary-tests-passed` em `physicalChainEvidence` pode ocorrer sem Liu resolvido; não interpretar como aprovação Liu nem certificação entrópica.
+- **L2:** `numerically-connected` dos arcos K é proveniência declarada, não prova independente de conectividade global; os testes só demonstram amostragem e associação.
+- **L3:** a regressão de integração C04-T04 testa KR forward, não RK backward pela classificação de cadeia (embora o avaliador isolado tenha teste backward).
+- **L4:** construtores habituais não fornecem `internalLiuArcs` automaticamente; o diagnóstico interno permanece `not-evaluated` sem registro explícito.
+- C05-T01 encerrada como auditoria; C05 continua aberta. Nenhuma mudança na seleção, construtores, interface ou `main`.
+
+## C04 encerrada; C05 iniciada — 04/11/2026
+
+- Encerramento formal autorizado da C04 (T01–T04) após validação comunicada de **949/949 testes**, ESLint e build. A cobertura permanece numérica e local; Liu amostrado não demonstra conectividade global de Hugoniot nem admissibilidade entrópica.
+- C05 iniciada com **T01 de auditoria somente de leitura** da cobertura de regressões C01–C04 e das limitações. Sem autorização para modificar construtores, seleção, interface ou `main`.
+
+## C04-T04 — Associação individual de Liu aos choques internos K (04/11/2026)
+
+- Classificação uniforme aceita evidência `internalLiuArcs` explicitamente atribuída ao bloco e segmento K, com checagem de família, orientação e declaração `numerically-connected`; sem copiar diagnóstico global da cadeia para o choque interno.
+- Três regressões verificam ausência de propagação, associação individual correta e recusa de índices/proveniência inadequados. Validação local comunicada: **949/949 testes**, ESLint e build aprovados; avisos não bloqueantes de WebSocket e chunks.
+- C04-T04 encerrada no escopo testado. A conectividade global não foi demonstrada; o construtor não fornece automaticamente arcos atribuídos; não há certificação entrópica, mudança de seleção ou alteração de interface. C04 aguarda decisão formal de encerramento; C05 não iniciada.
+
+## C04-T03 — Liu orientado em choques internos K (04/11/2026)
+
+- Adicionado avaliador isolado `src/math/solution/internalCompositeShockLiu.js`, com verificação de família, sentido R–S/S–R, junção sônica, pré-requisitos locais de choque e correspondência dos extremos do arco fornecido.
+- Liu direto aplicado ao choque interno de K à esquerda (sônica minus); Liu inverso ao choque interno de K à direita (sônica plus). Não reutiliza automaticamente relatórios de contatos com orientação distinta.
+- Sete testes em `tests/internalCompositeShockLiu.test.js`: cinco rejeições/inconclusões e dois casos de execução sobre arcos com amostras intermediárias corrigidas por Rankine–Hugoniot. A correção local não certifica conectividade global nem exclui outros ramos.
+- Validação local comunicada pelo responsável após commit `6b70b12`: ESLint aprovado, **946/946 testes** e build de produção concluído. Avisos não bloqueantes de porta WebSocket 24678 e chunks grandes.
+- **C04-T03 encerrada no escopo numérico testado; C04 permanece aberta.** Nenhuma integração automática à classificação uniforme, seleção de candidatos, construtores ou interface. Resultados amostrados não certificam entropia; `entropyCertified:false`.
+
+## C04-T01–T02 — auditoria e regressões de compostas K (04/11/2026)
+
+- **C04-T01:** auditados os construtores de blocos K, as verificações de choque e conexão sônica, a seleção de Liu direto/inverso e os testes correspondentes. Há verificações numéricas de RH, Lax fraco, junção e velocidades, mas não foi demonstrada a associação completa da evidência Liu aos choques internos de `composite-chain`.
+- **C04-T02:** acrescentados três testes de regressão KR: caso positivo de choque sônico com RH e Lax fraco, preservação da orientação e evidências internas e diagnóstico inconclusivo quando Liu não é avaliado. Corrigida a asserção de RH para verificar o campo público `rhResidual`.
+- Validação local comunicada pelo responsável: `npm run check` com ESLint aprovado, **939/939 testes** e build de produção concluído. Avisos não bloqueantes de WebSocket na porta 24678 e tamanho de chunks.
+- C04-T01 e C04-T02 encerradas no escopo delimitado; C04 ainda em execução. Sem mudanças em construtores, seleção, algoritmos de admissibilidade ou variedade 3D. Nenhuma certificação entrópica global reivindicada.
+
+## C03-T04 — diagnóstico agregado SS validado e C03 encerrada (04/11/2026)
+
+- Corrigido `physicalChainEvidence`: dois choques SS só recebem `necessary-tests-passed` quando ambos apresentam `no-sampled-violation`; evidência Liu ausente, inconclusiva ou desconhecida mantém `prerequisites-unverified`. Violações detectadas têm prioridade; `entropyCertified:false` permanece inalterado.
+- Atualizado teste legado e adicionadas quatro regressões C03-T04 para ausência, inconclusão, compatibilidade amostrada independente e violação. Não alterados os construtores de ondas, RH, Lax, seleção ou variedade 3D.
+- Validação local enviada pelo responsável: `npm run check` aprovado, ESLint sem falhas, **936/936 testes** e build concluído. Avisos não bloqueantes de porta WebSocket 24678 ocupada e chunks maiores que 500 kB.
+- C03 encerrada no escopo delimitado C03-T01–T04. Nenhuma certificação entrópica global ou completude do problema de Riemann é reivindicada; C04/C05 permanecem não iniciadas.
+
+## C02-T04 — indicadores de seleção validados (04/11/2026)
+
+- A lista de cadeias apresenta compatibilidade numérica não certificada, inconclusão ou incompatibilidade detectada, mantendo todas as opções e seus índices selecionáveis; construtores e critérios de seleção não foram alterados.
+- Atualizados os testes de auditoria e renderização para reconhecer o sufixo informativo. Verificações isoladas aprovadas (3/3 e 1/1); responsável confirmou aprovação de lint, testes e build via `npm run check` e apresentou capturas da cadeia SS.
+- Limitação visual não bloqueante: rótulo selecionado pode ficar truncado em painel estreito. C02-T04 encerrada; C02 não encerrada automaticamente; C03–C05 não iniciadas.
+
+## C02-T03 — síntese diagnóstica encerrada (04/11/2026)
+
+- Triagem somente informativa em três estados: incompatibilidade detectada, diagnóstico inconclusivo e compatibilidade numérica não certificada; nenhuma exclusão automática de candidatos.
+- Validação: 919/919 testes, ESLint e build aprovados conforme relatório enviado; captura confirma apresentação da compatibilidade numérica na cadeia SS. Os estados incompatível e inconclusivo foram cobertos por testes automatizados, sem conferência visual específica.
+- C02-T03 encerrada; qualquer alteração futura nos critérios de seleção exige decisão separada. C03–C05 não iniciadas.
+
+## C02-T02 — legibilidade e validação automatizada (04/11/2026)
+
+- Diagnósticos C01 reorganizados por conservação, continuidade, velocidades globais e por onda (RH, espectro, Lax, Liu, perfil viscoso), com quebras adaptadas ao painel estreito.
+- Responsável confirmou aprovação de `npm run check`; inspeção visual da nova organização aprovada por captura; C02-T02 encerrada. Nenhum construtor ou critério de seleção foi alterado.
+- Próxima decisão da C02: definir separadamente a sinalização de incompatibilidades verificadas e de admissibilidade inconclusiva, sem exclusão automática por ausência de certificação.
+
+## C02-T01 — integração visual validada e encerrada (04/11/2026)
+
+- Diagnóstico uniforme C01 exibido em modo somente leitura nos painéis principal e comparativo da cadeia selecionada; construtores e critérios de seleção preservados.
+- Validação comunicada pelo responsável: 8/8 testes específicos aprovados, `npm run check` aprovado e conferência visual da cadeia SS confirmada (RH, espectro, continuidade, velocidades, Lax, Liu e perfil viscoso).
+- Limitação visual observada: texto muito condensado na largura do painel lateral. Próxima tarefa finita C02-T02: melhorar legibilidade, sem alterar matemática nem seleção. Nenhuma certificação entrópica reivindicada.
+
+## Construção tradicional — C01 encerrada formalmente (04/11/2026)
+
+- Classificador puro de cadeias: nove configurações de salto, diagnósticos separados de RH e admissibilidade, tratamento sônico/degenerado, velocidade declarada em RH, continuidade de estados e ordenação de velocidades por junção.
+- Regressões específicas: **7/7 aprovadas**; suíte local completa reportada: **914/914 aprovados**, sem falhas. Avisos de porta WebSocket 24678 ocupada não bloquearam os testes.
+- Encerramento formal autorizado pelo responsável em 04/11/2026. A classificação preserva candidatos e motivos de inconclusão; não certifica entropia, solução fraca global ou completude. C02–C05 não iniciadas; `main` inalterada.
 
 ## Aba Parâmetros — P3 encerrada e plano P1–P3 concluído (03/11/2026)
 

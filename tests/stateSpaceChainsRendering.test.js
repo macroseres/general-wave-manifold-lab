@@ -70,7 +70,7 @@ test('RR and contact components render fans and distinct contact interfaces',asy
     assert.doesNotMatch(kp,/NaN|Infinity|Não foi possível/)
     const props={open:true,inline:true,state:{kind:'degenerate'},p:quadratic,tauMin:-1,tauMax:1,showRarefaction:false,riemannStates:inputs}
     const list=renderToStaticMarkup(createElement(StateSpace,props))
-    const option=list.match(/<option value="(\d+)">Cadeia \d+ · KR<\/option>/)
+    const option=list.match(/<option value="(\d+)">Cadeia \d+ · KR(?: · [^<]*)?<\/option>/)
     assert.ok(option,'KR must be available in the actual state workspace with default search settings')
     const selected=renderToStaticMarkup(createElement(StateSpace,{...props,selectedCandidateIndex:Number(option[1])}))
     assert.equal((selected.match(/aria-label="Trecho de rarefação do bloco composto"/g)??[]).length,2)

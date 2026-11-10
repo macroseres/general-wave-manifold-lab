@@ -65,7 +65,7 @@ export async function auditStateWorkspace(progress=()=>{},fixtures=stateAuditFix
         showRarefaction:false,riemannStates:fixture.states,constructionRequested:true,
         showLeftRiemannHugoniot:false,showRightRiemannHugoniot:false}
       const list=renderToStaticMarkup(createElement(Workspace,props))
-      const options=[...list.matchAll(/<option value="(\d+)">Cadeia \d+ · ([A-Z]{2})<\/option>/g)]
+      const options=[...list.matchAll(/<option value="(\d+)">Cadeia \d+ · ([A-Z]{2})(?: · [^<]*)?<\/option>/g)]
       const option=options.find(q=>q[2]===fixture.pattern)
       const selected=option?renderToStaticMarkup(createElement(Workspace,{...props,selectedCandidateIndex:Number(option[1])})):''
       rows.push({...fixture,index:option?Number(option[1]):null,available:options.map(q=>q[2]),
