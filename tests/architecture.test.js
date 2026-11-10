@@ -89,7 +89,7 @@ test('experiment schema v1 migrates domain to samplingDomain without changing va
   const current=createExperiment({appVersion:'x',coefficients:{a20:1,a11:0,a02:0,a10:0,a01:0,b20:0,b11:1,b02:0,b10:0,b01:0},samplingDomain:{tauMin:-2,tauMax:3,YMin:-4,YMax:5},point:{tau:0,Y:0,zc:0},visibility:{showSMinus:true,showSPlus:true,showRarefaction:true,showRareCurves:true,showFiniteStable:true,showFiniteUnstable:true,showInfinityStable:true,showInfinityUnstable:true},axisScale:{tau:1,Y:1,zc:1}})
   const legacy=structuredClone(current);legacy.schemaVersion=1;legacy.scientific.domain=legacy.scientific.samplingDomain;delete legacy.scientific.samplingDomain
   const migrated=validateExperiment(legacy)
-  assert.equal(migrated.schemaVersion,3)
+  assert.equal(migrated.schemaVersion,4)
   assert.deepEqual(migrated.scientific.samplingDomain,current.scientific.samplingDomain)
   assert.equal('domain' in migrated.scientific,false)
 })

@@ -1,3 +1,4 @@
+import {zoomPositionAroundTarget} from './scene/cameraZoom.js'
 import PointScreenAnchors from './PointScreenAnchors.jsx'
 import {rightWaveJunctions} from '../geometry/state/rightWaveJunctions.js'
 import DraggableInspection from './DraggableInspection.jsx'
@@ -33,7 +34,7 @@ const CameraRig=forwardRef(function CameraRig(_,ref){
     controls.current?.target.set(0,0,0)
     controls.current?.update()
   }
-  useImperativeHandle(ref,()=>({front:()=>setView([0,0,5]),side:()=>setView([5,0,0]),back:()=>setView([0,0,-5]),left:()=>setView([-5,0,0]),bottom:()=>setView([0,-5,0],[0,0,1]),top:()=>setView([0.06,5,0.0001]),reset:()=>setView([3,3,3]),focus:(target)=>{if(!Array.isArray(target)||!target.every(Number.isFinite))return;const oldTarget=controls.current?.target;const offset=camera.position.clone().sub(oldTarget||{x:0,y:0,z:0});camera.position.set(target[0]+offset.x,target[1]+offset.y,target[2]+offset.z);controls.current?.target.set(...target);controls.current?.update()},zoom:(factor)=>{camera.position.multiplyScalar(factor);controls.current?.update()}}))
+  useImperativeHandle(ref,()=>({front:()=>setView([0,0,5]),side:()=>setView([5,0,0]),back:()=>setView([0,0,-5]),left:()=>setView([-5,0,0]),bottom:()=>setView([0,-5,0],[0,0,1]),top:()=>setView([0.06,5,0.0001]),reset:()=>setView([3,3,3]),focus:(target)=>{if(!Array.isArray(target)||!target.every(Number.isFinite))return;const oldTarget=controls.current?.target;const offset=camera.position.clone().sub(oldTarget||{x:0,y:0,z:0});camera.position.set(target[0]+offset.x,target[1]+offset.y,target[2]+offset.z);controls.current?.target.set(...target);controls.current?.update()},zoom:(factor)=>{const position=zoomPositionAroundTarget(camera.position,controls.current?.target,factor);if(!position)return;camera.position.set(position.x,position.y,position.z);controls.current?.update()}}))
   return <OrbitControls ref={controls} makeDefault enableDamping dampingFactor={0.08} />
 })
 

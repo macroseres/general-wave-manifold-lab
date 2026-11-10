@@ -1,10 +1,11 @@
 import { numericalPolicySnapshot } from '../math/numerics/policy.js'
 
 export const EXPERIMENT_SCHEMA = 'general-wave-manifold-lab/experiment'
-export const EXPERIMENT_SCHEMA_VERSION = 3
+export const EXPERIMENT_SCHEMA_VERSION = 4
 
 const COEFFICIENT_KEYS=['a20','a11','a02','a10','a01','b20','b11','b02','b10','b01']
-const VISIBILITY_KEYS=['showSMinus','showSPlus','showRarefaction','showRareCurves','showFiniteStable','showFiniteUnstable','showInfinityStable','showInfinityUnstable']
+const ADDED_VISIBILITY_KEYS=['showDS','showJ','showKMinus','showKPlus']
+const VISIBILITY_KEYS=[...ADDED_VISIBILITY_KEYS,'showSMinus','showSPlus','showRarefaction','showRareCurves','showFiniteStable','showFiniteUnstable','showInfinityStable','showInfinityUnstable']
 
 function finiteNumber(value,name){
   if(typeof value!=='number'||!Number.isFinite(value))throw new Error(`${name} deve ser um número finito`)
@@ -39,29 +40,33 @@ export function createExperiment({appVersion,coefficients,samplingDomain,point,v
       numericalPolicy:numericalPolicySnapshot(),
     },
     presentation:{
-      visibility:Object.fromEntries(VISIBILITY_KEYS.map(key=>[key,visibility[key]])),
+      visibility:Object.fromEntries(VISIBILITY_KEYS.map(key=>[key,key in visibility?visibility[key]:(ADDED_VISIBILITY_KEYS.includes(key)?false:undefined)])),
       axisScale:{tau:axisScale.tau,Y:axisScale.Y,zc:axisScale.zc},
     },
   }
 }
 
 function migrateExperiment(input){
-  if(input?.schema===EXPERIMENT_SCHEMA&&input.schemaVersion===1&&input.scientific?.domain){
-    const migrated=copy(input)
-    migrated.schemaVersion=2
+  if(input?.schema!==EXPERIMENT_SCHEMA||![1,2,3].includes(input.schemaVersion))return input
+  const migrated=copy(input)
+  if(migrated.schemaVersion===1&&migrated.scientific?.domain){
     migrated.scientific.samplingDomain=migrated.scientific.domain
     delete migrated.scientific.domain
+    migrated.schemaVersion=2
+  }
+  if(migrated.schemaVersion===2){
+    if(!migrated.scientific||typeof migrated.scientific!=='object')return migrated
     migrated.scientific.riemannStates={left:null,right:null}
     migrated.schemaVersion=3
-    return migrated
   }
-  if(input?.schema===EXPERIMENT_SCHEMA&&input.schemaVersion===2){
-    const migrated=copy(input)
-    migrated.schemaVersion=3
-    migrated.scientific.riemannStates={left:null,right:null}
-    return migrated
+  if(migrated.schemaVersion===3){
+    const visibility=migrated.presentation?.visibility
+    if(visibility&&typeof visibility==='object'&&!Array.isArray(visibility)){
+      for(const key of ADDED_VISIBILITY_KEYS)if(!(key in visibility))visibility[key]=false
+    }
+    migrated.schemaVersion=4
   }
-  return input
+  return migrated
 }
 
 export function validateExperiment(rawInput){

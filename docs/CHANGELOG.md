@@ -1,3 +1,9 @@
+## Melhorias locais de interface 3D - 10/11/2026
+
+- Zoom dos botões preserva o centro de órbita após focar um ponto fora da origem; fatores inválidos não movem a câmera. Sem mudança nas equações ou no solver.
+- Experimentos no schema v4 preservam os controles de dupla sônica (DS), inflexão (J) e campos compostos K-/K+. Arquivos v1-v3 continuam importáveis; quando esses quatro controles não estavam salvos, são restaurados como ocultos. Outros controles ainda não incluídos no schema continuam fora deste escopo.
+- Regressões automatizadas cobrem foco deslocado, reversibilidade, entradas inválidas, round-trip e migração de experimentos. Inspeção visual no navegador ainda pendente.
+
 ## Aba Parâmetros — P3 encerrada e plano P1–P3 concluído (03/11/2026)
 
 - **P3 — Busca e catálogo:** seis exemplos finitos com dez coeficientes, filtro geométrico, prévia verificável e substituição dos coeficientes somente após confirmação explícita. Três testes automatizados específicos da P3 aprovados.
