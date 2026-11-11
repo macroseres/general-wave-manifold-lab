@@ -2,7 +2,7 @@
 
 Scientific laboratory for the study and visualization of wave manifolds, sonic loci, rarefaction fields and related constructions for systems of conservation laws.
 
-Current package version: **v0.7.0-dev.24.47.92**.
+Current package version: **v0.7.0-dev.24.47.93**.
 
 The central research goal is to construct and visualize Riemann solutions on the wave manifold, linked to state-space constructions and physical-space realizations, and study their classification by flux parameters. The implemented model is the general ten-coefficient quadratic flux. Complete solution coverage and a general validated Riemann solver remain research objectives. See [scientific objectives and scope](docs/OBJETIVOS_E_ESCOPO.html).
 

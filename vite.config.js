@@ -7,4 +7,20 @@ import documentationLibrary from './scripts/documentation-library.js'
 export default defineConfig({
   plugins: [react(), documentationLibrary()],
   base: process.env.VITE_BASE ?? '/',
+  build: {
+    rolldownOptions: {
+      output: {
+        codeSplitting: {
+          groups: [
+            { name: 'documentation-chapters', test: /\/docs\/mathematics\/.*\.html\?raw$/, maxSize: 400_000 },
+            { name: 'three-core', test: /\/three\/build\/three\.core\.js$/ },
+            { name: 'three-webgl', test: /\/three\/build\/three\.module\.js$/ },
+            { name: 'math-renderer', test: /\/node_modules\/katex\// },
+            { name: 'react-dom', test: /\/node_modules\/react-dom\// },
+            { name: 'wave-computations', test: /\/src\/(?:math|geometry)\//, entriesAware: true },
+          ],
+        },
+      },
+    },
+  },
 })
