@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RIEMANN_LIU_SONIC_ENDPOINT</title>
+<style>
+body{margin:2rem auto;padding:0 1rem;max-width:78ch;font:1rem/1.65 system-ui,sans-serif;color:#182230;background:#fff}
+h1,h2,h3,h4{line-height:1.25} a{color:#12568b} img{max-width:100%;height:auto}
+pre,blockquote{padding:1rem;background:#f3f6f8} pre{overflow:auto} code{overflow-wrap:anywhere}
+table{display:block;overflow:auto;border-collapse:collapse} th,td{padding:.4rem .65rem;border:1px solid #cdd5df;text-align:left}
+mjx-container[display=true]{overflow-x:auto;overflow-y:hidden;padding:.4rem 0}
+</style>
+
+</head>
+<body>
+<main>
+<h1 id="fechamento-local-do-arco-de-liu-no-contato-sonico">Fechamento local do arco de Liu no contato sônico</h1>
+<p>O módulo <code>src/math/solution/seededContactEndpoint.js</code> valida o acréscimo do estado de contato sônico refinado ao arco da Hugoniot forward obtido por continuação direta a partir de sementes características.</p>
+<p>Para o estado fixo <code>left</code> e o contato <code>target</code>, exige-se que o salto não trivial satisfaça Rankine–Hugoniot com resíduo relativo pequeno. A extremidade final da trajetória deve estar próxima do contato, e o deslocamento entre ambos deve ter projeção não negativa na tangente orientada pelo último segmento da continuação. O deslocamento transversal é limitado. A tangente da Hugoniot no contato é calculada a partir do gradiente da equação de incidência e deve ser compatível com a tangente da trajetória. Gradientes singulares não são aceitos.</p>
+<p>Após essas verificações, o contato é acrescentado ao arco orientado e <code>liuSpeedAlongFibre</code> testa, nas amostras, a condição necessária de Liu <code>s(left,target) &lt;= s(left,U)</code> para cada estado intermediário.</p>
+<p><strong>Limitações:</strong> o teste não prova que o arco não tenha outro ramo ou ponto de retorno entre amostras, não certifica a condição de Liu no contínuo, não determina admissibilidade viscosa e não é um resolvedor completo do problema de Riemann. O resultado público mantém <code>passes: false</code>, fornece <code>sampledLiuPasses</code> e um estado <code>preliminary-*</code>. O fechamento é recusado quando não se confirma a orientação e a compatibilidade local.</p>
+
+</main>
+</body>
+</html>

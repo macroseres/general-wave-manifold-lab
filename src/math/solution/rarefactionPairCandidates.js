@@ -1,5 +1,6 @@
 import {intersectWavePolylines} from './mixedWaveChains.js'
 import {stateCharacteristicDirection} from '../rarefaction/stateIntegralCurves.js'
+import {genuineNonlinearityAt} from '../rarefaction/genuineNonlinearity.js'
 import {refineRarefactionMiddleJoint,sampledArcLength} from './rarefactionJointCorrector.js'
 
 const valid=q=>Array.isArray(q)&&q.length===2&&q.every(Number.isFinite)
@@ -17,6 +18,7 @@ export function sampledRarefactionPrefix(branch,index,middle,p,reverse,options){
   const fields=states.map(U=>stateCharacteristicDirection(U,p,branch.family))
   if(fields.some(q=>!q))return null
   const speeds=fields.map(q=>q.lambda)
+  const derivatives=states.map(U=>genuineNonlinearityAt(U,p,branch.family))
   for(let i=1;i<states.length;i++){
     const a=states[i-1],b=states[i],length=distance(a,b),chord=[(b[0]-a[0])/length,(b[1]-a[1])/length]
     const eps=options.speedTolerance*(1+Math.max(Math.abs(speeds[i]),Math.abs(speeds[i-1])))
@@ -24,6 +26,13 @@ export function sampledRarefactionPrefix(branch,index,middle,p,reverse,options){
     // Reject intersections on a supplied polyline unrelated to its characteristic field.
     for(const field of [fields[i-1],fields[i]])
       if(Math.abs(chord[0]*field.direction[1]-chord[1]*field.direction[0])>options.tangentTolerance)return null
+    // Endpoint speeds can increase across a sample that straddles a local maximum.
+    // Orient the derivative by the fan traversal, including at the corrected junction.
+    for(const {value,direction,lambda} of [derivatives[i-1],derivatives[i]]){
+      if(!Number.isFinite(value))continue
+      const orientation=Math.sign(chord[0]*direction[0]+chord[1]*direction[1])
+      if(orientation*value < -options.speedTolerance*(1+Math.abs(lambda)))return null
+    }
   }
   return {family:branch.family,states,speeds,source:{side:branch.side,sign:branch.sign,index,stop:branch.stop??null}}
 }

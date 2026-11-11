@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RIEMANN_TWO_SHOCK_CHAINS</title>
+<style>
+body{margin:2rem auto;padding:0 1rem;max-width:78ch;font:1rem/1.65 system-ui,sans-serif;color:#182230;background:#fff}
+h1,h2,h3,h4{line-height:1.25} a{color:#12568b} img{max-width:100%;height:auto}
+pre,blockquote{padding:1rem;background:#f3f6f8} pre{overflow:auto} code{overflow-wrap:anywhere}
+table{display:block;overflow:auto;border-collapse:collapse} th,td{padding:.4rem .65rem;border:1px solid #cdd5df;text-align:left}
+mjx-container[display=true]{overflow-x:auto;overflow-y:hidden;padding:.4rem 0}
+</style>
+
+</head>
+<body>
+<main>
+<h1 id="cadeias-de-duas-ondas-de-choque-diagnostico-necessario">Cadeias de duas ondas de choque — diagnóstico necessário</h1>
+<p>Dado um candidato intermediário <code>U_M</code> proveniente da interseção das projeções das fibras de Hugoniot forward de <code>U_L</code> e backward de <code>U_R</code>, verificamos independentemente os saltos <code>U_L -&gt; U_M</code> e <code>U_M -&gt; U_R</code> pela equação de Rankine–Hugoniot.</p>
+<p>Para que dois choques separados apareçam na solução autossimilar com o primeiro à esquerda do segundo, suas velocidades devem satisfazer <code>s_1 &lt; s_2</code>. O módulo <code>riemannWaveChains.js</code> verifica essas condições com tolerâncias e classifica o candidato como <code>ordered-rh-candidate</code>, <code>speed-ordering-unverified</code>, <code>rankine-hugoniot-unverified</code>, <code>degenerate-jump</code> ou <code>missing-states</code>.</p>
+<p>Essa verificação é <strong>necessária, mas não suficiente</strong>: não identifica as famílias características dos choques, não verifica Liu ou perfis viscosos e não constrói a solução completa. Os estados intermediários continuam provenientes de interseções de polilinhas amostradas, portanto podem conter erros de projeção.</p>
+
+</main>
+</body>
+</html>

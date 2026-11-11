@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>LAYOUT_PHASE13_FINAL_AUDIT</title>
+<style>
+body{margin:2rem auto;padding:0 1rem;max-width:78ch;font:1rem/1.65 system-ui,sans-serif;color:#182230;background:#fff}
+h1,h2,h3,h4{line-height:1.25} a{color:#12568b} img{max-width:100%;height:auto}
+pre,blockquote{padding:1rem;background:#f3f6f8} pre{overflow:auto} code{overflow-wrap:anywhere}
+table{display:block;overflow:auto;border-collapse:collapse} th,td{padding:.4rem .65rem;border:1px solid #cdd5df;text-align:left}
+mjx-container[display=true]{overflow-x:auto;overflow-y:hidden;padding:.4rem 0}
+</style>
+
+</head>
+<body>
+<main>
+<h1 id="layout-etapa-13-auditoria-de-navegacao-e-acessibilidade">Layout — etapa 13: auditoria de navegação e acessibilidade</h1>
+<h2 id="escopo-verificado">Escopo verificado</h2>
+<ul>
+<li>Os quatro ambientes principais usam a mesma região central (<code>main#scientific-workspace</code>): Variedade 3D, Espaço de estados, Espaço físico e Documentação.</li>
+<li>Os controles laterais e a inspeção são exclusivos do ambiente 3D; em telas estreitas são acessados pelos botões Controles e Inspeção.</li>
+<li>Os botões móveis declaram explicitamente o painel controlado (<code>aria-controls</code>) e seu estado (<code>aria-expanded</code>).</li>
+<li>Um link de salto, visível ao receber foco pelo teclado, permite chegar à área científica sem percorrer todos os comandos do cabeçalho.</li>
+<li>O Manual permanece auxiliar; a Documentação é um ambiente central.</li>
+</ul>
+<h2 id="limites-da-auditoria">Limites da auditoria</h2>
+<p>Os testes automatizados não substituem uma inspeção visual em navegadores e dispositivos reais. Conferir manualmente, em resoluções de 390 px, 768 px e 1440 px: foco por Tab, rolagem do cabeçalho, acesso aos dois painéis móveis, comportamento do canvas 3D e navegação do índice matemático. Nenhuma alteração foi feita nas equações ou nos algoritmos numéricos.</p>
+
+</main>
+</body>
+</html>

@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RIEMANN_LIU_ARC_ASSESSMENT</title>
+<style>
+body{margin:2rem auto;padding:0 1rem;max-width:78ch;font:1rem/1.65 system-ui,sans-serif;color:#182230;background:#fff}
+h1,h2,h3,h4{line-height:1.25} a{color:#12568b} img{max-width:100%;height:auto}
+pre,blockquote{padding:1rem;background:#f3f6f8} pre{overflow:auto} code{overflow-wrap:anywhere}
+table{display:block;overflow:auto;border-collapse:collapse} th,td{padding:.4rem .65rem;border:1px solid #cdd5df;text-align:left}
+mjx-container[display=true]{overflow-x:auto;overflow-y:hidden;padding:.4rem 0}
+</style>
+
+</head>
+<body>
+<main>
+<h1 id="consolidacao-numerica-dos-testes-de-liu-no-arco-forward">Consolidação numérica dos testes de Liu no arco forward</h1>
+<p>Para um estado esquerdo fixo <code>U_L</code>, a condição forward de Liu exige
+<code>s(U_L,U_target) &lt;= s(U_L,U)</code> em <strong>todo</strong> estado intermediário <code>U</code> do
+arco de Hugoniot orientado. Uma desigualdade estrita em sentido contrário
+em qualquer ponto do arco é suficiente para detectar uma violação.</p>
+<p>O módulo <code>liuArcAssessment.js</code> reúne três verificações necessárias:</p>
+<ol>
+<li>amostras originais do arco orientado (<code>liuSpeedAlongFibre</code>);</li>
+<li>amostras intermediárias corrigidas por Rankine–Hugoniot (<code>refinedLiuInterior</code>);</li>
+<li>extremos tangenciais refinados (<code>liuStationaryOrdering</code>).</li>
+</ol>
+<p>Uma violação detectada tem precedência sobre qualquer teste inconclusivo.
+A classificação <code>no-liu-violation-detected</code> significa apenas que os três
+diagnósticos finitos não encontraram violação e que não há colchetes
+estacionários não resolvidos. Não é uma certificação contínua, global,
+de Liu, de Lax ou de perfil viscoso.</p>
+<p>O painel de Espaço de estados exibe essa classificação separadamente para
+os contatos forward com continuação direta por sementes características.
+O diagnóstico não classifica os contatos backward nem substitui a análise
+de admissibilidade de ondas compostas.</p>
+
+</main>
+</body>
+</html>

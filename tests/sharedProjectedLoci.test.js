@@ -1,6 +1,6 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
-import { sharedProjectedLoci } from '../src/geometry/sharedProjectedLoci.js'
+import { projectedBtLoci, sharedProjectedLoci } from '../src/geometry/sharedProjectedLoci.js'
 import { defaultCoefficients } from '../src/math/flux/quadraticFlux.js'
 
 test('same wave-manifold loci supply both state-space projections',()=>{
@@ -26,4 +26,14 @@ test('inflection locus J has finite 3D vertices on the characteristic plane',()=
     assert.ok([point.tau,point.Y,point.zc].every(Number.isFinite))
     assert.equal(point.Y,0)
   }
+})
+
+test('BT reflection exchanges the state projections and preserves both curves',()=>{
+  const [minus,plus]=projectedBtLoci(defaultCoefficients,{tauMin:-1,tauMax:1,YMin:-6,YMax:6})
+  assert.equal(minus.id,'BT-')
+  assert.equal(plus.id,'BT+')
+  assert.ok(minus.projected.minus.some(path=>path.length>2))
+  assert.ok(minus.projected.plus.some(path=>path.length>2))
+  assert.deepEqual(plus.projected.minus,minus.projected.plus)
+  assert.deepEqual(plus.projected.plus,minus.projected.minus)
 })

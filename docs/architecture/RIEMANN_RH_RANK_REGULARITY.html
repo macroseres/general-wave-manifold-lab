@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RIEMANN_RH_RANK_REGULARITY</title>
+<style>
+body{margin:2rem auto;padding:0 1rem;max-width:78ch;font:1rem/1.65 system-ui,sans-serif;color:#182230;background:#fff}
+h1,h2,h3,h4{line-height:1.25} a{color:#12568b} img{max-width:100%;height:auto}
+pre,blockquote{padding:1rem;background:#f3f6f8} pre{overflow:auto} code{overflow-wrap:anywhere}
+table{display:block;overflow:auto;border-collapse:collapse} th,td{padding:.4rem .65rem;border:1px solid #cdd5df;text-align:left}
+mjx-container[display=true]{overflow-x:auto;overflow-y:hidden;padding:.4rem 0}
+</style>
+
+</head>
+<body>
+<main>
+<h1 id="posto-diferencial-de-rankinehugoniot">Posto diferencial de Rankine–Hugoniot</h1>
+<p>Para o fluxo quadrático geral, na carta finita com <code>r=(1,Z)</code>, definimos <code>U_±=Ubar±Xr/2</code> e</p>
+<p><code>H(Ubar,X,Z,s)=F(U_+)-F(U_-)-s(U_+-U_-)=X(DF(Ubar)-sI)r</code>.</p>
+<p>O módulo <code>src/math/manifold/rankRegularity.js</code> calcula a matriz diferencial 2×5 de <code>H</code> em <code>(ubar_u,ubar_v,X,Z,s)</code> e os postos das matrizes aumentadas com <code>D U_-</code> e <code>D U_+</code>. Em pontos de <code>H=0</code>, posto 2 é a condição de valor regular para o sistema ambiente, e os postos aumentados permitem avaliar a dimensão local esperada das fibras de projeção, quando as hipóteses de posto constante se verificam.</p>
+<p><strong>Limites:</strong> o sistema ambiente inclui toda a componente trivial <code>X=0</code>. Ali <code>H=0</code> identicamente e <code>rank(DH)≤1</code>, mas isso <strong>não</strong> demonstra singularidade da variedade de ondas não trivial obtida por divisão de <code>X</code> e fecho geométrico. A carta recíproca e a equação desingularizada exigem uma análise independente. Os valores numéricos de posto são condicionados pela tolerância; não são certificados simbólicos de transversalidade. A classificação espectral de <code>DF</code> é distinta da regularidade de <code>H</code>.</p>
+
+</main>
+</body>
+</html>

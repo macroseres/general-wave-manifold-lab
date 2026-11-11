@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RIEMANN_MIXED_MIDDLE_REFINEMENT</title>
+<style>
+body{margin:2rem auto;padding:0 1rem;max-width:78ch;font:1rem/1.65 system-ui,sans-serif;color:#182230;background:#fff}
+h1,h2,h3,h4{line-height:1.25} a{color:#12568b} img{max-width:100%;height:auto}
+pre,blockquote{padding:1rem;background:#f3f6f8} pre{overflow:auto} code{overflow-wrap:anywhere}
+table{display:block;overflow:auto;border-collapse:collapse} th,td{padding:.4rem .65rem;border:1px solid #cdd5df;text-align:left}
+mjx-container[display=true]{overflow-x:auto;overflow-y:hidden;padding:.4rem 0}
+</style>
+
+</head>
+<body>
+<main>
+<h1 id="refinamento-do-estado-intermediario-nas-cadeias-mistas">Refinamento do estado intermediário nas cadeias mistas</h1>
+<p>Para os candidatos R_s(U_L) -&gt; H_f(U_R) e H_s(U_L) -&gt; R_f(U_R), a interseção entre poligonais é apenas uma aproximação inicial de U_M.</p>
+<p>O módulo <code>refineMixedMiddle</code> reintegra localmente um trecho da curva integral da família característica com RK4, usando orientação consistente com o trecho amostrado. Ao longo desse trecho, procura por bisseção uma raiz da incidência escalar</p>
+<pre><code>det(U - U_fixo, F(U) - F(U_fixo)) = 0.
+</code></pre>
+<p>Uma raiz só é aceita quando o diagnóstico vetorial de Rankine–Hugoniot confirma resíduo relativo pequeno e quando a posição não se afasta excessivamente da poligonal original. A raiz não é extrapolada para fora do segmento.</p>
+<p>O resultado fica no campo <code>refinement</code> de cada candidato. O estado <code>middle</code> do candidato continua representando a interseção amostrada; o diagnóstico <code>evidence</code> é reavaliado no ponto refinado apenas se o refinamento tiver sido aceito. A não existência de mudança de sinal, a falha da integração ou um resíduo excessivo resultam em diagnóstico explícito, não em uma raiz fictícia.</p>
+<p><strong>Limitações:</strong> a reintegração é local, com um único passo RK4 parametrizado pelo comprimento do trecho. A interseção ainda não é uma solução conjunta certificada da curva integral e da Hugoniot. Os critérios de Lax e de ordenação são necessários, mas não substituem Liu nem o perfil viscoso. Não há certificação de solução entrópica.</p>
+
+</main>
+</body>
+</html>

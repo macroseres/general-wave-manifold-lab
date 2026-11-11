@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DIRECT_RIEMANN_JUMP_DIAGNOSTIC</title>
+<style>
+body{margin:2rem auto;padding:0 1rem;max-width:78ch;font:1rem/1.65 system-ui,sans-serif;color:#182230;background:#fff}
+h1,h2,h3,h4{line-height:1.25} a{color:#12568b} img{max-width:100%;height:auto}
+pre,blockquote{padding:1rem;background:#f3f6f8} pre{overflow:auto} code{overflow-wrap:anywhere}
+table{display:block;overflow:auto;border-collapse:collapse} th,td{padding:.4rem .65rem;border:1px solid #cdd5df;text-align:left}
+mjx-container[display=true]{overflow-x:auto;overflow-y:hidden;padding:.4rem 0}
+</style>
+
+</head>
+<body>
+<main>
+<h1 id="diagnostico-preliminar-de-choque-direto">Diagnóstico preliminar de choque direto</h1>
+<p>Para estados U_L e U_R distintos, calcula-se ΔU=U_R-U_L e ΔF=F(U_R)-F(U_L). A velocidade de mínimos quadrados é s=(ΔU·ΔF)/|ΔU|²; a condição RH é avaliada por |ΔF-sΔU|/(1+|ΔF|+|s||ΔU|). O teste com tolerância 1e-8 é apenas algébrico e não constitui uma seleção entrópica. A existência de dois autovalores reais nos extremos não garante hiperbolicidade ao longo de uma curva de onda. O módulo não identifica estados intermediários, ondas compostas nem admissibilidade de Lax/Liu. U* permanece independente; a fibra forward de U_L e a backward de U_R não foram alteradas.</p>
+
+</main>
+</body>
+</html>

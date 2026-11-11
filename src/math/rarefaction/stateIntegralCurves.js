@@ -20,6 +20,20 @@ export function stateCharacteristicDirection(U, p, family, reference = null, tol
 }
 
 const add = (U, v, h) => U.map((x, i) => x + h * v[i])
+
+/** Evaluate between samples using the characteristic tangent at each endpoint. */
+export function interpolateCharacteristicSegment(a,b,t,p,family){
+  if(t===0)return a
+  if(t===1)return b
+  const chord=b.map((v,i)=>v-a[i])
+  const length=Math.hypot(...chord)
+  const start=stateCharacteristicDirection(a,p,family,chord)
+  const end=stateCharacteristicDirection(b,p,family,chord)
+  if(!start||!end)return null
+  return a.map((v,i)=>v+t*t*(3-2*t)*chord[i]+
+    length*t*(1-t)*((1-t)*start.direction[i]-t*end.direction[i]))
+}
+
 function rk4(U, p, family, h, reference) {
   const f = (q, ref) => stateCharacteristicDirection(q, p, family, ref)?.direction
   const k1 = f(U, reference); if (!k1) return null

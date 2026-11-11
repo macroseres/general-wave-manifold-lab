@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SCIENTIFIC_WORKSPACE_PLAN</title>
+<style>
+body{margin:2rem auto;padding:0 1rem;max-width:78ch;font:1rem/1.65 system-ui,sans-serif;color:#182230;background:#fff}
+h1,h2,h3,h4{line-height:1.25} a{color:#12568b} img{max-width:100%;height:auto}
+pre,blockquote{padding:1rem;background:#f3f6f8} pre{overflow:auto} code{overflow-wrap:anywhere}
+table{display:block;overflow:auto;border-collapse:collapse} th,td{padding:.4rem .65rem;border:1px solid #cdd5df;text-align:left}
+mjx-container[display=true]{overflow-x:auto;overflow-y:hidden;padding:.4rem 0}
+</style>
+
+</head>
+<body>
+<main>
+<h1 id="scientific-workspace-historical-architecture-proposal">Scientific workspace — historical architecture proposal</h1>
+<p>This is a historical proposal: parts of the workspace and candidate pipeline are now implemented. Current scientific direction is defined in <a href="../OBJETIVOS_E_ESCOPO.html">scientific objectives and scope</a>: the wave manifold is the central research space, with state-space constructions and physical realizations linked to it. The milestones below must not be read as a current feature inventory.</p>
+<h2 id="scientific-goals">Scientific goals</h2>
+<ol>
+<li>Classify the <strong>general quadratic flux</strong> by its coefficients, including the hyperbolic/parabolic/elliptic regions <strong>in state space</strong>.</li>
+<li>Construct and test wave curves and admissibility criteria before claiming a Riemann solver.</li>
+<li>Given left/right states, construct and inspect a Riemann solution when a validated solver exists.</li>
+<li>Link the wave manifold 3D view, the (u,v) state-space view, and the self-similar x/t wave diagram.</li>
+</ol>
+<h2 id="panel-map">Panel map</h2>
+<ul>
+<li><strong>Flux and classification:</strong> ten quadratic coefficients (or actual coefficient count in kernel), selected presets, Jacobian, discriminant, parameter study; parameter stratification is a separate research problem.</li>
+<li><strong>Wave geometry:</strong> charts, sampling, visible surfaces, rarefaction, separatrices, Hugoniot, composite curves and diagnostics.</li>
+<li><strong>Riemann problem:</strong> U_L, U_R, wave sequence, admissibility, intermediate states, residuals; do not display an unimplemented solver as complete.</li>
+<li><strong>Experiments:</strong> save/restore numerical settings, geometry visibility, chart, selected states, version, and solver output when supported.</li>
+</ul>
+<p>Keep 3D and state space concurrently accessible, preferably synchronized; retain x/t as a third view. Present numerical diagnostics as an expandable inspector, not as the main research task.</p>
+<h2 id="classification-is-not-a-two-parameter-claim">Classification is not a two-parameter claim</h2>
+<p>For a real 2x2 Jacobian A(U)=DF(U), let Delta(U)=(tr A)^2-4 det A. Delta&gt;0 gives two distinct real characteristic speeds (strictly hyperbolic); Delta=0 gives a repeated real speed (parabolic/transition in the eigenvalue-discriminant sense, <strong>not</strong> automatically a parabolic PDE); Delta&lt;0 gives a nonreal conjugate pair (elliptic in this local spectral classification). These are classifications at a state U, not a single unconditional label for the flux.</p>
+<p>The previous restricted wave-manifold-app parameter reduction to b1,b2 must <strong>not</strong> be generalized to arbitrary quadratic fluxes without proving an equivalence under allowed changes of variables and checking how those transformations affect the Riemann problem. A parameter-space classification should distinguish structural invariants, normalization orbits, and numerical slices, and should track regions where Delta changes sign.</p>
+<h2 id="implementation-milestones">Implementation milestones</h2>
+<ol type="A">
+<li>Audit existing UI labels and align KaTeX only where mathematically meaningful; avoid changing Three.js labels blindly.</li>
+<li>Implement pure state-space classification using the existing Jacobian and discriminant, with tests for all three signs and degeneracies.</li>
+<li>Provide a parameter-slice explorer, explicitly marking it as a slice rather than a global classification.</li>
+<li>Reorganize panel layout with 3D and state-space coordinated selections, without altering existing scientific kernels.</li>
+<li>Implement the Riemann solver incrementally through definition -&gt; pure code -&gt; test -&gt; numerics -&gt; geometry -&gt; renderer.</li>
+</ol>
+<p><strong>Status of this proposal:</strong> Partial implementation has superseded this planning snapshot. Complete parameter classification and a complete validated Riemann solver are not claimed; consult the scientific scope and current implementation evidence rather than inferring availability from these milestones.</p>
+
+</main>
+</body>
+</html>

@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RIEMANN_HUGONIOT_ROOT_CONDITIONING</title>
+<style>
+body{margin:2rem auto;padding:0 1rem;max-width:78ch;font:1rem/1.65 system-ui,sans-serif;color:#182230;background:#fff}
+h1,h2,h3,h4{line-height:1.25} a{color:#12568b} img{max-width:100%;height:auto}
+pre,blockquote{padding:1rem;background:#f3f6f8} pre{overflow:auto} code{overflow-wrap:anywhere}
+table{display:block;overflow:auto;border-collapse:collapse} th,td{padding:.4rem .65rem;border:1px solid #cdd5df;text-align:left}
+mjx-container[display=true]{overflow-x:auto;overflow-y:hidden;padding:.4rem 0}
+</style>
+
+</head>
+<body>
+<main>
+<h1 id="condicionamento-numerico-das-raizes-de-hugoniot">Condicionamento numérico das raízes de Hugoniot</h1>
+<p>Para um segmento amostrado q(t)=a+t(b-a), 0&lt;=t&lt;=1, o determinante
+D(t)=det(q(t)-Ufix,F(q(t))-F(Ufix)) é um polinômio de grau &lt;=3.</p>
+<p>O refinamento preserva a validação por resíduo relativo de Rankine–Hugoniot,
+proximidade do estado intermediário e exclusão do salto trivial. Além do ponto
+aceito, expõe:</p>
+<ul>
+<li><code>normalizedDeterminantSlope</code>: |D'(t)| / max(|c0|,...,|c3|),
+com valor 0 se o polinômio é identicamente nulo;</li>
+<li><code>nearestRootParameterDistance</code>: separação paramétrica para a raiz detectada
+mais próxima, ou null se não há outra raiz detectada;</li>
+<li><code>rootCondition</code>: <code>segment-contained</code>, <code>near-tangential</code> ou
+<code>transverse-numerical</code>. O limiar de inclinação é heurístico.</li>
+</ul>
+<p>Esses indicadores são apenas diagnósticos de condicionamento; não provam
+multiplicidade algébrica, bifurcação geométrica, nem admissibilidade entrópica.
+Os testes incluem raízes próximas, segmento quase tangente sem raiz e segmento
+inteiramente contido no locus de Hugoniot.</p>
+
+</main>
+</body>
+</html>

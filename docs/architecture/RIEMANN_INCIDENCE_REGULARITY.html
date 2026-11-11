@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RIEMANN_INCIDENCE_REGULARITY</title>
+<style>
+body{margin:2rem auto;padding:0 1rem;max-width:78ch;font:1rem/1.65 system-ui,sans-serif;color:#182230;background:#fff}
+h1,h2,h3,h4{line-height:1.25} a{color:#12568b} img{max-width:100%;height:auto}
+pre,blockquote{padding:1rem;background:#f3f6f8} pre{overflow:auto} code{overflow-wrap:anywhere}
+table{display:block;overflow:auto;border-collapse:collapse} th,td{padding:.4rem .65rem;border:1px solid #cdd5df;text-align:left}
+mjx-container[display=true]{overflow-x:auto;overflow-y:hidden;padding:.4rem 0}
+</style>
+
+</head>
+<body>
+<main>
+<h1 id="regularidade-da-incidencia-caracteristica-reduzida">Regularidade da incidência característica reduzida</h1>
+<p>Para r=(x,y) unitário, define-se q(U,[r])=det(r,DF(U)r).
+O diagnóstico calcula a derivada angular e as derivadas em u e v de q.</p>
+<ul>
+<li><code>incidenceRegularity=regular</code>: o gradiente (u,v,ângulo) de q é não nulo;
+portanto q=0 é uma hipersuperfície regular <strong>no espaço de incidência reduzido</strong>.</li>
+<li><code>fixedStateIntersection=transverse</code>: a derivada angular é não nula;
+a interseção da incidência com U fixo é transversal em RP¹.</li>
+<li><code>non-transverse</code>: raiz angular múltipla ou degenerada; não implica,
+isoladamente, singularidade da hipersuperfície de incidência.</li>
+</ul>
+<p>As derivadas são calculadas na representação homogênea e cobrem z=infinito
+(Z=0). Os limiares são relativos a uma escala dos coeficientes.</p>
+<p><strong>Limitação:</strong> isso não certifica a regularidade da variedade de ondas W,
+nem a transversalidade geométrica das fibras completas de Hugoniot. Essa
+etapa exige o posto da diferencial das equações de Rankine–Hugoniot nas
+cartas da variedade, incluindo a componente de coincidência.</p>
+
+</main>
+</body>
+</html>

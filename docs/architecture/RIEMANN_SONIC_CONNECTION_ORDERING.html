@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RIEMANN_SONIC_CONNECTION_ORDERING</title>
+<style>
+body{margin:2rem auto;padding:0 1rem;max-width:78ch;font:1rem/1.65 system-ui,sans-serif;color:#182230;background:#fff}
+h1,h2,h3,h4{line-height:1.25} a{color:#12568b} img{max-width:100%;height:auto}
+pre,blockquote{padding:1rem;background:#f3f6f8} pre{overflow:auto} code{overflow-wrap:anywhere}
+table{display:block;overflow:auto;border-collapse:collapse} th,td{padding:.4rem .65rem;border:1px solid #cdd5df;text-align:left}
+mjx-container[display=true]{overflow-x:auto;overflow-y:hidden;padding:.4rem 0}
+</style>
+
+</head>
+<body>
+<main>
+<h1 id="ordenacao-caracteristica-das-conexoes-sonicas-etapa-necessaria">Ordenação característica das conexões sônicas (etapa necessária)</h1>
+<p>Para um contato refinado em S+ (choque de U_L até U_c), compara-se U_c com uma curva integral da mesma família ancorada em U_R, armazenada do estado U_R para trás. Para um contato em S- (rarefação até U_c seguida de choque para U_R), compara-se com uma curva integral ancorada em U_L.</p>
+<p>Além da proximidade no espaço de estados e da condição s = lambda_i(U_c), a implementação verifica a ordenação da velocidade característica em <strong>todos os segmentos usados</strong> até a projeção do contato: velocidades não crescentes ao afastar-se de U_R; não decrescentes ao afastar-se de U_L. Reavalia-se a velocidade no ponto projetado e registra-se seu desvio em relação à velocidade de choque.</p>
+<p>A projeção sobre a polilinha é uma aproximação discreta, não a solução de um problema de valor de contorno na curva integral. O rótulo <code>ordered-geometric-candidate</code> expressa somente condições necessárias. Não implica condição de entropia, perfil viscoso, conexão composta global ou existência/unicidade de solução de Riemann.</p>
+
+</main>
+</body>
+</html>

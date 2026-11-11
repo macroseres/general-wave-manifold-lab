@@ -37,6 +37,19 @@ export function constantContactDirections(p,{coefficientTolerance=1e-12}={}){
   return residual<=eps?[{direction,speed,coefficientResidual:residual,coverage:'constant-direction'}]:[]
 }
 
+/** Contact directions valid on the axis-parallel line through the anchor. */
+export function localAxisContactDirections(anchor,p){
+  const J=jacobian(anchor,p)
+  const models=[]
+  if(p.a20===0&&p.b20===0&&J[1][0]===0){
+    models.push({direction:[1,0],speed:J[0][0],coverage:'horizontal-line'})
+  }
+  if(p.a02===0&&p.b02===0&&J[0][1]===0){
+    models.push({direction:[0,1],speed:J[1][1],coverage:'vertical-line'})
+  }
+  return models
+}
+
 function familyAt(U,descriptor,p,options){
   for(const family of ['slow','fast']){
     const q=stateCharacteristicDirection(U,p,family)
@@ -47,12 +60,12 @@ function familyAt(U,descriptor,p,options){
 }
 
 /** A contact must belong to the coefficient-level model, not merely be sonic. */
-export function constantContactConnection(left,right,p,family,options={}){
+export function constantContactConnection(left,right,p,family,options={},models=constantContactDirections(p,options)){
   const opts={...defaults,...options}
   if(!valid(left)||!valid(right)||!['slow','fast'].includes(family))return null
   const jump=sub(right,left),length=norm(jump)
   if(length<=opts.stateTolerance)return null
-  for(const model of constantContactDirections(p,opts)){
+  for(const model of models){
     if(Math.abs(cross(jump,model.direction))>opts.stateTolerance*(1+length)||
       familyAt(left,model,p,opts)!==family||familyAt(right,model,p,opts)!==family)continue
     const rh=directShockDiagnostic(left,right,p,{relativeTolerance:opts.stateTolerance})

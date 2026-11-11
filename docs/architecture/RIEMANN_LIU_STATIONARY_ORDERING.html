@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RIEMANN_LIU_STATIONARY_ORDERING</title>
+<style>
+body{margin:2rem auto;padding:0 1rem;max-width:78ch;font:1rem/1.65 system-ui,sans-serif;color:#182230;background:#fff}
+h1,h2,h3,h4{line-height:1.25} a{color:#12568b} img{max-width:100%;height:auto}
+pre,blockquote{padding:1rem;background:#f3f6f8} pre{overflow:auto} code{overflow-wrap:anywhere}
+table{display:block;overflow:auto;border-collapse:collapse} th,td{padding:.4rem .65rem;border:1px solid #cdd5df;text-align:left}
+mjx-container[display=true]{overflow-x:auto;overflow-y:hidden;padding:.4rem 0}
+</style>
+
+</head>
+<body>
+<main>
+<h1 id="comparacao-da-condicao-de-liu-nos-extremos-tangenciais">Comparação da condição de Liu nos extremos tangenciais</h1>
+<p>Para uma fibra forward orientada a partir de U_L, a desigualdade necessária de Liu é
+<code>s(U_L,U_target) &lt;= s(U_L,U)</code> para todo estado intermediário U no arco.</p>
+<p><code>liuStationaryOrdering</code> compara a velocidade no contato com as velocidades dos
+candidatos estacionários refinados (<code>refined-candidate</code>) identificados por
+<code>refineLiuTangentialExtrema</code>. Um valor estacionário menor que a velocidade
+final fornece uma violação numérica. Pontos <code>near-zero-sample</code> não são tratados
+como raízes refinadas; intervalos não resolvidos permanecem inconclusivos.</p>
+<p>A ausência de violações nos candidatos não é certificação da desigualdade
+em todo o arco: extremos não detectados, topologia do ramo e erros de
+continuação ainda exigem controle. O campo <code>passes</code> permanece <code>false</code>.</p>
+<p>O resultado fica disponível em <code>refinedLiuInterior(...).stationaryOrdering</code> e,
+para a continuação a partir das sementes, nos campos <code>stationaryLiuStatus</code>,
+<code>stationaryLiuChecked</code> e <code>stationaryLiuViolations</code>.</p>
+
+</main>
+</body>
+</html>

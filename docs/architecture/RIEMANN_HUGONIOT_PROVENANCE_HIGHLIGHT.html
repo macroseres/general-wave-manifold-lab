@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RIEMANN_HUGONIOT_PROVENANCE_HIGHLIGHT</title>
+<style>
+body{margin:2rem auto;padding:0 1rem;max-width:78ch;font:1rem/1.65 system-ui,sans-serif;color:#182230;background:#fff}
+h1,h2,h3,h4{line-height:1.25} a{color:#12568b} img{max-width:100%;height:auto}
+pre,blockquote{padding:1rem;background:#f3f6f8} pre{overflow:auto} code{overflow-wrap:anywhere}
+table{display:block;overflow:auto;border-collapse:collapse} th,td{padding:.4rem .65rem;border:1px solid #cdd5df;text-align:left}
+mjx-container[display=true]{overflow-x:auto;overflow-y:hidden;padding:.4rem 0}
+</style>
+
+</head>
+<body>
+<main>
+<h1 id="destaque-de-hugoniot-com-proveniencia">Destaque de Hugoniot com proveniência</h1>
+<p>A inspeção da cadeia candidata no espaço de estados usa, quando presentes, os metadados da interseção que originou o candidato.</p>
+<ul>
+<li>Cadeias de dois choques: <code>forwardSegment</code> e <code>backwardSegment</code> identificam os ramos originais.</li>
+<li>Cadeias mistas: <code>curveId</code> e <code>hugoniotIndex</code> identificam, respectivamente, o ramo e a posição na poligonal de Hugoniot.</li>
+<li>A busca do estado fixo permanece limitada aos vértices da curva identificada.</li>
+<li>A extremidade próxima a <code>U_M</code> fica restrita ao segmento indicado quando o índice está disponível.</li>
+<li>A tolerância geométrica continua obrigatória. Falhas de identificação retornam <code>null</code>, sem recorrer a outro ramo.</li>
+</ul>
+<p>Os traçados representam arcos <strong>amostrados</strong>, não uma prova de conexão exata, completude ou admissibilidade entrópica.</p>
+
+</main>
+</body>
+</html>

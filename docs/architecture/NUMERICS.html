@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NUMERICS</title>
+<style>
+body{margin:2rem auto;padding:0 1rem;max-width:78ch;font:1rem/1.65 system-ui,sans-serif;color:#182230;background:#fff}
+h1,h2,h3,h4{line-height:1.25} a{color:#12568b} img{max-width:100%;height:auto}
+pre,blockquote{padding:1rem;background:#f3f6f8} pre{overflow:auto} code{overflow-wrap:anywhere}
+table{display:block;overflow:auto;border-collapse:collapse} th,td{padding:.4rem .65rem;border:1px solid #cdd5df;text-align:left}
+mjx-container[display=true]{overflow-x:auto;overflow-y:hidden;padding:.4rem 0}
+</style>
+
+</head>
+<body>
+<main>
+<h1 id="numerical-conventions">Numerical conventions</h1>
+<p>This document records numerical algorithms, tolerances, event refinement and stopping criteria used by the scientific core.</p>
+<h2 id="canonical-ownership">Canonical ownership</h2>
+<p>Scientific numerical defaults live in <code>src/math/numerics/policy.js</code>. Shared integration/event primitives live in <code>src/math/numerics/integration.js</code>. Domain modules may expose overrides, but UI/rendering code must not invent scientific tolerances.</p>
+<p>There is deliberately <strong>no universal epsilon</strong>. Algebraic regularity, chart regularity, spectral coincidence, sonic degeneracy, equilibrium classification, finite-difference steps, ODE error control and event tolerances have different meanings and therefore distinct controls.</p>
+<h2 id="adaptive-integration">Adaptive integration</h2>
+<p>As of dev.19, rarefaction orbits and finite/infinite separatrices use adaptive classical RK4 with step doubling. For a trial step <code>h</code>, the integrator compares one full RK4 step with two half steps. The local error estimate is</p>
+<p><code>err = ||y_(h/2,h/2) - y_h|| / 15</code>.</p>
+<p>A step is accepted when</p>
+<p><code>err &lt;= atol + rtol * max(||y_n||, ||y_(n+1)||)</code>.</p>
+<p>Rejected steps are reduced and retried. Accepted steps return a suggested next step. Domain modules retain an explicit maximum step so adaptive stepping cannot silently reduce geometric sampling quality relative to the previously validated fixed-step curves. Minimum step, rejection limit and safety factor are canonical numerical-policy values.</p>
+<p>The accepted state is the two-half-step RK4 state. We deliberately do not apply a Richardson correction: this keeps the propagated method behavior simple while using step doubling strictly as an error controller.</p>
+<h2 id="events-and-roots">Events and roots</h2>
+<p><code>locateBracketedEvent()</code> is the shared scalar-event refinement primitive. It requires an already bracketed sign change and refines it by bisection/interpolation without starting a second ODE integration. The rarefaction coincidence transition uses this primitive for the spectral gap <code>s - lambda_other = 0</code>.</p>
+<p>Polynomial roots remain owned by <code>polynomialRoots.js</code>; equilibrium detection and analytic residual checks remain in their domain modules. Event localization and algebraic root solving are intentionally distinct numerical tasks.</p>
+<h2 id="failure-and-stopping-semantics">Failure and stopping semantics</h2>
+<p>Integration stops on invalid field evaluation, declared chart/domain boundary, maximum accepted-step count, stagnation, or inability to satisfy error control above the minimum step/rejection policy. Separatrix-specific saddle-hit and return criteria remain named domain controls. A failure is reported/handled explicitly; the integrator does not manufacture a point.</p>
+<h2 id="verification">Verification</h2>
+<p>The numerical test suite includes: forced rejection of an oversized trial step; convergence on the harmonic oscillator; improvement under tighter tolerances; preservation of the established rarefaction projection/tangent tests; infinity-separatrix topology; and finite-saddle separatrix generation.</p>
+<h2 id="reproducibility">Reproducibility</h2>
+<p><code>numericalPolicySnapshot()</code> serializes the canonical defaults, including adaptive absolute/relative tolerances, minimum step, rejection limit and safety factor. Experiment files therefore record the numerical policy against which they were created; policy mismatches are surfaced rather than silently treated as identical experiments.</p>
+
+</main>
+</body>
+</html>

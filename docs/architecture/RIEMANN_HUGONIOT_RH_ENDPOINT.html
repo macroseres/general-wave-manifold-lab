@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RIEMANN_HUGONIOT_RH_ENDPOINT</title>
+<style>
+body{margin:2rem auto;padding:0 1rem;max-width:78ch;font:1rem/1.65 system-ui,sans-serif;color:#182230;background:#fff}
+h1,h2,h3,h4{line-height:1.25} a{color:#12568b} img{max-width:100%;height:auto}
+pre,blockquote{padding:1rem;background:#f3f6f8} pre{overflow:auto} code{overflow-wrap:anywhere}
+table{display:block;overflow:auto;border-collapse:collapse} th,td{padding:.4rem .65rem;border:1px solid #cdd5df;text-align:left}
+mjx-container[display=true]{overflow-x:auto;overflow-y:hidden;padding:.4rem 0}
+</style>
+<script defer src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-chtml.js"></script>
+</head>
+<body>
+<main>
+<h1 id="refinamento-rh-do-extremo-da-curva-de-hugoniot">Refinamento RH do extremo da curva de Hugoniot</h1>
+<p>O trecho destacado de Hugoniot é identificado pelos metadados do ramo e do segmento da construção da cadeia. Quando os coeficientes do fluxo quadrático estão disponíveis, a extremidade é procurada <strong>dentro do segmento selecionado</strong> pela condição escalar</p>
+<p>\[
+\det(U-U_{fixo},F(U)-F(U_{fixo}))=0.
+\]</p>
+<p>Para saltos não nulos, essa condição é equivalente à existência de uma velocidade de choque que satisfaça Rankine–Hugoniot. A velocidade é calculada por projeção do salto do fluxo na direção do salto de estado, e o resíduo vetorial relativo é verificado separadamente.</p>
+<p>O algoritmo amostra o segmento, localiza mudanças de sinal e aplica bisseção; aceita apenas raízes próximas de <code>U_M</code>, com resíduo relativo RH menor que <code>1e-8</code>. Não procura raízes tangenciais sem mudança de sinal, não abandona o segmento de proveniência e não certifica admissibilidade entrópica. A curva entre os vértices continua sendo uma poligonal amostrada.</p>
+<p>O modo geométrico legado permanece disponível para chamadas que não forneçam coeficientes de fluxo; na interface principal o fluxo é passado explicitamente e o destaque só ocorre quando a correção RH é aceita.</p>
+
+</main>
+</body>
+</html>

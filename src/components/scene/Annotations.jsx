@@ -73,7 +73,7 @@ export function Axes({tauMin,tauMax,YMin,YMax,axisScale,onAxisPositions}) {
   const scale=[axisScale.tau,axisScale.Y,axisScale.zc]
   const worldPoint=point=>point.map((value,i)=>value*scale[i])
   return <group>
-    {axisLines.map(axis=><Line key={axis.id} points={[worldPoint(axis.from),worldPoint(axis.to)]}
+    {axisLines.map(axis=><Line contrast={false} key={axis.id} points={[worldPoint(axis.from),worldPoint(axis.to)]}
       color={axis.color} lineWidth={1} transparent opacity={0.55}
       depthTest={false} renderOrder={1}/>)}
     <AxisScreenAnchors {...{tauMin,tauMax,YMin,YMax,axisScale}} onPositions={onAxisPositions}/>

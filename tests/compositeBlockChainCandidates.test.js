@@ -1,3 +1,4 @@
+import {chainExamples} from '../src/experiment/chainExamples.js'
 import test from 'node:test'
 import assert from 'node:assert/strict'
 import {oldWavePreset,flux} from '../src/math/flux/quadraticFlux.js'
@@ -205,4 +206,20 @@ test('C04-T02: missing composite Liu remains inconclusive in uniform triage',()=
   assert.equal(shock.admissibility.liu.status,'not-evaluated')
   assert.equal(assessWaveChain(classified).status,'inconclusive')
   assert.equal(classified.entropyCertified,false)
+})
+
+test('CK and KC accept a contact confined to a line of a quadratic flux',()=>{
+  const expectedWaves={
+    CK:['contact','shock','rarefaction'],
+    KC:['rarefaction','shock','contact'],
+  }
+  for(const {pattern,states,coefficients:fluxParameters} of chainExamples.filter(q=>Object.hasOwn(expectedWaves,q.pattern))){
+    const branches=riemannMonotoneRarefactions(states,fluxParameters)
+    const candidate=compositeBlockChainCandidates(states,branches,{},fluxParameters).find(q=>q.pattern===pattern)
+    assert.ok(candidate,pattern)
+    assert.deepEqual(candidate.segments.map(wave=>wave.type),expectedWaves[pattern])
+    assert.ok(candidate.contacts[0].relativeResidual<1e-7)
+    assert.equal(candidate.contacts[0].model.coverage,'horizontal-line')
+    assert.ok(candidate.shocks[0].weakLax.passes)
+  }
 })

@@ -9,6 +9,7 @@ import {searchRarefactionPairs} from './rarefactionPairCandidates.js'
 import {searchContactChains} from './contactChainCandidates.js'
 import {searchCompositeBlockChains} from './compositeBlockChainCandidates.js'
 import {stateShockBranches} from './stateShockBranches.js'
+import {groupRiemannCandidates} from './riemannCandidateGroups.js'
 
 const valid=U=>Array.isArray(U)&&U.length===2&&U.every(Number.isFinite)
 const pending=()=>({candidates:[],report:{status:'not-requested',complete:false}})
@@ -62,6 +63,10 @@ export function stateConstructionSearch(states,branches,hugoniot,p,requested,rev
           evidence:physicalChainEvidence(profile,source),provenance:candidateProvenance(profile,source)})
         else (report.profileRejections??=[]).push(profile.status)
       }catch(error){assessment.profileStatus='numerical-failure';(report.profileRejections??=[]).push(error.message)}
+    }
+    if(key==='mixed'){
+      const groups=groupRiemannCandidates(profileCandidates.mixed)
+      profileCandidates.mixed=profileCandidates.mixed.filter((_,index)=>groups[index].groupMembers[0]===index)
     }
     report.selectable=profileCandidates[key].length
   }

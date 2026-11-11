@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RIEMANN_SONIC_RAREFACTION_CONNECTIONS</title>
+<style>
+body{margin:2rem auto;padding:0 1rem;max-width:78ch;font:1rem/1.65 system-ui,sans-serif;color:#182230;background:#fff}
+h1,h2,h3,h4{line-height:1.25} a{color:#12568b} img{max-width:100%;height:auto}
+pre,blockquote{padding:1rem;background:#f3f6f8} pre{overflow:auto} code{overflow-wrap:anywhere}
+table{display:block;overflow:auto;border-collapse:collapse} th,td{padding:.4rem .65rem;border:1px solid #cdd5df;text-align:left}
+mjx-container[display=true]{overflow-x:auto;overflow-y:hidden;padding:.4rem 0}
+</style>
+
+</head>
+<body>
+<main>
+<h1 id="conexoes-sonicas-com-rarefacoes-diagnostico-preliminar">Conexões sônicas com rarefações: diagnóstico preliminar</h1>
+<p>Para um choque a partir de U_L, o contato em S+ ocorre no estado direito U_c. Uma eventual conexão choque–rarefação precisa ligar U_c a U_R por uma curva integral da mesma família, com velocidades características ordenadas. Por isso a comparação é feita com a rarefação traçada a partir de U_R, em orientação reversa.</p>
+<p>Para um choque que termina em U_R, o contato em S- ocorre no estado esquerdo U_c. Uma eventual conexão rarefação–choque exige uma rarefação de U_L até U_c. Por isso a comparação é feita com a curva traçada a partir de U_L.</p>
+<p>O código exige convergência prévia da raiz de Rankine–Hugoniot + sônica, compara a distância do contato aos segmentos poligonais da rarefação oposta e verifica a compatibilidade numérica da velocidade. Não há certificação de raízes na curva integral contínua, condições entrópicas globais, compatibilidade das velocidades de todas as ondas ou construção completa do estado intermediário. A tolerância geométrica é relativa à escala das coordenadas; os resultados são candidatos exploratórios.</p>
+
+</main>
+</body>
+</html>

@@ -21,7 +21,7 @@
 .workspaceToolbar button.active,.workspaceToolbar button[aria-pressed="true"] {background:#183747;border-color:#4e9cb8}
 .workspaceToolbar button:disabled {opacity:.4;cursor:not-allowed}
 .workspaceToolbar button:focus-visible {outline:2px solid #65caff;outline-offset:1px}
-.workspaceToolbar .workspaceToolbarToggle {font-size:17px;border-color:#2eac73}
+.workspaceToolbar .workspaceToolbarToggle {font-size:16px;color:#b8c4d1}
 .workspaceToolbarDivider {flex:0 0 1px;width:1px;height:22px;background:#35414d;margin:0 4px}
 .workspaceToolbarHint {font-size:11px;color:#b8c4d1}
 .workspaceToolbar .cameraMoreViews {position:relative;flex:0 0 auto}
@@ -29,3 +29,63 @@
 .workspaceToolbar .surfaceIsolationControl,.workspaceToolbar .surfaceOpacityControl {flex:0 0 auto;font-size:11px}
 .workspaceToolbar select {max-width:145px}
 @media(max-width:760px){.workspaceToolbar{top:8px;right:8px;max-width:calc(100% - 16px)}}
+.workspaceToolbar {align-items:center;box-sizing:border-box}
+.workspaceToolbarContents {flex:1 1 auto;overflow:visible}
+.workspaceToolbarActions {
+  width:auto;
+  flex-wrap:wrap;
+  justify-content:flex-end;
+  gap:6px 8px;
+}
+.workspaceToolbarGroup {
+  display:flex;
+  flex-wrap:wrap;
+  align-items:center;
+  gap:4px;
+  min-width:0;
+  max-width:100%;
+}
+.workspaceToolbarGroup + .workspaceToolbarGroup {
+  padding-inline-start:8px;
+  border-inline-start:1px solid #35414d;
+}
+.workspaceToolbar .workspaceToolbarActions label {
+  display:inline-flex;
+  flex-direction:row;
+  align-items:center;
+  gap:6px;
+  margin:0;
+}
+.workspaceToolbar .surfaceIsolationControl select {
+  width:112px;
+  height:30px;
+}
+.workspaceToolbar .surfaceOpacityControl input[type=range] {width:64px;margin:0}
+.workspaceToolbar .surfaceOpacityControl output {min-width:3ch;font-variant-numeric:tabular-nums}
+.workspaceToolbar .cameraMoreViews summary {
+  list-style:none;
+  display:flex;
+  align-items:center;
+  gap:5px;
+  height:30px;
+  padding:0 8px;
+  border:1px solid #35414d;
+  border-radius:5px;
+  background:#202832;
+  box-sizing:border-box;
+}
+.workspaceToolbar .cameraMoreViews summary::-webkit-details-marker {display:none}
+.workspaceToolbar .cameraMoreViews summary::after {content:"+"}
+.workspaceToolbar .cameraMoreViews[open] summary::after {content:"−"}
+.workspaceToolbar .cameraMoreMenu {
+  position:absolute;
+  inset-inline-end:0;
+  top:calc(100% + 5px);
+  z-index:1;
+  display:grid;
+  gap:4px;
+  padding:5px;
+  background:#171e26;
+  border:1px solid #35414d;
+  border-radius:6px;
+}

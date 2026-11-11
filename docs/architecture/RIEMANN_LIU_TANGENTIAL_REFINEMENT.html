@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RIEMANN_LIU_TANGENTIAL_REFINEMENT</title>
+<style>
+body{margin:2rem auto;padding:0 1rem;max-width:78ch;font:1rem/1.65 system-ui,sans-serif;color:#182230;background:#fff}
+h1,h2,h3,h4{line-height:1.25} a{color:#12568b} img{max-width:100%;height:auto}
+pre,blockquote{padding:1rem;background:#f3f6f8} pre{overflow:auto} code{overflow-wrap:anywhere}
+table{display:block;overflow:auto;border-collapse:collapse} th,td{padding:.4rem .65rem;border:1px solid #cdd5df;text-align:left}
+mjx-container[display=true]{overflow-x:auto;overflow-y:hidden;padding:.4rem 0}
+</style>
+
+</head>
+<body>
+<main>
+<h1 id="refinamento-dos-extremos-tangenciais-da-velocidade-de-choque">Refinamento dos extremos tangenciais da velocidade de choque</h1>
+<p>Para uma fibra forward com estado esquerdo fixo, o diagnóstico localiza mudanças de sinal da derivada tangencial de velocidade de choque. Cada intervalo candidato é subdividido com projeção corretiva na equação de Rankine–Hugoniot, com controle de deslocamento e de avanço sobre o segmento orientado. A bisseção é interrompida por tolerância na derivada ou no comprimento do intervalo.</p>
+<p>Uma amostra com derivada próxima de zero é preservada como <code>near-zero-sample</code>, não promovida automaticamente a raiz refinada. Uma falha de projeção, regularidade ou orientação torna o intervalo inconclusivo. Os resultados ficam em <code>refinedLiuInterior(...).tangentialRefinement</code> e <strong>não</strong> substituem a verificação amostrada de Liu nem constituem certificação de admissibilidade global.</p>
+
+</main>
+</body>
+</html>

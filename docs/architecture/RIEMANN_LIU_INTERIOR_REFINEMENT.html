@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RIEMANN_LIU_INTERIOR_REFINEMENT</title>
+<style>
+body{margin:2rem auto;padding:0 1rem;max-width:78ch;font:1rem/1.65 system-ui,sans-serif;color:#182230;background:#fff}
+h1,h2,h3,h4{line-height:1.25} a{color:#12568b} img{max-width:100%;height:auto}
+pre,blockquote{padding:1rem;background:#f3f6f8} pre{overflow:auto} code{overflow-wrap:anywhere}
+table{display:block;overflow:auto;border-collapse:collapse} th,td{padding:.4rem .65rem;border:1px solid #cdd5df;text-align:left}
+mjx-container[display=true]{overflow-x:auto;overflow-y:hidden;padding:.4rem 0}
+</style>
+
+</head>
+<body>
+<main>
+<h1 id="refinamento-interior-do-teste-amostrado-de-liu">Refinamento interior do teste amostrado de Liu</h1>
+<p>Para o estado esquerdo fixo <code>U_L</code> e um arco forward orientado até <code>U_c</code>, a condição necessária de Liu é <code>s(U_L,U_c) &lt;= s(U_L,U)</code> para todos os estados intermediários <code>U</code> do mesmo arco. O teste anterior só comparava as velocidades nos vértices disponíveis.</p>
+<p>O módulo <code>src/math/solution/liuInteriorExtrema.js</code> subdivide cada segmento do arco, corrige o ponto médio com Newton normal à equação escalar de incidência de Rankine–Hugoniot e rejeita correções que se afastem demasiadamente do segmento. Verifica Rankine–Hugoniot para cada ponto, compara as velocidades com a velocidade final e detecta candidatos a extremos interiores pela mudança de sinal das diferenças sucessivas.</p>
+<p><code>refined-liu-violation</code> identifica uma violação numérica da desigualdade. <code>refined-liu-compatible</code> significa apenas que as amostras refinadas não revelaram violação. <code>interior-refinement-inconclusive</code> significa que a subdivisão não pôde ser realizada de modo confiável. Nenhum desses estados certifica continuidade, unicidade de ramo, admissibilidade de Liu global ou existência de um perfil viscoso.</p>
+<p>A função <code>seededLiuAtForwardContact</code> expõe <code>interiorStatus</code>, <code>interiorChecked</code>, <code>interiorViolations</code> e <code>interiorExtrema</code> sem modificar o status preliminar nem promover <code>passes</code> a verdadeiro.</p>
+
+</main>
+</body>
+</html>

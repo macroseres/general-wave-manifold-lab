@@ -4,9 +4,39 @@
  */
 import { zFromZc, zcFromZ } from '../../math/charts/zChart.js'
 import { characteristicSpectrum } from '../../math/characteristic/spectrum.js'
+import { waveState } from '../../math/manifold/waveState.js'
 import { characteristicLifts, stateFiberPoint, stateFiberPointReciprocal } from '../../math/state/fibers.js'
 
 const finite = Number.isFinite
+
+/** Sample the descending prefix in each direction from a finite lift. */
+export function decreasingForwardShockArcs(U, seed, p) {
+  return monotoneShockArcs(U,seed,p,"minus",-1)
+}
+
+export function monotoneShockArcs(U, seed, p, side, speedSign) {
+  if (!seed) return []
+  const start = stateFiberPoint(U, zFromZc(seed.zc), p, side)
+  if (start.kind !== 'regular') return []
+  const {s} = waveState(seed.tau, 0, start.z, p)
+  if (!finite(s)) return []
+  return [-1, 1].flatMap(direction => {
+    const points = [{...start, tau:seed.tau, Y:0, zc:seed.zc, s}]
+    for (let i = 1; i <= 2000; i++) {
+      const zc = seed.zc + direction * i * 0.001
+      if (Math.abs(zc) >= 0.999) break
+      const z = zFromZc(zc)
+      const next = stateFiberPoint(U, z, p, side)
+      const previous = points.at(-1)
+      if (next.kind !== 'regular' || next.denominator * previous.denominator <= 0 ||
+          Math.max(Math.abs(next.tau), Math.abs(next.Y)) > 1e6) break
+      const {s} = waveState(next.tau, next.Y, z, p)
+      if (!finite(s) || !(speedSign*(s-previous.s)>0)) break
+      points.push({...next, zc, s})
+    }
+    return points.length > 1 ? [points] : []
+  })
+}
 
 /** Robust visualization window for a fixed-state fibre.
  * It is a computational/view window only; it does not change the fibre.

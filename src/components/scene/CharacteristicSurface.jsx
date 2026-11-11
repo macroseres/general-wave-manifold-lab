@@ -24,8 +24,8 @@ export function CharacteristicSurface({tauMin,tauMax,p,_point,setPoint,showSlow=
 export function ExceptionalDirectionHandles({p,tauMin,tauMax,onSelect,selectedDirection,axisScale}) {
   const {markers}=useMemo(()=>exceptionalMarkers(p),[p])
   return <group>{markers.map((marker,i)=>{const selected=selectedDirection&&(marker.infinity?selectedDirection.infinity:!selectedDirection.infinity&&Math.abs(marker.zc-selectedDirection.zc)<1e-8);const zc=marker.zc*(marker.infinity?.995:1);const center=clamp(0,tauMin,tauMax);const inverseScale=[axisScale.tau,axisScale.Y,axisScale.zc].map(v=>1/Math.max(Math.abs(v||1),1e-8));return <group key={`${marker.infinity?'inf':marker.z}-${i}`} position={[center,0,zc]}>
-    <group scale={inverseScale}><group onClick={e=>{e.stopPropagation();onSelect(marker)}} onPointerOver={e=>{e.stopPropagation()}}>
-      <ScientificPoint3D radius={selected?.068:.052} color={selected?"#ffffff":"#ffd166"} material="basic"/>
+    <group scale={inverseScale}><group>
+      <ScientificPoint3D radius={selected?.068:.052} color={selected?"#ffffff":"#ffd166"} material="basic" onSelect={()=>onSelect(marker)}/>
     </group>
     <mesh raycast={()=>null}><torusGeometry args={[selected?.104:.083,.009,6,28]}/><meshBasicMaterial color={selected?"#fbbf24":"#1f2937"} depthTest={false}/></mesh></group>
     {selected&&<Line points={[[tauMin-center,0,0],[tauMax-center,0,0]]} color="#fbbf24" lineWidth={1.5} transparent opacity={0.75} depthTest={false} renderOrder={20}/> }

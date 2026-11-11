@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>LAYOUT_PHASE11_RESPONSIVE_AUDIT</title>
+<style>
+body{margin:2rem auto;padding:0 1rem;max-width:78ch;font:1rem/1.65 system-ui,sans-serif;color:#182230;background:#fff}
+h1,h2,h3,h4{line-height:1.25} a{color:#12568b} img{max-width:100%;height:auto}
+pre,blockquote{padding:1rem;background:#f3f6f8} pre{overflow:auto} code{overflow-wrap:anywhere}
+table{display:block;overflow:auto;border-collapse:collapse} th,td{padding:.4rem .65rem;border:1px solid #cdd5df;text-align:left}
+mjx-container[display=true]{overflow-x:auto;overflow-y:hidden;padding:.4rem 0}
+</style>
+
+</head>
+<body>
+<main>
+<h1 id="layout-etapa-11-auditoria-estrutural-responsiva">Layout — etapa 11: auditoria estrutural responsiva</h1>
+<h2 id="escopo">Escopo</h2>
+<p>Revisão da navegação dos quatro ambientes (Variedade 3D, Espaço de estados, Espaço físico e Documentação), preservando o conteúdo científico e a arquitetura de navegação já implementada.</p>
+<h2 id="ajustes">Ajustes</h2>
+<ul>
+<li>Cabeçalho com dimensões e quebra de texto controladas em telas intermediárias.</li>
+<li>Navegação dos ambientes com rolagem horizontal independente em telas estreitas, evitando cortes de botões.</li>
+<li>Altura máxima do cabeçalho e rolagem vertical controlada quando os controles ocupam muitas linhas.</li>
+<li>Painéis móveis 3D com limite de altura relativo à viewport dinâmica, preservando a área central.</li>
+<li>Índice da documentação com alvos maiores e foco visível.</li>
+<li>Restrições de largura e overflow no workspace para reduzir rolagem horizontal global.</li>
+</ul>
+<h2 id="limites-da-validacao">Limites da validação</h2>
+<p><code>npm test</code> passou com 532 testes. A auditoria foi estática/estrutural; ainda é necessária uma inspeção visual no navegador em resoluções desktop, tablet e celular. <code>npm run check</code> deve ser executado na máquina com as dependências instaladas para validar lint e build.</p>
+<h2 id="checklist-manual">Checklist manual</h2>
+<ol>
+<li>Desktop (&gt;= 1200 px): verificar se os três painéis 3D não se sobrepõem.</li>
+<li>Tablet (761–1100 px): verificar a quebra do cabeçalho e os menus.</li>
+<li>Celular (&lt;= 760 px): navegar pelas quatro abas e confirmar acesso a Controles e Inspeção.</li>
+<li>Celular estreito (&lt;= 400 px): confirmar rolagem horizontal da navegação sem cortar botões.</li>
+<li>Documentação: abrir links do índice, rolar equações largas e usar teclado.</li>
+<li>Espaços de estados e físico: confirmar tabelas com rolagem interna e gráficos sem corte.</li>
+</ol>
+
+</main>
+</body>
+</html>

@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>01-spaces-and-views</title>
+<style>
+body{margin:2rem auto;padding:0 1rem;max-width:78ch;font:1rem/1.65 system-ui,sans-serif;color:#182230;background:#fff}
+h1,h2,h3,h4{line-height:1.25} a{color:#12568b} img{max-width:100%;height:auto}
+pre,blockquote{padding:1rem;background:#f3f6f8} pre{overflow:auto} code{overflow-wrap:anywhere}
+table{display:block;overflow:auto;border-collapse:collapse} th,td{padding:.4rem .65rem;border:1px solid #cdd5df;text-align:left}
+mjx-container[display=true]{overflow-x:auto;overflow-y:hidden;padding:.4rem 0}
+</style>
+
+</head>
+<body>
+<main>
+<h1 id="spaces-and-views">01 — Spaces and views</h1>
+<p>The application uses three mathematically different spaces.</p>
+<h2 id="wave-manifold">Wave manifold</h2>
+<p>The wave manifold <code>W</code> stores wave data such as the left state <code>U_-</code>, right state <code>U_+</code>, and propagation speed <code>s</code>. The current global visualization uses coordinates adapted to this manifold, including the finite chart <code>(tau,Y,z)</code> and its compactified display coordinate.</p>
+<h2 id="state-space-implemented-point-projection">State space — implemented point projection</h2>
+<p>The state space is the <code>(u,v)</code> plane. A point <code>P ∈ W</code> has two natural projections into it: the left state <code>U_-</code> and the right state <code>U_+</code>. Use <strong>Espaço de estados</strong> in the header to inspect the currently selected point <code>P ∈ W</code>. The view shows <code>U_- = pi_-(P)</code>, <code>U_+ = pi_+(P)</code> and the midpoint <code>Ubar</code> in the <code>(u,v)</code> plane. The segment between <code>U_-</code> and <code>U_+</code> is a visual aid for the selected jump; it is not a newly computed wave curve. On the characteristic surface <code>C</code> (<code>Y=0</code>), the three markers coincide.</p>
+<p><strong>Status:</strong> point projections implemented. Projection of complete Hugoniot, rarefaction and composite curves will be added only when those mathematical objects are supplied by the validated math layer.</p>
+<h2 id="physical-space-implemented-rarefaction-view">Physical space — implemented rarefaction view</h2>
+<p>The physical plane uses the independent variables <code>(x,t)</code>. The solution is <code>U(x,t)=(u(x,t),v(x,t))</code>. For a validated rarefaction orbit with monotone characteristic speed, the app realizes the same orbit as a self-similar fan using <code>xi=x/t=s(U)</code> for <code>t&gt;0</code>. The view does not integrate a second physical-space ODE.</p>
+<p>Use <strong>Espaço físico</strong> to inspect this realization. Selecting a physical ray drives the shared selection back to the corresponding point <code>P</code> of the wave manifold. Orbits whose characteristic speed reverses are rejected as regular physical fans.</p>
+<p><strong>Status:</strong> rarefaction realization implemented and synchronized across <code>W -&gt; U -&gt; X</code>. Shock curves, composite waves and a general Riemann solver remain outside the pre-Hugoniot foundation.</p>
+<h2 id="curvas-de-rarefacao-no-espaco-de-estados">Curvas de rarefação no espaço de estados</h2>
+<p>A vista <strong>Espaço de estados (u,v)</strong> também pode mostrar as rarefações já
+calculadas na superfície característica. Essas curvas não são recalculadas
+no plano: cada ponto <code>(tau,z)</code> de uma órbita em <code>C</code> é enviado para o estado
+<code>Ubar(tau,z)</code>. Os trechos lento e rápido são identificados pela ordenação
+espectral usada para <code>C_s</code> e <code>C_f</code>. Na coincidência <code>E</code> essa distinção deixa
+de existir, e os segmentos são interrompidos visualmente em vez de receberem
+um rótulo artificial.</p>
+<h3 id="uma-rarefacao-pode-mudar-de-ramo-em-e">Uma rarefação pode mudar de ramo em E</h3>
+<p>Os rótulos <code>R_s</code> e <code>R_f</code> descrevem trechos de uma mesma curva integral. Se a
+órbita atravessa a coincidência <code>E</code>, ela continua através do mesmo ponto: um
+lado é classificado como lento e o outro como rápido. Na vista <code>(u,v)</code>, o
+ponto de transição é marcado e os dois estilos compartilham exatamente esse
+mesmo ponto. Portanto, uma mudança de estilo em <code>E</code> não significa que uma
+rarefação terminou e outra começou.</p>
+
+</main>
+</body>
+</html>

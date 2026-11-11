@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BIBLIOGRAPHY</title>
+<style>
+body{margin:2rem auto;padding:0 1rem;max-width:78ch;font:1rem/1.65 system-ui,sans-serif;color:#182230;background:#fff}
+h1,h2,h3,h4{line-height:1.25} a{color:#12568b} img{max-width:100%;height:auto}
+pre,blockquote{padding:1rem;background:#f3f6f8} pre{overflow:auto} code{overflow-wrap:anywhere}
+table{display:block;overflow:auto;border-collapse:collapse} th,td{padding:.4rem .65rem;border:1px solid #cdd5df;text-align:left}
+mjx-container[display=true]{overflow-x:auto;overflow-y:hidden;padding:.4rem 0}
+</style>
+
+</head>
+<body>
+<main>
+<h1 id="bibliografia-e-mapa-de-procedencia">Bibliografia e mapa de procedência</h1>
+<p>Este índice registra fontes primárias consultadas para os blocos de ondas e dinâmica. O <a href="DOCUMENTATION_COVERAGE.html">mapa dos 26 capítulos</a> separa essas fontes das deduções algébricas expostas no projeto e dos contratos editoriais. Uma fonte citada não valida automaticamente uma implementação ou uma generalização de seu resultado; a revisão bibliográfica exaustiva por resultado continua aberta.</p>
+<h2 id="wm-01-variedade-e-fibras-de-hugoniot">WM-01 — Variedade e fibras de Hugoniot</h2>
+<p>Cesar S. Eschenazi, Wanderson J. Lambert, Marlon M. López-Flores, Dan Marchesin, Carlos F. B. Palmeira e Bradley J. Plohr. <em>Solving Riemann Problems with a Topological Tool (Extended version)</em>. arXiv:2312.17377, <strong>versão 2, 13/09/2024</strong>. <a href="https://arxiv.org/html/2312.17377v2">Texto consultado</a>.</p>
+<table>
+<thead>
+<tr>
+<th>Localização</th>
+<th>Uso neste projeto</th>
+<th>Restrição</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>§2.1, equações 2.1–2.2</td>
+<td>Identificação do modelo estudado</td>
+<td>Caso IV simétrico especificado pelos autores; não cobre automaticamente os dez parâmetros</td>
+</tr>
+<tr>
+<td>§2.2, equações 2.3–2.8</td>
+<td>Relação de salto, blow-up e estados fixados</td>
+<td>Traduzir orientação do salto e convenções de coordenadas</td>
+</tr>
+<tr>
+<td>§2.4, equações 2.14 e 2.18</td>
+<td>Exemplo de parametrização adaptada</td>
+<td>A coordenada longitudinal do app usa outra base/tangente; comparar estados reconstruídos</td>
+</tr>
+<tr>
+<td>§4.1, equações 4.1 e 4.3–4.5, definição 4.1</td>
+<td>Construção por direções próprias, levantamento e escolha de arcos monótonos</td>
+<td>Não importar a EDO específica nem sua classificação global para outro fluxo</td>
+</tr>
+<tr>
+<td>§4.4, definição e equações 4.17–4.18</td>
+<td>Relação de compostas com rarefações levantadas</td>
+<td>Transporte de notação e orientação; as fórmulas específicas não foram copiadas para o exemplo triangular</td>
+</tr>
+</tbody>
+</table>
+<p>O uso neste capítulo é conceitual e localizado. O exemplo triangular, suas contas e os testes foram construídos para a documentação do projeto e não são apresentados como exemplo extraído desse artigo. Não se reivindica originalidade científica do exemplo.</p>
+<h2 id="rp-01-lugar-de-hugoniot-no-espaco-de-estados">RP-01 — Lugar de Hugoniot no espaço de estados</h2>
+<p>David I. Ketcheson, Randall J. LeVeque e Mauricio J. del Razo. <em>Riemann Problems and Jupyter Solutions: Theory and Approximate Solvers for Hyperbolic PDEs</em>. SIAM, 2020. <a href="https://www.clawpack.org/riemann_book/">Página dos autores</a>. Capítulo <a href="https://www.clawpack.org/riemann_book/html/Shallow_water.html">Shallow water</a>, subseções <strong>Shock waves</strong>, <strong>All-shock Riemann solutions</strong> e <strong>The entropy condition</strong>.</p>
+<p>Uso: referência didática para lugar de Hugoniot, condições de salto e distinção entre conexões conservativas e seleção de ondas. O modelo é de águas rasas; suas fórmulas não foram transferidas ao fluxo quadrático do app. A edição HTML é consultada como recurso dos autores; não se atribui um número de página da edição impressa.</p>
+<p>Para o capítulo de rarefação, foi consultada também a subseção <strong>Rarefaction waves / Integral curves</strong>; para a cadeia, <strong>All-shock Riemann solutions</strong>. Elas fundamentam a comparação conceitual entre conexões nos estados. As fórmulas exatas do leque triangular e da cadeia foram deduzidas na documentação, sem copiar as soluções específicas de águas rasas.</p>
+<h2 id="procedencia-das-partes-do-capitulo-modelo">Procedência das partes do capítulo-modelo</h2>
+<table>
+<thead>
+<tr>
+<th>Parte</th>
+<th>Procedência</th>
+<th>Evidência e limite</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Fibra como pré-imagem de um estado</td>
+<td>WM-01 §2.2, na convenção explícita do projeto</td>
+<td>Correspondência de definições; não importa a classificação global do artigo</td>
+</tr>
+<tr>
+<td>Fórmula geral via P,Q,R</td>
+<td>Dedução exposta na referência do projeto</td>
+<td>Conferência com <code>src/math/state/fibers.js</code></td>
+</tr>
+<tr>
+<td>Fluxo triangular e ponto selecionado</td>
+<td>Exemplo de verificação escolhido no projeto</td>
+<td>Contas exatas e teste do exemplo</td>
+</tr>
+<tr>
+<td>Interface física e Lax 2 no ponto</td>
+<td>Avaliação e demonstração explícitas</td>
+<td>Conservação e desigualdades nos extremos; sem certificação global de entropia</td>
+</tr>
+<tr>
+<td>Figura nos três espaços</td>
+<td>Dados gerados pelo núcleo, plotados com Matplotlib</td>
+<td>Trecho finito e ponto destacado; não representa toda a fibra</td>
+</tr>
+</tbody>
+</table>
+<p>Os exemplos adicionais estão em <code>17-campo-rarefacao.html</code> e <code>20-cadeias-riemann.html</code>, com dados em <code>docs/examples/wave-patterns-reference.json</code>. O primeiro deduz uma órbita exata de velocidade crescente; o segundo verifica dois saltos ordenados e demonstra, pelo diferencial de RH, que a falha da carta do primeiro salto não é uma singularidade da relação de salto. Os testes não demonstram unicidade ou classificação global.</p>
+<h2 id="ode-01-variedades-estavel-e-instavel">ODE-01 — Variedades estável e instável</h2>
+<p>William M. Feldman. <em>MATH 6410: Ordinary Differential Equations</em>, Fall 2024, University of Utah. <a href="https://www.math.utah.edu/%7Efeldman/ODE-slides/ODE-slides5v2024.pdf#page=7">Slides consultados</a>, slides 3–7, teorema no slide 7. Uso: existência local e tangência para uma linearização hiperbólica. Isso não justifica extensão global das separatrizes calculadas. O campo recíproco e seus valores -8 e 7 foram calculados para o preset declarado, não retirados do exemplo de pêndulo das notas.</p>
+<h2 id="procedencia-dos-demais-exemplos">Procedência dos demais exemplos</h2>
+<p>O caso composto duplamente sônico e seu perfil viscoso B=I são verificados por substituição explícita no capítulo 19. A classificação do capítulo 22 decorre de completar quadrados no discriminante do preset. A transformação afim do capítulo 21 usa as identidades demonstradas no próprio capítulo. Esses exemplos não são apresentados como teoremas globais da literatura, nem como resultados científicos originais.</p>
+<p>Próximas referências devem ser incorporadas por resultado, com versão, seção ou número de teorema, hipóteses e correspondência de notação. Referências apenas mencionadas por outro artigo ainda precisam de consulta direta. Em particular, não foi feita uma pesquisa exaustiva de prioridade ou originalidade para todos os objetos da variedade.</p>
+<h2 id="lf-01-teoria-classica-e-nao-classica-referencia-de-trabalho">LF-01 — Teoria clássica e não clássica: referência de trabalho</h2>
+<p>Philippe G. LeFloch. <em>Hyperbolic Systems of Conservation Laws: The Theory of Classical and Nonclassical Shock Waves</em>. Birkhäuser, 2002. <a href="https://link.springer.com/book/10.1007/978-3-0348-8150-0">Página editorial e sumário</a>.</p>
+<p>Consulta nesta etapa: metadados e sumário editorial. Localizadores de estudo: <em>Fundamental Concepts and Examples</em>, pp. 1–26; <em>The Riemann Problem</em>, parte de sistemas, pp. 139–166; capítulos <em>Classical Entropy Solutions of the Cauchy Problem</em> e <em>Nonclassical Entropy Solutions of the Cauchy Problem</em>. Não foi feita leitura integral nem conferência de números de definições e teoremas. LF-01 orienta a organização; não serve ainda como atestado de cada enunciado do projeto.</p>
+<h2 id="lf-02-selecao-por-relacao-cinetica">LF-02 — Seleção por relação cinética</h2>
+<p>Philippe G. LeFloch. <em>Kinetic relations for undercompressive shock waves. Physical, mathematical, and numerical issues</em>. arXiv:1002.2950v1, 15/02/2010. <a href="https://arxiv.org/abs/1002.2950v1">Registro e resumo consultados</a>.</p>
+<p>Uso localizado: distinção conceitual entre conservação/entropia e seleção adicional de choques subcompressivos por relação cinética. O resumo não fornece uma relação cinética para o fluxo quadrático geral do aplicativo. Não foi importado um teorema de existência ou unicidade. A derivação por regularização e a localização de resultados no texto completo permanecem pendentes.</p>
+<p>Consulta adicional de LF-02 para a camada tradicional: <a href="https://arxiv.org/html/1002.2950v1">texto HTML da versão 1</a>, §§2.1–2.3 (seleção e relação cinética), §4.4 (sistemas), §§5.1 e 5.3 (perfis). Essa consulta complementa o resumo; não importa as fórmulas escalares nem uma função cinética universal para o fluxo do app. Os números de teoremas do livro LF-01 continuam sem conferência integral.</p>
+<p>O contrato de revisão e as correspondências a demonstrar estão em <a href="FUNDAMENTACAO_E_CONSTRUCAO.html">FUNDAMENTACAO_E_CONSTRUCAO.html</a>. A primeira camada está em <a href="traditional/README.md">traditional/README.md</a>.</p>
+<h2 id="cw-01-teorema-classico-local">CW-01 — Teorema clássico local</h2>
+<p>Gui-Qiang Chen e Dehua Wang. <em>The Cauchy Problem for the Euler Equations for Compressible Fluids</em>. Preprint de 2002 para o <em>Handbook of Mathematical Fluid Dynamics</em>, vol. 1. <a href="https://www.math.ntnu.no/conservation/2002/001.pdf#page=21">PDF consultado</a>, §6.1, proposições 6.1–6.3 e teoremas 6.1–6.2, pp. impressas 20–22 (índices de PDF 19–21). Aplicação e hipóteses descritas em <a href="traditional/RESULTADOS_E_REGIMES.html">Resultados locais e regimes</a>. A fonte foi consultada diretamente; não se atribui ao projeto uma prova original do teorema.</p>
+<p>LF-02: consulta complementar ao §5.2 para contextualizar relações cinéticas geradas por perfis. O perfil cúbico explícito de RESULTADOS_E_REGIMES.html é demonstrado por substituição no próprio documento; não se usa o teorema 5.2 como uma classificação do fluxo quadrático 2×2.</p>
+<h2 id="img-01-tabela-fornecida-pelo-usuario">IMG-01 — Tabela fornecida pelo usuário</h2>
+<p>Imagem intitulada “Table 1”, anexada nesta conversa: nove configurações características de uma interface. Obra, autoria, edição e página não identificadas. As desigualdades foram transcritas para <a href="traditional/CLASSIFICACAO_DOS_SALTOS.html">CLASSIFICACAO_DOS_SALTOS.html</a>, com prova independente da contagem. Não se atribui a tabela ao livro de LeFloch sem confirmar sua origem. Os exemplos quadráticos foram construídos no projeto e verificados separadamente.</p>
+
+</main>
+</body>
+</html>

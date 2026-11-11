@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RIEMANN_STATE_RAREFACTION_SEEDS</title>
+<style>
+body{margin:2rem auto;padding:0 1rem;max-width:78ch;font:1rem/1.65 system-ui,sans-serif;color:#182230;background:#fff}
+h1,h2,h3,h4{line-height:1.25} a{color:#12568b} img{max-width:100%;height:auto}
+pre,blockquote{padding:1rem;background:#f3f6f8} pre{overflow:auto} code{overflow-wrap:anywhere}
+table{display:block;overflow:auto;border-collapse:collapse} th,td{padding:.4rem .65rem;border:1px solid #cdd5df;text-align:left}
+mjx-container[display=true]{overflow-x:auto;overflow-y:hidden;padding:.4rem 0}
+</style>
+
+</head>
+<body>
+<main>
+<h1 id="rarefaction-candidates-seeded-by-riemann-states">Rarefaction candidates seeded by Riemann states</h1>
+<p><code>src/math/rarefaction/stateIntegralCurves.js</code> computes local integral curves of the real eigenvector fields of <code>DF(U)</code> for the slow and fast characteristic families. The module is pure and independent of the renderer. It traces both orientations from each defined Riemann state, using RK4 with step doubling, and stops if strict hyperbolicity is lost.</p>
+<p>The curves are <strong>not</strong> certified admissible Riemann waves. No monotonicity or genuine nonlinearity test, wave-family ordering, shock/rarefaction connection, entropy selection, or complete physical-space solution is implemented in this step. In particular, backward curves from <code>U_R</code> are geometric candidate paths, not a solved right-going fan.</p>
+<p>The rendering uses orange for curves from <code>U_L</code>, green for those from <code>U_R</code>, and distinct dash patterns for slow and fast families. The characteristic locus and the generic inspection state remain independent of these Riemann seeds.</p>
+
+</main>
+</body>
+</html>

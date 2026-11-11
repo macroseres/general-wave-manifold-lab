@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RIEMANN_CANDIDATE_PROVENANCE</title>
+<style>
+body{margin:2rem auto;padding:0 1rem;max-width:78ch;font:1rem/1.65 system-ui,sans-serif;color:#182230;background:#fff}
+h1,h2,h3,h4{line-height:1.25} a{color:#12568b} img{max-width:100%;height:auto}
+pre,blockquote{padding:1rem;background:#f3f6f8} pre{overflow:auto} code{overflow-wrap:anywhere}
+table{display:block;overflow:auto;border-collapse:collapse} th,td{padding:.4rem .65rem;border:1px solid #cdd5df;text-align:left}
+mjx-container[display=true]{overflow-x:auto;overflow-y:hidden;padding:.4rem 0}
+</style>
+
+</head>
+<body>
+<main>
+<h1 id="origem-geometrica-de-uma-cadeia-candidata">Origem geométrica de uma cadeia candidata</h1>
+<p>O módulo <code>riemannCandidateProvenance.js</code> associa a cada perfil amostrado os metadados geométricos utilizados em sua construção. A origem é registrada separadamente para as ondas lenta e rápida:</p>
+<ul>
+<li>Dois choques: o primeiro conecta <code>U_L</code> a <code>U_M</code> a partir da Hugoniot forward fixada em <code>U_L</code>; o segundo conecta <code>U_M</code> a <code>U_R</code> a partir da Hugoniot backward fixada em <code>U_R</code>.</li>
+<li>Rarefação–choque: o leque parte de <code>U_L</code> em um ramo característico amostrado; o choque é associado à Hugoniot backward de <code>U_R</code>.</li>
+<li>Choque–rarefação: o choque é associado à Hugoniot forward de <code>U_L</code>; o leque termina em <code>U_R</code> em um ramo característico amostrado.</li>
+</ul>
+<p>O identificador de trecho refere-se à amostragem interna, não a um ramo global canonicamente identificado. A origem geométrica, o refinamento numérico, Rankine–Hugoniot e os diagnósticos de Lax/Liu são evidências distintas. O módulo não certifica admissibilidade entrópica, não remove candidatos e não altera o solucionador.</p>
+
+</main>
+</body>
+</html>

@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>FOUNDATION_VERIFICATION</title>
+<style>
+body{margin:2rem auto;padding:0 1rem;max-width:78ch;font:1rem/1.65 system-ui,sans-serif;color:#182230;background:#fff}
+h1,h2,h3,h4{line-height:1.25} a{color:#12568b} img{max-width:100%;height:auto}
+pre,blockquote{padding:1rem;background:#f3f6f8} pre{overflow:auto} code{overflow-wrap:anywhere}
+table{display:block;overflow:auto;border-collapse:collapse} th,td{padding:.4rem .65rem;border:1px solid #cdd5df;text-align:left}
+mjx-container[display=true]{overflow-x:auto;overflow-y:hidden;padding:.4rem 0}
+</style>
+<script defer src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-chtml.js"></script>
+</head>
+<body>
+<main>
+<h1 id="v0.7.0-dev.21-foundation-verification">v0.7.0-dev.21 — Foundation Verification</h1>
+<p>Audit baseline: locally validated <code>v0.7.0-dev.20</code>, including the lint cleanup reported after dev.20.</p>
+<p>This document verifies the seven pre-Hugoniot foundation commitments. <code>PASS</code> means the requirement is implemented with evidence in the repository. <code>DEFERRED</code> means a non-blocking presentation or future-scope item is explicitly postponed. <code>FAIL</code> would block closure. <strong>No blocking FAIL remains.</strong></p>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Foundation commitment</th>
+<th>Evidence</th>
+<th>Verification</th>
+<th>Status</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>Open <code>v0.7.0</code> cycle; versioning, CHANGELOG/ROADMAP; preserve <code>v0.6.0</code></td>
+<td><code>package.json</code>, <code>docs/CHANGELOG.html</code>, <code>docs/ROADMAP.html</code>; historical <code>v0.6.0</code> release is not rewritten by this tree</td>
+<td>version/document guard tests + release workflow</td>
+<td><strong>PASS</strong></td>
+</tr>
+<tr>
+<td>2</td>
+<td>Canonical LaTeX mathematics: general flux, <code>W</code>, RH, <code>(tau,Y,z)</code>, reciprocal chart, <code>C</code>, <code>E</code>, <code>S^±</code>, rarefaction</td>
+<td><code>docs/mathematics/01</code>–<code>09</code>; closure in <code>08-canonical-status.tex</code></td>
+<td>canonical-reference guard + scientific regression tests</td>
+<td><strong>PASS</strong></td>
+</tr>
+<tr>
+<td>3</td>
+<td>Mathematics ↔ code ↔ tests traceability</td>
+<td><code>docs/architecture/TRACEABILITY.html</code></td>
+<td>traceability guard; every current pre-Hugoniot scientific object has an implementation/test owner</td>
+<td><strong>PASS</strong></td>
+</tr>
+<tr>
+<td>4</td>
+<td>Numerical layer: tolerances, roots/equilibria, adaptive integration, events/continuation criteria, stopping rules</td>
+<td><code>src/math/numerics/{policy,integration,polynomialRoots}.js</code>, rarefaction modules</td>
+<td>error-control, rejection, convergence, event and orbit tests</td>
+<td><strong>PASS</strong></td>
+</tr>
+<tr>
+<td>5</td>
+<td>Geometry separated from Three.js/rendering</td>
+<td><code>src/geometry/</code>; finite separatrices in <code>src/math/</code>; sonic meshing in <code>src/geometry/sonic/</code></td>
+<td>architecture dependency guards + renderer-boundary guard</td>
+<td><strong>PASS</strong></td>
+</tr>
+<tr>
+<td>6</td>
+<td>Scientific UI foundation: tokens, math typography, interaction states, responsive behavior, light/dark</td>
+<td><code>tokens.css</code>, KaTeX <code>MathLabel/MathBlock</code>, dialogs/styles/theme handling</td>
+<td>lint/build + UI architecture audit</td>
+<td><strong>PASS</strong>, with exhaustive per-control scientific tooltips <strong>DEFERRED</strong> until each new object supplies its canonical tooltip text</td>
+</tr>
+<tr>
+<td>7</td>
+<td>Reproducible experiments</td>
+<td><code>src/experiment/schema.js</code>, schema v2, v1→v2 migration, numerical-policy snapshot, import/export UI</td>
+<td>round-trip/migration/validation tests</td>
+<td><strong>PASS</strong>, camera pose persistence <strong>DEFERRED</strong> because it is renderer-owned and not scientific state</td>
+</tr>
+</tbody>
+</table>
+<h2 id="three-space-extension-completed-before-closure">Three-space extension completed before closure</h2>
+<p>The additional pre-Hugoniot requirement introduced during the foundation cycle is also implemented:</p>
+<p>\[
+\mathcal W\longrightarrow\mathcal U\longrightarrow\mathcal X.
+\]</p>
+<p><code>src/math/solution/rarefactionSolution.js</code> and <code>src/geometry/physical/rarefactionFan.js</code> realize already validated regular rarefaction orbits in physical space. The implementation requires monotone characteristic speed and does <strong>not</strong> claim a general Riemann solver. This is documented in <code>docs/mathematics/09-three-spaces.tex</code> and the user manual.</p>
+<h2 id="deferred-items-are-not-hidden-failures">Deferred items are not hidden failures</h2>
+<p>Two presentation-level items remain intentionally deferred: persistence of the Three.js camera pose and exhaustive object-specific tooltips. Neither changes the mathematical/numerical experiment, the dependency boundaries, or the validated three-space rarefaction construction. They must not be silently promoted to scientific requirements later; if a publication workflow requires exact camera reproduction, the experiment presentation schema must be extended explicitly.</p>
+<h2 id="closure-decision">Closure decision</h2>
+<p>The pre-Hugoniot foundation has <strong>no blocking FAIL</strong>. The next scientific object may enter through the established pipeline:</p>
+<p>\[
+\boxed{\text{definition}\to\text{pure implementation}\to\text{test}\to\text{numerics}\to\text{geometry}\to\text{visualization}}.
+\]</p>
+<p>This verification authorizes starting the Hugoniot block only after the repository passes <code>npm run check</code> on the validated development environment.</p>
+
+</main>
+</body>
+</html>

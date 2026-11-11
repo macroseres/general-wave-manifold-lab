@@ -1,0 +1,252 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DOCUMENTATION_COVERAGE</title>
+<style>
+body{margin:2rem auto;padding:0 1rem;max-width:78ch;font:1rem/1.65 system-ui,sans-serif;color:#182230;background:#fff}
+h1,h2,h3,h4{line-height:1.25} a{color:#12568b} img{max-width:100%;height:auto}
+pre,blockquote{padding:1rem;background:#f3f6f8} pre{overflow:auto} code{overflow-wrap:anywhere}
+table{display:block;overflow:auto;border-collapse:collapse} th,td{padding:.4rem .65rem;border:1px solid #cdd5df;text-align:left}
+mjx-container[display=true]{overflow-x:auto;overflow-y:hidden;padding:.4rem 0}
+</style>
+
+</head>
+<body>
+<main>
+<h1 id="cobertura-editorial-e-cientifica-da-referencia">Cobertura editorial e científica da referência</h1>
+<p>Este mapa cobre os 26 capítulos exibidos. “Revisado” significa texto organizado com hipóteses e limites identificados; não significa validação global do software ou demonstração de todos os regimes. Os exemplos são casos delimitados, não uma base completa de soluções.</p>
+<table>
+<thead>
+<tr>
+<th>Capítulo</th>
+<th>Base / procedência</th>
+<th>Evidência ou exemplo</th>
+<th>Limite principal</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1. Formulação de Riemann</td>
+<td>Definição e dedução por regra da cadeia</td>
+<td>Equação de similaridade renderizada</td>
+<td>Ansatz não demonstra existência/unicidade</td>
+</tr>
+<tr>
+<td>2. Soluções fracas</td>
+<td>Dedução por integração por partes</td>
+<td>Rankine–Hugoniot nos exemplos de choques</td>
+<td>Regularidade e traços declarados</td>
+</tr>
+<tr>
+<td>3. Espectro</td>
+<td>Polinômio característico 2×2</td>
+<td>Fluxos dos fixtures e diagnósticos do núcleo</td>
+<td>Separar sinal exato de tolerância</td>
+</tr>
+<tr>
+<td>4. Leques</td>
+<td>Regra da cadeia e função inversa</td>
+<td>Leque exato do capítulo 17</td>
+<td>Derivada positiva no enunciado suave</td>
+</tr>
+<tr>
+<td>5. Hugoniot/Lax</td>
+<td>Desigualdades e contagens deduzidas</td>
+<td>Choque Lax 2 e cadeia Lax 1–2</td>
+<td>Classificador de contagens tem limitação nas fronteiras</td>
+</tr>
+<tr>
+<td>6. Entropia</td>
+<td>Compatibilidade e medida de salto deduzidas</td>
+<td>Par semidefinido do fluxo triangular</td>
+<td>Um par não seleciona todo o sistema</td>
+</tr>
+<tr>
+<td>7. Variedade</td>
+<td>WM-01 §2.2 e construção na convenção do app</td>
+<td>Levantamento do choque do capítulo 11</td>
+<td>Diagonal bruta não equivale ao prolongamento</td>
+</tr>
+<tr>
+<td>8. Coordenadas</td>
+<td>Identidade quadrática e expansão P,Q,R</td>
+<td>Fórmulas ligadas aos módulos de cartas</td>
+<td>Falha se N=0; não estender a fluxos arbitrários</td>
+</tr>
+<tr>
+<td>9. Carta finita</td>
+<td>Parametrização e velocidade deduzidas</td>
+<td>Ponto exato (-1/8,-1,2)</td>
+<td>Uma carta regular não cobre todas as direções</td>
+</tr>
+<tr>
+<td>10. Projeções</td>
+<td>Definições e reconstrução de extremos</td>
+<td>Fixtures de Hugoniot e rarefação</td>
+<td>Estado isolado não determina onda única</td>
+</tr>
+<tr>
+<td>11. Fibras</td>
+<td>WM-01 §2.2/2.4, RP-01 e dedução própria da convenção</td>
+<td>Figura, fixture e <code>hugoniotReferenceExample.test.js</code></td>
+<td>Somente ramo e ponto especificados</td>
+</tr>
+<tr>
+<td>12. Imagem de fibras</td>
+<td>Consequência das projeções fixadas</td>
+<td>Mesmo ramo projetado</td>
+<td>Imagem desenhada não certifica cobertura global</td>
+</tr>
+<tr>
+<td>13. Recíproca</td>
+<td>Homogeneização e transição deduzidas</td>
+<td>Ponto exato nas duas cartas</td>
+<td>Divisão por Z só na sobreposição</td>
+</tr>
+<tr>
+<td>14. Coincidência</td>
+<td>Álgebra de autovalor duplo</td>
+<td>Exemplos escalar/não escalar do capítulo 22</td>
+<td>Raiz não isolada pode escapar da detecção</td>
+</tr>
+<tr>
+<td>15. Sônicas</td>
+<td>Expansão exata de determinantes</td>
+<td>Resíduos do núcleo e exemplo duplamente sônico</td>
+<td>Distinguir determinantes completos e fatores reduzidos</td>
+</tr>
+<tr>
+<td>16. Inflexão/DS</td>
+<td>Relação K/derivada própria e eliminação</td>
+<td>Auditorias do núcleo, caso degenerado do capítulo 19</td>
+<td>Simplicidade espectral e posto não são automáticos</td>
+</tr>
+<tr>
+<td>17. Rarefação</td>
+<td>WM-01 §4.1, RP-01 e dedução triangular</td>
+<td>Leque exato, figura e <code>wavePatternsReference.test.js</code></td>
+<td>Perfil afim especial; não cobre curvas genéricas</td>
+</tr>
+<tr>
+<td>18. Separatrizes</td>
+<td>ODE-01, campo recíproco derivado</td>
+<td>Ramo estável exato e quatro metades numéricas</td>
+<td>Aproximação local das instáveis, sem prova global</td>
+</tr>
+<tr>
+<td>19. Compostas</td>
+<td>WM-01 §4.4, diferenciação de RH e caso explícito</td>
+<td>Junção sônica exata, perfil B=I, <code>advancedReference.test.js</code></td>
+<td>Caso degenerado; não certifica todas as saturadas</td>
+</tr>
+<tr>
+<td>20. Cadeias</td>
+<td>Colagem fraca e traço inicial demonstrados, RP-01</td>
+<td>Dois choques exatos e teste de cobertura da carta</td>
+<td>Outra parametrização necessária para o primeiro salto</td>
+</tr>
+<tr>
+<td>21. Afins</td>
+<td>Regra da cadeia, similaridade e Hessiana deduzidas</td>
+<td>Transformação reproduzível e teste avançado</td>
+<td>Invariância exata não elimina condicionamento</td>
+</tr>
+<tr>
+<td>22. Classificação</td>
+<td>Discriminante e quadrados completos</td>
+<td>Elipse, ponto, retas paralelas e reta dupla</td>
+<td>Corte de parâmetros não classifica todas as soluções</td>
+</tr>
+<tr>
+<td>23. Diagnósticos</td>
+<td>Critérios de reprodução e escala de resíduos</td>
+<td>Geradores JSON e pendências concretas</td>
+<td>Resíduo pequeno não mede sempre erro geométrico</td>
+</tr>
+<tr>
+<td>24. Auditoria</td>
+<td>Critérios e hipóteses de regularidade</td>
+<td>Rastreabilidade, testes e exclusões</td>
+<td>Critério documentado não é auditoria concluída</td>
+</tr>
+<tr>
+<td>25. Ambientes</td>
+<td>Contrato funcional confrontado com componentes</td>
+<td>Registro comum de Ajuda/Documentação</td>
+<td>Inspeção visual integrada ainda pendente</td>
+</tr>
+<tr>
+<td>26. Guia</td>
+<td>Contrato editorial e mapa de fontes</td>
+<td>Este índice e BIBLIOGRAPHY.html</td>
+<td>Revisão bibliográfica por resultado segue incremental</td>
+</tr>
+</tbody>
+</table>
+<h2 id="o-que-foi-concluido-nesta-etapa">O que foi concluído nesta etapa</h2>
+<p>Os textos usam Markdown compartilhado; as equações são renderizadas; os blocos principais possuem deduções, exemplos delimitados ou procedimentos de revisão; fontes consultadas têm versão/localização e ressalvas de transporte. Os estudos reproduzíveis cobrem choque, rarefação, cadeia de choques, conexão sônica degenerada, perfil viscoso isolado, separatrizes, classificações e uma transformação afim.</p>
+<p>Os resultados dos geradores e os testes complementam as contas. Não certificam classificação de todas as soluções para todo fluxo, regularidade de todos os ramos ou validade de toda a documentação apenas por compilação.</p>
+<p>Na verificação final desta etapa, lint, 746 testes e build passaram. As figuras exportadas foram inspecionadas como imagens; isso não substitui a conferência da página integrada. O build mantém o aviso de tamanho do pacote JavaScript.</p>
+<h2 id="pendencias-separadas-do-fechamento-editorial">Pendências separadas do fechamento editorial</h2>
+<table>
+<thead>
+<tr>
+<th>Pendência</th>
+<th>Próxima ação</th>
+<th>Registro</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Lax estrito nas fronteiras</td>
+<td>Corrigir a verificação de simplicidade e igualdade no classificador</td>
+<td>TRACEABILITY.html</td>
+</tr>
+<tr>
+<td>Resíduo recíproco de compostas</td>
+<td>Avaliar o fator canônico sem zero artificial perto de Z=0</td>
+<td>TRACEABILITY.html, capítulo 19</td>
+</tr>
+<tr>
+<td>Parametrizações degeneradas</td>
+<td>Construir cartas adicionais ou representação intrínseca para conexões válidas</td>
+<td>Capítulos 19 e 20</td>
+</tr>
+<tr>
+<td>Cobertura numérica global</td>
+<td>Definir classes, domínios, sequências e critérios, com provas ou auditorias delimitadas</td>
+<td>OBJETIVOS_E_ESCOPO.html</td>
+</tr>
+<tr>
+<td>Bibliografia por resultado</td>
+<td>Ampliar fontes primárias, versões e correspondências; sem reivindicar originalidade sem pesquisa específica</td>
+<td>BIBLIOGRAPHY.html</td>
+</tr>
+<tr>
+<td>Página renderizada</td>
+<td>Conferir desktop/mobile, busca, figuras e leitura; a tentativa anterior não mostrou este projeto</td>
+<td>Guia da referência</td>
+</tr>
+</tbody>
+</table>
+<p>Referências: <a href="BIBLIOGRAPHY.html">bibliografia</a>, <a href="architecture/TRACEABILITY.html">rastreabilidade</a>, <a href="examples/README.md">dados e comandos</a>, <a href="OBJETIVOS_E_ESCOPO.html">objetivos</a>.</p>
+<h2 id="metodo-de-fundamentacao-dos-objetos">Método de fundamentação dos objetos</h2>
+<p>O mapa em <a href="FUNDAMENTACAO_E_CONSTRUCAO.html">FUNDAMENTACAO_E_CONSTRUCAO.html</a> passa a orientar a revisão dos 26 capítulos. Ele registra a definição de origem, as operações na variedade e a obrigação de correspondência para cada bloco. A incorporação desse método não encerra a conferência bibliográfica por resultado nem demonstra equivalências globais. Os capítulos 6, 7, 19 e 26 receberam as distinções e definições centrais nesta etapa.</p>
+<h2 id="primeira-camada-construcao-tradicional">Primeira camada: construção tradicional</h2>
+<p>A referência em <a href="traditional/README.md">traditional/README.md</a> organiza a construção tradicional independentemente da variedade. O texto-base inclui os objetos tradicionais que antes estavam distribuídos entre os capítulos, acrescenta contatos e formaliza a condição orientada de Liu, os perfis regularizados e a composição local condicional. Os 26 capítulos existentes continuam preservados e não foram reorganizados na interface nesta etapa. A revisão bibliográfica por resultado e a determinação da seleção não clássica permanecem necessárias antes do fechamento científico.</p>
+<h2 id="cadeias-e-criterios-na-camada-tradicional">Cadeias e critérios na camada tradicional</h2>
+<p><a href="traditional/CADEIAS_E_ADMISSIBILIDADE.html">Cadeias e admissibilidade</a> consolida os padrões, o procedimento de resolução, as condições de colagem e os limites de cada conclusão. Os exemplos R–R, S–R, R–S e S–S possuem verificação explícita, incluindo Liu nos arcos declarados. A documentação não amplia automaticamente a cobertura do solver do aplicativo nem encerra a revisão bibliográfica ou a seleção não clássica específica.</p>
+<h2 id="revisao-local-e-direcao-nao-classica">Revisão local e direção não clássica</h2>
+<p><a href="traditional/RESULTADOS_E_REGIMES.html">Resultados locais e regimes</a> registra a referência do solver clássico local, as deduções de pequenos choques e sua entropia, as hipóteses por regime e a classe difusão–dispersão escolhida pelo usuário. O exemplo não clássico escalar cúbico é um estudo próprio de verificação, fora do fluxo quadrático implementado. Os coeficientes B,C do modelo do aplicativo e sua seleção cinética permanecem abertos; não se declara conclusão científica global.</p>
+<h2 id="base-para-implementar-as-16-combinacoes">Base para implementar as 16 combinações</h2>
+<p>A primeira camada agora inclui <a href="traditional/CLASSIFICACAO_DOS_SALTOS.html">os nove tipos de salto</a> e o <a href="traditional/IMPLEMENTACAO_16_CADEIAS.html">contrato das 16 combinações</a>. A classificação possui nove fixtures de RH no modelo quadrático; os testes verificam os espectros e a orientação. O contrato permite iniciar o solver por entradas e regimes, com fronteiras e critérios inconclusivos explícitos. A seleção cinética específica e a classificação global continuam como pesquisa; não são condições já resolvidas por esta consolidação.</p>
+<h2 id="contatos-na-implementacao-tradicional">Contatos na implementação tradicional</h2>
+<p><a href="traditional/CONTATOS_DIRECAO_CONSTANTE.html">Contatos de direção constante</a> registra o modelo restrito que habilita RC, SC, CR, CS e CC. A classificação requer um critério nos coeficientes, além de RH e família simples; não usa sonicidade isolada como definição de contato. O espaço de estados pode ser aberto sem carta regular da variedade. Campos linearmente degenerados de direção variável e construção geral de K continuam pendentes.</p>
+<h2 id="blocos-compostos-na-implementacao">Blocos compostos na implementação</h2>
+<p><a href="traditional/COMPOSTAS_NO_ESPACO_DE_ESTADOS.html">Compostas no espaço de estados</a> registra o cálculo dos parceiros sônicos, as duas orientações de K suportadas, o refinamento local das interseções e as limitações de cobertura. RK/KR/SK/KS têm testes positivos quadráticos; CK/KC/KK ainda não têm exemplos positivos validados nesta etapa. A correção do falso resíduo recíproco está acompanhada por testes independentes de transição e fronteira.</p>
+
+</main>
+</body>
+</html>

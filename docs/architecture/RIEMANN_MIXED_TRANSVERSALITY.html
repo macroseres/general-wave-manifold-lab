@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RIEMANN_MIXED_TRANSVERSALITY</title>
+<style>
+body{margin:2rem auto;padding:0 1rem;max-width:78ch;font:1rem/1.65 system-ui,sans-serif;color:#182230;background:#fff}
+h1,h2,h3,h4{line-height:1.25} a{color:#12568b} img{max-width:100%;height:auto}
+pre,blockquote{padding:1rem;background:#f3f6f8} pre{overflow:auto} code{overflow-wrap:anywhere}
+table{display:block;overflow:auto;border-collapse:collapse} th,td{padding:.4rem .65rem;border:1px solid #cdd5df;text-align:left}
+mjx-container[display=true]{overflow-x:auto;overflow-y:hidden;padding:.4rem 0}
+</style>
+
+</head>
+<body>
+<main>
+<h1 id="transversalidade-numerica-das-cadeias-mistas">Transversalidade numérica das cadeias mistas</h1>
+<p>Para a interseção de um ramo de rarefação com o locus de Hugoniot de um estado fixo, define-se a incidência <code>D(U)=det(U-Ufix,F(U)-F(Ufix))</code>. O módulo <code>riemannMixedTransversality.js</code> estima <code>grad D</code> por diferenças centrais e a tangente pela direção do segmento amostrado que contém a raiz acompanhada.</p>
+<p>O indicador <code>|grad D · T|/(||grad D|| ||T||)</code> fica entre 0 e 1. Zero indica tangência de primeira ordem; valores positivos indicam cruzamento regular na aproximação amostrada. Um limiar numérico de 0,04 identifica casos quase tangenciais, sem pretensão de classificação exata.</p>
+<p>A avaliação exige resíduo pequeno e normas não degeneradas. Caso contrário retorna estado inconclusivo. O resultado é diagnóstico local e não comprova admissibilidade entrópica, existência de bifurcação ou suavidade da dependência de <code>U_M</code> nos parâmetros.</p>
+
+</main>
+</body>
+</html>

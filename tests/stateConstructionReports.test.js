@@ -60,7 +60,7 @@ test('UI retains rejection diagnostics and offers the recovered SR profile with 
     const emptyView=renderToStaticMarkup(createElement(Workspace,{...props,
       p:{a20:0,a11:0,a02:0,a10:0,a01:-1,b20:0,b11:0,b02:0,b10:1,b01:0}}))
     assert.doesNotMatch(emptyView,/Cadeia candidata para inspeção|Inspeção conjunta da cadeia candidata|Mostrar construção selecionada/)
-    assert.match(emptyView,/Nenhum candidato selecionável encontrado/)
+    assert.match(emptyView,/Nenhum candidato selecionável<\/small>/)
     assert.match(emptyView,/Resultados das buscas de cadeias/)
     const exploring=renderToStaticMarkup(createElement(Workspace,{...props,exploreWaveBranches:true}))
     assert.match(exploring,/aria-label="Ramo de choque lento de U L"/)

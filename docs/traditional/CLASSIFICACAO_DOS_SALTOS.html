@@ -1,0 +1,177 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CLASSIFICACAO_DOS_SALTOS</title>
+<style>
+body{margin:2rem auto;padding:0 1rem;max-width:78ch;font:1rem/1.65 system-ui,sans-serif;color:#182230;background:#fff}
+h1,h2,h3,h4{line-height:1.25} a{color:#12568b} img{max-width:100%;height:auto}
+pre,blockquote{padding:1rem;background:#f3f6f8} pre{overflow:auto} code{overflow-wrap:anywhere}
+table{display:block;overflow:auto;border-collapse:collapse} th,td{padding:.4rem .65rem;border:1px solid #cdd5df;text-align:left}
+mjx-container[display=true]{overflow-x:auto;overflow-y:hidden;padding:.4rem 0}
+</style>
+<script defer src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-chtml.js"></script>
+</head>
+<body>
+<main>
+<h1 id="classificacao-caracteristica-dos-nove-tipos-de-salto">Classificação característica dos nove tipos de salto</h1>
+<p>Esta classificação precede a montagem das cadeias. Um tipo de salto descreve uma única interface; um padrão de cadeia descreve uma sequência de ondas ou blocos. Em particular, o nome inglês <em>two-shock</em> nesta tabela não significa dois choques consecutivos.</p>
+<h2 id="hipoteses-e-orientacao">1. Hipóteses e orientação</h2>
+<p>Considere um salto não nulo U_L→U_R de velocidade s que satisfaça Rankine–Hugoniot. Nesta seção, L e R são os extremos locais desse salto. Exigir autovalores reais distintos λ₁(U)&lt;λ₂(U) nos dois extremos e excluir s=λ_i(U_L) ou s=λ_i(U_R). A classificação é de extremos; não pressupõe hiperbolicidade em todo o segmento reto entre eles.</p>
+<p>No referencial da interface x=st, a velocidade relativa de uma característica é λ_i−s. Do lado esquerdo, λ_i&gt;s significa entrada na interface; do lado direito, λ_i&lt;s significa entrada. Defina</p>
+<p>\[
+n_L=\#\{i:\lambda_i(U_L)&lt;s\},\qquad n_R=\#\{i:\lambda_i(U_R)&lt;s\}.
+\]</p>
+<p>Cada extremo admite três posições abertas para s: abaixo das duas velocidades (n=0), entre elas (n=1) ou acima de ambas (n=2). Há, portanto, nove pares, mutuamente exclusivos e exaustivos sob essas hipóteses.</p>
+<h2 id="tabela-correspondente-a-imagem-fornecida">2. Tabela correspondente à imagem fornecida</h2>
+<p>Mantêm-se os nomes em inglês da imagem para permitir comparação direta. A derivação das assinaturas usa as desigualdades exibidas, sem atribuir à imagem um teorema de admissibilidade.</p>
+<table>
+<thead>
+<tr>
+<th>Nome da imagem</th>
+<th>Desigualdades no estado esquerdo</th>
+<th>Desigualdades no estado direito</th>
+<th>(n_L,n_R)</th>
+<th>Características incidentes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>One-shock</td>
+<td>s&lt;λ₁(U_L)</td>
+<td>λ₁(U_R)&lt;s&lt;λ₂(U_R)</td>
+<td>(0,1)</td>
+<td>3</td>
+</tr>
+<tr>
+<td>One-expansive</td>
+<td>λ₁(U_L)&lt;s&lt;λ₂(U_L)</td>
+<td>s&lt;λ₁(U_R)</td>
+<td>(1,0)</td>
+<td>1</td>
+</tr>
+<tr>
+<td>Two-shock</td>
+<td>λ₁(U_L)&lt;s&lt;λ₂(U_L)</td>
+<td>λ₂(U_R)&lt;s</td>
+<td>(1,2)</td>
+<td>3</td>
+</tr>
+<tr>
+<td>Two-expansive</td>
+<td>λ₂(U_L)&lt;s</td>
+<td>λ₁(U_R)&lt;s&lt;λ₂(U_R)</td>
+<td>(2,1)</td>
+<td>1</td>
+</tr>
+<tr>
+<td>Compressive</td>
+<td>s&lt;λ₁(U_L)</td>
+<td>λ₂(U_R)&lt;s</td>
+<td>(0,2)</td>
+<td>4</td>
+</tr>
+<tr>
+<td>Expansive</td>
+<td>λ₂(U_L)&lt;s</td>
+<td>s&lt;λ₁(U_R)</td>
+<td>(2,0)</td>
+<td>0</td>
+</tr>
+<tr>
+<td>Crossing</td>
+<td>λ₁(U_L)&lt;s&lt;λ₂(U_L)</td>
+<td>λ₁(U_R)&lt;s&lt;λ₂(U_R)</td>
+<td>(1,1)</td>
+<td>2</td>
+</tr>
+<tr>
+<td>Right transport</td>
+<td>s&lt;λ₁(U_L)</td>
+<td>s&lt;λ₁(U_R)</td>
+<td>(0,0)</td>
+<td>2</td>
+</tr>
+<tr>
+<td>Left transport</td>
+<td>λ₂(U_L)&lt;s</td>
+<td>λ₂(U_R)&lt;s</td>
+<td>(2,2)</td>
+<td>2</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Proposição.</strong> O número de características incidentes é N_in=2−n_L+n_R. Os casos one-shock e two-shock equivalem, respectivamente, às desigualdades estritas de Lax das famílias 1 e 2.</p>
+<p><strong>Demonstração.</strong> Há 2−n_L características com λ_i&gt;s no lado esquerdo e n_R com λ_i&lt;s no direito. Somá-las fornece a fórmula. Substituir (0,1) e (1,2) reproduz as desigualdades de Lax, usando a ordenação estrita em cada extremo.</p>
+<p>Na convenção de contagem do texto-base, N_in=4 é sobrecompressivo, N_in=3 corresponde a Lax e N_in&lt;3 tem déficit de características incidentes. Esses rótulos de contagem não identificam automaticamente a família nem selecionam choques não clássicos admissíveis. Right/left transport refere-se à direção relativa à interface, não ao sinal absoluto de s.</p>
+<h2 id="fronteiras-e-estados-excluidos">3. Fronteiras e estados excluídos</h2>
+<table>
+<thead>
+<tr>
+<th>Evento</th>
+<th>Registro obrigatório</th>
+<th>Consequência</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Salto nulo</td>
+<td>Estado constante e amplitude zero</td>
+<td>Não classificar como choque</td>
+</tr>
+<tr>
+<td>Δ&lt;0 em um extremo</td>
+<td>Espectro não real</td>
+<td>Fora dos nove tipos hiperbólicos</td>
+</tr>
+<tr>
+<td>Δ=0 em um extremo</td>
+<td>Coincidência; verificar estrutura própria</td>
+<td>Fora da classificação estrita</td>
+</tr>
+<tr>
+<td>s=λ_i no lado L ou R</td>
+<td>Lado e família da igualdade</td>
+<td>Fronteira sônica; não arredondar para um dos nove interiores</td>
+</tr>
+<tr>
+<td>Igualdade nos dois lados</td>
+<td>Todas as famílias incidentes na igualdade</td>
+<td>Dupla sonicidade não determina contato ou admissibilidade</td>
+</tr>
+<tr>
+<td>Valor próximo de zero por tolerância</td>
+<td>Escala, tolerância e estado inconclusivo</td>
+<td>Não tratar aproximação como igualdade exata ou desigualdade provada</td>
+</tr>
+</tbody>
+</table>
+<p>Um contato linearmente degenerado é característico nos dois extremos e pertence às fronteiras, não aos nove interiores. Expansive não é sinônimo de leque de rarefação. Uma composta deve ser desdobrada para classificar cada salto e registrar suas junções sônicas.</p>
+<h2 id="relacao-com-admissibilidade">4. Relação com admissibilidade</h2>
+<p>A classificação é um diagnóstico geométrico. RH estabelece conservação; os nove tipos descrevem a posição de s; Lax seleciona dois interiores sob suas hipóteses; Liu usa um arco de Hugoniot; entropia usa pares compatíveis; uma relação cinética pertence ao modelo adicional escolhido. Nenhuma dessas etapas deve ser inferida apenas do nome da região espectral.</p>
+<p>Pode-se mostrar uma conexão que não satisfaz a seleção escolhida para fins de exploração, mas o resultado deve ser identificado como conexão conservativa ou candidato e acompanhado da violação ou da pendência. “Não-Lax” não é um selo de admissibilidade não clássica.</p>
+<h2 id="os-nove-casos-sao-realizaveis-como-rh-no-modelo-quadratico">5. Os nove casos são realizáveis como RH no modelo quadrático</h2>
+<p>Uma construção algébrica fornece exemplos de todos os nove interiores, sem afirmar admissibilidade. Fixe U_L=(0,0), U_R=(1,0), s=0. Escolha os espectros de cada extremo entre (1,2), (−1,1) e (−2,−1), correspondentes a n=0,1,2. Denote seus traços por T_L,T_R e produtos por D_L,D_R. No fluxo de dez coeficientes, ponha</p>
+<p>\[
+\begin{aligned}
+a_{20}&amp;=b_{20}=1, &amp;a_{10}&amp;=b_{10}=-1,\\
+a_{01}&amp;=D_L+T_L+1, &amp;a_{11}&amp;=T_R-1-D_R-a_{01},\\
+b_{01}&amp;=T_L+1, &amp;b_{11}&amp;=T_R-T_L-2,\\
+a_{02}&amp;=b_{02}=0.
+\end{aligned}
+\]</p>
+<p><strong>Verificação.</strong> F(U_L)=F(U_R)=0, logo RH vale com s=0. Os jacobianos são</p>
+<p>\[
+DF(U_L)=\begin{pmatrix}-1&amp;D_L+T_L+1\\-1&amp;T_L+1\end{pmatrix},\qquad
+DF(U_R)=\begin{pmatrix}1&amp;T_R-1-D_R\\1&amp;T_R-1\end{pmatrix}.
+\]</p>
+<p>Seus traços e determinantes são os prescritos; portanto os espectros são os escolhidos. Os nove pares geram os nove tipos. A construção não garante entropia, perfil regularizado nem hiperbolicidade nos estados intermediários. Cada par pode usar um fluxo diferente: não se afirma a existência dos nove casos no mesmo preset.</p>
+<p>Os coeficientes e verificações estão em <code>scripts/traditional-shock-signatures.mjs</code> e <code>tests/traditionalShockSignatures.test.js</code>.</p>
+<h2 id="procedencia-e-compatibilidade-com-o-codigo">6. Procedência e compatibilidade com o código</h2>
+<p>A tabela foi transcrita das desigualdades da imagem fornecida pelo usuário nesta conversa e derivada pela contagem acima. A obra, edição e página de origem da imagem não foram identificadas; não atribuir a tabela a LeFloch sem essa identificação. As equações e a prova algébrica podem ser verificadas independentemente dessa procedência.</p>
+<p><code>src/math/state/hugoniotSpectrum.js</code> calcula as posições espectrais. <code>shockConfiguration.js</code> implementa os nove interiores separados da seleção e dos eventos de fronteira. <code>laxClass2x2</code>, em <code>hugoniotSpectralRegions.js</code>, agora exige espectros completos e rejeita coincidências e igualdades numéricas antes de emitir Lax. A correção está registrada na rastreabilidade e tem testes de regressão. A classificação não verifica RH; o diagnóstico direto registra separadamente a conservação.</p>
+
+</main>
+</body>
+</html>

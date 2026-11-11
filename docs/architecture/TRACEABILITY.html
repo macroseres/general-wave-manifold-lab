@@ -1,0 +1,439 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TRACEABILITY</title>
+<style>
+body{margin:2rem auto;padding:0 1rem;max-width:78ch;font:1rem/1.65 system-ui,sans-serif;color:#182230;background:#fff}
+h1,h2,h3,h4{line-height:1.25} a{color:#12568b} img{max-width:100%;height:auto}
+pre,blockquote{padding:1rem;background:#f3f6f8} pre{overflow:auto} code{overflow-wrap:anywhere}
+table{display:block;overflow:auto;border-collapse:collapse} th,td{padding:.4rem .65rem;border:1px solid #cdd5df;text-align:left}
+mjx-container[display=true]{overflow-x:auto;overflow-y:hidden;padding:.4rem 0}
+</style>
+
+</head>
+<body>
+<main>
+<h1 id="scientific-traceability-matrix">Scientific traceability matrix</h1>
+<p>This is the canonical index between the mathematical reference, pure implementation, regression evidence, geometry adapters and user-visible representation. It is maintained during development rather than reconstructed at release time.</p>
+<table>
+<thead>
+<tr>
+<th>Object / invariant</th>
+<th>Canonical mathematics</th>
+<th>Pure implementation</th>
+<th>Regression evidence</th>
+<th>Geometry / UI</th>
+<th>Status</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>General quadratic flux <code>F=(f,g)</code>, <code>DF</code></td>
+<td><code>01-flux.tex</code></td>
+<td><code>src/math/flux/quadraticFlux.js</code>: <code>flux</code>, <code>jacobian</code></td>
+<td>flux/Jacobian, RH and eigenvector tests</td>
+<td>coefficient controls</td>
+<td><strong>validated</strong></td>
+</tr>
+<tr>
+<td>Wave state, <code>U_-</code>, <code>U_+</code>, <code>s</code>, RH residual</td>
+<td><code>02-wave-manifold.tex</code></td>
+<td><code>src/math/manifold/waveState.js</code>: <code>waveState</code>, <code>rhResidual</code>, <code>eigenResidual</code></td>
+<td>RH/eigenvector residual tests</td>
+<td>inspection/global scene</td>
+<td><strong>validated</strong></td>
+</tr>
+<tr>
+<td>Finite chart <code>(tau,Y,z)</code> and <code>r(z)</code></td>
+<td><code>02-wave-manifold.tex</code>, <code>03-charts.tex</code></td>
+<td><code>src/math/charts/zChart.js</code>: <code>zChartCoefficients</code>, <code>fiber</code></td>
+<td>fiber/chart and eigenvector tests</td>
+<td>global scene</td>
+<td><strong>validated</strong></td>
+</tr>
+<tr>
+<td>Reciprocal chart <code>(eta,Y,Z)</code></td>
+<td><code>03-charts.tex</code></td>
+<td><code>src/math/charts/reciprocalChart.js</code>: <code>ZChartCoefficients</code>, <code>fiberZ</code></td>
+<td>homogenization and overlap tests</td>
+<td>reciprocal local chart</td>
+<td><strong>validated</strong></td>
+</tr>
+<tr>
+<td>Visual compactification <code>zc</code></td>
+<td><code>03-charts.tex</code></td>
+<td><code>zChart.js</code>: <code>zcFromZ</code>, <code>zFromZc</code></td>
+<td>chart round-trip tests</td>
+<td>renderer coordinate only</td>
+<td><strong>validated</strong></td>
+</tr>
+<tr>
+<td>Characteristic <code>C={Y=0}</code></td>
+<td><code>04-characteristic.tex</code></td>
+<td><code>waveState.js</code>, <code>characteristic/spectrum.js</code></td>
+<td>characteristic/projection tests</td>
+<td>global + state-space views</td>
+<td><strong>validated</strong></td>
+</tr>
+<tr>
+<td>Coincidence <code>E subset C</code></td>
+<td><code>04-characteristic.tex</code></td>
+<td><code>characteristic/coincidence.js</code>, <code>spectrum.js</code></td>
+<td>discriminant and refined crossing tests</td>
+<td>transition marker</td>
+<td><strong>validated</strong></td>
+</tr>
+<tr>
+<td>Sonic sheets <code>S^-</code>, <code>S^+</code></td>
+<td><code>05-sonic.tex</code></td>
+<td><code>src/math/sonic/sonic.js</code></td>
+<td>factorization/determinant/residual tests</td>
+<td><code>geometry/sonic/surface.js</code> -&gt; scene</td>
+<td><strong>validated</strong></td>
+</tr>
+<tr>
+<td>Rarefaction field</td>
+<td><code>06-rarefaction.tex</code></td>
+<td><code>src/math/rarefaction/field.js</code></td>
+<td>determinant identity/tangency tests</td>
+<td>downstream curves</td>
+<td><strong>validated</strong></td>
+</tr>
+<tr>
+<td>Generic rarefaction orbits</td>
+<td><code>06-rarefaction.tex</code></td>
+<td><code>src/math/rarefaction/orbits.js</code></td>
+<td>orbit/projection/event tests</td>
+<td>global + state-space views</td>
+<td><strong>validated with adaptive RK4 (dev.19)</strong></td>
+</tr>
+<tr>
+<td>Slow/fast segmentation through <code>E</code></td>
+<td><code>06-rarefaction.tex</code></td>
+<td><code>orbits.js</code>, <code>spectrum.js</code></td>
+<td>shared refined event and <code>orbitId</code> tests</td>
+<td>solid/dashed segments</td>
+<td><strong>validated</strong></td>
+</tr>
+<tr>
+<td>Finite singularities</td>
+<td><code>06-rarefaction.tex</code></td>
+<td><code>src/math/rarefaction/singularities.js</code></td>
+<td>field-zero/classification tests</td>
+<td>global scene</td>
+<td><strong>validated</strong></td>
+</tr>
+<tr>
+<td>Finite saddle separatrices</td>
+<td><code>06-rarefaction.tex</code></td>
+<td><code>src/math/rarefaction/finiteSeparatrices.js</code></td>
+<td>separatrix/renderer-boundary tests</td>
+<td>scene consumes polylines</td>
+<td><strong>validated with adaptive RK4 (dev.19)</strong></td>
+</tr>
+<tr>
+<td>Infinity saddle</td>
+<td><code>03-charts.tex</code>, <code>06-rarefaction.tex</code></td>
+<td><code>singularities.js</code>: <code>infinityRarefactionLinearData</code></td>
+<td>analytic reciprocal-saddle tests</td>
+<td>reciprocal local chart</td>
+<td><strong>validated</strong></td>
+</tr>
+<tr>
+<td>Four infinity half-separatrices</td>
+<td><code>06-rarefaction.tex</code></td>
+<td><code>src/math/rarefaction/separatrices.js</code></td>
+<td>branch/boundary/transition tests</td>
+<td><code>geometry/rarefaction/localChart.js</code></td>
+<td><strong>validated with adaptive RK4 (dev.19)</strong></td>
+</tr>
+<tr>
+<td>State projections <code>pi_-</code>, <code>pi_+</code></td>
+<td><code>07-state-and-physical-spaces.tex</code></td>
+<td><code>src/math/state/projections.js</code></td>
+<td>projection/coincidence tests</td>
+<td><code>geometry/state/stateSpace.js</code></td>
+<td><strong>validated</strong></td>
+</tr>
+<tr>
+<td>Rarefaction in <code>(u,v)</code></td>
+<td><code>06-rarefaction.tex</code>, <code>07-state-and-physical-spaces.tex</code></td>
+<td><code>orbits.js</code>, <code>projections.js</code></td>
+<td>projected tangent/eigenvector tests</td>
+<td>state-space dialog</td>
+<td><strong>validated</strong></td>
+</tr>
+<tr>
+<td>Physical rarefaction realization in <code>(x,t)</code></td>
+<td><code>07-state-and-physical-spaces.tex</code>, <code>09-three-spaces.tex</code></td>
+<td><code>src/math/solution/rarefactionSolution.js</code></td>
+<td>monotonicity/admissibility and three-space tests</td>
+<td><code>geometry/physical/rarefactionFan.js</code> -&gt; <code>PhysicalSpaceDialog.jsx</code></td>
+<td><strong>validated for regular rarefaction fans (dev.20); general Riemann solver not claimed</strong></td>
+</tr>
+<tr>
+<td>Numerical policy</td>
+<td>technical: <code>docs/architecture/NUMERICS.html</code></td>
+<td><code>src/math/numerics/policy.js</code>, <code>integration.js</code>, <code>polynomialRoots.js</code></td>
+<td>policy/serialization tests</td>
+<td>not a renderer concern</td>
+<td><strong>centralized; adaptive RK4 + event refinement implemented in dev.19</strong></td>
+</tr>
+<tr>
+<td>Reproducible experiment schema</td>
+<td><code>docs/architecture/REPRODUCIBILITY.html</code></td>
+<td><code>src/experiment/schema.js</code></td>
+<td>round-trip, migration, validation tests</td>
+<td>import/export UI</td>
+<td><strong>validated (schema v2)</strong></td>
+</tr>
+</tbody>
+</table>
+<h2 id="flux-atlas-definitions-and-evidence">Flux atlas — definitions and evidence</h2>
+<table>
+<thead>
+<tr>
+<th>Object / invariant</th>
+<th>Mathematical definition</th>
+<th>Pure implementation</th>
+<th>Regression evidence</th>
+<th>Geometry / UI</th>
+<th>Status</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Scalar locus and homogenization of all ten coefficients</td>
+<td><code>01-flux.tex</code>; <code>../mathematics/27-atlas-parametros-variedade-ondas.html</code>, §§4–6,14</td>
+<td><code>flux/scalarStratification.js</code>: <code>classifyScalarStratum</code></td>
+<td><code>scalarStratification.test.js</code>: six ranks, centers, transport, small nonzero obstructions</td>
+<td>planned; algebraic object precedes visualization</td>
+<td>exact rational classification of supplied decimals; no wave completeness claim</td>
+</tr>
+<tr>
+<td>Trace / binary cubic and canonical quadratic coefficients</td>
+<td><code>../mathematics/29-atlas-global-fluxos.html</code>, §§1–3,9</td>
+<td><code>flux/scalarStratification.js</code>: <code>quadraticAtlasData</code>, <code>quadraticCoefficientsFromPair</code></td>
+<td><code>globalFluxAtlas.test.js</code>: root strata and structural identities; <code>scripts/verify-global-flux-atlas.mjs</code>: stabilizer identities</td>
+<td>planned; metadata precedes UI</td>
+<td>exact input diagnostics; canonical continuous parameters may be approximate</td>
+</tr>
+<tr>
+<td>Generic residual flux normal form</td>
+<td><code>../mathematics/28-forma-normal-generica.html</code>, §§2–5</td>
+<td><code>flux/genericNormalForm.js</code></td>
+<td><code>genericNormalForm.test.js</code>; <code>scripts/verify-generic-normal-form.mjs</code></td>
+<td>planned; no renderer dependency</td>
+<td>numerical on the declared generic chart; exceptional/ill-conditioned inputs rejected</td>
+</tr>
+<tr>
+<td>Global flux atlas and exceptional linear quotients</td>
+<td><code>01-flux.tex</code>; <code>../mathematics/29-atlas-global-fluxos.html</code>, §§2–8</td>
+<td><code>flux/globalFluxAtlas.js</code>: <code>globalFluxAtlas</code></td>
+<td><code>globalFluxAtlas.test.js</code>: coverage, reconstruction, affine transport, rank-one classes and scale/boundary regressions</td>
+<td>planned; not integrated into parameter UI</td>
+<td>algebraic coverage argument documented; numerical realization with unresolved axes explicitly inconclusive; not certified wave classification</td>
+</tr>
+</tbody>
+</table>
+<p>Verification on 21/10/2026: research definitions and proofs are the linked Markdown chapters 27–29, anchored to the ten-coefficient convention of <code>01-flux.tex</code>. These are separate from the 26 application documentation sections and are not yet included in the compiled canonical LaTeX. Inclusion in this matrix records provenance and evidence; it does not imply that this editorial integration or the parameter UI is finished.</p>
+<p>The group transports both state endpoints with the same affine map and speeds by <code>s -&gt; k*s-d</code>, with k positive. The atlas does not select entropy/viscous admissibility and does not establish global regularity or equivalence of wave foliations. Physical/three-space visualization is intentionally deferred; no Riemann solution is fabricated for a flux orbit.</p>
+<p>Boundary correction: discrete rank-one quotients no longer use an absolute magnitude threshold to identify exact axes. A small nonzero coordinate relative to the quotient scale produces <code>ill-conditioned</code>, reason <code>residual-axis-unresolved</code>, without a residual class or normalized representative. Exactly zero coordinates in the computed gauge retain axis cases. Rounded transformations of exact boundary data may therefore be inconclusive. Tests require explicit inconclusiveness rather than silently accepting a different orbit label, and separately preserve the resolved discrete representatives.</p>
+<p>Regression: the T1, b=1/2 example with linear coordinates (x,y)=(1,1e-10), previously labeled differently at scales 1 and 100, is now inconclusive at both scales. Tests cover positive scales from 1e-12 through 1e12, both coordinate axes, the b=-1 product quotient and the traceless triple-root quotient. This is a policy for the computed gauge, not a proof of floating-point invariance under arbitrarily ill-conditioned affine transformations.</p>
+<h2 id="maintenance-rule">Maintenance rule</h2>
+<p>A scientific object is not complete until this matrix can identify its canonical definition, implementation and validation. Geometry/UI may be <code>planned</code> only when the mathematical object intentionally precedes visualization.</p>
+<p>The compatibility facade <code>src/math/quadraticFlux.js</code> is not a canonical implementation location.</p>
+<h2 id="closure-note-dev.18">Closure note — dev.18</h2>
+<p>The stale dev.13 debt markers for sonic meshing and finite-saddle separatrices are closed: dev.15 moved those responsibilities to <code>geometry/sonic/surface.js</code> and <code>math/rarefaction/finiteSeparatrices.js</code>. Dev.19 replaced the fixed-step rarefaction integrators with shared adaptive RK4 step-doubling and added bracketed scalar-event refinement plus convergence/error-control tests. Numerical policy remains serialized for reproducibility.</p>
+<h2 id="dev.22-state-fibres-and-characteristic-lifts">dev.22 — State fibres and characteristic lifts</h2>
+<p>Historical snapshot: “not rendered yet” below describes dev.22. See the subsequent dev.24.19 table for implemented fibre geometry and characteristic-lift inspection.</p>
+<table>
+<thead>
+<tr>
+<th>Definition</th>
+<th>Canonical reference</th>
+<th>Pure implementation</th>
+<th>Regression evidence</th>
+<th>UI status</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Projection fibres <code>pi_±^{-1}(U*)</code></td>
+<td><code>10-state-fibers.tex</code></td>
+<td><code>src/math/state/fibers.js</code>: <code>stateFiberPoint</code></td>
+<td>fixed-endpoint recovery</td>
+<td>not rendered yet</td>
+</tr>
+<tr>
+<td>Full reciprocal transition <code>(eta,Upsilon,Z)</code></td>
+<td><code>03-charts.tex</code>, <code>10-state-fibers.tex</code></td>
+<td><code>stateFiberPointReciprocal</code></td>
+<td>finite/reciprocal overlap</td>
+<td>not rendered yet</td>
+</tr>
+<tr>
+<td>Characteristic lifts of <code>U*</code></td>
+<td><code>10-state-fibers.tex</code></td>
+<td><code>characteristicLiftPolynomial</code>, <code>characteristicLifts</code></td>
+<td><code>Y=0</code> fibre intersections + <code>Z=0</code> lift</td>
+<td>not rendered yet</td>
+</tr>
+</tbody>
+</table>
+<p>The dev.22 layer deliberately stops before Hugoniot, admissibility, or a general Riemann solver. A fixed state is kept in <code>U</code>; its inverse images and characteristic lifts are objects in <code>W</code>.</p>
+<h2 id="dev.24.19-hugoniot-closure">dev.24.19 — Hugoniot closure</h2>
+<table>
+<thead>
+<tr>
+<th>Definition</th>
+<th>Canonical reference</th>
+<th>Pure implementation</th>
+<th>Regression evidence</th>
+<th>Geometry / UI</th>
+<th>Status</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>H^{forw}(U*)=pi_-^{-1}(U*)</code>, <code>H^{back}(U*)=pi_+^{-1}(U*)</code></td>
+<td><code>11-hugoniot.tex</code></td>
+<td><code>state/fibers.js</code>, <code>state/stateRoles.js</code></td>
+<td>fixed-endpoint and state-role tests</td>
+<td>fibre geometry / scene</td>
+<td><strong>validated</strong></td>
+</tr>
+<tr>
+<td>Global reciprocal Hugoniot continuation</td>
+<td><code>11-hugoniot.tex</code></td>
+<td><code>state/fibers.js</code>, <code>fibreAnalysis.js</code></td>
+<td>chart-overlap / continuation tests</td>
+<td>global scene</td>
+<td><strong>validated</strong></td>
+</tr>
+<tr>
+<td>Characteristic lifts <code>P_s</code>,<code>P_f</code></td>
+<td><code>11-hugoniot.tex</code></td>
+<td><code>fibreAnalysis.js</code></td>
+<td>common-intersection tests</td>
+<td>analysis panel</td>
+<td><strong>validated</strong></td>
+</tr>
+<tr>
+<td>Spectral regions and signature <code>(n_-,n_+)</code></td>
+<td><code>11-hugoniot.tex</code></td>
+<td><code>hugoniotSpectrum.js</code>, <code>hugoniotSpectralRegions.js</code></td>
+<td>spectral-boundary/signature tests</td>
+<td>spectral-region dialog</td>
+<td><strong>validated</strong></td>
+</tr>
+<tr>
+<td>Strict Lax 1/2 classification</td>
+<td><code>11-hugoniot.tex</code></td>
+<td><code>hugoniotSpectralRegions.js</code>: <code>laxClass2x2</code></td>
+<td>Lax tests</td>
+<td><code>hugoniotLaxGeometry.js</code> -&gt; scene</td>
+<td><strong>validated; Liu not claimed</strong></td>
+</tr>
+<tr>
+<td>Explicit state-space <code>pi_-</code> / <code>pi_+</code> projection</td>
+<td><code>11-hugoniot.tex</code></td>
+<td><code>state/projections.js</code> + validated Hugoniot segments</td>
+<td>projection regression</td>
+<td><code>StateSpaceDialog.jsx</code></td>
+<td><strong>validated</strong></td>
+</tr>
+<tr>
+<td>State roles and saturation seeds</td>
+<td><code>11-hugoniot.tex</code></td>
+<td><code>stateRoles.js</code>, <code>saturation.js</code></td>
+<td>role/seed tests</td>
+<td>Help only; composite geometry deferred</td>
+<td><strong>foundation for next block</strong></td>
+</tr>
+</tbody>
+</table>
+<p>See <code>HUGONIOT_VERIFICATION.html</code> for the closure audit.</p>
+<h2 id="current-coverage-beyond-the-historical-closure-tables">Current coverage beyond the historical closure tables</h2>
+<p>Numerical composite constructions now exist in <code>src/math/state/composite.js</code> and <code>compositeTrace.js</code>, with geometry in <code>src/geometry/composite/</code>. Riemann candidate chains and Liu diagnostics are implemented under <code>src/math/solution/</code>. The older “composite geometry deferred” entry describes the seed-stage snapshot, not current rendering availability. These additions still need a consolidated object-by-object traceability update; their presence is not a global validation claim.</p>
+<p>All 26 application reference sections now use shared Markdown. DocumentationContent.jsx preserves titles and ordering but contains no duplicated scientific prose. The LaTeX canonical reference retains its own responsibility; format migration is not a claim of completed scientific or bibliographic validation. See <a href="../OBJETIVOS_E_ESCOPO.html">scientific objectives and documentation requirements</a>.</p>
+<h2 id="documentation-audit-strict-lax-boundary-qualification">Documentation audit — strict Lax boundary qualification</h2>
+<p>The strict signature equivalence in <code>11-hugoniot.tex</code> requires strictly hyperbolic endpoints and exclusion of every characteristic equality. Historical finding (corrected in the state-space implementation step below): <code>spectralCount</code> assigns counts to <code>on-slow-characteristic</code> and <code>on-fast-characteristic</code>, and <code>laxClass2x2</code> classifies those counts without a separate strictness gate. Thus the function alone may label a characteristic boundary as Lax. Repeated endpoint eigenvalues also require an explicit gate. The application reference now documents this limitation in <code>05-choques-hugoniot-lax.html</code>; the migration left the correction pending; the subsequent implementation below adds the strict gate and regression tests. The historical “validated” table entry does not certify these boundary cases.</p>
+<p>The entropy chapter documents the mathematical condition; it does not imply that a general convex entropy-pair evaluator exists in the application. Current Liu assessment explicitly retains absence of detected violation as finite evidence, with <code>passes: false</code>.</p>
+<h2 id="documentation-audit-sonic-and-coincidence-qualifications">Documentation audit — sonic and coincidence qualifications</h2>
+<p>The application reference distinguishes full endpoint determinant zeros from reduced sonic sheets, following <code>05-sonic.tex</code> and <code>sonic.js</code>. The algebraic inflection condition <code>Y=K=0</code> agrees with loss of genuine nonlinearity at a simple selected eigenvalue; coincidence and regularity need separate analysis. The derivation is recorded in <code>16-inflexao-dupla-sonica.html</code>.</p>
+<p><code>commonIntersection.js</code> includes zero-jump points in its algebraic <code>onDS</code> flag and can report <code>J-and-DS</code>; <code>doubleSonicResidual</code> in <code>intersections.js</code> excludes <code>Y=0</code> for nontrivial double-sonic shocks. These conventions are now explicitly distinguished in the application reference. Likewise, an empty <code>coincidenceTauRoots</code> result may mean no isolated root rather than no coincidence; the identically zero case requires additional analysis. No numerical behavior was changed in documenting these qualifications.</p>
+<h2 id="documentation-audit-rarefaction-and-composite-tracing">Documentation audit — rarefaction and composite tracing</h2>
+<p><code>17-campo-rarefacao.html</code> qualifies projected tangency by the nonzero map determinant; a zero tangency residual alone does not certify a regular projected curve. <code>18-separatrizes.html</code> records the exact parameter factor <code>D(Psi) Vz = -z VZ</code>, already checked by <code>tests/rarefactionChartTime.test.js</code>, and distinguishes integration direction from physical solution orientation.</p>
+<p>Historical finding (corrected by the composite-block implementation below): the reciprocal search in <code>compositeTrace.js</code> used <code>Z² Phi = Z PhiHat</code> and symmetric continuation near zero. This is equivalent as an exact zero condition only for nonzero Z, and its magnitude may collapse near zero independently of the canonical factor. A read-only reproduction with <code>oldWavePreset()</code> modified by <code>b20=0.3</code>, a characteristic seed <code>waveState(0.3,0,0.4,p)</code> and <code>compositeLeafIntersections</code> default options returned a reciprocal candidate near <code>Z=-5.79e-11</code>: the reported residual magnitude was approximately <code>2.43e-12</code>, while the direct boundary factor had magnitude approximately <code>32.59</code>. Both orientations exhibited the issue. The documentation migration left production unchanged; the subsequent composite-block implementation replaces this residual and adds regression tests.</p>
+<p><code>19-ondas-compostas.html</code> also records that <code>traceCompositeField.complete</code> means one selected candidate per input sample, with nearest-direction branch selection, not exhaustive branch coverage or entropy certification. The canonical definitions remain in <code>12-composite-waves.tex</code>.</p>
+<h2 id="documentation-audit-chains-and-parameter-classification">Documentation audit — chains and parameter classification</h2>
+<p><code>20-cadeias-riemann.html</code> maps two-shock and mixed candidate assembly to <code>riemannWaveChains.js</code>, <code>mixedWaveChains.js</code> and <code>riemannSelfSimilarCandidate.js</code>. It distinguishes weak-solution hypotheses, an initial-trace argument for bounded finite-speed profiles, numerical interpolation and entropy evidence. The current mixed physical profile requires strict speed separation, so it does not by itself implement the sonic equal-speed joins allowed in the mathematical construction.</p>
+<p><code>21-transformacoes-afins.html</code> records the affine transport of Riemann data, projective directions and known entropy pairs. <code>transformQuadraticFlux</code> returns transformed quadratic coefficients and a separate constant; dropping that constant preserves the conservation law and RH differences. <code>22-classificacao-estados.html</code> distinguishes <code>classifyState</code> spectral labels from <code>classifyConic</code> zero-locus types and <code>sampleParameterDiagram</code> two-coefficient slices. Category names in the parameter diagram do not classify all states or all Riemann solutions of a flux.</p>
+<h2 id="completion-of-the-application-text-migration">Completion of the application text migration</h2>
+<p>Sections 23–26 now document numerical reproducibility, audit assumptions, workspace responsibilities, source provenance and remaining work. The registry contains only ordered titles and Markdown imports; its complete set of 26 sections is loaded in the rendering test. Semantic grouping also covers conventions, procedures and audit criteria. Scientific calculations were preserved. Bibliographic consolidation and visual inspection remain pending; automated rendering does not establish either.</p>
+<h2 id="worked-hugoniot-reference-chapter">Worked Hugoniot reference chapter</h2>
+<table>
+<thead>
+<tr>
+<th>Claim / artifact</th>
+<th>Source or derivation</th>
+<th>Implementation / evidence</th>
+<th>Scope</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Fixed-state Hugoniot lift</td>
+<td><code>BIBLIOGRAPHY.html</code>, WM-01 §2.2; P,Q,R derivation in chapter 11</td>
+<td><code>state/fibers.js</code></td>
+<td>Explicit regular chart and denominators</td>
+</tr>
+<tr>
+<td>Triangular flux, states (2,0) → (0,-1)</td>
+<td>Exact example in <code>11-fibras-hugoniot.html</code></td>
+<td><code>docs/examples/hugoniot-reference.json</code>, <code>tests/hugoniotReferenceExample.test.js</code></td>
+<td>Single weak Lax-2 shock of speed 1; no global entropy/uniqueness claim</td>
+</tr>
+<tr>
+<td>Finite/reciprocal coordinates</td>
+<td>(-1/8,-1,2) ↔ (-1/2,-2,1/2)</td>
+<td><code>waveState</code>, <code>stateFiberPointReciprocal</code>, <code>liftHugoniotSample</code></td>
+<td>Regular overlap, excludes Z=0</td>
+</tr>
+<tr>
+<td>Curve and figure</td>
+<td><code>scripts/hugoniot-reference.mjs</code>, <code>scripts/plot_hugoniot_reference.py</code></td>
+<td>Generated JSON report, SVG/PNG in <code>public/docs/</code></td>
+<td>81 samples over 7/4 ≤ z ≤ 9/4; not complete fibre coverage</td>
+</tr>
+<tr>
+<td>Displayed sources and figure</td>
+<td>Same chapter Markdown used by Help and Documentation</td>
+<td><code>documentationRendering.test.js</code></td>
+<td>Safe HTTP links and local figure parsing; browser appearance remains pending</td>
+</tr>
+</tbody>
+</table>
+<h2 id="worked-rarefaction-and-two-shock-chapters">Worked rarefaction and two-shock chapters</h2>
+<p><code>17-campo-rarefacao.html</code> derives the exact fast-family fan for the triangular flux, with states (0,-3/4) and (1,1/4), orbit <code>(tau,Y,z)=(3/8-alpha,0,1)</code> and physical fan <code>V(xi)=(xi,xi-3/4)</code> between speeds 0 and 1. <code>20-cadeias-riemann.html</code> derives the two-shock chain (2,1) → (2,0) → (0,-1), with speeds 1/2 and 1.</p>
+<p><code>docs/examples/wave-patterns-reference.json</code>, <code>scripts/wave-patterns-reference.mjs</code> and <code>tests/wavePatternsReference.test.js</code> connect the formulas to field/projection operations and the physical candidate evaluators. The tests also preserve the first shock's <code>degenerate-fiber</code> lift status: its finite-chart P,Q,R all vanish, but the raw RH differential has rank two. An alternative local parametrization is required to represent it; no correction of that production limitation is claimed. Figures show only the stated arcs/points, including an explicitly labelled intrinsic projection for the chain rather than a fabricated finite-chart lift.</p>
+<h2 id="closure-of-the-remaining-worked-blocks">Closure of the remaining worked blocks</h2>
+<p><code>advancedReference.test.js</code> and the advanced fixture/generator cover an exact degenerate sonic connection, its implicit composite ODE, an isolated B=I viscous profile, a reciprocal stable branch with eigenvalues -8 and 7, four numerical half-separatrices, four exact conic types and affine covariance. The composite case has zero endpoint sonic determinants and requires a representation beyond the current P,Q,R chart; the physical equal-speed join is not a claim of general solver coverage.</p>
+<p><code>DOCUMENTATION_COVERAGE.html</code> maps all 26 chapters to provenance, evidence and exclusions. <code>NOTACAO.html</code> consolidates symbol meanings; the application glossary now uses Delta for the spectral discriminant. Production equations and the known numerical limitations remain unchanged. Exported figures are inspected separately from the still-pending integrated browser visual verification.</p>
+<h2 id="state-space-implementation-strict-configurations-and-rr">State-space implementation — strict configurations and RR</h2>
+<p>The historical Lax boundary finding is corrected: <code>state/shockConfiguration.js</code> requires ordered simple endpoint spectra and excludes sonic equalities within its declared tolerance. <code>laxClass2x2</code> consumes that gate rather than positional counts alone. Tests exercise the nine quadratic RH fixtures, sonic boundaries, repeated eigenvalues and near-boundary values. This remains a numerical endpoint classification, not a continuous entropy certificate.</p>
+<p><code>solution/rarefactionPairCandidates.js</code> uses sampled slow-forward / fast-backward intersections as seeds for <code>solution/rarefactionJointCorrector.js</code>: anchored RK4 reintegration, bounded damped Newton, residual and conditioning diagnostics, and reconstructed fans. State and physical views share these numerical candidates. Existing RS, SR and SS construction remains available. Curved-flux convergence studies are reproducible with <code>scripts/audit-rr-convergence.js</code>; <code>rarefactionJointCorrector.test.js</code> tests the middle state, branch bounds and profiles. The search remains limited to supplied branches and is not globally complete or entropy-certified.</p>
+<p><code>searchRarefactionPairs</code> returns candidates plus a serializable report even without candidates; the array-returning <code>rarefactionPairCandidates</code> API is retained. The report preserves per-seed rejection/corrector reasons, branch stops and extents, unexamined branch pairs and candidate-limit termination. Ill-conditioned or stalled corrections are inconclusive, integration failures remain numerical failures, and no sampled candidate is not a nonexistence proof. The state-plane diagnostic panel displays the summary and attempt reasons. <code>rarefactionPairCandidates.test.js</code> and <code>stateSpaceChainsRendering.test.js</code> cover these contracts. See ../STATE_SPACE_STATUS.html and RIEMANN_MONOTONE_RAREFACTIONS.html for evidence and outstanding scope.</p>
+<h2 id="state-space-implementation-constant-direction-contact-chains">State-space implementation — constant-direction contact chains</h2>
+<p><code>solution/contactChainCandidates.js</code> checks the common nullspace of the two state derivatives of the quadratic Jacobian, then the constant eigenpair of its linear part. It constructs RC/SC/CR/CS/CC only in this constant-direction contact model and keeps endpoint hyperbolicity, RH and speed-ordering checks. An affine RH determinant on the contact line supplies isolated SC/CS intermediate states without chart projections. RC/CR still rely on sampled characteristic intersections. The general curved linearly degenerate case is not claimed.</p>
+<p>Physical geometry now distinguishes shock and contact interfaces, and profiles preserve both sets of one-sided traces. State-space geometry accepts explicit state anchors without a wave-manifold projection; no surrogate projection is fabricated. Tests include rendering a linear CC chain when the current wave-manifold point is degenerate. See traditional/CONTATOS_DIRECAO_CONSTANTE.html (under docs) for the coefficient-level deduction and limitations.</p>
+<h2 id="state-space-implementation-composite-blocks-and-reciprocal-correction">State-space implementation — composite blocks and reciprocal correction</h2>
+<p><code>solution/sonicPartners.js</code> solves the finite-amplitude quadratic RH equation at a prescribed characteristic speed through a homogeneous cubic direction equation and an independently checked amplitude. <code>compositeBlockChainCandidates.js</code> traces sampled slow R-S / fast S-R blocks and searches the seven pairs containing K. Candidate blocks retain every elementary segment, sonic junction and numerical scope. Positive quadratic cases cover RK/KR/SK/KS; CK/KC/KK remain without positive validated fixtures. Ordinary shocks use strict Lax endpoint checks and internal sonic shocks use qualified weak inequalities, without entropy certification.</p>
+<p><code>sonic/reciprocalSonic.js</code> evaluates the canonical nontrivial reciprocal factor directly. <code>compositeTrace.js</code> no longer uses the vanishing extra Z factor or symmetric continuation; bracket width alone no longer accepts a root. Regression tests reject the historical b20=0.3 boundary counterexample and verify PhiHat=Z Phi on overlap. This supersedes the historical reciprocal residual finding above.</p>
+
+</main>
+</body>
+</html>

@@ -9,6 +9,39 @@
  * deliberately does not mesh a saturation or trace a composite curve.
  */
 import { sonicImplicit } from '../sonic/sonic.js'
+import { waveState } from '../manifold/waveState.js'
+import { rarefactionField } from '../rarefaction/field.js'
+import { zFromZc,zcFromZ } from '../charts/zChart.js'
+
+/** Solve D(Phi_-, pi_-) Q' = (0, D pi_- R) on the regular sheet. */
+export function regularMinusCompositeDirection(P,Q,p,{checkEquilibrium=false}={}){
+  const zc=zcFromZ(P.z)
+  const field=rarefactionField(P.tau,P.z,p)
+  if(field.kind!=='regular')return null
+  const velocity=Math.hypot(field.tauDot,field.zcDot)
+  if(!Number.isFinite(velocity)||(checkEquilibrium?velocity>1e-8:velocity===0))return null
+  const scale=velocity||1
+  const h=1e-5
+  const source=[-1,1].map(sign=>waveState(P.tau+sign*h*field.tauDot/scale,0,zFromZc(zc+sign*h*field.zcDot/scale),p))
+  if(source.some(q=>q.kind!=='regular'))return null
+  const columns=[Q.tau,Q.Y,zcFromZ(Q.z)].map((_,axis,base)=>{
+    const values=[-1,1].map(sign=>{
+      const [tau,Y,zc]=base.map((v,i)=>v+(axis===i?sign*h:0))
+      const z=zFromZc(zc),state=waveState(tau,Y,z,p)
+      return state.kind==='regular'?[sonicImplicit(tau,Y,z,p,'minus'),...state.Um]:[]
+    })
+    return values[1].map((v,i)=>(v-values[0][i])/(2*h))
+  })
+  const [normal,u,v]=[0,1,2].map(i=>columns.map(column=>column[i]))
+  if(![...normal,...u,...v].every(Number.isFinite))return null
+  const cross=([a,b,c],[d,e,f])=>[b*f-c*e,c*d-a*f,a*e-b*d]
+  const uxv=cross(u,v),det=normal.reduce((sum,n,i)=>sum+n*uxv[i],0)
+  if(Math.abs(det)<=1e-7*Math.hypot(...normal)*Math.hypot(...u)*Math.hypot(...v))return null
+  if(checkEquilibrium)return [0,0,0]
+  const [du,dv]=source[1].Um.map((value,i)=>(value-source[0].Um[i])/(2*h))
+  const direction=cross(v,normal).map((value,i)=>(du*value+dv*cross(normal,u)[i])/det)
+  return direction.every(Number.isFinite)&&Math.hypot(...direction)>1e-9?direction:null
+}
 
 export const COMPOSITE_CONSTRUCTIONS = Object.freeze({
   minus: Object.freeze({

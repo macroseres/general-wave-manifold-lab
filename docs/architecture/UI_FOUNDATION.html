@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>UI_FOUNDATION</title>
+<style>
+body{margin:2rem auto;padding:0 1rem;max-width:78ch;font:1rem/1.65 system-ui,sans-serif;color:#182230;background:#fff}
+h1,h2,h3,h4{line-height:1.25} a{color:#12568b} img{max-width:100%;height:auto}
+pre,blockquote{padding:1rem;background:#f3f6f8} pre{overflow:auto} code{overflow-wrap:anywhere}
+table{display:block;overflow:auto;border-collapse:collapse} th,td{padding:.4rem .65rem;border:1px solid #cdd5df;text-align:left}
+mjx-container[display=true]{overflow-x:auto;overflow-y:hidden;padding:.4rem 0}
+</style>
+
+</head>
+<body>
+<main>
+<h1 id="scientific-ui-foundation-dev.17">Scientific UI Foundation — dev.17</h1>
+<p>The UI is downstream of validated mathematics and geometry. Its job is inspection, control and presentation; it must not redefine scientific objects.</p>
+<h2 id="semantic-tokens-and-themes">Semantic tokens and themes</h2>
+<p><code>src/styles/tokens.css</code> is the canonical semantic palette. Dark is the first-use default; the user may switch to light. The preference is local presentation state and is intentionally not part of the scientific experiment schema.</p>
+<p>Interactive controls must expose keyboard focus. Reduced-motion preferences are respected. Mathematical notation remains routed through <code>MathLabel</code> / <code>MathBlock</code> and KaTeX.</p>
+<h2 id="terminology">Terminology</h2>
+<p>The finite wave-manifold chart uses <code>(tau,Y,z)</code>. The controls <code>tauMin</code>, <code>tauMax</code>, <code>YMin</code>, <code>YMax</code> specify a <strong>sampling window</strong>, not the mathematical domain of <code>W</code>. The experiment schema therefore uses <code>scientific.samplingDomain</code>. Schema v1 files using <code>scientific.domain</code> are migrated to schema v2 on import.</p>
+<p><code>zc=(2/pi) arctan(z)</code> is a visual compactification coordinate. <code>Z=1/z</code> is the reciprocal projective chart. UI labels must not conflate them.</p>
+<h2 id="responsive-policy">Responsive policy</h2>
+<p>Desktop preserves the three scientific regions: controls, 3D view and inspection. At narrow widths the 3D view remains primary and side inspection panels are hidden rather than squeezed into unusable widths. Dialogs remain independently scrollable.</p>
+<h2 id="foundation-closure">Foundation closure</h2>
+<p>The pre-Hugoniot foundation now has explicit ownership for mathematics, numerics, geometry, rendering, experiment serialization and UI semantics. New mathematical objects must use these existing boundaries rather than introduce feature-specific exceptions.</p>
+<h2 id="etapa-6-harmonizacao-incremental">Etapa 6 — harmonização incremental</h2>
+<p>As cores semânticas dos diagramas de inspeção e dos overlays passaram a utilizar tokens de tema; <strong>as cores científicas das curvas não foram alteradas</strong>. A harmonização completa de painéis, tipografia e responsividade continua pendente de inspeção visual.</p>
+<h2 id="incremento-controles-e-responsividade-08102026">Incremento: controles e responsividade (08/10/2026)</h2>
+<p><code>src/styles/scientific-ui.css</code> é carregado após <code>style.css</code> e centraliza altura mínima e raio dos controles, foco visível, cor dos inputs, contraste do painel de auditoria, limites dos diálogos e disposição móvel. Inclui respeito a <code>prefers-reduced-motion</code>. Não altera as cores das curvas, as superfícies nem os dados matemáticos. A revisão visual no navegador e o perfil de GPU continuam pendentes.</p>
+
+</main>
+</body>
+</html>

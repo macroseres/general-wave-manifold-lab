@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RIEMANN_MIXED_CHAIN_LIU</title>
+<style>
+body{margin:2rem auto;padding:0 1rem;max-width:78ch;font:1rem/1.65 system-ui,sans-serif;color:#182230;background:#fff}
+h1,h2,h3,h4{line-height:1.25} a{color:#12568b} img{max-width:100%;height:auto}
+pre,blockquote{padding:1rem;background:#f3f6f8} pre{overflow:auto} code{overflow-wrap:anywhere}
+table{display:block;overflow:auto;border-collapse:collapse} th,td{padding:.4rem .65rem;border:1px solid #cdd5df;text-align:left}
+mjx-container[display=true]{overflow-x:auto;overflow-y:hidden;padding:.4rem 0}
+</style>
+
+</head>
+<body>
+<main>
+<h1 id="diagnostico-de-liu-para-cadeias-mistas">Diagnóstico de Liu para cadeias mistas</h1>
+<p>Para <code>rarefaction-shock</code>, o choque liga <code>U_M</code> a <code>U_R</code>, com <code>U_R</code> fixo na fibra backward; para <code>shock-rarefaction</code>, liga <code>U_L</code> a <code>U_M</code>, com <code>U_L</code> fixo na fibra forward.</p>
+<p>O estado <code>U_M</code> não é necessariamente sônico. Portanto, os relatórios de Liu de contatos sônicos não devem ser reaproveitados. O módulo <code>mixedChainLiu.js</code> inicia uma continuação numérica da fibra a partir do extremo fixo, verifica a ligação local ao estado intermediário refinado e testa a desigualdade amostrada correta em cada orientação.</p>
+<p>O cálculo é limitado aos primeiros candidatos que passaram pelos testes de RH, ordenação e Lax, para conter custo na interface. Estados intermediários ainda não refinados, ramos ambíguos, corretores que falham e limites de avaliação são classificados como inconclusivos. A ausência de violação nas amostras <strong>não certifica</strong> a condição global de Liu nem a entropia da cadeia.</p>
+
+</main>
+</body>
+</html>

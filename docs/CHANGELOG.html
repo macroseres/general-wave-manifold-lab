@@ -1,0 +1,897 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CHANGELOG</title>
+<style>
+body{margin:2rem auto;padding:0 1rem;max-width:78ch;font:1rem/1.65 system-ui,sans-serif;color:#182230;background:#fff}
+h1,h2,h3,h4{line-height:1.25} a{color:#12568b} img{max-width:100%;height:auto}
+pre,blockquote{padding:1rem;background:#f3f6f8} pre{overflow:auto} code{overflow-wrap:anywhere}
+table{display:block;overflow:auto;border-collapse:collapse} th,td{padding:.4rem .65rem;border:1px solid #cdd5df;text-align:left}
+mjx-container[display=true]{overflow-x:auto;overflow-y:hidden;padding:.4rem 0}
+</style>
+
+</head>
+<body>
+<main>
+<h2 id="melhorias-locais-de-interface-3d-10112026">Melhorias locais de interface 3D - 10/11/2026</h2>
+<ul>
+<li>Zoom dos botões preserva o centro de órbita após focar um ponto fora da origem; fatores inválidos não movem a câmera. Sem mudança nas equações ou no solver.</li>
+<li>Experimentos no schema v4 preservam os controles de dupla sônica (DS), inflexão (J) e campos compostos K-/K+. Arquivos v1-v3 continuam importáveis; quando esses quatro controles não estavam salvos, são restaurados como ocultos. Outros controles ainda não incluídos no schema continuam fora deste escopo.</li>
+<li>Regressões automatizadas cobrem foco deslocado, reversibilidade, entradas inválidas, round-trip e migração de experimentos. Inspeção visual no navegador ainda pendente.</li>
+</ul>
+<h2 id="c05-t01-auditoria-de-regressoes-e-limites-04112026">C05-T01 — Auditoria de regressões e limites (04/11/2026)</h2>
+<ul>
+<li>Auditoria somente de leitura dos classificadores, avaliador Liu de K, evidência física e testes C01–C04. Nenhuma alteração algorítmica ou execução adicional de testes; última validação local informada permanece em 949/949.</li>
+<li><strong>L1:</strong> para RS/SR, <code>necessary-tests-passed</code> em <code>physicalChainEvidence</code> pode ocorrer sem Liu resolvido; não interpretar como aprovação Liu nem certificação entrópica.</li>
+<li><strong>L2:</strong> <code>numerically-connected</code> dos arcos K é proveniência declarada, não prova independente de conectividade global; os testes só demonstram amostragem e associação.</li>
+<li><strong>L3:</strong> a regressão de integração C04-T04 testa KR forward, não RK backward pela classificação de cadeia (embora o avaliador isolado tenha teste backward).</li>
+<li><strong>L4:</strong> construtores habituais não fornecem <code>internalLiuArcs</code> automaticamente; o diagnóstico interno permanece <code>not-evaluated</code> sem registro explícito.</li>
+<li>C05-T01 encerrada como auditoria; C05 continua aberta. Nenhuma mudança na seleção, construtores, interface ou <code>main</code>.</li>
+</ul>
+<h2 id="c04-encerrada-c05-iniciada-04112026">C04 encerrada; C05 iniciada — 04/11/2026</h2>
+<ul>
+<li>Encerramento formal autorizado da C04 (T01–T04) após validação comunicada de <strong>949/949 testes</strong>, ESLint e build. A cobertura permanece numérica e local; Liu amostrado não demonstra conectividade global de Hugoniot nem admissibilidade entrópica.</li>
+<li>C05 iniciada com <strong>T01 de auditoria somente de leitura</strong> da cobertura de regressões C01–C04 e das limitações. Sem autorização para modificar construtores, seleção, interface ou <code>main</code>.</li>
+</ul>
+<h2 id="c04-t04-associacao-individual-de-liu-aos-choques-internos-k-04112026">C04-T04 — Associação individual de Liu aos choques internos K (04/11/2026)</h2>
+<ul>
+<li>Classificação uniforme aceita evidência <code>internalLiuArcs</code> explicitamente atribuída ao bloco e segmento K, com checagem de família, orientação e declaração <code>numerically-connected</code>; sem copiar diagnóstico global da cadeia para o choque interno.</li>
+<li>Três regressões verificam ausência de propagação, associação individual correta e recusa de índices/proveniência inadequados. Validação local comunicada: <strong>949/949 testes</strong>, ESLint e build aprovados; avisos não bloqueantes de WebSocket e chunks.</li>
+<li>C04-T04 encerrada no escopo testado. A conectividade global não foi demonstrada; o construtor não fornece automaticamente arcos atribuídos; não há certificação entrópica, mudança de seleção ou alteração de interface. C04 aguarda decisão formal de encerramento; C05 não iniciada.</li>
+</ul>
+<h2 id="c04-t03-liu-orientado-em-choques-internos-k-04112026">C04-T03 — Liu orientado em choques internos K (04/11/2026)</h2>
+<ul>
+<li>Adicionado avaliador isolado <code>src/math/solution/internalCompositeShockLiu.js</code>, com verificação de família, sentido R–S/S–R, junção sônica, pré-requisitos locais de choque e correspondência dos extremos do arco fornecido.</li>
+<li>Liu direto aplicado ao choque interno de K à esquerda (sônica minus); Liu inverso ao choque interno de K à direita (sônica plus). Não reutiliza automaticamente relatórios de contatos com orientação distinta.</li>
+<li>Sete testes em <code>tests/internalCompositeShockLiu.test.js</code>: cinco rejeições/inconclusões e dois casos de execução sobre arcos com amostras intermediárias corrigidas por Rankine–Hugoniot. A correção local não certifica conectividade global nem exclui outros ramos.</li>
+<li>Validação local comunicada pelo responsável após commit <code>6b70b12</code>: ESLint aprovado, <strong>946/946 testes</strong> e build de produção concluído. Avisos não bloqueantes de porta WebSocket 24678 e chunks grandes.</li>
+<li><strong>C04-T03 encerrada no escopo numérico testado; C04 permanece aberta.</strong> Nenhuma integração automática à classificação uniforme, seleção de candidatos, construtores ou interface. Resultados amostrados não certificam entropia; <code>entropyCertified:false</code>.</li>
+</ul>
+<h2 id="c04-t01t02-auditoria-e-regressoes-de-compostas-k-04112026">C04-T01–T02 — auditoria e regressões de compostas K (04/11/2026)</h2>
+<ul>
+<li><strong>C04-T01:</strong> auditados os construtores de blocos K, as verificações de choque e conexão sônica, a seleção de Liu direto/inverso e os testes correspondentes. Há verificações numéricas de RH, Lax fraco, junção e velocidades, mas não foi demonstrada a associação completa da evidência Liu aos choques internos de <code>composite-chain</code>.</li>
+<li><strong>C04-T02:</strong> acrescentados três testes de regressão KR: caso positivo de choque sônico com RH e Lax fraco, preservação da orientação e evidências internas e diagnóstico inconclusivo quando Liu não é avaliado. Corrigida a asserção de RH para verificar o campo público <code>rhResidual</code>.</li>
+<li>Validação local comunicada pelo responsável: <code>npm run check</code> com ESLint aprovado, <strong>939/939 testes</strong> e build de produção concluído. Avisos não bloqueantes de WebSocket na porta 24678 e tamanho de chunks.</li>
+<li>C04-T01 e C04-T02 encerradas no escopo delimitado; C04 ainda em execução. Sem mudanças em construtores, seleção, algoritmos de admissibilidade ou variedade 3D. Nenhuma certificação entrópica global reivindicada.</li>
+</ul>
+<h2 id="c03-t04-diagnostico-agregado-ss-validado-e-c03-encerrada-04112026">C03-T04 — diagnóstico agregado SS validado e C03 encerrada (04/11/2026)</h2>
+<ul>
+<li>Corrigido <code>physicalChainEvidence</code>: dois choques SS só recebem <code>necessary-tests-passed</code> quando ambos apresentam <code>no-sampled-violation</code>; evidência Liu ausente, inconclusiva ou desconhecida mantém <code>prerequisites-unverified</code>. Violações detectadas têm prioridade; <code>entropyCertified:false</code> permanece inalterado.</li>
+<li>Atualizado teste legado e adicionadas quatro regressões C03-T04 para ausência, inconclusão, compatibilidade amostrada independente e violação. Não alterados os construtores de ondas, RH, Lax, seleção ou variedade 3D.</li>
+<li>Validação local enviada pelo responsável: <code>npm run check</code> aprovado, ESLint sem falhas, <strong>936/936 testes</strong> e build concluído. Avisos não bloqueantes de porta WebSocket 24678 ocupada e chunks maiores que 500 kB.</li>
+<li>C03 encerrada no escopo delimitado C03-T01–T04. Nenhuma certificação entrópica global ou completude do problema de Riemann é reivindicada; C04/C05 permanecem não iniciadas.</li>
+</ul>
+<h2 id="c02-t04-indicadores-de-selecao-validados-04112026">C02-T04 — indicadores de seleção validados (04/11/2026)</h2>
+<ul>
+<li>A lista de cadeias apresenta compatibilidade numérica não certificada, inconclusão ou incompatibilidade detectada, mantendo todas as opções e seus índices selecionáveis; construtores e critérios de seleção não foram alterados.</li>
+<li>Atualizados os testes de auditoria e renderização para reconhecer o sufixo informativo. Verificações isoladas aprovadas (3/3 e 1/1); responsável confirmou aprovação de lint, testes e build via <code>npm run check</code> e apresentou capturas da cadeia SS.</li>
+<li>Limitação visual não bloqueante: rótulo selecionado pode ficar truncado em painel estreito. C02-T04 encerrada; C02 não encerrada automaticamente; C03–C05 não iniciadas.</li>
+</ul>
+<h2 id="c02-t03-sintese-diagnostica-encerrada-04112026">C02-T03 — síntese diagnóstica encerrada (04/11/2026)</h2>
+<ul>
+<li>Triagem somente informativa em três estados: incompatibilidade detectada, diagnóstico inconclusivo e compatibilidade numérica não certificada; nenhuma exclusão automática de candidatos.</li>
+<li>Validação: 919/919 testes, ESLint e build aprovados conforme relatório enviado; captura confirma apresentação da compatibilidade numérica na cadeia SS. Os estados incompatível e inconclusivo foram cobertos por testes automatizados, sem conferência visual específica.</li>
+<li>C02-T03 encerrada; qualquer alteração futura nos critérios de seleção exige decisão separada. C03–C05 não iniciadas.</li>
+</ul>
+<h2 id="c02-t02-legibilidade-e-validacao-automatizada-04112026">C02-T02 — legibilidade e validação automatizada (04/11/2026)</h2>
+<ul>
+<li>Diagnósticos C01 reorganizados por conservação, continuidade, velocidades globais e por onda (RH, espectro, Lax, Liu, perfil viscoso), com quebras adaptadas ao painel estreito.</li>
+<li>Responsável confirmou aprovação de <code>npm run check</code>; inspeção visual da nova organização aprovada por captura; C02-T02 encerrada. Nenhum construtor ou critério de seleção foi alterado.</li>
+<li>Próxima decisão da C02: definir separadamente a sinalização de incompatibilidades verificadas e de admissibilidade inconclusiva, sem exclusão automática por ausência de certificação.</li>
+</ul>
+<h2 id="c02-t01-integracao-visual-validada-e-encerrada-04112026">C02-T01 — integração visual validada e encerrada (04/11/2026)</h2>
+<ul>
+<li>Diagnóstico uniforme C01 exibido em modo somente leitura nos painéis principal e comparativo da cadeia selecionada; construtores e critérios de seleção preservados.</li>
+<li>Validação comunicada pelo responsável: 8/8 testes específicos aprovados, <code>npm run check</code> aprovado e conferência visual da cadeia SS confirmada (RH, espectro, continuidade, velocidades, Lax, Liu e perfil viscoso).</li>
+<li>Limitação visual observada: texto muito condensado na largura do painel lateral. Próxima tarefa finita C02-T02: melhorar legibilidade, sem alterar matemática nem seleção. Nenhuma certificação entrópica reivindicada.</li>
+</ul>
+<h2 id="construcao-tradicional-c01-encerrada-formalmente-04112026">Construção tradicional — C01 encerrada formalmente (04/11/2026)</h2>
+<ul>
+<li>Classificador puro de cadeias: nove configurações de salto, diagnósticos separados de RH e admissibilidade, tratamento sônico/degenerado, velocidade declarada em RH, continuidade de estados e ordenação de velocidades por junção.</li>
+<li>Regressões específicas: <strong>7/7 aprovadas</strong>; suíte local completa reportada: <strong>914/914 aprovados</strong>, sem falhas. Avisos de porta WebSocket 24678 ocupada não bloquearam os testes.</li>
+<li>Encerramento formal autorizado pelo responsável em 04/11/2026. A classificação preserva candidatos e motivos de inconclusão; não certifica entropia, solução fraca global ou completude. C02–C05 não iniciadas; <code>main</code> inalterada.</li>
+</ul>
+<h2 id="aba-parametros-p3-encerrada-e-plano-p1p3-concluido-03112026">Aba Parâmetros — P3 encerrada e plano P1–P3 concluído (03/11/2026)</h2>
+<ul>
+<li><strong>P3 — Busca e catálogo:</strong> seis exemplos finitos com dez coeficientes, filtro geométrico, prévia verificável e substituição dos coeficientes somente após confirmação explícita. Três testes automatizados específicos da P3 aprovados.</li>
+<li><strong>Validação:</strong> <code>npm run check</code> local aprovado (ESLint, <strong>899/899 testes</strong>, build). Seleção, prévia, aplicação confirmada e atualização do mapa conferidas visualmente e confirmadas pelo responsável.</li>
+<li><strong>Limites:</strong> catálogo não exaustivo, diagnósticos numéricos sem certificação simbólica geral. <strong>P1, P2 e P3 encerradas</strong> no escopo aprovado; nenhuma P4 criada. PR #2 permanece sem integração à <code>main</code>.</li>
+</ul>
+<h2 id="aba-parametros-p1-e-p2-encerradas-03112026">Aba Parâmetros — P1 e P2 encerradas (03/11/2026)</h2>
+<ul>
+<li><strong>P1 — Classificação matemática:</strong> discriminante quadrático do fluxo geral, análise global de sinais e diagnóstico espectral local, distinguindo coincidência computada de mera proximidade numérica e preservando resultados inconclusivos nas fronteiras. Validação local: ESLint, 896/896 testes (15 específicos da P1) e build aprovados. Sem alegação de certificação simbólica ou completude global.</li>
+<li><strong>P2 — Diagnóstico no painel:</strong> seções recolhíveis de diagnóstico global e local em Parâmetros → Fluxo, com critérios, evidências e apresentação adaptada ao painel lateral. Inspeção visual e atualização ao modificar coeficientes/estado confirmadas pelo responsável; <code>npm run check</code> local aprovado com 896/896 testes e build.</li>
+<li><strong>Limites à época da P2:</strong> P3 ainda não iniciada naquele marco; posteriormente encerrada conforme registro de 03/11/2026 acima. PR #2 permanece sem integração à <code>main</code>. Avisos não bloqueantes de WebSocket e tamanho do bundle registrados na validação local.</li>
+</ul>
+<h2 id="divisao-do-scene.jsx-03112026">Divisão do Scene.jsx — 03/11/2026</h2>
+<ul>
+<li><code>src/components/Scene.jsx</code> (772 linhas) passa a conter apenas a composição da cena (<code>CameraRig</code>, <code>SceneContent</code>, <code>Scene</code>). Os componentes foram movidos sem alteração de código para <code>src/components/scene/</code>: <code>shared</code> (<code>Line</code>, <code>clamp</code>), <code>StateOverlays</code>, <code>SpecialLoci</code>, <code>HopfSurfaces</code>, <code>SonicSurfaces</code>, <code>Rarefaction</code>, <code>CharacteristicSurface</code> e <code>Annotations</code>.</li>
+<li>Os testes de fronteira que liam <code>Scene.jsx</code> como texto usam agora <code>tests/helpers/sceneSource.js</code>, que concatena <code>Scene.jsx</code> e <code>scene/*.jsx</code>; os padrões verificados são os mesmos.</li>
+<li>As funções puras do Espaço de estados (<code>axisTicks</code>, <code>fittedWindow</code>, <code>robustExtent</code>, <code>validWindow</code>, <code>shockStopLabel</code> e as constantes/projeções de viewport) saíram de <code>StateSpaceDialog.jsx</code> para <code>src/geometry/state/stateSpaceView.js</code>, sem dependência de React, com testes unitários em <code>tests/stateSpaceView.test.js</code>. <code>StateMathAnnotation</code> passou a ter arquivo próprio. O componente <code>StatePlot</code> (~690 linhas) permanece intacto: dividi-lo exige refatorar estado compartilhado entre hooks e deve ser feito com verificação visual.</li>
+</ul>
+<h2 id="licenca-03112026">Licença — 03/11/2026</h2>
+<ul>
+<li>Adicionada a licença MIT (<code>LICENSE</code>, titular Edwin López, 2026), com os campos <code>license</code> e <code>author</code> em <code>package.json</code> e uma seção no README.</li>
+</ul>
+<h2 id="organizacao-do-codigo-e-da-documentacao-03112026">Organização do código e da documentação — 03/11/2026</h2>
+<ul>
+<li>Código de produção, scripts e testes (exceto <code>tests/math.test.js</code>, que cobre a própria fachada) passam a importar dos módulos de domínio em vez de <code>src/math/quadraticFlux.js</code>. A fachada de compatibilidade permanece e continua testada.</li>
+<li>As 137 notas <code>FASE_*</code> (135 <code>.md</code> e 2 <code>.json</code>) foram movidas de <code>docs/</code> para <code>docs/fases/</code>, com um <code>README.md</code> de índice gerado a partir dos títulos. Nenhum código, teste ou capítulo referenciava esses caminhos.</li>
+</ul>
+<h2 id="infraestrutura-de-build-02112026">Infraestrutura de build — 02/11/2026</h2>
+<ul>
+<li>Adicionado <code>vite.config.js</code> aplicando <code>@vitejs/plugin-react</code> (Fast Refresh) e <code>base</code> configurável por <code>VITE_BASE</code> para implantação em subcaminho.</li>
+<li>A cena 3D (Three.js), o Espaço físico, a Documentação e os diálogos (manual, regiões espectrais, carta local) passam a ser carregados sob demanda com <code>React.lazy</code>; o ambiente inicial (Estados) não carrega mais Three.js. Os diálogos permanecem montados após a primeira abertura, preservando o estado interno.</li>
+<li>Removido <code>src/math/manifold/coincidence.js</code>, sem importadores; a implementação em uso é <code>src/math/characteristic/coincidence.js</code>.</li>
+<li>Adicionados <code>.nvmrc</code> (Node 22) e <code>engines</code> em <code>package.json</code>, alinhados ao requisito do Vite.</li>
+</ul>
+<h2 id="correcao-do-atlas-e-rastreabilidade-21102026">Correção do atlas e rastreabilidade — 21/10/2026</h2>
+<ul>
+<li>Corrigida a classificação dos quocientes lineares excepcionais: coordenadas pequenas não nulas não são mais tratadas como eixos exatos por um limiar absoluto. Decisões ambíguas retornam <code>ill-conditioned</code> sem classe residual; regressões cobrem reescala positiva, eixos resolvidos e os setores de posto um. A avaliação do produto residual evita perda de sinal por subfluxo do produto direto.</li>
+<li>Registrados estratificação escalar, par traço/cúbico, carta genérica e atlas global na matriz canônica, com definições, módulos, testes, verificações simbólicas, UI planejada e limites de validação. Inclusão no LaTeX compilado e classificação das ondas permanecem pendentes.</li>
+</ul>
+<h2 id="documentacao-matematica-20102026">Documentação matemática — 20/10/2026</h2>
+<ul>
+<li><p>Fechamento algébrico do atlas relativo ao grupo afim de estados com escala positiva de velocidade e referencial: representação por traço e cúbico binário, nove famílias quadráticas, estabilizadores completos e quocientes lineares, incluindo as exceções de posto um. Acrescentados normalizador global, diagnósticos racionais e testes de cobertura, reconstrução e equivalência. Classificação de ondas e certificação numérica nas fronteiras permanecem separadas desse resultado.</p>
+</li>
+<li><p>Atlas dos dez parâmetros: classificador racional dos lugares escalares e homogeneização; dedução de uma forma normal residual no setor quadrático genérico por base e centro intrínsecos. Novos módulos puros e testes de transporte, invariância, reconstrução e setores excepcionais. As formas dos setores excepcionais e a classificação global das folheações permanecem abertas.</p>
+</li>
+<li><p>Concluído o mapa editorial dos 26 capítulos. Acrescentados estudos de composta degenerada, perfil viscoso B=I, separatriz recíproca, classificações exatas e transporte afim, com fixtures, figuras, fontes localizadas e testes. O mapa distingue fechamento editorial de validação científica global e reúne as pendências de implementação.</p>
+</li>
+<li><p>Acrescentados estudos exatos de rarefação rápida e cadeia de dois choques aos capítulos 17 e 20, com fontes localizadas, figuras nos três espaços, fixtures e testes de campo, conservação, famílias e perfil. Explicitada uma conexão regular que exige outra parametrização local; cálculos de produção preservados.</p>
+</li>
+<li><p>Desenvolvido o capítulo-modelo de fibras de Hugoniot: referências primárias com seção e limites de aplicação, exemplo exato nos três espaços, fixture, gerador de dados, figura científica e dois testes matemáticos. O renderizador passa a exibir links bibliográficos e figuras locais; cálculos de produção preservados.</p>
+</li>
+<li><p>Registrados os objetivos científicos com a Variedade de Ondas como eixo da pesquisa e correspondência entre os três espaços.</p>
+</li>
+<li><p>Migradas todas as 26 seções da referência exibida para Markdown compartilhado entre Documentação e Ajuda; o registro JSX mantém apenas títulos e ordem.</p>
+</li>
+<li><p>Concluídos diagnósticos, critérios de auditoria, ambientes e guia de leitura. O teste de renderização carrega o registro completo; convenções, procedimentos e critérios usam agrupamento semântico. A inspeção visual e a revisão bibliográfica permanecem pendentes.</p>
+</li>
+<li><p>Detalhados cadeias e traço inicial, limites da interpolação física e de junções sônicas implementadas, transporte afim de dados e entropias, e distinção entre espectro local, cônicas e cortes de parâmetros.</p>
+</li>
+<li><p>Ampliado o bloco de rarefação, separatrizes e compostas: projeção regular, fator exato de orientação entre cartas e limitações da seleção de ramos e do resíduo recíproco na fronteira.</p>
+</li>
+<li><p>Revisados coincidência e lugares sônicos: notação uniforme para o discriminante, distinção entre determinantes completos e folhas reduzidas, relação exata entre K e perda de genuína não linearidade, e convenções numéricas de dupla sônica na característica.</p>
+</li>
+<li><p>Consolidado o bloco da variedade: distinção da diagonal prolongada, domínios regulares, velocidade, amplitude de fibras e dedução da mudança recíproca preservando estados e velocidade. Explicitados limites de cobertura das projeções numéricas.</p>
+</li>
+<li><p>Ampliadas as deduções de velocidade/resíduo de salto e produção entrópica; explicitadas as desigualdades completas de Lax, a orientação das fibras e os limites dos diagnósticos numéricos.</p>
+</li>
+<li><p>Explicitada a hipótese de derivada positiva para a construção do leque suave de rarefação, distinguindo-a da monotonicidade numérica amostrada.</p>
+</li>
+<li><p>Adicionado guia das fontes matemáticas, limites do renderizador e sequência de consolidação. Incluídos testes de interpretação, agrupamento e renderização matemática; nenhuma equação de produção foi alterada.</p>
+</li>
+</ul>
+<h2 id="diagnostico-infinitesimal-de-contato-sonico-etapa-de-pesquisa">Diagnóstico infinitesimal de contato sônico (etapa de pesquisa)</h2>
+<ul>
+<li>Derivada analítica de velocidade de choque na coincidência, usando Hessiana quadrática e autovetores esquerdo/direito.</li>
+<li>Tooltip nos candidatos a perda de não linearidade genuína; quatro testes adicionais.</li>
+<li>Não certifica contato sônico finito nem admissibilidade de ondas compostas.</li>
+</ul>
+<h2 id="auditoria-numerica-incremental-v0.7.0-dev.24.47.58">Auditoria numérica incremental — v0.7.0-dev.24.47.58</h2>
+<ul>
+<li>Centralizados os defaults de integração adaptativa e localização de eventos em <code>NUMERICAL_POLICY.integration</code>, sem mudar os valores.</li>
+<li>Adicionados testes de regressão da política, RK4 adaptativo, orientação temporal, eventos e normalização.</li>
+<li>Registradas limitações e pendências em <code>docs/NUMERICAL_LAYER_AUDIT.html</code>.</li>
+</ul>
+<h2 id="certificacao-adicional-08102026">Certificação adicional (08/10/2026)</h2>
+<ul>
+<li>Derivado o fator temporal exato <code>D Psi V_z = -z V_Z</code> entre cartas de rarefação.</li>
+<li>Adicionados testes de sobreposição regular para três fluxos quadráticos.</li>
+<li>Atualizados LaTeX canônico e matriz de rastreabilidade; nenhuma alteração no renderer ou nas equações de produção.</li>
+</ul>
+<h2 id="v0.7.0-dev.24.47.22-canonical-sonic-intersection-audit">v0.7.0-dev.24.47.22 — Canonical sonic-intersection audit</h2>
+<ul>
+<li>Adds the exact algebraic classification <code>S^- ∩ S^+ = J ∪ DS</code>, derived from the two canonical implicit sonic equations.</li>
+<li>Adds an independent numerical audit using separately extracted minus/plus meshes; mesh samples are checked against both original implicit equations and only then classified by the mathematical layer.</li>
+<li>Verifies canonical <code>J</code> and <code>DS</code> coverage without redefining either locus from mesh intersections.</li>
+<li>No change to <code>Phi_±</code>, sonic tolerances, or the renderer geometry.</li>
+</ul>
+<h2 id="v0.7.0-dev.24.47.21-canonical-zero-vertex-zero-edge-resolution">v0.7.0-dev.24.47.21 — Canonical zero-vertex / zero-edge resolution</h2>
+<ul>
+<li>Starts from dev.24.47.20 and preserves its canonical shared-edge roots and exact regular Marching-Tetrahedra cases.</li>
+<li>Treats a tetrahedron with exactly one <code>Phi=0</code> grid vertex as its own affine topological case instead of silently classifying that vertex as negative.</li>
+<li>For mixed signs at the remaining three vertices, emits the unique affine triangle through the exact zero vertex and the two canonical sign-change roots.</li>
+<li>For equal signs at the remaining vertices, retains the exact zero vertex but emits no artificial surface face.</li>
+<li>Keeps the exact two-zero-vertex (zero-edge) rule: opposite signs produce the unique triangle containing the zero edge; equal signs retain only the zero edge.</li>
+<li>Adds <code>zeroVertexTetCount</code> diagnostics; no patch, triangle deletion, hole filling, or solution as <code>Y(tau,z)</code> is introduced.</li>
+</ul>
+<h2 id="v0.7.0-dev.24.47.20-canonical-shared-edge-intersections">v0.7.0-dev.24.47.20 — Canonical shared-edge intersections</h2>
+<ul>
+<li>Starts directly from dev.24.47.12; diagnostic rendering from dev.24.47.13–19 is not retained.</li>
+<li>Caches every implicit root on an undirected grid edge and reuses the exact same point in every incident tetrahedron.</li>
+<li>Makes edge-root solving orientation independent by imposing a canonical endpoint order before bisection.</li>
+<li>Replaces angular polygon ordering in regular tetrahedra by the exact Marching-Tetrahedra sign cases; the 2+/2- quadrilateral has a fixed combinatorial boundary order.</li>
+<li>Keeps exact DS zero edges unchanged; no patch, hole filling, or solution of the sonic surface as Y(tau,z) is introduced.</li>
+<li>Separates remaining shared-face diagnostics into regular mismatches and exact zero-edge degeneracies.</li>
+</ul>
+<h2 id="v0.7.0-dev.24.47.12-double-sonic-zero-edge-topology">v0.7.0-dev.24.47.12 — Double-sonic zero-edge topology</h2>
+<ul>
+<li>Keeps the dev.24.47.11 canonical implicit Marching Tetrahedra baseline.</li>
+<li>Treats tetrahedra containing an exact <code>Phi=0</code> edge as a distinct topological case instead of feeding duplicated zero-edge endpoints to generic polygon sorting.</li>
+<li>When the two opposite tetrahedron vertices have opposite signs, emits exactly the triangle formed by the zero edge and the certified root on the opposite edge.</li>
+<li>When the opposite vertices have the same sign, retains the exact zero edge but invents no surface face.</li>
+<li>Handles exact zero faces explicitly and refuses to invent a unique surface inside an identically-zero tetrahedron.</li>
+<li>Adds diagnostics for zero-edge, zero-face, and zero-volume tetrahedra and a regression test for the canonical DS fibres.</li>
+</ul>
+<h2 id="v0.7.0-dev.24.47.11-constrained-implicit-marching-tetrahedra">v0.7.0-dev.24.47.11 — Constrained implicit Marching Tetrahedra</h2>
+<ul>
+<li>Discards the explicit regular-chart experiment from dev.24.47.10.</li>
+<li>Restores canonical implicit extraction of <code>Phi_- = 0</code> and <code>Phi_+ = 0</code>; no coordinate is solved as <code>Y(tau,z)</code>.</li>
+<li>Replaces third-party Marching Cubes with a native conforming Freudenthal Marching Tetrahedra mesh.</li>
+<li>Inserts certified double-sonic base coordinates as grid planes before tetrahedralization, so DS is a constrained grid fibre rather than an overlay or post-processing seam.</li>
+<li>Uses edge-local root refinement, global vertex welding, and consistent face orientation.</li>
+<li>Removes the <code>isosurface</code> dependency.</li>
+</ul>
+<h2 id="v0.7.0-dev.24.47.9-ds-conforming-sonic-seam">v0.7.0-dev.24.47.9 — DS-conforming sonic seam</h2>
+<ul>
+<li>Starts from dev.24.47.7; dev.24.47.8 is discarded.</li>
+<li>Keeps the canonical DS calculation K=det(M)=0 and the edge-certified implicit Marching Cubes mesh.</li>
+<li>Replaces only a narrow neighborhood of each certified DS fibre by a conforming implicit seam.</li>
+<li>The seam is solved directly from Phi_±=0 without dividing by det(M); its central column is exactly the canonical DS fibre.</li>
+<li>Removes overlapping global triangles in the replaced neighborhood instead of drawing a second surface on top.</li>
+</ul>
+<h2 id="v0.7.0-dev.24.47.7-canonical-double-sonic-base-points">v0.7.0-dev.24.47.7 — Canonical double-sonic base points</h2>
+<ul>
+<li>Restores dev.24.47.5 as the sonic-mesh baseline; the dev.24.47.6 DS-anchored sampling experiment is not retained.</li>
+<li>Moves the double-sonic base-point calculation into the mathematical sonic-intersection layer.</li>
+<li>Solves <code>det(M)(z)=0</code> algebraically and then <code>K(tau,z)=0</code> on each finite projective direction; DS is no longer obtained by intersecting two polygonised contour families.</li>
+<li>Certifies every rendered DS fibre against both canonical implicit sonic equations <code>Phi_-=0</code> and <code>Phi_+=0</code> at nonzero Y.</li>
+<li>Does not alter the dev.24.47.5 Marching Cubes mesh, edge certification, or sampling grid.</li>
+</ul>
+<h2 id="v0.7.0-dev.24.47.5-edge-certified-sonic-mesh">v0.7.0-dev.24.47.5 — Edge-certified sonic mesh</h2>
+<ul>
+<li>Replaces unconstrained/local 3-D Newton correction of Marching-Cubes vertices with certification restricted to the original grid edge.</li>
+<li>Preserves Marching-Cubes connectivity while refining vertices directly against the canonical implicit equations <code>Phi_±=0</code>.</li>
+<li>Adds mesh diagnostics: maximum implicit residual, edge refinements, uncertified vertices, degenerate triangles and maximum edge ratio.</li>
+<li>Keeps the synchronous renderer while sonic topology is being validated; Worker/cache optimization remains deferred.</li>
+</ul>
+<h2 id="v0.7.0-dev.24.47.4-topology-preserving-sonic-certification">v0.7.0-dev.24.47.4 — Topology-preserving sonic certification</h2>
+<ul>
+<li>Keeps direct synchronous Marching Cubes while geometry is validated.</li>
+<li>Constrains implicit vertex certification to the local Marching-Cubes cell neighbourhood.</li>
+<li>Adds backtracking so certification cannot jump to a remote branch of <code>Phi_±=0</code>, eliminating the giant spurious faces introduced by unconstrained Newton projection.</li>
+<li>Preserves the canonical implicit equations; no explicit <code>Y=2K/detM</code> parametrization is used.</li>
+</ul>
+<h2 id="v0.7.0-dev.24.47.3-direct-sonic-render-validation">v0.7.0-dev.24.47.3 — Direct sonic render validation</h2>
+<ul>
+<li>Removes the asynchronous Worker from the sonic rendering path temporarily so a valid Marching-Cubes mesh cannot be lost by Worker lifecycle/state handling.</li>
+<li>Keeps the implicit certified Marching-Cubes extractor and canonical <code>Phi_±=0</code> mathematics unchanged.</li>
+<li>Disables frustum culling for the diagnostic sonic meshes and logs vertex/triangle counts and extraction time.</li>
+<li><code>S+</code> remains the exact <code>Y</code> reflection of the extracted <code>S-</code> sheet.</li>
+</ul>
+<h2 id="v0.7.0-dev.24.47.2-sonic-worker-recovery-and-diagnostics">v0.7.0-dev.24.47.2 — Sonic worker recovery and diagnostics</h2>
+<ul>
+<li>Keeps certified implicit Marching Cubes as the sonic mesher.</li>
+<li>Detects module-worker errors, empty worker meshes, and stalled extraction instead of silently hiding <code>S^-</code>/<code>S^+</code>.</li>
+<li>Adds a certified main-thread recovery path only when the worker fails; the worker remains the default path.</li>
+<li>Carries mesh diagnostics (vertex/triangle counts, elapsed time and base evaluations) with worker results.</li>
+<li>Does not alter <code>Phi_±</code>, <code>DS</code>, <code>J</code>, tolerances, or the scientific definitions.</li>
+</ul>
+<h2 id="v0.7.0-dev.24.47.1-certified-marching-cubes-vertices">v0.7.0-dev.24.47.1 — Certified Marching Cubes vertices</h2>
+<ul>
+<li>Projects every Marching Cubes vertex back onto the original implicit sonic equation <code>Phi_±=0</code> by Newton correction along the numerical gradient.</li>
+<li>Does not solve <code>Y=2K/det(M)</code> and remains defined at the double-sonic degeneracy.</li>
+<li>Restores the mesh diagnostic contract <code>rejectedDegenerate: 0</code> expected by the scientific tests; triangle non-degeneracy remains independently asserted.</li>
+<li>Keeps the Web Worker and LRU cache introduced in dev.24.47.</li>
+</ul>
+<h2 id="v0.7.0-dev.24.47-marching-cubes-sonic-extraction-worker-lru">v0.7.0-dev.24.47 — Marching Cubes sonic extraction (worker + LRU)</h2>
+<ul>
+<li>Replaces the native marching-tetrahedra extractor with <code>isosurface</code> Marching Cubes, adapted from the working <code>wave-manifold-app</code> implementation.</li>
+<li>Evaluates the canonical implicit <code>Phi_minus(tau,Y,z)</code> directly, without solving <code>Y(tau,z)</code>; <code>S^+</code> is the exact mirrored display sheet.</li>
+<li>Moves extraction into a dedicated Web Worker and adds a six-entry / 24 MiB LRU cache with transferable geometry buffers.</li>
+<li>Preserves the yellow double-sonic and magenta inflection loci as independent mathematical curves.</li>
+<li>This is a new extraction strategy requiring visual verification and the complete local <code>npm run check</code>; no claim of verified mesh residuals is made before those tests.</li>
+</ul>
+<h2 id="v0.7.0-dev.24.46-stable-sonic-baseline-ds-styling">v0.7.0-dev.24.46 — Stable sonic baseline + DS styling</h2>
+<ul>
+<li>Restores the validated dev.24.44 implicit sonic mesher after the dev.24.45 closure heuristic fragmented the sheets.</li>
+<li>Keeps <code>S^-</code> and <code>S^+</code> extracted directly from <code>Phi_±=0</code>; no explicit <code>Y(tau,z)</code> parametrization is introduced.</li>
+<li>Styles the double-sonic locus <code>DS</code> in yellow, thicker and above the translucent sonic sheets.</li>
+<li>Leaves the remaining local mesh holes isolated for a later mesher replacement rather than adding destructive cell-rejection heuristics.</li>
+</ul>
+<h2 id="v0.7.0-dev.24.43.1-architecture-guardrail-fix">v0.7.0-dev.24.43.1 — Architecture guardrail fix</h2>
+<ul>
+<li>Removes the obsolete unused <code>sonicImplicit</code> import from the optimized sonic geometry.</li>
+<li>Updates the architecture guardrail to verify native implicit evaluation through <code>sonicData</code>, <code>K</code>, and <code>detM</code>, while continuing to forbid solving the sonic surface as <code>Y(tau,z)</code>.</li>
+<li>No mathematical or meshing algorithm change.</li>
+</ul>
+<h2 id="v0.7.0-dev.24.43-fast-implicit-sonic-meshing">v0.7.0-dev.24.43 — Fast Implicit Sonic Meshing</h2>
+<ul>
+<li>Keeps <code>Phi_-=0</code> and <code>Phi_+=0</code> as the sole authority for sonic surface extraction; no solved <code>Y(tau,z)</code> graph is introduced.</li>
+<li>Caches canonical sonic data <code>K</code> and <code>det(M)</code> once per <code>(tau,zc)</code> lattice node instead of recomputing it for every <code>Y</code> sample.</li>
+<li>Preserves the certified 48-step crossing-edge refinement, but removes the expensive finite-difference <code>grad(Phi)</code> orientation pass; sonic meshes are rendered double-sided.</li>
+<li>Uses the exact identity <code>Phi_+(tau,Y,z)=-Phi_-(tau,-Y,z)</code> to extract the implicit mesh once and obtain the second renderer sheet by the exact reflection <code>Y -&gt; -Y</code>.</li>
+<li>Adds extraction timing and base-evaluation metadata for performance auditing.</li>
+<li><code>DS</code> remains independently represented by <code>K=det(M)=0</code>, so the optimization does not divide by <code>det(M)</code> or erase double-sonic fibres.</li>
+</ul>
+<h2 id="v0.7.0-dev.24.42-sonic-intersection-geometry">v0.7.0-dev.24.42 — Sonic Intersection Geometry</h2>
+<ul>
+<li>Formaliza a dupla sônica como a interseção implícita fora de C: <code>K=0</code>, <code>det M=0</code>, equivalently <code>Phi_-=Phi_+=0</code> for <code>Y != 0</code>.</li>
+<li>Formaliza a inflexão em C como <code>Y=0</code>, <code>K=0</code>.</li>
+<li>Adiciona resíduos canônicos independentes do renderer e testes que certificam DS simultaneamente nas duas equações sônicas.</li>
+<li>Mantém a extração das superfícies sônicas inteiramente implícita; não reintroduz <code>Y(tau,z)</code>.</li>
+</ul>
+<h2 id="v0.7.0-dev.24.41-fully-implicit-sonic-geometry">v0.7.0-dev.24.41 — Fully Implicit Sonic Geometry</h2>
+<ul>
+<li>Audits the sonic pipeline and removes the solved graph coordinates <code>yMinus</code> / <code>yPlus</code> from the mathematical API.</li>
+<li><code>S^-</code> and <code>S^+</code> are rendered exclusively as zero sets of the canonical implicit equations <code>Phi_-=Y det(M)-2K=0</code> and <code>Phi_+=Y det(M)+2K=0</code> in the full <code>(tau,Y,zc)</code> sampling box.</li>
+<li>Restores full 3-D implicit extraction so the mesh never assumes <code>Y=Y(tau,z)</code>, including near <code>det(M)=0</code>.</li>
+<li>Double sonic <code>DS</code> remains the simultaneous degeneracy <code>K=det(M)=0</code>; its Y-fibres are not produced by division.</li>
+<li>The point inspector now reports <code>Phi_-(P)</code>, <code>Phi_+(P)</code>, <code>det(M)</code> and <code>K</code> instead of solved Y-values.</li>
+<li>Tests no longer construct sonic points from <code>Y=±2K/det(M)</code>.</li>
+</ul>
+<h2 id="v0.7.0-dev.24.40-fast-implicit-sonic-extraction">v0.7.0-dev.24.40 — Fast Implicit Sonic Extraction</h2>
+<ul>
+<li>Preserves the canonical sonic equations <code>Phi_-=0</code> and <code>Phi_+=0</code> as the authority for geometry.</li>
+<li>Replaces volumetric <code>(tau,Y,zc)</code> marching tetrahedra by column-wise implicit root extraction, exploiting only the exact fact that <code>Phi</code> is affine in <code>Y</code>.</li>
+<li>Evaluates and certifies every emitted vertex against the original <code>sonicImplicit</code> function.</li>
+<li>Treats <code>det(M)=0</code> columns as degenerate/empty and leaves <code>DS</code> to its exact <code>K=det(M)=0</code> geometry; no arbitrary <code>0/0</code> point is emitted.</li>
+<li>Prevents mesh connectivity across opposite signs of <code>det(M)</code> and clips whole cells at the finite <code>Y</code> sampling boundary.</li>
+<li>Reduces the default sampling work from a 3-D volume to a 2-D <code>(tau,zc)</code> grid while increasing the latter to 72×108.</li>
+<li>Reports <code>maxResidual</code> and rejection counts on the generated geometry for numerical auditing.</li>
+</ul>
+<h2 id="v0.7.0-dev.24.39-native-implicit-sonic-extraction">v0.7.0-dev.24.39 — Native Implicit Sonic Extraction</h2>
+<ul>
+<li>Restores the sonic renderer to the canonical implicit level sets <code>Phi_-=0</code> and <code>Phi_+=0</code> in the full <code>(tau,Y,zc)</code> box.</li>
+<li>Removes <code>Y=±2K/det(M)</code> from sonic surface generation entirely.</li>
+<li>Uses root-refined marching tetrahedra on the actual implicit function; interpolation is refined against <code>Phi</code>, including the nonlinear visual <code>zc</code> coordinate.</li>
+<li>Treats edges lying wholly on the zero set as degenerate instead of inventing midpoint vertices.</li>
+<li>Keeps <code>DS</code> as exact separately certified fibres where <code>K=det(M)=0</code>.</li>
+<li>Welds vertices, removes degenerate faces and orients faces by <code>grad(Phi)</code>.</li>
+<li>Adds regression coverage that every emitted sonic vertex satisfies the original implicit equation.</li>
+</ul>
+<h2 id="v0.7.0-dev.24.38.1-regular-sheet-topology-fix">v0.7.0-dev.24.38.1 — Regular-sheet topology fix</h2>
+<ul>
+<li>Keeps the sonic definition implicit: <code>Phi_-=0</code> and <code>Phi_+=0</code>.</li>
+<li>Forbids regular-sheet connectivity across <code>det(M)=0</code>.</li>
+<li>Removes three-corner clipped triangles, which created artificial spikes at asymptotes and the Y sampling boundary.</li>
+<li>Preserves <code>DS</code> separately as the exact degenerate fibres <code>K=det(M)=0</code>.</li>
+<li>Adds regression coverage requiring each emitted regular triangle to stay on one sign component of <code>det(M)</code>.</li>
+</ul>
+<h2 id="v0.7.0-dev.24.38-structured-implicit-sonic-geometry">v0.7.0-dev.24.38 — Structured Implicit Sonic Geometry</h2>
+<ul>
+<li>Replaces generic 3D marching tetrahedra as the primary sonic renderer with a structured mesh over the <code>(tau,zc)</code> base.</li>
+<li>Keeps the canonical equations <code>Phi_-=Y det(M)-2K=0</code> and <code>Phi_+=Y det(M)+2K=0</code> as the mathematical definition.</li>
+<li>Divides by <code>det(M)</code> only on certified regular fibres separated from <code>det(M)=0</code>; degenerate fibres are never evaluated as <code>0/0</code>.</li>
+<li>Represents <code>DS</code> independently from the simultaneous conditions <code>K=0</code> and <code>det(M)=0</code>, so the double-sonic fibres are preserved rather than deleted or bridged.</li>
+<li>Clips the regular graph to the configured Y window without generating artificial caps across asymptotes or double-sonic fibres.</li>
+<li>Every emitted regular mesh vertex is regression-tested against the original implicit sonic equation.</li>
+</ul>
+<h2 id="v0.7.0-dev.24.37-implicit-sonic-mesh-refinement">v0.7.0-dev.24.37 — Implicit Sonic Mesh Refinement</h2>
+<ul>
+<li>Keeps <code>S^-</code> and <code>S^+</code> defined exclusively by the implicit level sets <code>Phi_-=0</code> and <code>Phi_+=0</code>; no division by <code>det(M)</code> was reintroduced.</li>
+<li>Welds shared marching-tetrahedra vertices into an indexed mesh and removes degenerate faces.</li>
+<li>Orients every sonic face consistently using the numerical gradient of the corresponding implicit function before smooth vertex normals are computed.</li>
+<li>Adds independent visibility controls for the double-sonic locus <code>DS</code> and inflection locus <code>J</code>.</li>
+<li>Preserves <code>DS</code> and <code>J</code> as mathematical geometry generated outside the renderer.</li>
+<li>Adds regression coverage for indexed, welded, finite implicit sonic meshes.</li>
+</ul>
+<h3 id="v0.7.0-dev.24.27-composite-inspection">v0.7.0-dev.24.27 — Composite inspection</h3>
+<ul>
+<li>Adds certified composite branch/point diagnostics to the scientific UI without moving mathematical evaluation into the renderer.</li>
+</ul>
+<h2 id="v0.7.0-dev.24.20-composite-definition">v0.7.0-dev.24.20 — Composite Definition</h2>
+<ul>
+<li>Opens the composite-wave block only at the definition/pure-kernel stage.</li>
+<li>Fixes <code>sat_forw(Gamma)</code> through <code>pi_-^{-1}(U_-(P))</code> and <code>sat_back(Gamma)</code> through <code>pi_+^{-1}(U_+(P))</code>.</li>
+<li>Defines <code>K_- = sat_forw(R) ∩ S^-</code> and <code>K_+ = sat_back(R) ∩ S^+</code>, using the non-trivial sonic factors.</li>
+<li>Adds pure construction metadata and sonic-membership residuals; no saturation meshing, branch continuation, or renderer logic is introduced.</li>
+</ul>
+<h2 id="v0.7.0-dev.24.19-hugoniot-closure">v0.7.0-dev.24.19 — Hugoniot Closure</h2>
+<ul>
+<li>Consolidates the canonical fixed-state Hugoniot mathematics in <code>docs/mathematics/11-hugoniot.tex</code>.</li>
+<li>Adds the formal <code>HUGONIOT_VERIFICATION.html</code> PASS/DEFERRED closure audit and extends scientific traceability.</li>
+<li>Records explicit <code>pi_-</code> / <code>pi_+</code> state-space projection, spectral signatures, strict Lax classification, state-role distinctions and the saturation boundary.</li>
+<li>Closes the Hugoniot roadmap item without claiming Liu admissibility, composite waves, or a general Riemann solver.</li>
+</ul>
+<h2 id="v0.7.0-dev.24.18-explicit-state-projection">v0.7.0-dev.24.18 — Explicit State Projection</h2>
+<ul>
+<li>Adds an explicit <code>pi_-</code> / <code>pi_+</code> selector to the state-space view.</li>
+<li>Under <code>pi_-</code>, <code>H^{forw}(U*)=pi_-^{-1}(U*)</code> projects to the single point <code>U*</code>, while the backward fibre projects to the variable <code>U_-</code> curve.</li>
+<li>Under <code>pi_+</code>, the backward fibre projects to <code>U*</code>, while the forward fibre projects to the variable <code>U_+</code> curve.</li>
+<li>Keeps strict-Lax metadata attached to the non-constant image; no spectral classification is recomputed in state space.</li>
+<li>Expands Help through the current scientific state: local states/projections, fixed-state Hugoniot fibres, explicit projections, spectral/Lax diagnostics, Riemann-data roles, saturation foundation, and current physical-space scope.</li>
+</ul>
+<h2 id="v0.7.0-dev.24.16-lax-geometry">v0.7.0-dev.24.16 — Lax Geometry</h2>
+<ul>
+<li>Transfers the already validated strict-Lax classification from the mathematical layer to Hugoniot display geometry; Three.js does not define or recompute the criterion.</li>
+<li>Uses family appearance independently of projection orientation: Lax 1 / Lax 2 / non-Lax / undefined are visually distinct.</li>
+<li>Keeps <code>pi_-^{-1}(U*) = H^{forw}(U*)</code> solid and <code>pi_+^{-1}(U*) = H^{back}(U*)</code> dashed.</li>
+<li>Preserves <code>U*</code> as a generic state; no identification with global Riemann data <code>U_L,U_R</code> is introduced.</li>
+</ul>
+<h2 id="v0.7.0-dev.24.8-canonical-characteristic-lifts">v0.7.0-dev.24.8 — Canonical Characteristic Lifts</h2>
+<ul>
+<li>Names the finite slow and fast characteristic intersections of a fixed state fibre as <code>P_s</code> and <code>P_f</code>, using spectral classification rather than geometric position.</li>
+<li>Keeps coincidence and projective-infinity lifts explicit; they are never forced into slow/fast labels.</li>
+<li>Reports the coordinates of <code>P_s</code> and <code>P_f</code> in the fibre-analysis panel without adding permanent scene markers.</li>
+<li>Adds regression tests for the classification contract.</li>
+</ul>
+<h2 id="v0.7.0-dev.24.7-global-hugoniot-continuation">v0.7.0-dev.24.7 — Global Hugoniot Continuation</h2>
+<ul>
+<li>Continue fixed-state projection fibres in the reciprocal chart <code>(eta,Upsilon,Z)</code> near projective infinity.</li>
+<li>Validate reciprocal/finite chart agreement and avoid fake display chords across <code>Z=0</code>.</li>
+<li>Preserve exact characteristic intersections as non-rendered invariants.</li>
+</ul>
+<h2 id="v0.7.0-dev.24.6-hugoniotcharacteristic-intersections">v0.7.0-dev.24.6 — Hugoniot/Characteristic Intersections</h2>
+<ul>
+<li>Clips rarefaction polylines to the visible <code>(u,v)</code> window instead of discarding useful visible pieces.</li>
+<li>Adds exact, display-independent validation of the common characteristic intersections of the forward/backward state fibres.</li>
+<li>Keeps the validated default windows and 3D scales unchanged.</li>
+</ul>
+<h2 id="v0.7.0-dev.24.5-hugoniot-fibre-visibility-and-scale">v0.7.0-dev.24.5 — Hugoniot fibre visibility and scale</h2>
+<ul>
+<li>Names the fixed-state fibres as future Hugoniot curves: <code>H^{forw}(U*) = pi_-^{-1}(U*)</code> and <code>H^{back}(U*) = pi_+^{-1}(U*)</code>.</li>
+<li>Renders both fibres as thicker independent 3D curves; their intersections with <code>C</code> are represented by the curves themselves, without permanent point markers.</li>
+<li>Adjusts the default visual scale and <code>Ajustar vista 3D</code> so free fibres remain visible without allowing their far tails to flatten the sampled sonic geometry.</li>
+<li>Keeps the mathematical sampling windows unchanged (<code>tau,Y</code> default to <code>[-5,5]</code>).</li>
+</ul>
+<h2 id="v0.7.0-dev.24.4-fixed-state-space-default-window">v0.7.0-dev.24.4 — Fixed state-space default window</h2>
+<ul>
+<li>Default state-space viewport is now <code>u,v ∈ [-5,5]</code>.</li>
+<li>Manual bounds and “Ajustar à geometria” remain available and affect visualization only.</li>
+</ul>
+<h2 id="v0.7.0-dev.24.2-decoupled-state-fibres">v0.7.0-dev.24.2 — Decoupled state fibres</h2>
+<ul>
+<li>Restores the global sampling window as an independent control, with defaults τ,Y ∈ [-5,5].</li>
+<li>Fixed-state fibres are no longer clipped by the sonic-surface sampling window.</li>
+<li>Selecting U* no longer changes τ min/max or Y min/max.</li>
+<li>Keeps independent visual scales for τ, Y and z-hat; these never alter the mathematics.</li>
+<li>Splits fibre polylines across projective poles to avoid artificial chords.</li>
+</ul>
+<h2 id="v0.7.0-dev.23.1-state-fibre-ux">v0.7.0-dev.23.1 — State Fibre UX</h2>
+<h2 id="v0.7.0-dev.24-state-fibre-analysis">v0.7.0-dev.24 — State Fibre Analysis</h2>
+<ul>
+<li>Algebraic singular-direction analysis for fixed-state fibres.</li>
+<li>Connected regular branch count over the real projective direction line.</li>
+<li>Reciprocal-chart treatment of the infinity direction.</li>
+<li>Characteristic-lift classification as slow, fast, coincidence, or infinity.</li>
+<li>Explicit verification that pi-minus/pi-plus share the same (tau,z) trace and have opposite Y.</li>
+</ul>
+<h2 id="v0.7.0-dev.23.3-state-selection-separation">v0.7.0-dev.23.3 — State-selection separation</h2>
+<ul>
+<li><p>Makes <code>U*</code> the primary state-space selection; the projection of the currently inspected <code>W</code> is hidden by default.</p>
+</li>
+<li><p>Adds an explicit optional control to show <code>U_-</code>, <code>\bar U</code>, and <code>U_+</code> from the 3D inspection as secondary context.</p>
+</li>
+<li><p>Decouples <strong>Ajustar à geometria</strong> from the inspected <code>W</code>: when rarefaction curves are available, the fitted <code>(u,v)</code> window uses those curves only.</p>
+</li>
+<li><p>Keeps selection of <code>U*</code>, 3D inspection of <code>W</code>, and the state-space viewport as independent operations.</p>
+</li>
+<li><p>State-space viewport controls with 1:1 scaling and “Ajustar à geometria”.</p>
+</li>
+<li><p>U* no longer expands the state-space viewport automatically.</p>
+</li>
+<li><p>Independent visibility controls for π₋⁻¹(U*) and π₊⁻¹(U*).</p>
+</li>
+<li><p>Preserves the distinction between state selection in 𝒰 and point inspection in 𝒲.</p>
+</li>
+</ul>
+<h2 id="v0.7.0-dev.19-adaptive-numerics">v0.7.0-dev.19 — Adaptive Numerics</h2>
+<ul>
+<li>Added adaptive RK4 step-doubling with explicit local error control, rejection/retry, minimum step and suggested next step.</li>
+<li>Migrated generic rarefaction orbits and finite/infinity separatrices from fixed-step RK4 to the shared adaptive integrator while preserving their previous step as a maximum sampling step.</li>
+<li>Added a shared bracketed scalar-event refiner and routed coincidence-crossing refinement through it.</li>
+<li>Added convergence and forced-rejection tests; existing rarefaction/separatrix regression tests remain active.</li>
+<li>Extended the reproducible numerical policy with adaptive tolerances and controller parameters.</li>
+</ul>
+<h2 id="v0.7.0-dev.18-canonical-mathematics-closure">v0.7.0-dev.18 — Canonical Mathematics Closure</h2>
+<ul>
+<li>Closed the pre-Hugoniot canonical LaTeX reference without introducing a new wave object.</li>
+<li>Added an explicit canonical-status chapter fixing notation, chart conventions, rarefaction continuity, projective-boundary interpretation, and the distinction among <code>W</code>, state space and physical space.</li>
+<li>Updated scientific traceability through dev.17 and removed stale debt markers already resolved in dev.15.</li>
+<li>Added documentation regression guards so the canonical reference includes the closure chapter and the traceability matrix cannot silently revert to the old renderer-debt state.</li>
+<li>Recorded adaptive integration and the three-space solution framework as the remaining pre-Hugoniot foundation increments.</li>
+</ul>
+<h2 id="v0.7.0-dev.14-numerical-policy-integration-ownership">v0.7.0-dev.14 — Numerical Policy &amp; Integration Ownership</h2>
+<ul>
+<li>Added a canonical, semantically grouped numerical policy; the project deliberately has no universal epsilon.</li>
+<li>Centralized rarefaction orbit/separatrix RK4 stepping in <code>src/math/numerics/integration.js</code> without changing the validated fixed-step algorithms.</li>
+<li>Centralized defaults for algebraic roots, chart regularity, spectral coincidence, sonic degeneracy, singularity classification, event refinement and rarefaction integration.</li>
+<li>Exposed a serializable numerical-policy snapshot in preparation for reproducible experiment files.</li>
+<li>Added tests that distinguish tolerances by numerical meaning and protect the canonical policy from accidental mutation.</li>
+<li>Renderer-side finite-separatrix integration remains intentionally recorded for removal in dev.15.</li>
+</ul>
+<h2 id="v0.7.0-dev.13-scientific-traceability">v0.7.0-dev.13 — Scientific Traceability</h2>
+<ul>
+<li>Added a canonical traceability matrix linking mathematical definitions to implementation, tests, geometry and UI.</li>
+<li>Added an explicit Foundation Completion audit before Hugoniot development.</li>
+<li>Identified numerical-policy debt and renderer-side scientific work without hiding it behind refactoring.</li>
+<li>Added executable architecture tests protecting <code>math</code> and <code>geometry</code> from React/Three.js dependencies.</li>
+<li>Recorded <code>Scene.jsx</code> finite-separatrix integration and sonic meshing as targets for the next Foundation increments.</li>
+</ul>
+<h2 id="v0.7.0-dev.12-math-rendering-state-view-polish">v0.7.0-dev.12 — Math Rendering &amp; State View Polish</h2>
+<ul>
+<li>KaTeX real para <code>MathLabel</code>/<code>MathBlock</code>; fórmulas da Ajuda usam LaTeX.</li>
+<li>Espaço de estados mantém escala 1:1 com auto-fit mais justo e melhor overflow/legenda.</li>
+<li>Cabeçalho distingue carta finita <code>z</code>, carta recíproca <code>Z=1/z</code> e coordenada visual compactificada <code>z-hat</code>.</li>
+</ul>
+<h2 id="dev.8-rarefaction-visualization">0.7.0-dev.8 — Rarefaction Visualization</h2>
+<ul>
+<li>Closed the visual inspection loop for the reciprocal rarefaction chart <code>(eta,Z)</code>.</li>
+<li>Added physical-time arrows to the four infinity half-separatrices: stable branches point toward the saddle and unstable branches away from it.</li>
+<li>Added explicit branch labels <code>Ws-/Ws+</code> and <code>Wu-/Wu+</code>, saddle label <code>p∞</code>, and a labelled projective boundary <code>Z=0</code>.</li>
+<li>Preserved the rule that branches on <code>Z=0</code> are never fabricated at <code>zc=+/-1</code> in the finite chart.</li>
+<li>Added Escape-key dismissal and responsive adjustments to the local-chart dialog.</li>
+<li>Added a regression test for orientation metadata at the math-to-geometry boundary.</li>
+<li>Corrected the application version shown in the header.</li>
+</ul>
+<h2 id="dev.7-documentation-continuity-and-solution-spaces">0.7.0-dev.7 — Documentation Continuity and Solution Spaces</h2>
+<ul>
+<li>Distinguished the wave manifold, state space <code>(u,v)</code>, and physical space <code>(x,t)</code> in the canonical mathematical reference.</li>
+<li>Documented the projections <code>pi_-</code> and <code>pi_+</code>, the solution map <code>U(x,t)</code>, shock trajectories, and the self-similar variable used by future Riemann-solution work.</li>
+<li>Added an incremental user-manual source so validated procedures and interpretation rules are captured during development rather than reconstructed at the end.</li>
+<li>Documented planned ownership for state-space and physical-space modules without claiming those views are already implemented.</li>
+</ul>
+<h1 id="changelog">Changelog</h1>
+<h2 id="v0.7.0-dev.23.4-point-notation-and-inspection-marker">v0.7.0-dev.23.4 — Point notation and inspection marker</h2>
+<ul>
+<li>Uses <code>P ∈ 𝒲</code> for the currently inspected point of the wave manifold; <code>𝒲</code> remains the manifold itself.</li>
+<li>Removes the extra 3D sphere drawn at the selected point after clicking the characteristic surface; clicking still updates the inspected point <code>P</code>.</li>
+<li>Updates projection notation to <code>π₋(P)=U₋</code> and <code>π₊(P)=U₊</code> in UI/help/canonical documentation.</li>
+</ul>
+<h2 id="dev.5-rarefaction-separatrices">0.7.0-dev.5 — Rarefaction Separatrices</h2>
+<ul>
+<li>Audited all four local half-separatrices of the reciprocal-chart saddle at projective infinity.</li>
+<li>Preserved reciprocal-chart points as the canonical separatrix representation and made finite-chart projection explicit.</li>
+<li>Fixed the false finite projection of <code>Z = 0</code>: boundary branches are no longer collapsed to <code>zc = ±1</code>.</li>
+<li>Verified that the two stable branches of the regression preset lie on the projective boundary, while the unstable branches enter opposite <code>Z</code> sides.</li>
+<li>Added exact chart-transition tests for the unstable branches.</li>
+</ul>
+<h2 id="dev.4-rarefaction-singularities">0.7.0-dev.4 — Rarefaction Singularities</h2>
+<ul>
+<li>Derived the reciprocal-chart singularity condition at projective infinity.</li>
+<li>Added analytic <code>infinityRarefactionLinearData</code> for existence, location, and eigenvalues at <code>Z = 0</code>.</li>
+<li>Verified the regression preset has <code>(eta,Z)=(-1/40,0)</code> with eigenvalues <code>(-8,7)</code>, hence a saddle.</li>
+<li>Added tests separating mathematical classification from compactified rendering.</li>
+</ul>
+<p>All notable changes to this project are documented here.</p>
+<p>The project follows Semantic Versioning while recognizing that versions below 1.0.0 may evolve their public scientific/API conventions.</p>
+<h2 id="unreleased">[Unreleased]</h2>
+<h2 id="dev.22-state-fibres-and-characteristic-lifts">[0.7.0-dev.22] — State Fibres and Characteristic Lifts</h2>
+<ul>
+<li>Formalized fixed states <code>U_*</code> as points of state space whose inverse images under <code>pi_-</code> and <code>pi_+</code> are generally curves in the wave manifold.</li>
+<li>Derived pure finite- and reciprocal-chart projection-fibre formulas without introducing Hugoniot or Riemann-solver semantics.</li>
+<li>Completed the full reciprocal wave-coordinate transition with <code>Upsilon=Y/Z</code>; the earlier unchanged-<code>Y</code> notation is valid only on the characteristic where the jump vanishes.</li>
+<li>Added projective characteristic lifts of a state, including the genuine <code>Z=0</code> direction without fake finite <code>z</code>.</li>
+<li>Added regression tests for endpoint recovery, chart overlap, characteristic intersections and the projective infinity lift.</li>
+</ul>
+<h2 id="dev.21-foundation-verification">[0.7.0-dev.21] — Foundation Verification</h2>
+<ul>
+<li>Audited the seven original pre-Hugoniot foundation commitments with explicit PASS/DEFERRED/FAIL evidence.</li>
+<li>Closed stale documentation after the dev.20 three-space implementation and corrected the LaTeX inclusion of <code>09-three-spaces.tex</code>.</li>
+<li>Updated README, roadmap, traceability, architecture and user manual to the actual dev.21 state.</li>
+<li>Recorded only two non-blocking presentation deferrals: camera-pose persistence and exhaustive object-specific tooltips.</li>
+<li>Declared no blocking Foundation FAIL, conditional on the complete local <code>npm run check</code>.</li>
+</ul>
+<h2 id="dev.11-state-space-math-typography-coincidence-continuity">[0.7.0-dev.11] — State Space, Math Typography &amp; Coincidence Continuity</h2>
+<ul>
+<li>Preserved a single rarefaction orbit across the coincidence locus: slow/fast labels now apply to segments, not to the whole orbit.</li>
+<li>Added bisection refinement of slow-fast crossings and shares the same refined <code>E</code> point between adjacent rendered segments.</li>
+<li>Preserved an <code>orbitId</code> across branch changes and marked coincidence transitions in the state-space view.</li>
+<li>Made the state-space plotting area square so equal <code>(u,v)</code> spans have true 1:1 screen scale; slow/fast segments also differ by line style.</li>
+<li>Added reusable <code>MathLabel</code> and <code>MathBlock</code> UI primitives and reorganized mathematical Help with a navigable index.</li>
+<li>Corrected Help notation so <code>C</code> is the characteristic surface and <code>E</code> is coincidence, and removed the old app as a mathematical justification.</li>
+<li>Updated canonical LaTeX and the incremental user manual with orbit continuity through <code>E</code>.</li>
+</ul>
+<h2 id="dev.9-state-space">[0.7.0-dev.9] — State Space</h2>
+<ul>
+<li>Added pure canonical projections <code>pi_-</code> and <code>pi_+</code> from the wave manifold to <code>(u,v)</code>.</li>
+<li>Added a geometry-only state-plane adapter and a dedicated state-space inspection dialog.</li>
+<li>The selected <code>U_-</code>, <code>U_+</code>, and <code>Ubar</code> are shown without recomputing wave mathematics in React.</li>
+<li>Added regression tests for the projections, their coincidence on <code>C</code>, and the geometry adapter.</li>
+<li>Updated the mathematical reference, roadmap, and incremental user manual.</li>
+</ul>
+<p>— v0.7.0 Mathematical Core</p>
+<h3 id="added">Added</h3>
+<ul>
+<li>Derived the lifted rarefaction field on <code>\mathcal C</code> directly from the eigenvector equation and the finite-chart map.</li>
+<li>Added <code>characteristicSpectrum</code> to classify regular characteristic points spectrally as slow (<code>\mathcal C_s</code>), fast (<code>\mathcal C_f</code>) or coincidence (<code>\mathcal E</code>).</li>
+<li>Documented the exact cubic equation controlling finite rarefaction singular directions.</li>
+</ul>
+<h3 id="changed">Changed</h3>
+<ul>
+<li>Formalized the complete left/right sonic loci by the endpoint determinant conditions and separated their common characteristic component from the nontrivial sonic sheets <code>\mathcal S^-</code> and <code>\mathcal S^+</code>.</li>
+<li>Added exact determinant-factorization helpers so the code mirrors the documented sonic equations.</li>
+<li>Opened the v0.7.0 development cycle.</li>
+<li>Fixed the canonical notation: <code>\mathcal C</code> denotes the characteristic surface and <code>\mathcal E</code> the coincidence locus, with <code>\mathcal E\subset\mathcal C</code>.</li>
+<li>Added <code>src/math/characteristic/</code>; moved the coincidence locus there and moved the characteristic discriminant out of <code>manifold/waveState.js</code> into <code>characteristic/spectrum.js</code>.</li>
+<li>Added a dedicated LaTeX section deriving <code>\mathcal C</code> and <code>\mathcal E</code>.</li>
+<li>Formalized the ten-parameter general quadratic flux and its Jacobian in the LaTeX reference.</li>
+<li>Formalized the finite-chart wave-manifold coordinates and the exact meaning of <code>tau</code>.</li>
+<li>Derived the reciprocal-chart transition <code>eta = tau/Z^2 = tau z^2</code> from the general quadratic fiber equation.</li>
+</ul>
+<h3 id="tests">Tests</h3>
+<ul>
+<li>Strengthened chart-transition tests to verify coefficient homogenization and the exact <code>tau</code>/<code>eta</code> transition.</li>
+</ul>
+<h2 id="section">[0.6.0] - 2026-10-07</h2>
+<h3 id="added-1">Added</h3>
+<ul>
+<li>GitHub Actions CI running <code>npm run check</code>.</li>
+<li>Repository <code>.gitignore</code>.</li>
+<li>Architecture and numerical-conventions documentation.</li>
+<li>Architecture Decision Records (ADRs).</li>
+<li>LaTeX mathematical-reference skeleton for formula-by-formula migration and verification.</li>
+<li>Project roadmap and contribution workflow.</li>
+<li>Initial scientific design tokens.</li>
+<li>Independent regression tests for the extracted mathematical modules.</li>
+</ul>
+<h3 id="changed-1">Changed</h3>
+<ul>
+<li>Established an explicit scientific dependency direction: mathematics → numerics → geometry → visualization → UI.</li>
+<li>Extracted the general quadratic flux, presets, and Jacobian to <code>src/math/flux/quadraticFlux.js</code>.</li>
+<li>Extracted the finite projective chart to <code>src/math/charts/zChart.js</code>.</li>
+<li>Extracted the complementary <code>Z=1/z</code> chart to the Windows-portable module <code>src/math/charts/reciprocalChart.js</code>.</li>
+<li>Extracted wave-manifold state construction and Rankine–Hugoniot/eigenvector residuals to <code>src/math/manifold/waveState.js</code>.</li>
+<li>Extracted the coincidence locus to <code>src/math/manifold/coincidence.js</code>.</li>
+<li>Extracted sonic geometry to <code>src/math/sonic/sonic.js</code>.</li>
+<li>Extracted rarefaction field, singularity analysis, and separatrix integration to dedicated <code>src/math/rarefaction/</code> modules.</li>
+<li>Extracted polynomial-root helpers to <code>src/math/numerics/polynomialRoots.js</code>.</li>
+<li>Reduced <code>src/math/quadraticFlux.js</code> to a pure compatibility facade; existing application imports remain valid.</li>
+</ul>
+<h3 id="fixed">Fixed</h3>
+<ul>
+<li>Removed temporary <code>HelpDialog.jsx.tmp</code>.</li>
+<li>Avoided filenames distinguished only by letter case, preventing chart-module collisions on case-insensitive filesystems such as standard Windows installations.</li>
+</ul>
+<h2 id="dev.6-local-chart-geometry">0.7.0-dev.6 — Local Chart &amp; Geometry</h2>
+<ul>
+<li>Added a geometry adapter between rarefaction mathematics and rendering.</li>
+<li>Added an interactive local <code>(eta,Z)</code> chart for the projective saddle at infinity.</li>
+<li>The local chart renders all four half-separatrices directly in reciprocal coordinates.</li>
+<li>Stable branches on <code>Z=0</code> remain on the projective boundary and are never collapsed to <code>zc=±1</code>.</li>
+<li>Added tests that enforce the math → geometry boundary.</li>
+</ul>
+<h2 id="dev.10-rarefaction-in-state-space">[0.7.0-dev.10] — Rarefaction in State Space</h2>
+<ul>
+<li>Extracted reusable generic rarefaction-orbit integration from the Three.js scene into the mathematical rarefaction layer.</li>
+<li>Projected the same characteristic-surface orbits to <code>(u,v)</code> without integrating a second state-space ODE.</li>
+<li>Added slow/fast state-space segments inherited from <code>C_s</code> and <code>C_f</code>, split at coincidence/undefined points.</li>
+<li>Extended state-space geometry bounds to include projected rarefaction curves.</li>
+<li>Added regression tests for exact projection, characteristic tangency, and branch consistency.</li>
+<li>Updated the mathematical reference and incremental user manual.</li>
+</ul>
+<h2 id="v0.7.0-dev.15-geometryrenderer-boundary">v0.7.0-dev.15 — Geometry/Renderer Boundary</h2>
+<ul>
+<li>Move finite-saddle separatrix integration out of <code>Scene.jsx</code> into <code>math/rarefaction/finiteSeparatrices.js</code>.</li>
+<li>Move sonic-sheet sampling, pole guards, clipping and triangulation out of React into <code>geometry/sonic/surface.js</code>.</li>
+<li>Keep Three.js responsible for converting prepared geometry into buffers/materials and rendering it.</li>
+<li>Add regression and architecture tests for the new boundary.</li>
+</ul>
+<h2 id="v0.7.0-dev.16-reproducible-experiments">v0.7.0-dev.16 — Reproducible Experiments</h2>
+<ul>
+<li>Add versioned experiment schema <code>general-wave-manifold-lab/experiment</code> v1.</li>
+<li>Export/import flux coefficients, domain, selected point, numerical-policy snapshot, visible objects and visual scales as JSON.</li>
+<li>Separate scientific state from presentation state in the serialized format.</li>
+<li>Validate imported experiments and reject unknown schema versions or invalid domains.</li>
+<li>Detect and report numerical-policy mismatches instead of silently claiming exact reproduction.</li>
+<li>Add regression tests for round-trip serialization, validation and numerical-policy compatibility.</li>
+</ul>
+<h2 id="v0.7.0-dev.17-scientific-ui-foundation-audit">v0.7.0-dev.17 — Scientific UI / Foundation Audit</h2>
+<ul>
+<li>Rename experiment <code>scientific.domain</code> to the precise <code>scientific.samplingDomain</code>; schema v2 migrates dev.16 schema-v1 files on import.</li>
+<li>Rename the UI section from “Domínio” to “Janela de amostragem” and state explicitly that it is not the mathematical domain of <code>W</code>.</li>
+<li>Activate semantic UI tokens and provide coherent dark/light presentation themes with persisted local preference.</li>
+<li>Add keyboard focus visibility, reduced-motion handling and final responsive guards.</li>
+<li>Document the scientific UI boundary and close the pre-Hugoniot Foundation completion sequence.</li>
+</ul>
+<h2 id="v0.7.0-dev.20-three-space-solution-framework">v0.7.0-dev.20 — Three-Space Solution Framework</h2>
+<ul>
+<li>Add the physical solution space <code>X ≃ R²_(x,t)</code> as an executable view, not only documentation.</li>
+<li>Connect one already-computed rarefaction orbit across <code>W -&gt; U -&gt; X</code> without reintegrating it in downstream views.</li>
+<li>Realize a rarefaction physically only when its characteristic speed is monotone; generic/nonmonotone orbits are explicitly rejected as physical fans.</li>
+<li>Use the self-similar coordinate <code>xi=x/t=s(U)</code> for the rarefaction fan, with no claim of a general Riemann solver.</li>
+<li>Allow a physical-space ray to drive the shared wave-manifold selection back to <code>(tau,0,zc)</code>.</li>
+<li>Add pure solution and physical-geometry layers plus regression tests.</li>
+</ul>
+<h2 id="dev.23-state-fibre-visualization">0.7.0-dev.23 — State Fibre Visualization</h2>
+<ul>
+<li>Visualiza em <code>𝒲</code> as duas pré-imagens <code>π₋⁻¹(U*)</code> e <code>π₊⁻¹(U*)</code> de um estado fixado em <code>𝒰</code>.</li>
+<li>Permite fixar <code>U*</code> a partir de <code>U₋</code>, <code>Ū</code> ou <code>U₊</code> do ponto atualmente inspecionado.</li>
+<li>Marca os lifts característicos finitos e os classifica como slow, fast ou coincidence.</li>
+<li>A amostragem e segmentação das fibras pertence à camada de geometria; <code>Scene.jsx</code> apenas renderiza os dados preparados.</li>
+</ul>
+<h2 id="v0.7.0-dev.24.3-view-fitting">v0.7.0-dev.24.3 — View fitting</h2>
+<ul>
+<li>Make “Ajustar à geometria” in state space use a robust square 1:1 viewport and include the selected <code>U*</code> without letting distant rarefaction outliers dominate the fit.</li>
+<li>Add “Ajustar vista 3D”, which changes only the visual scales <code>(s_tau,s_Y,s_zc)</code> using the sampled surfaces plus the robust state-fibre extent.</li>
+<li>Keep the mathematical sampling window and free state fibres unchanged by 3D fitting.</li>
+</ul>
+<h2 id="v0.7.0-dev.24.9-hugoniot-branch-decomposition">v0.7.0-dev.24.9 — Hugoniot Branch Decomposition</h2>
+<ul>
+<li>Decomposes fixed-state projection fibres into connected regular branches over RP^1.</li>
+<li>Preserves continuation through Z=0 when projective infinity is regular.</li>
+<li>Associates canonical Ps/Pf characteristic lifts to their regular branches without asserting shock admissibility.</li>
+</ul>
+<h2 id="v0.7.0-dev.24.10-hugoniot-spectral-diagnostics">v0.7.0-dev.24.10 — Hugoniot spectral diagnostics</h2>
+<ul>
+<li>Adds a pure mathematical diagnostic for the ordered endpoint spectra at <code>U_-</code> and <code>U_+</code> along a Rankine–Hugoniot state.</li>
+<li>Reports the signed gaps <code>s-lambda_i(U_-)</code> and <code>s-lambda_i(U_+)</code> without imposing any shock admissibility criterion.</li>
+<li>Exposes the diagnostic in the point-inspection panel as groundwork for a later, explicitly chosen admissibility model.</li>
+<li>Adds regression tests for eigenvalue ordering, speed gaps, and characteristic-limit consistency.</li>
+</ul>
+<h2 id="v0.7.0-dev.24.11-hugoniot-spectral-regions">v0.7.0-dev.24.11 — Hugoniot Spectral Regions</h2>
+<ul>
+<li>Partitions each regular fixed-state Hugoniot branch by the spectral signature of the Rankine–Hugoniot speed at both endpoint states.</li>
+<li>Refines transition events to equalities <code>s = lambda_i(U_-)</code> or <code>s = lambda_i(U_+)</code>.</li>
+<li>Keeps the construction diagnostic: no Lax/Liu or other shock-admissibility criterion is imposed.</li>
+<li>Samples projective direction by angle, independently of the 3-D visualization window.</li>
+</ul>
+<h2 id="v0.7.0-dev.24.12-spectral-region-inspection">v0.7.0-dev.24.12 — Spectral Region Inspection</h2>
+<ul>
+<li>Adds an on-demand scientific inspector for the spectral regions of the forward and backward fixed-state Hugoniot fibres.</li>
+<li>Reports each regular branch, its spectral signature at <code>U_-</code> and <code>U_+</code>, sampled <code>z</code> interval, and refined characteristic boundaries <code>s=lambda_i(U_±)</code>.</li>
+<li>Keeps spectral classification strictly diagnostic; no Lax, Liu, or other shock-admissibility criterion is inferred.</li>
+<li>Leaves the approved sampling windows and visual scales unchanged.</li>
+</ul>
+<h2 id="v0.7.0-dev.24.15-state-roles-and-saturation-foundation">v0.7.0-dev.24.15 — State roles and saturation foundation</h2>
+<ul>
+<li>Formaliza U* como estado genérico, sem papel esquerdo/direito intrínseco.</li>
+<li>Formaliza (UL,UR) como dados globais orientados do problema de Riemann.</li>
+<li>Formaliza U-(P), U+(P) como estados locais móveis.</li>
+<li>Introduz sementes puras para sat_forw(Gamma) via pi_- e sat_back(Gamma) via pi_+; o meshing da saturada fica para a camada numérica/geométrica posterior.</li>
+</ul>
+<h2 id="v0.7.0-dev.24.21-numerical-composite-trace">v0.7.0-dev.24.21 — Numerical Composite Trace</h2>
+<ul>
+<li>Added pure finite-chart intersection of each rarefaction-generated Hugoniot leaf with the canonical non-trivial sonic sheet.</li>
+<li>Added continuation preserving the correspondence <code>P(sigma) -&gt; Q(sigma)</code>, rather than treating composite points as an unordered cloud.</li>
+<li>Projective-infinity intersections are deliberately deferred to reciprocal-chart continuation; no fake finite point is introduced.</li>
+</ul>
+<h3 id="v0.7.0-dev.24.22-projective-composite-continuation">v0.7.0-dev.24.22 — Projective Composite Continuation</h3>
+<ul>
+<li>Composite leaf intersections now use both the finite z chart and the reciprocal (eta,Upsilon,Z) chart.</li>
+<li>Sonic membership is evaluated directly in reciprocal coordinates at Z=0; no fake finite z/tau/Y point is created at projective infinity.</li>
+<li>Finite and reciprocal roots are deduplicated by projective direction, preserving the source-rarefaction to composite correspondence.</li>
+</ul>
+<h3 id="v0.7.0-dev.24.23-composite-branch-decomposition">v0.7.0-dev.24.23 — Composite branch decomposition</h3>
+<ul>
+<li>Decomposes the discrete composite trace into continuous projective branches.</li>
+<li>Uses one-to-one matching only between consecutive rarefaction samples; roots that disappear terminate a branch rather than creating artificial bridges.</li>
+<li>Supports finite and reciprocal-chart intersection records.</li>
+</ul>
+<h3 id="v0.7.0-dev.24.24-composite-numerical-certification">v0.7.0-dev.24.24 — Composite numerical certification</h3>
+<ul>
+<li>Certifies each traced composite point independently against the target sonic sheet and the generating Hugoniot fibre.</li>
+<li>Records separate sonic and fixed-state residuals without changing branch topology.</li>
+</ul>
+<h2 id="v0.7.0-dev.24.36-implicit-sonic-geometry">v0.7.0-dev.24.36 — Implicit Sonic Geometry</h2>
+<ul>
+<li>Replaced explicit sonic rendering <code>Y=±2K/det M</code> by direct level-set extraction of <code>Phi_-=Y det M-2K=0</code> and <code>Phi_+=Y det M+2K=0</code> using marching tetrahedra.</li>
+<li>The renderer no longer divides by <code>det M</code>; therefore the <code>K=det M=0</code> degeneracy is retained instead of cut out.</li>
+<li>Added the inflection locus <code>J: Y=0, K=0</code> and double-sonic locus <code>DS: K=0, det M=0, Y!=0</code> to sonic geometry.</li>
+<li>For the Wave Manifold preset, two double-sonic vertical lines are recovered and Newton-refined to residuals near machine precision.</li>
+<li>Composite endpoint diagnostics now test proximity to <code>DS</code>; in the current preset none of the 12 remaining root-disappearance endpoints is close to the recovered double-sonic lines, so those endpoints remain an independent issue.</li>
+</ul>
+<h2 id="dev.24.47.41">0.7.0-dev.24.47.41</h2>
+<ul>
+<li>Added offline <code>audit:sonics:upper-boundary</code> comparing the upper compactified boundary at nZ=50 and nZ=100, including mixed boundary-edge endpoints, geometric lengths, distances to domain boundary, and implicit residuals.</li>
+<li>Kept production sonic triangulation and Worker unchanged.</li>
+</ul>
+<h3 id="certificacao-matematica-adicional-dev.24.47.58-sem-mudanca-de-versao">Certificação matemática adicional (dev.24.47.58, sem mudança de versão)</h3>
+<ul>
+<li>Acrescentados 12 testes em <code>tests/canonicalCertification.test.js</code>, cobrindo fluxo, jacobiano, RH, cartas, sônicas e rarefação para três conjuntos de parâmetros.</li>
+<li>Expandida a matriz <code>docs/MATH_CODE_TRACEABILITY.html</code> com escopo, testes e pendências explícitas.</li>
+<li>Nenhuma alteração de geometria, renderização ou equações de produção.</li>
+</ul>
+<h3 id="etapa-4-diagnosticos-do-integrador-dev.24.47.58-versao-mantida">Etapa 4 — diagnósticos do integrador (dev.24.47.58, versão mantida)</h3>
+<ul>
+<li>RK4 adaptativo informa explicitamente aceitação forçada no passo mínimo.</li>
+<li>Opção estrita <code>minimumStepPolicy: 'reject'</code> sem alteração do padrão de produção.</li>
+<li>Quatro testes adicionais de política de parada.</li>
+</ul>
+<h3 id="certificacao-numerica-complementar-desenvolvimento-v0.7.0">Certificação numérica complementar (desenvolvimento v0.7.0)</h3>
+<ul>
+<li>Oito testes novos para raízes múltiplas, degenerescências de equilíbrios no infinito e critérios de continuidade de ramos.</li>
+<li>Documentadas as limitações de multiplicidade, discretização e ausência de certificação global de bifurcações.</li>
+<li>Sem mudanças nas rotinas geométricas ou de produção.</li>
+</ul>
+<h3 id="numerical-root-diagnostics-development">Numerical root diagnostics (development)</h3>
+<ul>
+<li>Added opt-in polynomial multiplicity/tangency diagnostics for degree &lt;= 3.</li>
+<li>Added conservative root-count event diagnostics for continuation samples.</li>
+<li>Added six tests; no production geometry or rendering changes.</li>
+</ul>
+<h3 id="auditoria-adicional-de-raizes-proximas-dev.24.47.58">Auditoria adicional de raízes próximas (dev.24.47.58)</h3>
+<ul>
+<li><p>Diagnósticos opt-in de sensibilidade a perturbações do termo constante e amostras de continuação.</p>
+</li>
+<li><p>Testes para tangências, raízes próximas e eventos não classificados.</p>
+</li>
+<li><p>Sem mudanças nos resolvedores e renderizadores de produção.</p>
+</li>
+<li><p>v0.7.0-dev.24.47.58 (auditoria de continuação): função opcional
+<code>auditCompositeContinuation</code> para rastrear mudanças de contagem e
+correspondências potencialmente ambíguas nas curvas compostas, sem
+alterar o matching de produção; quatro testes novos.</p>
+</li>
+<li><p>Integração opcional da auditoria de continuação ao pipeline das curvas compostas, sem alterar a geometria.</p>
+</li>
+<li><p>Painel científico compacto para auditoria de continuação de 𝒦₋ e 𝒦₊, com contagem de eventos não classificados e certificação detalhada expansível. Três testes adicionais; nenhuma alteração na geração geométrica.</p>
+</li>
+<li><p>Etapa 5 (parcial): isolado adaptador Three.js da malha sônica em <code>src/rendering/sonicBufferGeometry.js</code>; ver <code>docs/architecture/GEOMETRY_RENDERER_AUDIT.html</code>.</p>
+</li>
+<li><p>Etapa 5 (curvas): adaptador puro <code>src/rendering/curvePoints.js</code> para coordenadas das curvas e substituição das alocações manuais de <code>BufferGeometry</code> por <code>&lt;Line&gt;</code>; quatro testes de regressão arquitetural.</p>
+</li>
+<li><p>Etapa 5 (Worker): limpeza explícita de handlers e timers no ciclo de vida do Worker sônico; validação de respostas por identificador/chave extraída para adaptador testável. Sem mudanças de geometria ou aparência.</p>
+</li>
+</ul>
+<h2 id="v0.7.0-dev.24.47.58-graphic-resource-lifecycle-audit">v0.7.0-dev.24.47.58 — Graphic resource lifecycle audit</h2>
+<ul>
+<li>Memoize and dispose characteristic boundary and coordinate axes GPU resources.</li>
+<li>Dispose the temporary source plane after generating the characteristic border edges.</li>
+<li>Centralize cleanup of geometry and axes helper; add three focused lifecycle tests.</li>
+<li>Preserve scientific geometry and existing sonic worker behavior.</li>
+</ul>
+<h3 id="etapa-5-estresse-do-ciclo-de-vida-dev.24.47.58">Etapa 5 — Estresse do ciclo de vida (dev.24.47.58)</h3>
+<ul>
+<li>Adicionados testes para 500 atualizações consecutivas de parâmetros sônicos e 500 ciclos de descarte de geometrias, materiais e Workers.</li>
+<li>Nenhuma alteração nas equações, na triangulação ou na renderização de produção.</li>
+<li>Testes Node: 223/223; validação GPU/navegador ainda pendente.</li>
+</ul>
+<h3 id="etapa-56-protocolo-de-navegador-e-tokens-de-inspecao">Etapa 5/6 — protocolo de navegador e tokens de inspeção</h3>
+<ul>
+<li>Adicionado <code>docs/architecture/BROWSER_VALIDATION_PROTOCOL.html</code> com critérios de aceite de GPU e mudanças rápidas de parâmetros.</li>
+<li>Diagramas locais e overlays passam a consumir tokens semânticos de tema; nenhuma mudança matemática ou de geometria.</li>
+</ul>
+<h2 id="etapa-6-controles-e-responsividade-08102026">Etapa 6 — controles e responsividade (08/10/2026)</h2>
+<ul>
+<li><p>Introduzido <code>src/styles/scientific-ui.css</code> para controles, foco acessível, painel de auditoria, diálogos e layout móvel.</p>
+</li>
+<li><p>Adicionados três testes de regressão estrutural da camada de estilos.</p>
+</li>
+<li><p>Nenhuma alteração nos cálculos, na triangulação ou nas cores científicas.</p>
+</li>
+<li><p>Etapa 6: harmonização temática e responsiva das janelas de ajuda, carta local e regiões espectrais; títulos acessíveis e testes de regressão. Sem mudanças na geometria científica.</p>
+</li>
+</ul>
+<h3 id="etapa-6-tipografia-matematica-e-estados-revisao-incremental">Etapa 6 — tipografia matemática e estados (revisão incremental)</h3>
+<ul>
+<li>Padronizada a legibilidade dos blocos KaTeX e sua rolagem horizontal em telas estreitas.</li>
+<li>Harmonizados estados de controles expandidos, inválidos e desabilitados; alinhadas as opções de visibilidade.</li>
+<li>Sem alterações em dados científicos, geometria, materiais Three.js ou cores de trajetórias.</li>
+</ul>
+<h3 id="etapa-6-auditoria-de-notacao-matematica">Etapa 6 — auditoria de notação matemática</h3>
+<ul>
+<li>Rótulos matemáticos da inspeção principal convertidos para o componente KaTeX existente <code>MathLabel</code>.</li>
+<li>Adicionada auditoria em <code>docs/ui/MATH_NOTATION_AUDIT.html</code> e testes de regressão; sem alterações matemáticas ou geométricas.</li>
+</ul>
+<h3 id="espaco-de-estados-selecao-interativa-de-dados-de-riemann">Espaço de estados: seleção interativa de dados de Riemann</h3>
+<ul>
+<li><p>Introduz U_L e U_R independentes de U* com clique, arraste, teclado e campos numéricos.</p>
+</li>
+<li><p>Mantém a geometria científica e as rotinas de solução existentes inalteradas.</p>
+</li>
+<li><p>Diagnóstico de multiplicidade projetiva de direções características, inclusive carta recíproca; não equivale à tangência geométrica da fibra.</p>
+</li>
+<li><p>Análise diferencial desingularizada de Rankine–Hugoniot nas cartas finita e recíproca, com cinco testes de regressão.</p>
+</li>
+</ul>
+<h2 id="fundamentacao-antes-da-construcao-geometrica-20102026">Fundamentação antes da construção geométrica — 20/10/2026</h2>
+<p>A direção editorial passa a exigir definição na teoria de origem, seleção clássica ou não clássica quando aplicável, construção intrínseca, demonstração da correspondência, degenerações e realização física antes do algoritmo. O contrato e o mapa dos objetos dos 26 capítulos estão em docs/FUNDAMENTACAO_E_CONSTRUCAO.md. Foram acrescentadas definições de pré-imagem, levantamento, saturação por fibras e interseção ao capítulo da variedade; a admissibilidade foi separada de extensões geométricas nos capítulos de entropia e compostas. LeFloch foi incorporado como referência de trabalho com alcance da consulta explícito. A leitura detalhada do livro e a revisão por resultado continuam pendentes.</p>
+<h2 id="terminologia-construcao-tradicional-e-construcao-topologica-20102026">Terminologia: construção tradicional e construção topológica — 20/10/2026</h2>
+<p>Uniformizados os capítulos, títulos do aplicativo e guia de notação: a construção tradicional em leis de conservação abrange as teorias clássica e não clássica de LeFloch; a construção sobre a Variedade de Ondas é denominada topológica. Preservado o significado técnico de solução clássica para regularidade da EDP. A admissibilidade escolhida deve ser preservada ao passar entre as construções.</p>
+<h2 id="camada-tradicional-antes-da-construcao-topologica-20102026">Camada tradicional antes da construção topológica — 20/10/2026</h2>
+<p>Criada uma referência autônoma em docs/traditional/, com formulação fraca, espectro, rarefações, contatos, Hugoniot, Lax, Liu, entropia, sonicidade, compostas, perfis regularizados, relação cinética e montagem física do problema de Riemann. Inclui deduções explícitas e uma proposição condicional para a resolução local do estado intermediário. A ordem de revisão foi atualizada: base tradicional primeiro, camada topológica depois. Preservados os capítulos existentes. A revisão por teorema e a seleção cinética específica permanecem abertas; não se declara solver global para os dez parâmetros.</p>
+<h2 id="consolidacao-das-cadeias-tradicionais-20102026">Consolidação das cadeias tradicionais — 20/10/2026</h2>
+<p>Criado docs/traditional/CADEIAS_E_ADMISSIBILIDADE.html com registro de ondas, condições de fechamento, ordenação, tratamento de interfaces coincidentes, catálogo de padrões e matriz de critérios. Inclui quatro cadeias exatas do fluxo triangular, prova de Liu para os ramos especificados, contato e junção sônica, proposição de colagem e rastreabilidade dos limites do aplicativo. A consolidação é documental; não implementa busca geral nem determina uma relação cinética para o fluxo geral.</p>
+<h2 id="ampliacao-do-catalogo-de-blocos-20102026">Ampliação do catálogo de blocos — 20/10/2026</h2>
+<p>A lista inicial de cadeias era restrita: acrescentada a matriz formal dos 16 pares R, S, C e K, regras para cadeias maiores e distinção entre decomposição em blocos e perfil físico. Incluídos exemplos exatos C–C para um fluxo linear pertencente à família implementada e K–K/R–K para um fluxo cúbico didático explicitamente fora do escopo quadrático do aplicativo. Conferidos RH e produções entrópicas dos novos choques; os exemplos não implicam cobertura do solver.</p>
+<h2 id="revisao-de-resultados-e-regimes-tradicionais-20102026">Revisão de resultados e regimes tradicionais — 20/10/2026</h2>
+<p>Localizada a referência CW-01, §6.1, para as curvas de ondas e o teorema clássico local. Acrescentadas deduções dos ramos de pequenos choques e da produção entrópica, tabela de padrões locais por famílias e limites dos regimes degenerados. A classe não clássica escolhida pelo usuário é difusão–dispersão com coeficientes a definir. Documentada a equação geral de perfil e um ramo cúbico escalar explícito com RH, perfil e produção entrópica verificados. O estudo não determina uma cinética universal para os dez coeficientes. Novos script e testes reproduzem as identidades de três escolhas de parâmetros.</p>
+<h2 id="nove-tipos-de-salto-e-contrato-das-16-cadeias-20102026">Nove tipos de salto e contrato das 16 cadeias — 20/10/2026</h2>
+<p>Consolidada a classificação dos nove interiores espectrais da imagem fornecida, com desigualdades, orientação, número de características incidentes, exclusões sônicas e separação de admissibilidade. A origem bibliográfica da imagem não foi identificada e não é atribuída a LeFloch. Criados nove exemplos quadráticos exatos de RH, com script e testes. O contrato IMPLEMENTACAO_16_CADEIAS.html define dados, construtores, equações de fechamento, disponibilidade por regime, resultados dos critérios e sequência de implementação nos estados. Nenhuma busca geral ou correção de classificador de produção foi implementada nesta etapa documental.</p>
+<h2 id="espaco-de-estados-configuracoes-estritas-e-rr-20102026">Espaço de estados: configurações estritas e RR — 20/10/2026</h2>
+<p>Implementado o classificador dos nove interiores espectrais, separado das fronteiras sônicas e da admissibilidade. Corrigido laxClass2x2 para exigir espectros completos e rejeitar coincidências e igualdades dentro da tolerância. O diagnóstico direto e as regiões espectrais apresentam a configuração. Acrescentados candidatos RR por interseções de curvas integrais amostradas, com dois leques, avaliação física, proveniência e seleção compartilhada entre os ambientes. Comparação e agrupamento não inventam choques para RR. Contatos e composição geral de K permanecem pendentes; esta etapa não implementa os 16 padrões nem certifica entropia.</p>
+<h2 id="espaco-de-estados-contatos-de-direcao-constante-20102026">Espaço de estados: contatos de direção constante — 20/10/2026</h2>
+<p>Acrescentados RC, SC, CR, CS e CC para modelos de contato com direção própria e velocidade constantes. O critério verifica o núcleo comum dos coeficientes quadráticos e a equação própria da parte linear, com tolerâncias explícitas. SC/CS podem ser resolvidos diretamente pela equação afim de RH na reta de contato. Os candidatos são compartilhados entre estados e físico, com contatos roxos, traços separados e nenhuma interpolação através das interfaces. A janela de estados agora pode ser criada dos dados de Riemann sem um ponto regular da variedade. Contatos de direção variável, amplitudes nulas, incidências não isoladas e composição geral de K permanecem fora desta ampliação.</p>
+<h2 id="compostas-nos-estados-e-correcao-reciproca-20102026">Compostas nos estados e correção recíproca — 20/10/2026</h2>
+<p>Acrescentada busca local de pares com K, usando parceiros sônicos de amplitude finita calculados diretamente nas equações quadráticas de RH. K lento usa R–S e K rápido usa S–R; as interseções de blocos são refinadas em parâmetros locais e todos os segmentos são reavaliados. Casos quadráticos RK/KR/SK/KS possuem testes positivos; CK/KC/KK continuam sem fixture positiva validada. A representação física preserva os segmentos internos e o traço direito nas junções sônicas. No plano, segmentos de referência entre extremos de choques não são apresentados como curvas de Hugoniot.</p>
+<p>Corrigido o resíduo de compositeTrace: avaliação direta de PhiHat, inclusive em Z=0 regular, em vez de Z²Phi e continuação simétrica. Bisseções não aceitam apenas largura pequena. A regressão do falso certificado da fronteira foi reproduzida e passou a ser rejeitada. Não há certificação entrópica, cinética ou de completude global.</p>
+
+</main>
+</body>
+</html>

@@ -73,6 +73,8 @@ export function compositeBranchGeometry(branch,scales={},window=null){
       const clipped=clipSegment(prev.q,q,window)
       if(clipped){
         const map=(c,source)=>({x:(scales.tauScale??1)*c.tau,y:(scales.YScale??1)*c.Y,z:(scales.zScale??1)*zc(c.z),mathematical:c,source})
+        // A common vertex outside the window cannot join the two clipped edges.
+        if(!inside(prev.q,window))push()
         if(!current.length)current.push(map(clipped[0],prev.point))
         current.push(map(clipped[1],point))
       }else push()

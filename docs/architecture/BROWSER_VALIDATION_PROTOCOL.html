@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BROWSER_VALIDATION_PROTOCOL</title>
+<style>
+body{margin:2rem auto;padding:0 1rem;max-width:78ch;font:1rem/1.65 system-ui,sans-serif;color:#182230;background:#fff}
+h1,h2,h3,h4{line-height:1.25} a{color:#12568b} img{max-width:100%;height:auto}
+pre,blockquote{padding:1rem;background:#f3f6f8} pre{overflow:auto} code{overflow-wrap:anywhere}
+table{display:block;overflow:auto;border-collapse:collapse} th,td{padding:.4rem .65rem;border:1px solid #cdd5df;text-align:left}
+mjx-container[display=true]{overflow-x:auto;overflow-y:hidden;padding:.4rem 0}
+</style>
+
+</head>
+<body>
+<main>
+<h1 id="protocolo-de-validacao-visual-e-gpu-etapa-5">Protocolo de validação visual e GPU — etapa 5</h1>
+<p>Status: <strong>pendente de execução no navegador com dependências instaladas</strong>. Os testes Node de descarte e cancelamento não medem memória GPU.</p>
+<h2 id="ambiente-e-registro">Ambiente e registro</h2>
+<p>Registrar navegador, versão, sistema, resolução, DPR, placa gráfica e versão do aplicativo. Executar <code>npm run check</code> antes da validação manual. Abrir DevTools &gt; Performance/Memory e monitorar <code>renderer.info.memory.geometries</code> e <code>renderer.info.memory.textures</code> quando disponíveis (somente em sessão de diagnóstico; não expor esse objeto em produção).</p>
+<h2 id="cenarios">Cenários</h2>
+<ol>
+<li>Abrir ambas as sônicas em modo transparente, girar a cena e comparar com opaco e wireframe. Inspecionar especialmente bordas e orientação de faces.</li>
+<li>Repetir com <code>a20=1.9</code> e os demais parâmetros de referência do projeto, registrando capturas com os mesmos ângulos de câmera.</li>
+<li>Alternar 50 vezes os objetos sônicos e as curvas, sem alterar os coeficientes. Após estabilização, comparar a contagem de recursos gráficos com a inicial.</li>
+<li>Alterar rapidamente parâmetros e domínio durante 60 segundos; verificar se resultados de solicitações antigas não substituem os atuais.</li>
+<li>Abrir e fechar 30 vezes as cartas locais e vistas físicas; verificar travamentos, erros de console e descarte.</li>
+<li>Repetir nos temas claro e escuro e em viewport estreita. Conferir contraste dos eixos e legibilidade matemática.</li>
+</ol>
+<h2 id="criterio-de-aceite">Critério de aceite</h2>
+<p>Nenhuma exceção não tratada; ausência de superfícies obsoletas; sem reaparecimento das listras corrigidas na versão .57; nenhuma tendência persistente de crescimento de recursos após estabilização e coleta de lixo (oscilações transitórias são esperadas). Se houver crescimento, registrar série temporal e reprodução mínima.</p>
+<p>Não declarar a etapa 5 concluída até obter evidência visual e de memória do navegador.</p>
+
+</main>
+</body>
+</html>

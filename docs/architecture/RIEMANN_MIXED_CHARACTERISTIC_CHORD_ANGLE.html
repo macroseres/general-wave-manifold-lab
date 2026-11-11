@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RIEMANN_MIXED_CHARACTERISTIC_CHORD_ANGLE</title>
+<style>
+body{margin:2rem auto;padding:0 1rem;max-width:78ch;font:1rem/1.65 system-ui,sans-serif;color:#182230;background:#fff}
+h1,h2,h3,h4{line-height:1.25} a{color:#12568b} img{max-width:100%;height:auto}
+pre,blockquote{padding:1rem;background:#f3f6f8} pre{overflow:auto} code{overflow-wrap:anywhere}
+table{display:block;overflow:auto;border-collapse:collapse} th,td{padding:.4rem .65rem;border:1px solid #cdd5df;text-align:left}
+mjx-container[display=true]{overflow-x:auto;overflow-y:hidden;padding:.4rem 0}
+</style>
+
+</head>
+<body>
+<main>
+<h1 id="erro-angular-da-corda-na-cadeia-mista">Erro angular da corda na cadeia mista</h1>
+<p>Para a raiz reconstruída U_M, seja d=B-A a corda do segmento da rarefação amostrada que contém a interseção com o locus de Hugoniot. Seja r_i(U_M) a direção característica local real e simples da família selecionada. O indicador é</p>
+<pre><code>theta = arccos(|d . r_i| / (||d|| ||r_i||)),  0 &lt;= theta &lt;= pi/2.
+</code></pre>
+<p>O valor é independente da orientação dos vetores. Um ângulo pequeno indica concordância direcional local entre a corda amostrada e o autovetor; não é limite superior do erro geométrico da curva integral, não garante convergência da integração e não constitui teste de admissibilidade entrópica. O diagnóstico é indisponível quando a corda é degenerada ou a direção característica não está definida (incluindo autovalores coincidentes ou região elíptica).</p>
+<p>A avaliação usa a raiz reconstruída pelo procedimento de sensibilidade das cadeias mistas, e não necessariamente o estado intermediário original antes do refinamento. O limiar visual de alinhamento é de 3 graus; é uma convenção numérica ajustável na função.</p>
+
+</main>
+</body>
+</html>

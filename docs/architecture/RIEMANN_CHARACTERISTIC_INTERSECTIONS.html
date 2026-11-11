@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RIEMANN_CHARACTERISTIC_INTERSECTIONS</title>
+<style>
+body{margin:2rem auto;padding:0 1rem;max-width:78ch;font:1rem/1.65 system-ui,sans-serif;color:#182230;background:#fff}
+h1,h2,h3,h4{line-height:1.25} a{color:#12568b} img{max-width:100%;height:auto}
+pre,blockquote{padding:1rem;background:#f3f6f8} pre{overflow:auto} code{overflow-wrap:anywhere}
+table{display:block;overflow:auto;border-collapse:collapse} th,td{padding:.4rem .65rem;border:1px solid #cdd5df;text-align:left}
+mjx-container[display=true]{overflow-x:auto;overflow-y:hidden;padding:.4rem 0}
+</style>
+
+</head>
+<body>
+<main>
+<h1 id="levantamentos-caracteristicos-dos-dados-de-riemann">Levantamentos característicos dos dados de Riemann</h1>
+<p>Para cada estado fixado <code>U_L</code> ou <code>U_R</code>, o módulo <code>src/math/characteristic/riemannLifts.js</code> calcula as direções projetivas reais de autovetores de <code>DF(U)</code> e as velocidades características associadas. A orientação da fibra é <code>pi_-</code> para <code>U_L</code> (Hugoniot forward) e <code>pi_+</code> para <code>U_R</code> (Hugoniot backward).</p>
+<p>O diagnóstico distingue dois autovalores reais distintos, um autovalor duplo com Jacobiano não escalar, Jacobiano escalar (infinitas direções próprias) e espectro não real. A direção <code>r=(1,0)</code> é representada por <code>Z=0</code>, sem truncamento artificial de <code>z</code>.</p>
+<p><strong>Limite científico:</strong> o resultado caracteriza direções de autovetores na coincidência <code>Y=0</code>. Não demonstra que cada direção tenha levantamento regular em uma carta da variedade de ondas, nem certifica multiplicidade de interseção da curva de Hugoniot com a característica. A fronteira <code>Delta=0</code> não é automaticamente uma tangência geométrica. Não são avaliadas admissibilidade, entropia ou rarefações.</p>
+<p>Próximo passo: relacionar essas direções aos levantamentos da variedade, testar regularidade e tangência de forma intrínseca, e integrar a classificação das regiões de <code>Delta</code> no plano de estados.</p>
+
+</main>
+</body>
+</html>

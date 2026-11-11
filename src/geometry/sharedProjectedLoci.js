@@ -3,11 +3,21 @@
  * Nonregular chart points split paths; never join across the projective boundary.
  */
 import { characteristicMesh } from './characteristic/mesh.js'
-import { doubleSonicGeometry, inflectionGeometry } from './sonic/surface.js'
+import { doubleSonicGeometry, inflectionGeometry, sonicSurfaceTriangles } from './sonic/surface.js'
+import { partitionSonicMesh } from './sonic/spectralPartition.js'
+import { flipSonicEdgesExperimental } from './sonic/edgeFlipExperimental.js'
+import { btMinusPaths, reflectBtPaths } from './sonic/btLocusPaths.js'
 import { waveState } from '../math/manifold/waveState.js'
 import { zFromZc } from '../math/charts/zChart.js'
 
 const finitePoint = q => Array.isArray(q) && q.length === 3 && q.every(Number.isFinite)
+export const locusPresentation = {
+  E:{tex:'\\mathcal E',name:'Coincidência',label:'ℰ',color:'#bc9cba'},
+  DS:{tex:'\\mathcal{DS}',name:'Dupla sônica',label:'DS',color:'#8da5b5'},
+  J:{tex:'\\mathcal J',name:'Inflexão',label:'𝒥',color:'#8da5b5'},
+  'BT-':{tex:'\\mathcal{BT}^-',name:'Curva BT negativa',label:'BT⁻',color:'#f59e0b'},
+  'BT+':{tex:'\\mathcal{BT}^+',name:'Curva BT positiva',label:'BT⁺',color:'#e879f9'},
+}
 function splitProjection(points, side, p) {
   const result = []
   let segment = []
@@ -36,15 +46,20 @@ export function sharedProjectedLoci(p,{tauMin,tauMax,YMin,YMax}) {
   const j = inflectionGeometry(p,{tauMin,tauMax})
     .filter(path=>Array.isArray(path)&&path.length>=2)
     .map(path=>path.map(q=>({tau:q.tau,Y:0,zc:q.zc})))
-  const definitions = [
-    {id:'E',label:'ℰ',color:'#bc9cba',paths:coincidence},
-    {id:'DS',label:'DS',color:'#8da5b5',paths:ds},
-    {id:'J',label:'𝒥',color:'#8da5b5',paths:j},
-  ]
-  return definitions.map(item=>({ ...item, projected: {
-    minus:item.paths.flatMap(path=>splitProjection(path,'minus',p)),
-    plus:item.paths.flatMap(path=>splitProjection(path,'plus',p)),
-  }}))
+  return [projectLocus('E',coincidence,p),projectLocus('DS',ds,p),projectLocus('J',j,p)]
+}
+
+const projectLocus=(id,paths,p)=>({id,...locusPresentation[id],paths,projected:{
+  minus:paths.flatMap(path=>splitProjection(path,'minus',p)),
+  plus:paths.flatMap(path=>splitProjection(path,'plus',p)),
+}})
+
+export function projectedBtLoci(p,window,{btCurveMode='continuation',sonicMeshMode}={}){
+  const raw=sonicSurfaceTriangles(p,{...window,side:'minus',diagnostics:false})
+  const mesh=sonicMeshMode==='edge-flip'?flipSonicEdgesExperimental(raw,p,'minus'):raw
+  const sampled={positions:Float32Array.from(mesh.positions),indices:Uint32Array.from(mesh.indices)}
+  const minus=btMinusPaths(partitionSonicMesh(sampled,p,'minus').bt,p,window,btCurveMode)
+  return [projectLocus('BT-',minus,p),projectLocus('BT+',reflectBtPaths(minus),p)]
 }
 
 /** Bound canonical fibre coordinates using the state viewport, not the 3D window. */

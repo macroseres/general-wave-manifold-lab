@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RIEMANN_HUGONIOT_DEGENERATE_ROOT_TESTS</title>
+<style>
+body{margin:2rem auto;padding:0 1rem;max-width:78ch;font:1rem/1.65 system-ui,sans-serif;color:#182230;background:#fff}
+h1,h2,h3,h4{line-height:1.25} a{color:#12568b} img{max-width:100%;height:auto}
+pre,blockquote{padding:1rem;background:#f3f6f8} pre{overflow:auto} code{overflow-wrap:anywhere}
+table{display:block;overflow:auto;border-collapse:collapse} th,td{padding:.4rem .65rem;border:1px solid #cdd5df;text-align:left}
+mjx-container[display=true]{overflow-x:auto;overflow-y:hidden;padding:.4rem 0}
+</style>
+<script defer src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-chtml.js"></script>
+</head>
+<body>
+<main>
+<h1 id="raizes-degeneradas-na-restricao-de-hugoniot">Raízes degeneradas na restrição de Hugoniot</h1>
+<p>Para um fluxo quadrático em duas componentes e um segmento de estados
+\(q(t)=a+t(b-a)\), a função
+\[
+D(t)=\det\big(q(t)-U_0,F(q(t))-F(U_0)\big)
+\]
+é um polinômio de grau no máximo três. A busca de zeros separa o intervalo
+pelas raízes da derivada, incluindo pontos estacionários onde uma raiz
+múltipla pode não produzir mudança de sinal.</p>
+<h2 id="exemplo-analitico-de-tangencia">Exemplo analítico de tangência</h2>
+<p>Considere \(F(u,v)=(u^2/2,uv)\), \(U_0=(0,0)\) e \(q(t)=(2t-1,1)\).
+Então \(D(t)=(2t-1)^2/2\), com raiz dupla em \(t=1/2\).
+A raiz corresponde a um salto não trivial. Testes específicos verificam:
+raiz interior tangencial, segmento invertido, distância excessiva de \(U_M\),
+segmento degenerado fora de Hugoniot e raiz no extremo.</p>
+<p>A correção de extremo permanece restrita ao segmento de proveniência e
+sujeita a um limite para o resíduo relativo de Rankine–Hugoniot. Essa
+verificação <strong>não</strong> estabelece admissibilidade entrópica, nem garante
+certificação algébrica exata perto de degenerescências mal condicionadas.</p>
+
+</main>
+</body>
+</html>

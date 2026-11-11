@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RIEMANN_MIDDLE_OBSERVED_ORDER</title>
+<style>
+body{margin:2rem auto;padding:0 1rem;max-width:78ch;font:1rem/1.65 system-ui,sans-serif;color:#182230;background:#fff}
+h1,h2,h3,h4{line-height:1.25} a{color:#12568b} img{max-width:100%;height:auto}
+pre,blockquote{padding:1rem;background:#f3f6f8} pre{overflow:auto} code{overflow-wrap:anywhere}
+table{display:block;overflow:auto;border-collapse:collapse} th,td{padding:.4rem .65rem;border:1px solid #cdd5df;text-align:left}
+mjx-container[display=true]{overflow-x:auto;overflow-y:hidden;padding:.4rem 0}
+</style>
+
+</head>
+<body>
+<main>
+<h1 id="ordem-observada-de-convergencia-do-estado-intermediario">Ordem observada de convergência do estado intermediário</h1>
+<p>Para aproximações de U_M em passos h, h/2 e h/4, sejam d_h = ||U_h-U_{h/2}|| e d_{h/2}=||U_{h/2}-U_{h/4}||. Quando ambas são positivas e resolvidas numericamente, calcula-se p_obs=log(d_h/d_{h/2})/log(2). O procedimento é aplicado às diferenças sucessivas de cada trio de malhas.</p>
+<p>Se alguma interseção é ambígua ou ausente, a ordem não é inferida. Diferenças inferiores à tolerância também não recebem ordem artificial. Um deslocamento grande entre a primeira e última aproximação é sinalizado, sem concluir que ocorreu troca de ramo ou bifurcação.</p>
+<p>A seleção da raiz continua baseada em proximidade ao U_M de referência; a continuidade topológica do ramo, a ordem assintótica e a admissibilidade entrópica <strong>não estão certificadas</strong>.</p>
+
+</main>
+</body>
+</html>

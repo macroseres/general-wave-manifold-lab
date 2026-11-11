@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RIEMANN_PROJECTIVE_CONTACT</title>
+<style>
+body{margin:2rem auto;padding:0 1rem;max-width:78ch;font:1rem/1.65 system-ui,sans-serif;color:#182230;background:#fff}
+h1,h2,h3,h4{line-height:1.25} a{color:#12568b} img{max-width:100%;height:auto}
+pre,blockquote{padding:1rem;background:#f3f6f8} pre{overflow:auto} code{overflow-wrap:anywhere}
+table{display:block;overflow:auto;border-collapse:collapse} th,td{padding:.4rem .65rem;border:1px solid #cdd5df;text-align:left}
+mjx-container[display=true]{overflow-x:auto;overflow-y:hidden;padding:.4rem 0}
+</style>
+
+</head>
+<body>
+<main>
+<h1 id="contato-projetivo-das-direcoes-caracteristicas">Contato projetivo das direções características</h1>
+<p>Para um estado fixo U e J=DF(U)=[[a,b],[c,d]], a equação homogênea de direções características r=(x,y) é</p>
+<p>q(x,y)=det(r,Jr)=c x²+(d-a)xy-b y²=0.</p>
+<p>No círculo de direções, a derivada angular de q ao longo de (-y,x) distingue raízes simples de múltiplas, sem depender da carta z=x/y. Assim, a direção projetiva y=0 (Z=0) também é testada.</p>
+<p><strong>Escopo:</strong> este teste é algébrico e local no estado U. Ele não certifica a regularidade da fibra de Hugoniot na variedade de ondas, não resolve singularidades da carta e não verifica admissibilidade de ondas. Para isso, será necessário analisar a diferencial da restrição da projeção à fibra e seus limites nas cartas.</p>
+<p>A implementação está em <code>src/math/characteristic/projectiveContact.js</code>; o diagnóstico integra <code>riemannLifts.js</code> e o painel Espaço de estados. Testes: <code>tests/projectiveCharacteristicContact.test.js</code>.</p>
+
+</main>
+</body>
+</html>

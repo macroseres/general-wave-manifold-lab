@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GEOMETRY_RENDERER_AUDIT</title>
+<style>
+body{margin:2rem auto;padding:0 1rem;max-width:78ch;font:1rem/1.65 system-ui,sans-serif;color:#182230;background:#fff}
+h1,h2,h3,h4{line-height:1.25} a{color:#12568b} img{max-width:100%;height:auto}
+pre,blockquote{padding:1rem;background:#f3f6f8} pre{overflow:auto} code{overflow-wrap:anywhere}
+table{display:block;overflow:auto;border-collapse:collapse} th,td{padding:.4rem .65rem;border:1px solid #cdd5df;text-align:left}
+mjx-container[display=true]{overflow-x:auto;overflow-y:hidden;padding:.4rem 0}
+</style>
+
+</head>
+<body>
+<main>
+<h1 id="etapa-5-auditoria-da-fronteira-geometriarenderizacao">Etapa 5 — Auditoria da fronteira geometria/renderização</h1>
+<p>Base: <code>v0.7.0-dev.24.47.58</code>. Escopo: separação arquitetural conservadora, sem alterar equações, amostragem, triangulação ou aparência.</p>
+<h2 id="fronteiras-existentes">Fronteiras existentes</h2>
+<ul>
+<li><code>src/math/</code>: funções científicas puras, incluindo fluxo, cartas, sônicas, rarefação, fibras e integração.</li>
+<li><code>src/geometry/</code>: produz coordenadas, curvas, ramos e malhas sem dependência de React ou Three.js.</li>
+<li><code>src/components/Scene.jsx</code>: coordena objetos visíveis, câmera, materiais e conversão de coordenadas em objetos gráficos.</li>
+<li><code>src/geometry/composite/compositeSceneData.js</code>: constrói os dados geométricos e seus diagnósticos; <code>ContinuationAuditPanel.jsx</code> consome somente diagnósticos.</li>
+</ul>
+<h2 id="ajuste-desta-entrega">Ajuste desta entrega</h2>
+<p>Extraída a conversão de dados da malha sônica em <code>THREE.BufferGeometry</code> para <code>src/rendering/sonicBufferGeometry.js</code>. O adaptador preserva o espelhamento de <code>Y</code>, a orientação consistente dos triângulos, os índices e o cálculo de normais. O <code>Scene.jsx</code> permanece responsável pelo ciclo de vida (<code>dispose</code>), materiais e visibilidade. A função pura de orientação permanece em <code>src/geometry/sonic/orientTriangles.js</code>.</p>
+<h2 id="dividas-identificadas">Dívidas identificadas</h2>
+<ol>
+<li><code>Scene.jsx</code> ainda converte curvas de coincidência, rarefação e separatrizes diretamente em <code>THREE.Vector3</code>/<code>THREE.BufferGeometry</code>; essa conversão deve migrar para adaptadores de renderização, com teste de equivalência visual.</li>
+<li>O fallback síncrono da superfície sônica e o Worker são coordenados em <code>Scene.jsx</code>. A geração é pura, mas o agendamento/estado de execução ainda se mistura ao componente.</li>
+<li>Há <code>BufferGeometry</code> criado durante renderização de linhas; revisar descarte de recursos ao desmontar/atualizar.</li>
+<li>A geometria da característica (<code>Y=0</code>) é declarada diretamente em JSX, o que é aceitável como primitiva visual, mas a política deve distinguir primitivas de dados científicos.</li>
+<li>A camada numérica ainda tem diagnósticos de eventos não resolvidos; não interpretar ambiguidades de continuação como bifurcações demonstradas.</li>
+</ol>
+<h2 id="criterios-para-encerrar-a-etapa-5">Critérios para encerrar a etapa 5</h2>
+<ul>
+<li>Dados científicos sem importações de React/Three.js (teste arquitetural existente).</li>
+<li>Adaptadores de renderização isolados e equivalência numérica/visual verificada para malhas e curvas.</li>
+<li>Ciclo de vida de recursos Three.js controlado.</li>
+<li>Renderização não determina equações, tolerâncias, triangulação ou topologia.</li>
+</ul>
+<p><strong>Estado:</strong> em andamento; esta entrega isola o adaptador da malha sônica, não encerra a etapa 5.</p>
+<h2 id="curvas-separacao-incremental-dev.24.47.58">Curvas — separação incremental (dev.24.47.58)</h2>
+<ul>
+<li><code>src/rendering/curvePoints.js</code> converte dados puros em triplas para o renderer, com contratos explícitos <code>tauYzc</code> e <code>xyz</code> e deslocamento visual opcional no eixo Y.</li>
+<li><code>Scene.jsx</code> usa o adaptador nas curvas de coincidência, rarefação, separatrizes finitas e no infinito, loci especiais DS/J, fibras de estado e curvas compostas.</li>
+<li>As curvas que criavam <code>THREE.BufferGeometry().setFromPoints</code> diretamente durante a renderização passaram a usar <code>&lt;Line&gt;</code> de <code>@react-three/drei</code>, que administra o ciclo de vida dos recursos de linha. A malha sônica continua usando o adaptador próprio com <code>dispose()</code> explícito.</li>
+<li>A geometria matemática não importa Three.js; os deslocamentos visuais (0.018, 0.026, 0.043, 0.062 etc.) continuam exclusivos do renderer.</li>
+<li>Verificação: <code>tests/curveRenderingBoundary.test.js</code> e suíte Node. Ainda requer inspeção visual e <code>npm run check</code> em ambiente com dependências instaladas.</li>
+</ul>
+<h2 id="worker-sonico-ciclo-de-vida-dev.24.47.58">Worker sônico — ciclo de vida (dev.24.47.58)</h2>
+<ul>
+<li><code>src/rendering/sonicWorkerLifecycle.js</code> centraliza a verificação de identidade da resposta (<code>id</code> e chave de parâmetros) e o descarte do Worker (desvinculação de <code>onmessage</code>, <code>onerror</code>, <code>onmessageerror</code> antes de <code>terminate</code>).</li>
+<li><code>SonicSurfaces</code> cancela os timers do fallback associados à montagem durante o desmontar, impedindo execução posterior de trabalho agendado.</li>
+<li>O fallback em mudanças de parâmetros mantém sua própria limpeza por efeito; resultados calculados com chaves antigas não são publicados.</li>
+<li>O <code>BufferGeometry</code> sônico continua descartado no cleanup do efeito de geometria.</li>
+<li>A geração e a triangulação não foram alteradas. A auditoria não comprova ausência de vazamentos de GPU em sessões prolongadas; exige inspeção no navegador.</li>
+<li>Testes: <code>tests/sonicWorkerLifecycle.test.js</code> e suíte Node.</li>
+</ul>
+<h2 id="recursos-graficos-e-atualizacao-de-parametros-dev.24.47.58">Recursos gráficos e atualização de parâmetros (dev.24.47.58)</h2>
+<ul>
+<li><code>src/rendering/graphicsLifecycle.js</code> centraliza descarte de <code>BufferGeometry</code> e <code>AxesHelper</code> (geometria e materiais).</li>
+<li>A borda da característica é memorizada por domínio; o <code>PlaneGeometry</code> temporário é descartado imediatamente após a extração de <code>EdgesGeometry</code>.</li>
+<li>O <code>AxesHelper</code> é memorizado pelo comprimento e descartado quando substituído ou desmontado. A malha sônica mantém o descarte por efeito associado à geometria memorizada.</li>
+<li>Três testes de ciclo de vida foram adicionados em <code>tests/graphicsLifecycle.test.js</code>. A suíte Node passou (221/221).</li>
+<li><strong>Pendente:</strong> inspeção visual e de memória GPU no navegador durante alterações rápidas de parâmetros; <code>npm run check</code> não pôde completar por ausência de ESLint no ambiente de execução.</li>
+</ul>
+<h2 id="estresse-de-atualizacao-de-parametros-e-descarte">Estresse de atualização de parâmetros e descarte</h2>
+<ul>
+<li><code>tests/rapidParameterLifecycle.test.js</code> simula 500 mudanças sucessivas de chave e identificador da solicitação sônica, certificando que somente a resposta atual é aceita pelo predicado de identidade.</li>
+<li>O mesmo arquivo simula 500 ciclos de substituição e verifica descarte das geometrias, materiais e Workers e desvinculação dos handlers antes do término.</li>
+<li>A suíte Node passa com 223/223 testes.</li>
+<li><strong>Limite da evidência:</strong> os testes exercitam auxiliares puros com objetos simulados; não medem memória GPU, não exercitam React em um navegador e não certificam que a interface permaneça responsiva durante um fallback síncrono de triangulação. A inspeção real de WebGL e do comportamento visual ainda é obrigatória antes do encerramento da etapa 5.</li>
+</ul>
+
+</main>
+</body>
+</html>

@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>COMPOSTAS_NO_ESPACO_DE_ESTADOS</title>
+<style>
+body{margin:2rem auto;padding:0 1rem;max-width:78ch;font:1rem/1.65 system-ui,sans-serif;color:#182230;background:#fff}
+h1,h2,h3,h4{line-height:1.25} a{color:#12568b} img{max-width:100%;height:auto}
+pre,blockquote{padding:1rem;background:#f3f6f8} pre{overflow:auto} code{overflow-wrap:anywhere}
+table{display:block;overflow:auto;border-collapse:collapse} th,td{padding:.4rem .65rem;border:1px solid #cdd5df;text-align:left}
+mjx-container[display=true]{overflow-x:auto;overflow-y:hidden;padding:.4rem 0}
+</style>
+<script defer src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-chtml.js"></script>
+</head>
+<body>
+<main>
+<h1 id="blocos-compostos-diretamente-no-espaco-de-estados">Blocos compostos diretamente no espaço de estados</h1>
+<h2 id="escopo-implementado">Escopo implementado</h2>
+<p><code>compositeBlockChainCandidates.js</code> acrescenta uma busca limitada para RK, SK, CK, KR, KS, KC e KK. Nesta versão, o bloco K lento à esquerda é rarefação–choque e o bloco K rápido à direita é choque–rarefação. Não se afirma cobertura de todas as orientações ou de compostas com mais segmentos internos.</p>
+<p>Os estados sônicos são calculados por equações do fluxo quadrático nos estados, sem coordenadas da Variedade de Ondas. As rarefações continuam amostradas, e os choques ordinários dos padrões SK/KS usam as curvas de Hugoniot fornecidas ao buscador. A origem dessas curvas pode continuar dependendo dos módulos de projeção existentes.</p>
+<h2 id="parceiros-sonicos-de-amplitude-finita">Parceiros sônicos de amplitude finita</h2>
+<p>Fixe um estado P, uma família simples i e s=λ_i(P). Escreva V=P+ar, B=DF(P)−sI e H(r)=D²F[r,r]. Para o fluxo quadrático, RH equivale, fora de a=0, a</p>
+<p>\[
+Br+\frac a2H(r)=0.
+\]</p>
+<p>Quando H(r) não se anula, uma condição necessária é det(Br,H(r))=0. Em r=(z,1), essa condição é um polinômio de grau no máximo três. A carta algébrica r=(1,Z) cobre a direção omitida; as soluções são deduplicadas nos estados. Uma vez encontrada a direção unitária, recuperar</p>
+<p>\[
+a=-\frac{2\langle Br,H(r)\rangle}{\|H(r)\|^2}.
+\]</p>
+<p><strong>Demonstração.</strong> Expanda F(P+ar)−F(P)=aDF(P)r+a²H(r)/2, subtraia sa r e divida por a. A colinearidade fornece o polinômio; o produto escalar com H fornece a amplitude. Cada candidato ainda precisa passar pela equação vetorial de RH, pois raízes aproximadas ou degeneradas podem não satisfazê-la.</p>
+<p>O construtor rejeita saltos pequenos, direções com H próximo de zero, espectros insuficientemente separados e conexões que falham nas desigualdades não estritas de Lax adotadas para o choque sônico. Polinômios identicamente nulos e famílias contínuas de parceiros não são enumerados. Portanto o algoritmo não é uma prova de completude.</p>
+<h2 id="curvas-de-saida-e-entrada-de-k">Curvas de saída e entrada de K</h2>
+<p>Na construção lenta progressiva, percorrer a rarefação de U_L até P e calcular os parceiros V, com choque P→V sônico no lado esquerdo. Cada V é uma saída candidata do bloco K. Na construção rápida retrospectiva, percorrer a rarefação desde U_R para trás até P e calcular V, com choque V→P sônico no lado direito; cada V é uma entrada candidata.</p>
+<p>As raízes são acompanhadas entre amostras consecutivas por distância limitada, sem ligar desaparecimentos de raízes. Esse acompanhamento é uma heurística de continuação numérica, não uma classificação dos ramos. Uma quantidade máxima de amostras e ramos limita a busca; os limites ficam registrados no candidato.</p>
+<p>Para cada par de blocos, intersectar as curvas de saída e entrada, refinar localmente os dois parâmetros por Newton amortecido dentro dos segmentos identificados e reconstruir os segmentos internos. Verificar novamente RH, sonicidade, família, monotonicidade amostrada, tangência e ordenação. Uma interseção geométrica sozinha não produz um candidato aceito.</p>
+<p>O corretor usa interpolação das curvas integrais fornecidas, não reintegração conjunta certificada das EDOs. Interseções tangenciais ou não isoladas podem não ser resolvidas. Os choques ordinários continuam sujeitos a um teste estrito de Lax; sua incidência de RH é reavaliada e pode rejeitar uma interseção de poligonais imprecisa.</p>
+<h2 id="representacao-fisica-e-distincao-de-selecao">Representação física e distinção de seleção</h2>
+<p>O perfil preserva a lista de segmentos e os dois blocos. Uma junção interna pode ter velocidade igual entre leque e choque. No valor exato da velocidade de um choque, a avaliação usa o traço direito, mesmo quando esse valor também é a borda do leque anterior. Entre os dois blocos, esta versão exige uma margem de velocidade estritamente positiva; junções de blocos com margem zero permanecem fora do buscador.</p>
+<p>Cada leque é desenhado separadamente no plano de estados e no espaço físico. Um segmento pontilhado entre extremos de um choque no plano é identificado como referência, não como arco de Hugoniot reconstruído. As junções sônicas são destacadas e os choques não são interpolados através do salto nos perfis.</p>
+<p>O relatório mantém <code>entropyCertified: false</code>. Lax não estrito nos extremos sônicos é apenas um teste necessário adotado nesta busca; Liu contínuo, perfil difusivo–dispersivo e relação cinética não são deduzidos dessa verificação.</p>
+<h2 id="casos-verificados-e-disponibilidade">Casos verificados e disponibilidade</h2>
+<table>
+<thead>
+<tr>
+<th>Padrão</th>
+<th>Evidência desta etapa</th>
+<th>Restrição</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>KR</td>
+<td>Caso quadrático no preset B₁=8, B₂=0, a=0, c=1; junção (1,−1), saída de K próxima de (1,1)</td>
+<td>Rarefações numéricas e busca local</td>
+</tr>
+<tr>
+<td>RK</td>
+<td>Mesmo preset; junção rápida ((1−√71)/7,0), entrada de K próxima de (−1,−1)</td>
+<td>Rarefações numéricas e busca local</td>
+</tr>
+<tr>
+<td>SK, KS</td>
+<td>Casos quadráticos com curvas de Hugoniot fornecidas e verificação separada dos dois choques</td>
+<td>Não demonstram cobertura da amostragem usada na interface</td>
+</tr>
+<tr>
+<td>KK</td>
+<td>Receita de composição e validação implementada</td>
+<td>Sem caso positivo validado nesta etapa; não declarar suporte científico fechado</td>
+</tr>
+<tr>
+<td>CK, KC</td>
+<td>Entradas de busca implementadas</td>
+<td>Contatos restritos ao modelo de direção constante; sem caso positivo validado nesta etapa</td>
+</tr>
+</tbody>
+</table>
+<p>Não se conclui a existência dos 16 padrões para um mesmo fluxo ou dado inicial. As entradas formais, a existência de um construtor e a verificação de um caso positivo são estados distintos de disponibilidade.</p>
+<h2 id="correcao-independente-do-residuo-reciproco">Correção independente do resíduo recíproco</h2>
+<p>A busca antiga de compostas usava Z²Φ=ZΦ̂, que podia produzir resíduos artificialmente pequenos perto de Z=0. <code>sonic/reciprocalSonic.js</code> agora avalia diretamente</p>
+<p>\[
+\widehat\Phi_\pm=\Upsilon\det\widehat M\ \pm\ 2\widehat K,
+\qquad \widehat\Phi_\pm=Z\Phi_\pm\quad(Z\ne0).
+\]</p>
+<p>Aqui M̂=D²F[(1,Z),·] e K̂ é o termo misto do determinante de DF(Ū)−sI com M̂. A fórmula é regular em Z=0 quando a carta é regular. A bisseção só aceita uma raiz se o próprio resíduo atingir a tolerância; encurtar o intervalo não basta. A regressão com b₂₀=0,3, registrada na rastreabilidade, deixa de certificar a falsa raiz na fronteira.</p>
+<p>Esta correção melhora os diagnósticos topológicos existentes, mas a nova construção de parceiros sônicos não depende deles. As duas implementações mantêm seus escopos separados.</p>
+<h2 id="reproducao">Reprodução</h2>
+<p><code>tests/compositeBlockChainCandidates.test.js</code> contém os dados, a integração dos arcos e os casos RK/KR/SK/KS. <code>tests/reciprocalCompositeResidual.test.js</code> confere a transição do fator sônico e rejeita o antigo falso certificado. <code>tests/stateSpaceChainsRendering.test.js</code> verifica a seleção de KR na vista de estados e os dois leques no componente físico.</p>
+
+</main>
+</body>
+</html>

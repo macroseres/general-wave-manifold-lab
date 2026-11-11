@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>OBJETIVOS_E_ESCOPO</title>
+<style>
+body{margin:2rem auto;padding:0 1rem;max-width:78ch;font:1rem/1.65 system-ui,sans-serif;color:#182230;background:#fff}
+h1,h2,h3,h4{line-height:1.25} a{color:#12568b} img{max-width:100%;height:auto}
+pre,blockquote{padding:1rem;background:#f3f6f8} pre{overflow:auto} code{overflow-wrap:anywhere}
+table{display:block;overflow:auto;border-collapse:collapse} th,td{padding:.4rem .65rem;border:1px solid #cdd5df;text-align:left}
+mjx-container[display=true]{overflow-x:auto;overflow-y:hidden;padding:.4rem 0}
+</style>
+
+</head>
+<body>
+<main>
+<h1 id="objetivos-cientificos-e-escopo-do-aplicativo">Objetivos científicos e escopo do aplicativo</h1>
+<p>Este documento registra a direção científica do projeto, confirmada em 20/10/2026. Deve orientar o roadmap, a documentação matemática e as decisões de implementação. Não é uma declaração de que todos os objetivos já foram alcançados.</p>
+<h2 id="objetivo-central">Objetivo central</h2>
+<p>Construir e visualizar soluções do problema de Riemann na Variedade de Ondas, estabelecendo sua correspondência com as construções no espaço de estados e suas realizações no espaço físico. A variedade é o eixo científico do laboratório: o objetivo de pesquisa é representar nela todas as soluções do espaço de estados dentro de um escopo matemático explicitamente definido.</p>
+<p>As construções conhecidas na literatura para o espaço de estados fornecem referências para a implementação e comparação. Seu levantamento à variedade deve ser desenvolvido e justificado; uma representação gráfica semelhante não demonstra equivalência matemática.</p>
+<h2 id="fluxo-e-classificacao">Fluxo e classificação</h2>
+<p>O ponto de partida implementado é o fluxo quadrático geral de dois estados e dez coeficientes reais, definido em <code>mathematics/01-flux.tex</code> e <code>src/math/flux/quadraticFlux.js</code>. A intenção de estudar um fluxo geral não implica suporte atual a fluxos diferenciáveis arbitrários.</p>
+<p>O laboratório deve permitir estudar classificações segundo os parâmetros, incluindo regiões espectrais, degenerações, geometria das ondas e regimes das construções de Riemann. Deve distinguir classificação em cada estado, exploração de cortes do espaço de parâmetros e classificação global por invariantes ou equivalências demonstradas. Um preset ou corte numérico não representa toda a família.</p>
+<h2 id="correspondencia-entre-os-tres-espacos">Correspondência entre os três espaços</h2>
+<ul>
+<li><strong>Estados:</strong> dados iniciais <code>U_L</code>, <code>U_R</code>, estados intermediários, curvas de ondas, orientação e condições de conexão.</li>
+<li><strong>Variedade de Ondas:</strong> levantamentos dessas construções, projeções <code>pi_-</code> e <code>pi_+</code>, cartas, fibras, sônicas, rarefações e compostas, com identificação dos ramos e degenerações.</li>
+<li><strong>Físico:</strong> realização da mesma cadeia em <code>(x,t)</code>, com velocidades, saltos, leques e perfis autossimilares quando aplicáveis.</li>
+</ul>
+<p>Cada construção deve explicitar como os dados nos três espaços se relacionam, quais projeções são usadas e onde a correspondência deixa de ser regular ou única. Não se presume uma bijeção global entre curvas no espaço de estados e objetos na variedade. Trocas de carta e fronteiras projetivas precisam de tratamento próprio.</p>
+<h2 id="significado-de-cobertura-das-solucoes">Significado de cobertura das soluções</h2>
+<p>“Todas as soluções” é uma meta de pesquisa. Cada resultado de cobertura deve declarar a classe de fluxos, o domínio de parâmetros e estados, as sequências de ondas consideradas, o critério de admissibilidade e as exclusões ou degenerações ainda abertas. Não se presume existência ou unicidade global, especialmente em regimes de tipo misto.</p>
+<p>O software deve distinguir construção matemática, aproximação numérica, candidato e solução validada sob hipóteses declaradas. Resíduos pequenos, Lax, Liu amostrado e testes de convergência são evidências específicas; não constituem isoladamente prova de completude ou admissibilidade entrópica global.</p>
+<h2 id="documentacao-como-base-de-desenvolvimento">Documentação como base de desenvolvimento</h2>
+<p>A terminologia distingue construção tradicional em leis de conservação, que abrange as teorias clássica e não clássica de LeFloch, e construção topológica sobre a Variedade de Ondas. A passagem entre construções deve preservar a admissibilidade escolhida, com correspondência demonstrada no domínio declarado.</p>
+<p>A estrutura obrigatória é definição na teoria de origem → admissibilidade quando aplicável → construção intrínseca na variedade → demonstração da correspondência → degenerações → realização física → algoritmo e evidência. O contrato e o mapa dos objetos estão em <a href="FUNDAMENTACAO_E_CONSTRUCAO.html">Fundamentação e construção</a>. A teoria clássica e não clássica deve preceder a seleção geométrica; uma extensão na variedade não define por si só uma onda não clássica.</p>
+<p>Para cada objeto ou construção, registrar:</p>
+<ol>
+<li>Definição, notação, domínio e hipóteses.</li>
+<li>Referência bibliográfica precisa para resultados da literatura; dedução e hipóteses para adaptações ou resultados desenvolvidos no projeto.</li>
+<li>Construção no espaço de estados, levantamento à variedade e realização física, quando disponíveis.</li>
+<li>Algoritmo, tolerâncias, critérios de parada, singularidades e casos inconclusivos.</li>
+<li>Implementação, testes e evidências de validação correspondentes.</li>
+<li>Estado explícito: planejado, em investigação, implementado numericamente ou validado em escopo delimitado.</li>
+</ol>
+<p>A referência matemática em LaTeX e a documentação exibida no aplicativo ainda coexistem. As 26 seções exibidas no aplicativo usam Markdown como fonte compartilhada entre Documentação e Ajuda, sem texto científico duplicado no registro JSX. A referência LaTeX continua com responsabilidade canônica própria. A migração deve preservar as hipóteses e vincular as fórmulas à referência canônica, evitando versões científicas divergentes.</p>
+<h2 id="estado-observado-e-sequencia-de-trabalho">Estado observado e sequência de trabalho</h2>
+<p>Ordem de desenvolvimento científico confirmada: primeiro consolidar integralmente a construção tradicional nos espaços de estados e físico, incluindo seleção clássica e não clássica; depois acrescentar a camada topológica na Variedade de Ondas. O ponto de entrada é <a href="traditional/README.md">traditional/README.md</a>. O material topológico existente permanece preservado para revisão posterior, sem ser requisito de leitura da primeira camada.</p>
+<p>Já existem o fluxo quadrático, cartas e projeções, rarefações, fibras de Hugoniot, construções numéricas de compostas, cadeias candidatas de Riemann e diagnósticos físicos e de admissibilidade. Sua existência não encerra a validação global das construções.</p>
+<p>A sequência de trabalho é consolidar a documentação e a rastreabilidade atuais; organizar as construções conhecidas no espaço de estados com referências; explicitar e validar seus levantamentos à variedade; conectar as realizações físicas; e ampliar a cobertura e classificação por parâmetros com hipóteses e limitações registradas. A documentação acompanha cada etapa, antes de sua apresentação como resultado validado.</p>
+
+</main>
+</body>
+</html>

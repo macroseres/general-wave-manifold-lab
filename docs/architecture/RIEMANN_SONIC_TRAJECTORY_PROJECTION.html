@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RIEMANN_SONIC_TRAJECTORY_PROJECTION</title>
+<style>
+body{margin:2rem auto;padding:0 1rem;max-width:78ch;font:1rem/1.65 system-ui,sans-serif;color:#182230;background:#fff}
+h1,h2,h3,h4{line-height:1.25} a{color:#12568b} img{max-width:100%;height:auto}
+pre,blockquote{padding:1rem;background:#f3f6f8} pre{overflow:auto} code{overflow-wrap:anywhere}
+table{display:block;overflow:auto;border-collapse:collapse} th,td{padding:.4rem .65rem;border:1px solid #cdd5df;text-align:left}
+mjx-container[display=true]{overflow-x:auto;overflow-y:hidden;padding:.4rem 0}
+</style>
+
+</head>
+<body>
+<main>
+<h1 id="projecao-de-contato-sonico-em-curvas-integrais-numericas">Projeção de contato sônico em curvas integrais numéricas</h1>
+<p>A busca anterior projetava o contato refinado sobre segmentos retilíneos da polilinha de rarefação. Agora, para cada segmento, parte-se da amostra inicial, segue-se o autovetor característico normalizado da família correspondente usando RK4 e minimiza-se a distância ao contato no intervalo de comprimento igual à corda amostrada.</p>
+<p>O refinamento é local: cada arco é reiniciado na amostra já disponível. O procedimento não constitui solução de um problema de valor de contorno nem garante que o contato sônico pertença exatamente à curva integral. A distância reportada é a distância a uma aproximação numérica da curva; não há certificação de erro global.</p>
+<p>Mantêm-se as condições necessárias de correspondência de família, lado sônico, resíduos numéricos do contato e ordenação de velocidades ao longo do trecho utilizado. A admissibilidade do choque e da onda composta permanece aberta.</p>
+<p>Implementação: <code>src/math/solution/trajectoryContactProjection.js</code> e <code>src/math/solution/sonicRarefactionConnections.js</code>. Testes: <code>tests/trajectoryContactProjection.test.js</code> e <code>tests/sonicRarefactionConnections.test.js</code>.</p>
+
+</main>
+</body>
+</html>

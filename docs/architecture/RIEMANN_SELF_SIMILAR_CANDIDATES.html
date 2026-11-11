@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RIEMANN_SELF_SIMILAR_CANDIDATES</title>
+<style>
+body{margin:2rem auto;padding:0 1rem;max-width:78ch;font:1rem/1.65 system-ui,sans-serif;color:#182230;background:#fff}
+h1,h2,h3,h4{line-height:1.25} a{color:#12568b} img{max-width:100%;height:auto}
+pre,blockquote{padding:1rem;background:#f3f6f8} pre{overflow:auto} code{overflow-wrap:anywhere}
+table{display:block;overflow:auto;border-collapse:collapse} th,td{padding:.4rem .65rem;border:1px solid #cdd5df;text-align:left}
+mjx-container[display=true]{overflow-x:auto;overflow-y:hidden;padding:.4rem 0}
+</style>
+<script defer src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-chtml.js"></script>
+</head>
+<body>
+<main>
+<h1 id="perfis-autossimilares-candidatos">Perfis autossimilares candidatos</h1>
+<p>Para \(\xi=x/t\), uma cadeia de dois choques ordenados produz três estados constantes separados pelas velocidades \(s_1&lt;s_2\). Para uma cadeia mista, a região do leque é aproximada por interpolação entre estados da curva integral usando a velocidade característica \(\lambda_i(U)\) como coordenada.</p>
+<p>O construtor exige um estado intermediário refinado para cadeias mistas, um trecho de rarefação monotônico, Rankine–Hugoniot e separação das velocidades. Para dois choques, a interface seleciona previamente candidatos com famílias e desigualdades estritas de Lax. As condições de Liu e a existência de perfil viscoso não são certificadas por esta representação. Nenhuma escolha de candidato é feita como solução única do problema de Riemann.</p>
+<p><code>evaluateSelfSimilarCandidate(candidate,xi)</code> devolve o estado interpolado. Na velocidade de um choque, utiliza a convenção de traço à direita. Para leques, a interpolação é apenas uma aproximação visual da solução da EDO característica, e não um método de integração exato.</p>
+
+</main>
+</body>
+</html>

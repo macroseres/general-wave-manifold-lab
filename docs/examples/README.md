@@ -2,7 +2,7 @@
 
 ## Fibra de Hugoniot nos três espaços
 
-O capítulo exibido no app é [11-fibras-hugoniot.md](../mathematics/11-fibras-hugoniot.md). O arquivo [hugoniot-reference.json](hugoniot-reference.json) contém o fluxo, os estados e as coordenadas exatas esperadas.
+O capítulo exibido no app é [11-fibras-hugoniot.html](../mathematics/11-fibras-hugoniot.html). O arquivo [hugoniot-reference.json](hugoniot-reference.json) contém o fluxo, os estados e as coordenadas exatas esperadas.
 
 | Grandeza | Valor |
 |---|---|
@@ -35,7 +35,7 @@ O JSON de resultados pode ser regenerado sem alterar o fixture de entrada. A fig
 
 ![Fibra de Hugoniot nos três espaços](../../public/docs/hugoniot-reference.svg)
 
-As fontes e sua relação com este exemplo estão em [BIBLIOGRAPHY.md](../BIBLIOGRAPHY.md).
+As fontes e sua relação com este exemplo estão em [BIBLIOGRAPHY.html](../BIBLIOGRAPHY.html).
 
 ## Rarefação e cadeia de dois choques
 
@@ -43,8 +43,8 @@ O mesmo fluxo triangular é usado em dois novos estudos. Os dados estão em [wav
 
 | Estudo | Dados | Resultado exato | Limite documentado |
 |---|---|---|---|
-| [Rarefação](../mathematics/17-campo-rarefacao.md) | (0,−3/4) → (1,1/4) | V(ξ)=(ξ,ξ−3/4) no leque 0≤ξ≤1; z=1, Y=0, τ=3/8−ξ | Interpolação exata neste perfil afim, não em curvas genéricas |
-| [Dois choques](../mathematics/20-cadeias-riemann.md) | (2,1) → (2,0) → (0,−1) | Velocidades 1/2 e 1, famílias Lax 1 e 2 | O levantamento do primeiro salto falha na parametrização atual, embora o diferencial de RH tenha posto dois |
+| [Rarefação](../mathematics/17-campo-rarefacao.html) | (0,−3/4) → (1,1/4) | V(ξ)=(ξ,ξ−3/4) no leque 0≤ξ≤1; z=1, Y=0, τ=3/8−ξ | Interpolação exata neste perfil afim, não em curvas genéricas |
+| [Dois choques](../mathematics/20-cadeias-riemann.html) | (2,1) → (2,0) → (0,−1) | Velocidades 1/2 e 1, famílias Lax 1 e 2 | O levantamento do primeiro salto falha na parametrização atual, embora o diferencial de RH tenha posto dois |
 
 Reproduzir com o mesmo ambiente Python/Matplotlib descrito acima:
 

@@ -46,21 +46,6 @@
 }
 .workspaceLayout--3d #three-d-controls .coeff {grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
 .workspaceLayout--3d #three-d-controls .coeff label {min-width:0;margin:0}
-/* Shared compact toolbars: every action stays on one line. */
-.workspaceToolbar {box-sizing:border-box;min-height:40px;align-items:center;}
-.workspaceToolbarContents {flex:1 1 auto;min-width:0;overflow-x:auto;overflow-y:hidden;}
-.workspaceToolbarActions {display:flex;flex-flow:row nowrap;align-items:center;gap:5px;white-space:nowrap;}
-.workspaceToolbarActions > * {flex-shrink:0;}
-.workspaceToolbarActions label,
-.workspaceToolbarActions .surfaceIsolationControl,
-.workspaceToolbarActions .surfaceOpacityControl {display:inline-flex !important;flex-direction:row !important;align-items:center !important;gap:6px !important;margin:0 !important;white-space:nowrap !important;}
-.workspaceToolbarActions .surfaceOpacityControl input[type=range] {width:72px !important;margin:0 !important;}
-.workspaceToolbarActions select {width:auto;max-width:132px;min-height:29px;}
-.workspaceToolbarActions .cameraMoreViews summary {white-space:nowrap;}
-.workspaceToolbarActions button {white-space:nowrap;}
-.workspaceToolbarToggle {flex:0 0 30px !important;}
-
-
 /* Documentation: the index is the shared drawer body, not a second layout. */
 .workspaceLayout--docs .documentationDrawer > .workspaceDrawerScroll > .documentationIndex {
  position:static;align-self:stretch;display:flex;flex:0 0 auto;flex-direction:column;
@@ -92,11 +77,11 @@
 .workspaceLayout .workspaceDisclosure > summary::-webkit-details-marker {display:none}
 .workspaceLayout .workspaceDisclosure > summary:hover {background:#1c2631}
 .workspaceLayout .workspaceDisclosure > summary::after {
- content:"⌄";position:static;inset:auto;display:block;flex:0 0 auto;
+ content:"+";position:static;inset:auto;display:block;flex:0 0 auto;
  font-size:14px;font-weight:400;line-height:1;color:#b8c8d7;
- transform:rotate(0);transition:transform .15s ease;
+
 }
-.workspaceLayout .workspaceDisclosure[open] > summary::after {transform:rotate(180deg)}
+.workspaceLayout .workspaceDisclosure[open] > summary::after {content:"−"}
 .workspaceLayout .workspaceDisclosure > .sidebarSectionBody,
 .workspaceLayout .workspaceDisclosure > .physicalToolsDrawerContent,
 .workspaceLayout .workspaceDisclosure > .statePanelSectionBody {margin:0;padding:12px 10px;border:0;background:transparent}
@@ -905,13 +890,6 @@
 /* Quiet parameter drawer: one surface, separated groups and consistent fields. */
 .workspaceLayout--parameters .parametersSidebarBody {padding:0 0 12px}
 .workspaceLayout--parameters .parametersControlSidebar .workspaceDisclosure {margin:0}
-.workspaceLayout--parameters .parametersControlSidebar .workspaceDisclosure + .workspaceDisclosure {border-top:1px solid #252e38}
-.workspaceLayout--parameters .parametersControlSidebar .workspaceDisclosure > summary {
- background:transparent;border-bottom:0;min-height:42px;padding:10px 14px;
- color:#d2dde7;font-size:11px;font-weight:600;
-}
-.workspaceLayout--parameters .parametersControlSidebar .workspaceDisclosure > summary:hover {background:#171e26}
-.workspaceLayout--parameters .parametersControlSidebar .statePanelSectionBody {padding:2px 14px 16px}
 .workspaceLayout--parameters .parametersControlSidebar .statePanelSectionBody > p {margin:4px 0 12px;font-size:11px;line-height:1.5;color:#9eafbf}
 .workspaceLayout--parameters .parametersControlSidebar .statePanelSectionBody > small {display:block;margin-top:8px;font-size:10px;line-height:1.5;color:#91a2b4}
 .workspaceLayout--parameters .parametersControlSidebar :is(.parametersCoefficients,.parametersMatrix) {margin:4px 0 0;gap:12px 10px}
@@ -1038,6 +1016,10 @@
   scrollbar-gutter:stable;overscroll-behavior:contain;
 }
 
+.workspaceLayout--states[data-panel-expanded="false"] > .stateToolsDrawer.workspacePanelDrawer {
+  display:none;
+}
+
 
 /* P2: compact, readable diagnostics within the existing narrow parameter drawer. */
 .parametersControlSidebar .parametersDiagnosticList {
@@ -1069,4 +1051,327 @@
 }
 .parametersControlSidebar .parametersDiagnosticList + .workspaceSubsection {
   margin-top:8px;
+}
+.workspaceLayout .workspacePanelDrawer > .workspaceDrawerScroll {
+  scrollbar-width:thin;
+  scrollbar-color:var(--drawer-control-border) transparent;
+  padding-bottom:8px;
+}
+.workspaceLayout .workspacePanelDrawer .workspaceControlGroup > legend {
+  color:var(--gwml-text-secondary);
+  font-size:12px;
+  font-weight:700;
+}
+.workspaceLayout .workspacePanelDrawer :is(button,input,select,summary,a):focus-visible {
+  outline:2px solid var(--gwml-accent,#64d2ff);
+  outline-offset:2px;
+}
+.workspaceLayout .workspacePanelDrawer :is(.stateVisibilityRow,.curveObjectRow,.surfaceObjectRow,.scientificVisibilityRow):hover {
+  background:color-mix(in srgb,var(--drawer-control-text) 6%,transparent);
+}
+.workspaceLayout .workspacePanelDrawer .stateSwitchCopy small {
+  line-height:1.4;
+  overflow-wrap:anywhere;
+}
+.workspaceLayout .workspacePanelDrawer label:has(> input[type="checkbox"]):not(:has(> :is(span,small,strong))) {
+  display:flex;
+  flex-direction:row-reverse;
+  justify-content:space-between;
+  align-items:center;
+  gap:10px;
+  min-height:34px;
+  padding:4px 6px;
+  margin:0;
+  border-radius:5px;
+  line-height:1.4;
+  cursor:pointer;
+}
+.workspaceLayout .workspacePanelDrawer label:has(> input[type="checkbox"]):not(:has(> :is(span,small,strong))):hover {
+  background:color-mix(in srgb,var(--drawer-control-text) 6%,transparent);
+}
+.workspaceLayout .workspacePanelDrawer label:has(> input[type="checkbox"]):not(:has(> :is(span,small,strong))) > input {
+  flex:0 0 auto;
+  width:16px;
+  height:16px;
+  margin:0;
+  cursor:pointer;
+}
+.workspaceLayout .workspacePanelDrawer label:has(> input:disabled) {
+  opacity:.6;
+  cursor:default;
+}
+:is(.workspaceLayout--3d,.workspaceLayout--states) .workspacePanelDrawer .stateVisibilityRow {
+  display:grid;
+  grid-template-columns:minmax(0,1fr) 8px 30px;
+  align-items:center;
+  gap:8px;
+  min-height:38px;
+  padding:5px 4px;
+  border:0;
+  border-bottom:1px solid var(--workspace-stroke);
+}
+:is(.workspaceLayout--3d,.workspaceLayout--states) .workspacePanelDrawer .stateVisibilityRow::before {
+  content:"";
+  grid-column:2;
+  grid-row:1;
+  width:7px;
+  height:7px;
+  border-radius:50%;
+  background:var(--visibility-color,transparent);
+}
+:is(.workspaceLayout--3d,.workspaceLayout--states) .workspacePanelDrawer .stateVisibilityRow > .stateSwitchCopy {
+  display:grid;
+  grid-column:1;
+  grid-row:1;
+  min-width:0;
+  gap:2px;
+}
+:is(.workspaceLayout--3d,.workspaceLayout--states) .workspacePanelDrawer .stateSwitchCopy > strong {color:var(--drawer-control-text)}
+:is(.workspaceLayout--3d,.workspaceLayout--states) .workspacePanelDrawer .stateSwitchCopy > :is(small,.sceneObjectName) {
+  margin:0;
+  padding:0;
+  background:none;
+  color:var(--gwml-text-secondary);
+  font-size:11px;
+  line-height:1.4;
+}
+:is(.workspaceLayout--3d,.workspaceLayout--states) .workspacePanelDrawer .stateVisibilityRow > .visibilityEye {
+  grid-column:3;
+  grid-row:1;
+  width:30px;
+  height:30px;
+}
+:is(.workspaceLayout--3d,.workspaceLayout--states) .workspacePanelDrawer .stateVisibilityRow > .visibilityEye:disabled {opacity:.45;cursor:default}
+.workspaceLayout .workspacePanelDrawer .sceneNumericRow {
+  display:grid;
+  grid-template-columns:minmax(0,1fr) minmax(0,6rem);
+  align-items:center;
+  gap:12px;
+  min-height:38px;
+  padding:4px 0;
+  margin:0;
+  border-bottom:1px solid var(--workspace-stroke);
+}
+.workspaceLayout .workspacePanelDrawer .sceneNumericRow input {
+  width:100%;
+  text-align:right;
+  font-variant-numeric:tabular-nums;
+}
+.workspaceLayout--3d #three-d-inspection .inspectorSectionBody > p {
+  margin:0;
+  padding:6px 0;
+  border-bottom:1px solid var(--workspace-stroke);
+  line-height:1.45;
+  overflow-wrap:anywhere;
+  font-variant-numeric:tabular-nums;
+}
+.workspaceLayout--3d #three-d-inspection .inspectorSectionBody > p > b {
+  margin-inline-end:4px;
+}
+.workspaceLayout--3d #three-d-controls .scaleActions {
+  display:grid;
+  grid-template-columns:1fr;
+  gap:6px;
+}
+.workspaceLayout--3d #three-d-controls .scaleActions .scaleReset {
+  width:100%;
+  min-height:32px;
+  padding:5px 8px;
+  border:1px solid var(--drawer-control-border);
+  background:var(--drawer-control-bg);
+  color:var(--drawer-control-text);
+  text-align:left;
+}
+.workspaceLayout--3d #three-d-controls .scaleActions .scaleReset:hover {
+  border-color:var(--gwml-accent,#64d2ff);
+}
+.candidateChainSummary {margin:8px 0;font-variant-numeric:tabular-nums}
+.candidateChainSummary > div {
+  display:grid;
+  grid-template-columns:auto minmax(0,1fr);
+  gap:8px;
+  padding:5px 0;
+  border-bottom:1px solid var(--workspace-stroke);
+}
+.candidateChainSummary dd {margin:0;text-align:right;overflow-wrap:anywhere}
+:is(.workspaceLayout--3d,.workspaceLayout--states) .workspacePanelDrawer .stateVisibilityRow {
+  min-height:32px;
+  padding:0.5px 2px;
+  column-gap:5px;
+}
+:is(.workspaceLayout--3d,.workspaceLayout--states) .workspacePanelDrawer .stateVisibilityRow > .stateSwitchCopy {
+  display:flex;
+  flex-wrap:wrap;
+  align-items:baseline;
+  gap:0 6px;
+}
+:is(.workspaceLayout--3d,.workspaceLayout--states) .workspacePanelDrawer .stateSwitchCopy > strong {
+  flex:0 0 auto;
+  max-width:100%;
+}
+:is(.workspaceLayout--3d,.workspaceLayout--states) .workspacePanelDrawer .stateSwitchCopy > :is(small,.sceneObjectName) {
+  display:inline;
+}
+.workspaceLayout--3d #three-d-controls .surfaceControls {
+  padding-inline:3px;
+}
+:is(.workspaceLayout--3d,.workspaceLayout--states) .workspacePanelDrawer .stateSwitchCopy > strong:has(+ :is(small,.sceneObjectName))::after {
+  content:" :";
+}
+:is(.workspaceLayout--3d,.workspaceLayout--states) .workspacePanelDrawer .stateVisibilityRow > .stateSwitchCopy {
+  display:block;
+  white-space:normal;
+  overflow-wrap:anywhere;
+}
+:is(.workspaceLayout--3d,.workspaceLayout--states) .workspacePanelDrawer .stateSwitchCopy > strong:has(+ :is(small,.sceneObjectName)) {
+  margin-inline-end:0.35em;
+}
+.workspaceLayout--docs .documentationIndexGroup + .documentationIndexGroup {
+  margin-top:4px;
+  border-top:1px solid var(--workspace-stroke);
+}
+.workspaceLayout--docs .documentationGroupHeading {min-height:38px}
+.workspaceLayout--docs .documentationGroupTitle {font-size:12px}
+.workspaceLayout--docs .documentationIndexGroup > a {
+  display:grid;
+  grid-template-columns:2.4em minmax(0,1fr);
+  align-items:baseline;
+  gap:5px;
+  padding:6px 6px 6px 14px;
+  font-size:11px;
+}
+.workspaceLayout--docs .documentationIndexNumber {
+  color:var(--gwml-text-secondary);
+  font-variant-numeric:tabular-nums;
+}
+.workspaceLayout--docs .documentationIndexGroup > a[aria-current="location"] {
+  border-inline-start:2px solid #62b99b;
+  background:color-mix(in srgb,#62b99b 12%,transparent);
+}
+.workspaceLayout--docs .documentationReadingLayout {max-width:900px}
+.workspaceLayout--docs .documentationSectionContent .mathBlock {
+  box-sizing:border-box;
+  max-width:100%;
+  margin:1.2rem 0;
+  padding:4px clamp(8px,2vw,20px);
+  border:1px solid var(--workspace-stroke);
+  border-radius:6px;
+  font-size:clamp(14px,1.3vw,17px);
+}
+.workspaceLayout--docs .documentationSectionContent .mathBlock .katex-display {
+  margin:0;
+  padding:12px 0;
+  font-size:1em;
+  overflow-x:auto;
+  overflow-y:hidden;
+}
+.workspaceLayout--docs .documentationSectionContent .mathBlock .katex-display > .katex {
+  width:max-content;
+  min-width:100%;
+}
+.workspaceLayout--docs .documentationLibraryHeading {
+  margin:16px 0 5px;
+  padding:8px 5px 0;
+  border-top:1px solid var(--workspace-stroke);
+  font-size:12px;
+}
+.workspaceLayout--docs .documentationLibraryGroup > a {
+  display:block;
+  padding-inline-start:15px;
+  overflow-wrap:anywhere;
+}
+.workspaceLayout--docs .documentationReadingLayout[hidden] {display:none}
+.documentationLibraryReader {
+  display:flex;
+  flex-direction:column;
+  min-height:0;
+  height:100%;
+}
+.documentationLibraryReader > header {
+  display:flex;
+  flex-wrap:wrap;
+  justify-content:space-between;
+  gap:8px;
+  padding:12px 16px;
+  border-bottom:1px solid var(--workspace-stroke);
+}
+.documentationLibraryReader > header a {color:var(--gwml-accent,#64d2ff)}
+.documentationLibraryReader > iframe {display:block;width:100%;flex:1 1 0;border:0;background:#fff}
+.workspaceLayout--docs .documentationGroupTitle {
+  display:flex;
+  align-items:baseline;
+  gap:6px;
+  padding-inline-start:6px;
+}
+.documentationIndexChevron {flex:0 0 1em;text-align:center}
+.workspaceLayout--docs .documentationIndexGroup > .documentationIndexUnnumbered {display:block}
+.documentationRelated {margin:20px 0 32px;padding:12px 16px;border:1px solid var(--workspace-stroke);border-radius:6px}
+.documentationRelated a {display:block;margin:6px 0;color:var(--gwml-accent,#64d2ff)}
+.workspaceLayout .workspacePanelDrawer .sceneNumericRow output {
+  text-align:right;
+  font-variant-numeric:tabular-nums;
+}
+.workspaceLayout--physical .physicalControlSection .sceneNumericRow > label {
+  margin:0;
+}
+.parametersControlSidebar :is(.parametersCoefficients,.parametersMatrix):has(> .sceneNumericRow) {
+  grid-template-columns:minmax(0,1fr);
+  gap:0;
+}
+.parametersControlSidebar .parametersDiagnosticList > div {
+  grid-template-columns:minmax(0,1fr) minmax(0,6rem);
+  align-items:baseline;
+  gap:12px;
+}
+.parametersControlSidebar .parametersDiagnosticList dd {
+  text-align:right;
+  font-variant-numeric:tabular-nums;
+}
+
+.stateChainSegment > summary {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+.stateChainSegment > summary::before {
+  content: '+';
+  color: var(--gwml-text-secondary);
+}
+.stateChainSegment[open] > summary::before {
+  content: '−';
+}
+.stateChainSegmentKey {
+  min-width: 20px;
+  font-weight: 600;
+}
+
+.chainPanelBody {
+  display: grid;
+  gap: 10px;
+  min-width: 0;
+}
+.chainPanelField {
+  display: grid;
+  gap: 5px;
+  min-width: 0;
+  font-size: 12px;
+}
+.chainPanelField select {
+  width: 100%;
+  min-width: 0;
+}
+.chainPanelActions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 10px;
+}
+.chainPanelActions small, .chainPanelQualification {
+  color: var(--gwml-text-secondary);
+}
+.chainPanelTrajectory .stateChainInspection {
+  padding: 0;
+}
+.chainPanelTrajectory .candidateChainSummary {
+  margin-top: 0;
 }

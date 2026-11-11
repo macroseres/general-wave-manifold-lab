@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>IMPLEMENTACAO_16_CADEIAS</title>
+<style>
+body{margin:2rem auto;padding:0 1rem;max-width:78ch;font:1rem/1.65 system-ui,sans-serif;color:#182230;background:#fff}
+h1,h2,h3,h4{line-height:1.25} a{color:#12568b} img{max-width:100%;height:auto}
+pre,blockquote{padding:1rem;background:#f3f6f8} pre{overflow:auto} code{overflow-wrap:anywhere}
+table{display:block;overflow:auto;border-collapse:collapse} th,td{padding:.4rem .65rem;border:1px solid #cdd5df;text-align:left}
+mjx-container[display=true]{overflow-x:auto;overflow-y:hidden;padding:.4rem 0}
+</style>
+<script defer src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-chtml.js"></script>
+</head>
+<body>
+<main>
+<h1 id="contrato-para-implementar-as-16-combinacoes-no-espaco-de-estados">Contrato para implementar as 16 combinações no espaço de estados</h1>
+<p>Este documento encerra a especificação inicial do catálogo, não a investigação global de todas as soluções. É o ponto de partida da próxima etapa de código. A implementação deve depender do fluxo, de equações nos estados e do modelo de seleção; a futura camada topológica será uma representação adicional.</p>
+<h2 id="o-que-significa-implementar-o-catalogo">1. O que significa implementar o catálogo</h2>
+<p>Disponibilizar os 16 pares formais de blocos R, S, C e K, com disponibilidade determinada pelas hipóteses do problema. Construir candidatos onde os construtores estejam disponíveis, verificar os segmentos e apresentar conclusões qualificadas. Uma opção da interface não garante uma solução para os dados inseridos.</p>
+<p>Registrar família, orientação, domínio, amplitude e ramos internos em cada bloco. C é contato de uma família linearmente degenerada; K é composta com segmentos explícitos e junções sônicas. Não usar K como nome genérico de dois segmentos arbitrários. Amplitudes nulas são identidades; a normalização do resultado remove blocos vazios e compara perfis equivalentes.</p>
+<h2 id="construcao-e-equacoes-de-fechamento">2. Construção e equações de fechamento</h2>
+<p>Para cada bloco A e estado U, o construtor retorna ramos A(α;U), estado de saída, segmentos e intervalo de velocidades. O vetor α pode ter mais de uma componente. Uma composta não deve ser forçada a ter um parâmetro escalar sem justificar sua parametrização.</p>
+<p>Para A–B, resolver a condição de saída</p>
+<p>\[
+B(\beta;A(\alpha;U_L))=U_R,
+\]</p>
+<p>incluindo as equações internas de cada bloco. Quando as curvas progressiva de A e retrospectiva de B estiverem disponíveis, pode-se resolver A(α;U_L)=B_back(β;U_R). A construção retrospectiva deve preservar a orientação física de cada onda e seu critério, não inverter uma desigualdade de admissibilidade sem dedução.</p>
+<p>Se o número de incógnitas exceder o número de restrições independentes, registrar uma família de candidatos ou acrescentar condições do modelo; não selecionar uma raiz arbitrária como solução única. Singularidades do jacobiano exigem continuação ou estado inconclusivo, não exclusão silenciosa do ramo.</p>
+<h2 id="registro-das-16-entradas">3. Registro das 16 entradas</h2>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Construtor esquerdo</th>
+<th>Construtor direito</th>
+<th>Condição adicional a destacar</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>RR</td>
+<td>R</td>
+<td>R</td>
+<td>Monotonicidade contínua ou evidência amostrada dos dois leques</td>
+</tr>
+<tr>
+<td>RS</td>
+<td>R</td>
+<td>S</td>
+<td>Borda final do leque não supera s</td>
+</tr>
+<tr>
+<td>RC</td>
+<td>R</td>
+<td>C</td>
+<td>Verificar degenerescência linear da família do contato</td>
+</tr>
+<tr>
+<td>RK</td>
+<td>R</td>
+<td>K</td>
+<td>Verificar o leque e todos os segmentos da composta</td>
+</tr>
+<tr>
+<td>SR</td>
+<td>S</td>
+<td>R</td>
+<td>s não supera a borda inicial do leque</td>
+</tr>
+<tr>
+<td>SS</td>
+<td>S</td>
+<td>S</td>
+<td>Patamar positivo exige s_esquerdo&lt;s_direito</td>
+</tr>
+<tr>
+<td>SC</td>
+<td>S</td>
+<td>C</td>
+<td>Seleção do choque e curva de contato identificadas</td>
+</tr>
+<tr>
+<td>SK</td>
+<td>S</td>
+<td>K</td>
+<td>Seleção do choque e de cada salto dentro de K</td>
+</tr>
+<tr>
+<td>CR</td>
+<td>C</td>
+<td>R</td>
+<td>Contato orientado antes do início do leque</td>
+</tr>
+<tr>
+<td>CS</td>
+<td>C</td>
+<td>S</td>
+<td>Contato e seleção do choque separados</td>
+</tr>
+<tr>
+<td>CC</td>
+<td>C</td>
+<td>C</td>
+<td>Mesma velocidade exige examinar fusão; famílias distintas podem separar-se</td>
+</tr>
+<tr>
+<td>CK</td>
+<td>C</td>
+<td>K</td>
+<td>Contato e estados internos de K verificados</td>
+</tr>
+<tr>
+<td>KR</td>
+<td>K</td>
+<td>R</td>
+<td>Última velocidade de K não supera a borda inicial de R</td>
+</tr>
+<tr>
+<td>KS</td>
+<td>K</td>
+<td>S</td>
+<td>Última velocidade de K não supera s</td>
+</tr>
+<tr>
+<td>KC</td>
+<td>K</td>
+<td>C</td>
+<td>Última velocidade de K não supera a do contato</td>
+</tr>
+<tr>
+<td>KK</td>
+<td>K</td>
+<td>K</td>
+<td>Duas estruturas internas verificadas e fechamento pelo estado intermediário</td>
+</tr>
+</tbody>
+</table>
+<p>Em todas as linhas, exigir b_A≤a_B e resolver corretamente bordas coincidentes. No solver clássico local, as famílias e hipóteses reduzem os padrões aos descritos em <code>RESULTADOS_E_REGIMES.html</code>; as demais entradas devem explicar sua indisponibilidade nesse regime.</p>
+<h2 id="dados-de-entrada-e-saida">4. Dados de entrada e saída</h2>
+<p><strong>Entrada:</strong> coeficientes do fluxo, U_L,U_R, domínio de estados, catálogo pedido, família de cada bloco, limites de amplitude e busca, ramos habilitados, critérios de seleção, tolerâncias com escalas e orçamento numérico. Para perfis, incluir modelo exato de difusão–dispersão e seus coeficientes. Para entropia, incluir funções ou representação verificável dos pares e domínio de convexidade.</p>
+<p><strong>Saída por candidato:</strong> identificador do padrão e dos ramos, estados externos/intermediários/internos, segmentos elementares, velocidades, resíduos, espectros, tipos dos nove interiores ou fronteiras, resultados de cada critério, limites da busca e perfil físico quando construível. Preservar as condições de parada e os trechos não explorados.</p>
+<p><strong>Saída sem candidato:</strong> distinguir hipótese incompatível, construtor não implementado, ausência demonstrada em escopo delimitado, nenhum candidato encontrado na busca limitada e falha numérica. Nenhum candidato amostrado não prova inexistência.</p>
+<h2 id="resultados-dos-criterios">5. Resultados dos critérios</h2>
+<p>Usar registros separados para conservação, hiperbolicidade, classificação do salto, crescimento dos leques, Lax, Liu, entropia, perfil, cinética, ordenação e fechamento. Cada registro deve conter estado, fundamento, domínio, tolerância e motivo.</p>
+<p>Estados mínimos: <code>not-applicable</code>, <code>not-evaluated</code>, <code>inconclusive</code>, <code>violation-detected</code>, <code>numerically-compatible</code>, <code>proved-in-scope</code>. Esses nomes são um contrato proposto, não uma API já existente. Reservar prova para um resultado matemático ou método certificado com suas hipóteses, não para um resíduo abaixo de tolerância.</p>
+<p>O resumo de admissibilidade é uma agregação dos critérios exigidos pelo modelo. Uma violação exigida rejeita o candidato segundo esse modelo; um requisito inconclusivo mantém a seleção inconclusiva. Critérios opcionais ausentes não rejeitam uma solução segundo outro modelo declarado. <code>not-applicable</code> nunca é sinônimo de aprovado.</p>
+<h2 id="ordem-de-desenvolvimento-e-correcoes-previas">6. Ordem de desenvolvimento e correções prévias</h2>
+<ol>
+<li>Classificação das fronteiras de Lax corrigida e nove interiores implementados com testes; manter os eventos sônicos separados ao ampliar o solver.</li>
+<li>Consolidar construtores de R, S e C no espaço de estados e seus contratos de domínio. Cobrir primeiro RR, RS, SR, SS, RC, SC, CR, CS e CC onde as hipóteses permitirem.</li>
+<li>Resolver estados intermediários por ramos e acrescentar ordenação, perfil físico e deduplicação pela cadeia normalizada.</li>
+<li>Consolidar K por suas equações tradicionais, sem depender de um resíduo regularizado que se anula artificialmente na fronteira de carta; cobrir RK, SK, CK, KR, KS, KC e KK.</li>
+<li>Acrescentar perfis e cinética somente para o modelo parametrizado e estudado. A escolha atual é difusão–dispersão; os coeficientes específicos continuam dados a definir.</li>
+</ol>
+<p>Essa sequência não exige terminar a camada topológica antes da busca nos estados. A discrepância do resíduo recíproco e a classificação de fronteiras registradas na rastreabilidade foram corrigidas nesta sequência e receberam testes de regressão. Preservar essas verificações ao ampliar as cadeias.</p>
+<h2 id="verificacao-necessaria-para-declarar-suporte">7. Verificação necessária para declarar suporte</h2>
+<p>Cada ID tem um estado de disponibilidade independente: especificado, construtor disponível, candidatos calculados ou verificado em casos delimitados. Acrescentar exemplos negativos: ondas fora de ordem, leque invertido, contato sem degenerescência linear, igualdade indevidamente rotulada como Lax, ramos desconectados, salto não conservativo e requisito cinético ausente.</p>
+<p>Os exemplos triangulares existentes cobrem casos de RR, RS, SR e SS; o fluxo linear F=(u,2v) fornece CC e o fluxo F=(u²/2,3v) fornece RC. Os exemplos cúbicos de KK e RK verificam o conceito, mas não são testes de suporte do modelo quadrático. Para os padrões ainda sem caso quadrático demonstrado, registrar a ausência de fixture e pesquisar exemplos; não inventar um resultado para completar os 16 indicadores.</p>
+<p>As verificações de classificação em <code>traditional-shock-signatures.mjs</code> são exemplos quadráticos de saltos individuais e não fixtures das 16 cadeias. Testar a classificação separadamente da busca e da admissibilidade.</p>
+<h2 id="condicao-de-passagem-para-implementacao">8. Condição de passagem para implementação</h2>
+<p>O <a href="../STATE_SPACE_STATUS.html">estado de implementação</a> registra o início desta sequência: nove interiores e barreira estrita de Lax implementados; RR numérico integrado às vistas, ao lado de RS, SR e SS existentes. RC, SC, CR, CS e CC foram acrescentados para contatos com direção e velocidade constantes; campos de direção variável permanecem pendentes. Uma busca limitada de K em duas orientações foi acrescentada, com RK/KR/SK/KS verificados e CK/KC/KK sem casos positivos validados. RR usa interseções poligonais somente como sementes para o corretor conjunto das curvas reintegradas, com leques reconstruídos e estudos de convergência em fluxos curvos. O relatório RR preserva motivos de falha ou resultado inconclusivo, limites e pares não examinados, inclusive sem candidatos; o limite de candidatos é registrado explicitamente. Essa entrega não certifica monotonicidade contínua, entropia ou completude global.</p>
+<p>A nomenclatura, as equações de fechamento, as condições de seleção e os resultados inconclusivos estão definidos. É possível iniciar uma implementação incremental e revisável. Permanecem pesquisas científicas específicas: cinética do fluxo quadrático, cobertura de grandes amplitudes e classificação global. Elas devem constar da disponibilidade e dos relatórios do aplicativo, sem impedir a construção dos casos que já têm base matemática.</p>
+
+</main>
+</body>
+</html>

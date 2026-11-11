@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>STATE_FIBRE_ANALYSIS</title>
+<style>
+body{margin:2rem auto;padding:0 1rem;max-width:78ch;font:1rem/1.65 system-ui,sans-serif;color:#182230;background:#fff}
+h1,h2,h3,h4{line-height:1.25} a{color:#12568b} img{max-width:100%;height:auto}
+pre,blockquote{padding:1rem;background:#f3f6f8} pre{overflow:auto} code{overflow-wrap:anywhere}
+table{display:block;overflow:auto;border-collapse:collapse} th,td{padding:.4rem .65rem;border:1px solid #cdd5df;text-align:left}
+mjx-container[display=true]{overflow-x:auto;overflow-y:hidden;padding:.4rem 0}
+</style>
+<script defer src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-chtml.js"></script>
+</head>
+<body>
+<main>
+<h1 id="state-fibre-analysis-v0.7.0-dev.24">State-fibre analysis — v0.7.0-dev.24</h1>
+<p>For a fixed state \(U_*\in\mathcal U\), this increment analyses the inverse images
+\(\pi_-^{-1}(U_*)\) and \(\pi_+^{-1}(U_*)\) before rendering them.</p>
+<p>In the finite chart, the projection-fibre formula has denominator
+\[
+P(z)z+Q(z)=2\bigl[b_{20}z^3+(b_{11}-a_{20})z^2+(b_{02}-a_{11})z-a_{02}\bigr].
+\]
+Its real projective zeros are singular parameter directions. The reciprocal chart
+\((\eta,\Upsilon,Z)\) is used at \(Z=0\) to decide whether the projective infinity
+direction is regular or singular; no finite \(z\) is fabricated there.</p>
+<p>Removing the singular projective directions from \(\mathbb{RP}^1\) determines the
+regular connected branches of the fibre. If there are \(k&gt;0\) singular projective
+directions, there are \(k\) regular components; if there are none, the regular
+fibre has one projective component.</p>
+<p>For the two endpoint projections, the fixed-state equations imply
+\[
+\tau_-(z)=\tau_+(z),\qquad Y_+(z)=-Y_-(z).
+\]
+Thus both fibres have the same branch topology and the same characteristic lifts;
+they are reflected in the jump coordinate.</p>
+<p>Characteristic lifts are the intersections with \(\mathcal C=\{Y=0\}\), obtained
+from \(L_{U_*}(z)=0\), and are classified by the canonical spectral test as slow,
+fast, coincidence, or projective infinity.</p>
+
+</main>
+</body>
+</html>

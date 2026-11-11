@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RIEMANN_SONIC_SHOCK_ENDPOINTS</title>
+<style>
+body{margin:2rem auto;padding:0 1rem;max-width:78ch;font:1rem/1.65 system-ui,sans-serif;color:#182230;background:#fff}
+h1,h2,h3,h4{line-height:1.25} a{color:#12568b} img{max-width:100%;height:auto}
+pre,blockquote{padding:1rem;background:#f3f6f8} pre{overflow:auto} code{overflow-wrap:anywhere}
+table{display:block;overflow:auto;border-collapse:collapse} th,td{padding:.4rem .65rem;border:1px solid #cdd5df;text-align:left}
+mjx-container[display=true]{overflow-x:auto;overflow-y:hidden;padding:.4rem 0}
+</style>
+
+</head>
+<body>
+<main>
+<h1 id="verificacao-de-choque-nas-conexoes-sonicas">Verificação de choque nas conexões sônicas</h1>
+<p>Para cada contato refinado, além da ordenação na rarefação, verificamos RH,
+hiperbolicidade estrita dos extremos e as desigualdades fracas de Lax:</p>
+<ul>
+<li>Família lenta: λ_s(U_-) ≥ s ≥ λ_s(U_+), e s &lt; λ_f(U_±).</li>
+<li>Família rápida: λ_f(U_-) ≥ s ≥ λ_f(U_+), e s &gt; λ_s(U_±).</li>
+</ul>
+<p>No contato em S⁺ exige-se s=λ_i(U_+); em S⁻, s=λ_i(U_-).
+As desigualdades são avaliadas com tolerância numérica. A igualdade sônica
+é permitida; logo não se trata de um choque de Lax estrito.</p>
+<p><strong>Alcance:</strong> diagnóstico necessário de extremos, não verificação do perfil
+viscoso, da condição de Liu ao longo da fibra ou da admissibilidade de uma
+onda composta. A classificação <code>weak-lax-candidate</code> não deve ser interpretada
+como solução entrópica certificada.</p>
+
+</main>
+</body>
+</html>

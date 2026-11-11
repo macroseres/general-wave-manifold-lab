@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ARCHITECTURE</title>
+<style>
+body{margin:2rem auto;padding:0 1rem;max-width:78ch;font:1rem/1.65 system-ui,sans-serif;color:#182230;background:#fff}
+h1,h2,h3,h4{line-height:1.25} a{color:#12568b} img{max-width:100%;height:auto}
+pre,blockquote{padding:1rem;background:#f3f6f8} pre{overflow:auto} code{overflow-wrap:anywhere}
+table{display:block;overflow:auto;border-collapse:collapse} th,td{padding:.4rem .65rem;border:1px solid #cdd5df;text-align:left}
+mjx-container[display=true]{overflow-x:auto;overflow-y:hidden;padding:.4rem 0}
+</style>
+
+</head>
+<body>
+<main>
+<h1 id="architecture">Architecture</h1>
+<h2 id="principle">Principle</h2>
+<p>The application is scientific software. Mathematical definitions must not depend on React, Three.js, or UI state.</p>
+<p>The dependency direction is:</p>
+<p><strong>mathematics → numerics → geometry → visualization → UI</strong></p>
+<p>Dependencies in the opposite direction are not allowed.</p>
+<h2 id="layers">Layers</h2>
+<h3 id="srcmath"><code>src/math</code></h3>
+<p>Pure mathematical definitions and operations. No React or Three.js imports.</p>
+<p>Target modules as the project grows:</p>
+<ul>
+<li><code>flux/</code> — flux functions, Jacobians and parameter presets.</li>
+<li><code>manifold/</code> — Rankine–Hugoniot relations and wave-manifold state.</li>
+<li><code>characteristic/</code> — objects contained in the characteristic surface <code>C</code>, including the coincidence locus <code>E</code>.</li>
+<li><code>charts/</code> — projective/local coordinate charts and chart transitions.</li>
+<li><code>sonic/</code> — sonic loci and related conditions.</li>
+<li><code>rarefaction/</code> — rarefaction fields, singularities and separatrices.</li>
+<li><code>numerics/</code> — integration, root finding and linear algebra used by the mathematical layer.</li>
+</ul>
+<h3 id="srcgeometry"><code>src/geometry</code></h3>
+<p>Sampling, meshes, curve discretization and transformations needed to display mathematical objects.</p>
+<h3 id="srccomponentsscene"><code>src/components/scene</code></h3>
+<p>Three.js / React Three Fiber rendering only. It consumes mathematical/geometry results; it does not define them.</p>
+<h3 id="srccomponentspanels-and-srccomponentsui"><code>src/components/panels</code> and <code>src/components/ui</code></h3>
+<p>Interaction, controls and presentation.</p>
+<h3 id="srcstyles"><code>src/styles</code></h3>
+<p>Design tokens and shared visual rules.</p>
+<h2 id="scientific-invariant">Scientific invariant</h2>
+<p>Every new mathematical object should have, whenever possible:</p>
+<ol>
+<li>a definition in the mathematical documentation;</li>
+<li>a pure implementation;</li>
+<li>a residual, identity, invariant, or benchmark that can be tested;</li>
+<li>only then, a numerical/visual representation.</li>
+</ol>
+<h2 id="refactoring-rule">Refactoring rule</h2>
+<p>Architectural refactors must preserve existing mathematical tests. A renderer change must not be used to conceal a mathematical regression.</p>
+<h2 id="geometry-layer">Geometry layer</h2>
+<p>Rendering must not consume mathematical state by inventing chart values. Pure adapters under <code>src/geometry/</code> convert already-computed mathematical objects into drawable, chart-specific geometry. React/Three/SVG components consume that geometry only. In particular, the reciprocal local chart keeps <code>(eta,Z)</code> as its native coordinates and never maps <code>Z=0</code> to fake finite <code>z</code> or <code>zc</code> values.</p>
+<h2 id="mathematical-spaces-and-solution-layer">Mathematical spaces and solution layer</h2>
+<p>The architecture distinguishes three spaces:</p>
+<ul>
+<li><code>W</code>: wave manifold, carrying wave data such as <code>U_-</code>, <code>U_+</code>, and <code>s</code>;</li>
+<li><code>U ≃ R²_(u,v)</code>: state space;</li>
+<li><code>X</code>: physical <code>(x,t)</code> space.</li>
+</ul>
+<p>The canonical state projections are <code>pi_-(P)=U_-</code> and <code>pi_+(P)=U_+</code>. A physical solution is a map <code>U: X -&gt; U</code>, <code>(x,t) -&gt; (u(x,t),v(x,t))</code>.</p>
+<p>Current and planned ownership:</p>
+<pre><code class="language-text">src/math/state/       state-space operations and projections
+src/math/solution/     rarefaction realizations, Riemann candidates and numerical admissibility diagnostics
+src/math/riemann/      future assembly of wave families into general Riemann solutions
+src/geometry/state/   drawable geometry in the (u,v) plane
+src/geometry/physical/ drawable geometry in the (x,t) plane
+</code></pre>
+<p>The state and physical geometry directories are implemented. Current Riemann candidate assembly lives in <code>math/solution/</code>, including mixed and two-shock chains, Hugoniot continuation and sampled Liu diagnostics. The <code>math/riemann/</code> directory above is a possible future ownership boundary, not an existing module. A complete general validated solver remains future work. Physical-space visualization consumes solution/candidate data with their qualification from <code>math/solution/</code>; React/Three.js must not reconstruct PDE solutions.</p>
+<p>The scientific priority is lifting state-space Riemann constructions to the wave manifold and relating them to physical realizations. See <a href="../OBJETIVOS_E_ESCOPO.html">scientific objectives and scope</a>.</p>
+<h2 id="documentation-lifecycle">Documentation lifecycle</h2>
+<p>Scientific features are documented incrementally. <code>docs/mathematics/</code> is the canonical formula-level reference under verification; <code>docs/architecture/</code> records implementation ownership and numerical boundaries; <code>docs/user-manual/</code> records user-facing meaning and operation. Planned functionality must be labeled as planned rather than described as already available.</p>
+<h3 id="rarefaction-visualization-boundary">Rarefaction visualization boundary</h3>
+<p><code>math/rarefaction/separatrices.js</code> owns orbit integration and dynamical metadata. <code>geometry/rarefaction/localChart.js</code> clips those orbits to a drawable reciprocal-chart window and derives display orientation from <code>timeDirection</code>. React/SVG components consume that geometry; they must not reintegrate or alter the rarefaction field.</p>
+<h2 id="state-space-projection-boundary-v0.7.0-dev.9">State-space projection boundary (v0.7.0-dev.9)</h2>
+<p>State-space inspection follows the same dependency direction as the rarefaction local chart:</p>
+<p><code>math/state/projections.js</code> -&gt; <code>geometry/state/stateSpace.js</code> -&gt; <code>components/StateSpaceDialog.jsx</code>.</p>
+<p>The math module owns the canonical maps <code>pi_-</code> and <code>pi_+</code>; the geometry module owns bounds and display coordinates; React only renders. Complete wave curves in <code>(u,v)</code> must later be projections of reusable validated wave objects rather than independent integrations embedded in the view.</p>
+<h2 id="state-space-wave-curves">State-space wave curves</h2>
+<p>State-space views consume validated wave objects.  Generic rarefaction
+orbits are integrated once in <code>src/math/rarefaction/orbits.js</code>; their
+state-space representation is the canonical projection <code>Ubar(tau,z)</code> on
+<code>C</code>.  React/Three.js must not maintain an independent rarefaction integrator.</p>
+<h2 id="rarefaction-branch-events">Rarefaction branch events</h2>
+<p>Slow/fast is segment metadata, not an identity of an entire integral orbit. The
+math layer integrates one orbit and detects/refines crossings of the
+coincidence locus <code>E</code> from the signed spectral gap. Geometry/UI may style the
+adjacent segments differently, but must preserve the same <code>orbitId</code> and the
+same refined transition point. React must not reintegrate or reconnect these
+segments heuristically.</p>
+<h2 id="mathematical-ui-notation">Mathematical UI notation</h2>
+<p>Reusable <code>MathLabel</code> and <code>MathBlock</code> components centralize mathematical
+presentation in the UI. They are presentation primitives only: canonical
+formulas remain in <code>docs/mathematics/</code>, and no mathematical computation is
+allowed in these components.</p>
+<h2 id="traceability-gate-v0.7.0-dev.13">Traceability gate (v0.7.0-dev.13)</h2>
+<p><code>docs/architecture/TRACEABILITY.html</code> is the maintained index from canonical mathematics to implementation, tests, geometry and UI. <code>tests/architecture.test.js</code> makes the most important dependency boundary executable: neither <code>src/math</code> nor <code>src/geometry</code> may import React, React Three Fiber, or Three.js.</p>
+<p>Known violations <em>inside the renderer</em> are documented in <code>FOUNDATION_COMPLETION_AUDIT.html</code> rather than normalized as architecture. In particular, finite rarefaction-separatrix integration and sonic-sheet meshing currently present in <code>Scene.jsx</code> are migration targets, not approved ownership.</p>
+<h3 id="renderer-boundary-dev.15">Renderer boundary (dev.15)</h3>
+<p><code>src/components/Scene.jsx</code> may own camera, lights, materials, interaction and Three.js buffers. ODE integration belongs to <code>src/math/</code>; sampling/triangulation of already-defined mathematical objects belongs to <code>src/geometry/</code>. Finite rarefaction separatrices and sonic-sheet triangulation now obey this boundary.</p>
+
+</main>
+</body>
+</html>

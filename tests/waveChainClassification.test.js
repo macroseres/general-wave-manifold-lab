@@ -4,6 +4,31 @@ import assert from 'node:assert/strict'
 import {traditionalShockSignatures} from '../scripts/traditional-shock-signatures.mjs'
 import {classifyWaveChain} from '../src/math/solution/waveChainClassification.js'
 import {assessWaveChain} from '../src/math/solution/waveChainAssessment.js'
+import {stateShockArc} from '../src/geometry/state/candidateStateGeometry.js'
+import {chainExamples} from '../src/experiment/chainExamples.js'
+import {riemannCertificationReport} from '../src/math/solution/riemannCertificationReport.js'
+
+test('KR slow shock is checked on the continuous forward arc',()=>{
+  const {coefficients:p}=chainExamples.find(example=>example.pattern==='KR')
+  const shock={type:'shock',family:'slow',sonicSide:'minus',speed:0.4870963610113786,
+    from:[0.24001988503746696,-0.8459726400707195],to:[0.3897631253946665,0.11312269595502988]}
+  const candidate={status:'sampled-candidate',kind:'composite-chain',segments:[shock]}
+  const arc=stateShockArc(shock,p)
+  const liu=geometry=>classifyWaveChain(candidate,p,geometry).waves[0].admissibility.liu.status
+  assert.equal(liu({segments:[{arc}]}),'continuous-liu-compatible')
+  assert.equal(liu({segments:[{arc:{...arc,reverse:true}}]}),'inconclusive')
+  assert.equal(liu(undefined),'not-evaluated')
+  const audit=riemannCertificationReport({...candidate,left:shock.from,right:shock.to},
+    classifyWaveChain(candidate,p,{segments:[{arc}]}),p)
+  assert.equal(audit.boundariesMatch,true)
+  assert.equal(audit.shocks[0].sonicStatus,'numerically-compatible')
+  assert.ok(audit.shocks[0].sonicSpeedError<1e-12)
+  assert.equal(audit.status,'not-certified')
+  assert.ok(audit.pending.some(item=>item.includes('arredondamento')))
+  const wrongBoundary=riemannCertificationReport({...candidate,left:[0,0],right:shock.to},
+    classifyWaveChain(candidate,p,{segments:[{arc}]}),p)
+  assert.equal(wrongBoundary.boundariesMatch,false)
+})
 
 const burgers={a20:.5,a11:0,a02:0,a10:0,a01:0,b20:0,b11:0,b02:.5,b10:0,b01:5}
 
@@ -102,7 +127,7 @@ test('C01: adjacent waves diagnose continuity and global speed ordering independ
 test('C02-T01: both inspection panels receive coefficients and display uniform diagnostics without changing selection',()=>{
   const inspection=readFileSync(new URL('../src/components/StateChainInspection.jsx',import.meta.url),'utf8')
   const workspace=readFileSync(new URL('../src/components/StateSpaceDialog.jsx',import.meta.url),'utf8')
-  assert.match(inspection,/classifyWaveChain\(candidate,p\)/)
+  assert.match(inspection,/classifyWaveChain\(candidate,p,geometry\)/)
   assert.match(inspection,/classification\.chainGeometry\.continuity\.status/)
   assert.match(inspection,/classification\.chainGeometry\.speedOrdering\.status/)
   assert.match(inspection,/classification\.waves\.map/)
@@ -118,7 +143,7 @@ test('C02-T02: uniform diagnostics remain individually labeled in narrow panels'
   }
   assert.match(inspection,/overflowWrap:'anywhere'/)
   assert.match(inspection,/classification\.waves\.map/)
-  assert.match(inspection,/classifyWaveChain\(candidate,p\)/)
+  assert.match(inspection,/classifyWaveChain\(candidate,p,geometry\)/)
 })
 
 test('C02-T03: inconclusive evidence does not reject a candidate',()=>{
@@ -140,10 +165,10 @@ test('C02-T03: necessary checks may pass without entropy certification',()=>{
 
 test('C02-T04: candidate selector displays triage without filtering or disabling candidates',()=>{
   const workspace=readFileSync(new URL('../src/components/StateSpaceDialog.jsx',import.meta.url),'utf8')
-  assert.match(workspace,/candidateAssessments=useMemo\(\(\)=>allProfiles\.map\(candidate=>assessWaveChain\(classifyWaveChain\(candidate,p\)\)\)/)
+  assert.match(workspace,/classifyWaveChain\(candidate,p,candidate===activeProfile\?chainGeometry:undefined\)/)
   assert.match(workspace,/candidateAssessments\[i\]\?\.status==='incompatible'/)
   assert.match(workspace,/candidateAssessments\[i\]\?\.status==='inconclusive'/)
-  assert.match(workspace,/Compatível numericamente \(não certificada\)/)
+  assert.match(workspace,/Compatibilidade numérica/)
   assert.match(workspace,/onSelectCandidate\?\.\(Number\(e\.target\.value\)\)/)
   assert.doesNotMatch(workspace,/allProfiles\.filter\(.*candidateAssessments/)
 })

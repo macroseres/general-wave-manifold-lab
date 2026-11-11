@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RIEMANN_CANDIDATE_GROUPING</title>
+<style>
+body{margin:2rem auto;padding:0 1rem;max-width:78ch;font:1rem/1.65 system-ui,sans-serif;color:#182230;background:#fff}
+h1,h2,h3,h4{line-height:1.25} a{color:#12568b} img{max-width:100%;height:auto}
+pre,blockquote{padding:1rem;background:#f3f6f8} pre{overflow:auto} code{overflow-wrap:anywhere}
+table{display:block;overflow:auto;border-collapse:collapse} th,td{padding:.4rem .65rem;border:1px solid #cdd5df;text-align:left}
+mjx-container[display=true]{overflow-x:auto;overflow-y:hidden;padding:.4rem 0}
+</style>
+
+</head>
+<body>
+<main>
+<h1 id="agrupamento-conservador-de-candidatos-de-riemann">Agrupamento conservador de candidatos de Riemann</h1>
+<p><code>groupRiemannCandidates</code> organiza candidatos de perfis autossimilares numericamente semelhantes sem excluir nenhuma cadeia ou selecionar soluções entrópicas.</p>
+<p>Critérios necessários para agrupamento: mesmo tipo de cadeia, mesmos estados extremos, estado intermediário próximo, velocidades de choque próximas e mesmas evidências geométricas, de Lax, do leque e de Liu. Para cadeias mistas, cinco amostras normalizadas da trajetória de rarefação e das velocidades características também precisam concordar. Tolerâncias relativas configuráveis: <code>stateTolerance=1e-5</code>, <code>speedTolerance=1e-6</code>.</p>
+<p>O procedimento é uma heurística de equivalência com representante do primeiro candidato, <strong>não</strong> uma classificação topológica de ramos. Grupos próximos da tolerância podem depender da ordem de entrada. Não há garantia de identidade geométrica ou admissibilidade entrópica. A interface mostra <code>G1</code>, <code>G2</code>, etc. e a quantidade de possíveis duplicações, preservando a seleção individual por índice.</p>
+
+</main>
+</body>
+</html>

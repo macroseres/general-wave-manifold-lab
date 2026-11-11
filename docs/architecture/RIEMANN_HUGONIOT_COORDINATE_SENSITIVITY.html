@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RIEMANN_HUGONIOT_COORDINATE_SENSITIVITY</title>
+<style>
+body{margin:2rem auto;padding:0 1rem;max-width:78ch;font:1rem/1.65 system-ui,sans-serif;color:#182230;background:#fff}
+h1,h2,h3,h4{line-height:1.25} a{color:#12568b} img{max-width:100%;height:auto}
+pre,blockquote{padding:1rem;background:#f3f6f8} pre{overflow:auto} code{overflow-wrap:anywhere}
+table{display:block;overflow:auto;border-collapse:collapse} th,td{padding:.4rem .65rem;border:1px solid #cdd5df;text-align:left}
+mjx-container[display=true]{overflow-x:auto;overflow-y:hidden;padding:.4rem 0}
+</style>
+
+</head>
+<body>
+<main>
+<h1 id="sensibilidade-em-coordenadas-do-espaco-de-estados">Sensibilidade em coordenadas do espaço de estados</h1>
+<p>Para o segmento amostrado fixo q(t)=A+t(B-A), o acompanhamento numérico da raiz da condição de Rankine–Hugoniot fornece dt/dp. Mantendo A e B fixos, a derivada da posição corrigida é dq/dp=(B-A)dt/dp. A comparação de dois candidatos utiliza os vetores (du/dp,dv/dp), evitando comparar parâmetros t de segmentos distintos como se tivessem escala comum.</p>
+<p>Esta é uma derivada <em>restrita ao segmento original</em>. Não é a derivada do estado intermediário de uma cadeia de Riemann completamente reconstruída após perturbação do fluxo, pois os próprios ramos e interseções podem variar. Derivadas sem acompanhamento bilateral de raízes são inconclusivas. O procedimento não avalia admissibilidade entrópica.</p>
+
+</main>
+</body>
+</html>

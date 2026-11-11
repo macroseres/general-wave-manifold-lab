@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RIEMANN_STATES_PERSISTENCE</title>
+<style>
+body{margin:2rem auto;padding:0 1rem;max-width:78ch;font:1rem/1.65 system-ui,sans-serif;color:#182230;background:#fff}
+h1,h2,h3,h4{line-height:1.25} a{color:#12568b} img{max-width:100%;height:auto}
+pre,blockquote{padding:1rem;background:#f3f6f8} pre{overflow:auto} code{overflow-wrap:anywhere}
+table{display:block;overflow:auto;border-collapse:collapse} th,td{padding:.4rem .65rem;border:1px solid #cdd5df;text-align:left}
+mjx-container[display=true]{overflow-x:auto;overflow-y:hidden;padding:.4rem 0}
+</style>
+
+</head>
+<body>
+<main>
+<h1 id="estados-iniciais-do-problema-de-riemann">Estados iniciais do problema de Riemann</h1>
+<p>O painel de estados permite posicionar independentemente <code>U_L</code> e <code>U_R</code> por L/R, clique e hover. Ambos começam ausentes (<code>null</code>).</p>
+<p>A partir do schema v3, <code>scientific.riemannStates</code> registra <code>{left:[u,v]|null,right:[u,v]|null}</code>. A importação valida que coordenadas sejam números finitos. Experimentos v1 e v2 são migrados, com ambos os estados ausentes, sem inventar dados iniciais.</p>
+<p>Esta alteração apenas persiste dados iniciais; não constrói nem certifica uma solução de Riemann. A sincronização de soluções entre espaço de estados, variedade de ondas e espaço físico exige um solucionador admissível.</p>
+
+</main>
+</body>
+</html>

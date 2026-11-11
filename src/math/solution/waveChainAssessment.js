@@ -4,6 +4,8 @@
  */
 export function assessWaveChain(classification){
   if(!classification)return {status:'inconclusive',reasons:['Diagnóstico indisponível']}
+  if(classification.validation?.status==='validated')
+    return {status:'validated',reasons:[`Existência de uma solução ${classification.validation.pattern??'KR'} admissível por Liu validada com limites intervalares.`]}
   const reasons=[]
   const junctions=classification.chainGeometry?.junctions??[]
   for(const j of junctions){
@@ -11,6 +13,8 @@ export function assessWaveChain(classification){
     if(j.speedOrdering?.status==='reversed')reasons.push(`Junção ${j.index+1}: velocidades fora de ordem`)
   }
   for(const w of classification.waves??[]){
+    if(w.admissibility?.liu?.status==='continuous-liu-violation')
+      reasons.push(`Onda ${w.index+1}: violação de Liu no arco contínuo`)
     if(w.admissibility?.liu?.status==='sampled-violation-detected')
       reasons.push(`Onda ${w.index+1}: violação amostrada de Liu`)
   }

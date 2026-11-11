@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CONTRIBUTING</title>
+<style>
+body{margin:2rem auto;padding:0 1rem;max-width:78ch;font:1rem/1.65 system-ui,sans-serif;color:#182230;background:#fff}
+h1,h2,h3,h4{line-height:1.25} a{color:#12568b} img{max-width:100%;height:auto}
+pre,blockquote{padding:1rem;background:#f3f6f8} pre{overflow:auto} code{overflow-wrap:anywhere}
+table{display:block;overflow:auto;border-collapse:collapse} th,td{padding:.4rem .65rem;border:1px solid #cdd5df;text-align:left}
+mjx-container[display=true]{overflow-x:auto;overflow-y:hidden;padding:.4rem 0}
+</style>
+
+</head>
+<body>
+<main>
+<h1 id="contributing">Contributing</h1>
+<h2 id="branches">Branches</h2>
+<ul>
+<li><code>main</code>: stable and releasable.</li>
+<li><code>feat/&lt;short-name&gt;</code>: new functionality.</li>
+<li><code>fix/&lt;short-name&gt;</code>: corrections.</li>
+<li><code>docs/&lt;short-name&gt;</code>: documentation-only work.</li>
+<li><code>refactor/&lt;short-name&gt;</code>: behavior-preserving structural work.</li>
+</ul>
+<h2 id="before-a-commit">Before a commit</h2>
+<p>Run:</p>
+<pre><code class="language-bash">npm run check
+</code></pre>
+<p>Do not merge when lint, mathematical tests or build fail.</p>
+<h2 id="scientific-changes">Scientific changes</h2>
+<p>For a new mathematical object or a change in a formula:</p>
+<ol>
+<li>update the mathematical documentation;</li>
+<li>implement it outside the renderer;</li>
+<li>add/adjust mathematical tests;</li>
+<li>implement geometry/rendering;</li>
+<li>update the changelog when user-visible or scientifically relevant.</li>
+</ol>
+<h2 id="commits">Commits</h2>
+<p>Prefer focused Conventional Commit messages, for example:</p>
+<ul>
+<li><code>feat(sonic): add implicit S+ residual</code></li>
+<li><code>fix(charts): correct Z-chart transition</code></li>
+<li><code>docs(math): derive rarefaction field</code></li>
+<li><code>refactor(math): split quadratic flux module</code></li>
+</ul>
+
+</main>
+</body>
+</html>

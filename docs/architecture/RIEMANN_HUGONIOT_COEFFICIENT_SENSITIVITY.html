@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RIEMANN_HUGONIOT_COEFFICIENT_SENSITIVITY</title>
+<style>
+body{margin:2rem auto;padding:0 1rem;max-width:78ch;font:1rem/1.65 system-ui,sans-serif;color:#182230;background:#fff}
+h1,h2,h3,h4{line-height:1.25} a{color:#12568b} img{max-width:100%;height:auto}
+pre,blockquote{padding:1rem;background:#f3f6f8} pre{overflow:auto} code{overflow-wrap:anywhere}
+table{display:block;overflow:auto;border-collapse:collapse} th,td{padding:.4rem .65rem;border:1px solid #cdd5df;text-align:left}
+mjx-container[display=true]{overflow-x:auto;overflow-y:hidden;padding:.4rem 0}
+</style>
+
+</head>
+<body>
+<main>
+<h1 id="sensibilidade-local-das-raizes-de-hugoniot-aos-coeficientes">Sensibilidade local das raízes de Hugoniot aos coeficientes</h1>
+<p>Para um segmento fixo <code>q(t)=a+t(b-a)</code> e estado de referência <code>fixed</code>, o algoritmo localiza a raiz do determinante de Rankine–Hugoniot. Em seguida perturba, individualmente, os dez coeficientes quadráticos por <code>±1e-5 max(1,|p_j|)</code> e procura uma raiz próxima à selecionada, no mesmo segmento.</p>
+<p>O resultado <code>coefficientSensitivity</code> contém <code>trials</code> com deslocamentos do parâmetro <code>t</code> e derivadas centrais quando ambos os lados são identificáveis; <code>maximumParameterShift</code>; <code>missingPerturbedRoots</code>; e <code>status</code> (<code>locally-tracked</code> ou <code>unresolved-perturbation</code>). A análise pode ser desativada com <code>analyzeSensitivity:false</code>.</p>
+<p><strong>Limitações:</strong> o experimento não recompõe a curva de Hugoniot inteira após perturbar os coeficientes, nem prova continuidade, bifurcação ou admissibilidade entrópica. Raízes próximas podem ser indistinguíveis sob a tolerância local; casos não rastreados são declarados inconclusivos. Os deslocamentos são relativos ao parâmetro do segmento e dependem da parametrização.</p>
+
+</main>
+</body>
+</html>

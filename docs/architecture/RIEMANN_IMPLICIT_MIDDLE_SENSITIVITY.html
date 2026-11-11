@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RIEMANN_IMPLICIT_MIDDLE_SENSITIVITY</title>
+<style>
+body{margin:2rem auto;padding:0 1rem;max-width:78ch;font:1rem/1.65 system-ui,sans-serif;color:#182230;background:#fff}
+h1,h2,h3,h4{line-height:1.25} a{color:#12568b} img{max-width:100%;height:auto}
+pre,blockquote{padding:1rem;background:#f3f6f8} pre{overflow:auto} code{overflow-wrap:anywhere}
+table{display:block;overflow:auto;border-collapse:collapse} th,td{padding:.4rem .65rem;border:1px solid #cdd5df;text-align:left}
+mjx-container[display=true]{overflow-x:auto;overflow-y:hidden;padding:.4rem 0}
+</style>
+
+</head>
+<body>
+<main>
+<h1 id="sensibilidade-implicita-do-estado-intermediario-duas-ondas-de-choque">Sensibilidade implícita do estado intermediário — duas ondas de choque</h1>
+<p>Para estados extremos fixos, defina D(A,B;p)=det(B-A,F(B;p)-F(A;p)). Um estado intermediário de uma cadeia de dois choques deve satisfazer G(M,p)=(D(L,M;p),D(M,R;p))=0.</p>
+<p>Se a matriz 2×2 G_M for inversível, o teorema da função implícita dá dM/dp_j=−G_M^{-1}G_. O módulo calcula G_M por diferenças centrais e G_ exatamente a partir da dependência linear do fluxo quadrático em cada coeficiente. Rejeita estados fora de ambos os loci e matrizes numericamente singulares. Retorna derivadas em (u,v), não no parâmetro local do segmento.</p>
+<p><strong>Escopo:</strong> trata-se da derivada local da interseção de duas equações RH. Não recalcula numericamente as curvas completas, não acompanha mudança de ramo, não verifica admissibilidade de Lax/Liu e não escolhe uma solução entrópica. Para cadeias mistas a função não é aplicada: uma equação de rarefação adicional seria necessária.</p>
+
+</main>
+</body>
+</html>

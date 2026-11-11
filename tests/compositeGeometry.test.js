@@ -52,7 +52,7 @@ test("visual geometry splits a legitimate RP1 crossing at duplicated z-hat borde
 test("composite topology audit classifies every branch endpoint",()=>{
  const d=buildCompositeSceneData(defaultCoefficients,-5,5,{showMinus:true,showPlus:false,YMin:-6,YMax:6}).minus.diagnostics
  const t=d.topology
- assert.equal(t.endpoints,t["rarefaction-end"]+t["outside-window"]+t["projective-boundary"]+t["root-disappearance"]+t.unclassified)
+ assert.equal(t.endpoints,t["rarefaction-end"]+t["outside-window"]+t["projective-boundary"]+t["double-sonic"]+t["root-disappearance"]+t.unclassified)
  assert.equal(t.unclassified,0)
 })
 test("current Wave Manifold preset has exact K-minus/K-plus mirror symmetry",()=>{

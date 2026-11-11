@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RIEMANN_LIU_TANGENTIAL_SPEED</title>
+<style>
+body{margin:2rem auto;padding:0 1rem;max-width:78ch;font:1rem/1.65 system-ui,sans-serif;color:#182230;background:#fff}
+h1,h2,h3,h4{line-height:1.25} a{color:#12568b} img{max-width:100%;height:auto}
+pre,blockquote{padding:1rem;background:#f3f6f8} pre{overflow:auto} code{overflow-wrap:anywhere}
+table{display:block;overflow:auto;border-collapse:collapse} th,td{padding:.4rem .65rem;border:1px solid #cdd5df;text-align:left}
+mjx-container[display=true]{overflow-x:auto;overflow-y:hidden;padding:.4rem 0}
+</style>
+
+</head>
+<body>
+<main>
+<h1 id="derivada-tangencial-da-velocidade-de-choque">Derivada tangencial da velocidade de choque</h1>
+<p>Para <code>U_L</code> fixo e <code>U</code> sobre a Hugoniot forward, seja <code>d=U-U_L</code> e <code>s=(d·(F(U)-F(U_L)))/(d·d)</code>. A incidência escalar é <code>H(U)=det(d,F(U)-F(U_L))=0</code>. Em um ponto regular, <code>t=(-H_v,H_u)/||∇H||</code> é tangente unitária.</p>
+<p>Diferenciando a identidade Rankine–Hugoniot ao longo da curva, obtemos</p>
+<p><code>ds/dℓ = d·(DF(U)-sI)t / ||d||²</code>.</p>
+<p>O módulo <code>liuTangentialSpeed.js</code> calcula esta derivada analiticamente; <code>liuTangentialExtrema</code> procura mudanças de sinal e valores pequenos sobre um arco orientado. A orientação do vetor tangente é alinhada com a progressão das amostras.</p>
+<p>Os zeros identificados são <strong>candidatos</strong>, não extremos certificados: podem faltar pontos entre amostras, a tangente pode ser singular, e um arco amostrado não prova conectividade global. O diagnóstico é acrescentado ao resultado de <code>refinedLiuInterior</code> no campo <code>tangential</code>, sem alterar os critérios anteriores de aprovação/rejeição amostrada.</p>
+
+</main>
+</body>
+</html>

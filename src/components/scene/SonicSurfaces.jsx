@@ -1,6 +1,5 @@
 import {partitionSonicMesh} from '../../geometry/sonic/spectralPartition.js'
-import {smoothBtSegments} from '../../geometry/sonic/smoothBtCurve.js'
-import {continueBtMinus} from '../../geometry/sonic/continueBtCurve.js'
+import {btMinusPaths,reflectBtPaths} from '../../geometry/sonic/btLocusPaths.js'
 import {waveColors} from '../../config/waveColors.js'
 import {scientificCurveStyle} from '../../config/scientificCurveRules.js'
 import {useEffect, useMemo, useRef, useState} from 'react'
@@ -120,14 +119,10 @@ export function SonicSurfaces({p,tauMin,tauMax,YMin,YMax,showBTMinus=true,showBT
   const splitMinus=useMemo(()=>data&&(showMinus||showPlus)?partitionSonicMesh(data,p,'minus'):null,[data,p,showMinus,showPlus])
   const btPaths=useMemo(()=>{
     if(!splitMinus||( !showBTMinus&&!showBTPlus))return []
-    if(btCurveMode==='continuation'){
-      const traced=continueBtMinus(splitMinus.bt,p,{tauMin,tauMax,YMin,YMax,zcMax:0.999},{step:0.035,maxSteps:1000})
-      if(traced.length)return traced
-    }
-    return smoothBtSegments(splitMinus.bt,p,'minus',3,320)
+    return btMinusPaths(splitMinus.bt,p,{tauMin,tauMax,YMin,YMax},btCurveMode)
   },[splitMinus,p,showBTMinus,showBTPlus,tauMin,tauMax,YMin,YMax,btCurveMode])
   // Apply dagger to BT vertices explicitly: Line2 does not rely on a negative parent scale.
-  const btPlusPaths=useMemo(()=>showBTPlus?btPaths.map(path=>path.map(([tau,Y,zc])=>[tau,-Y,zc])):[],[btPaths,showBTPlus])
+  const btPlusPaths=useMemo(()=>showBTPlus?reflectBtPaths(btPaths):[],[btPaths,showBTPlus])
   const minusSlow=useMemo(()=>splitMinus?makeSonicBufferGeometry(splitMinus.slow):null,[splitMinus])
   const minusFast=useMemo(()=>splitMinus?makeSonicBufferGeometry(splitMinus.fast):null,[splitMinus])
   // Dagger is a scene transformation: positive geometry is never remeshed.

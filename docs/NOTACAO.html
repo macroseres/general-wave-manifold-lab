@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NOTACAO</title>
+<style>
+body{margin:2rem auto;padding:0 1rem;max-width:78ch;font:1rem/1.65 system-ui,sans-serif;color:#182230;background:#fff}
+h1,h2,h3,h4{line-height:1.25} a{color:#12568b} img{max-width:100%;height:auto}
+pre,blockquote{padding:1rem;background:#f3f6f8} pre{overflow:auto} code{overflow-wrap:anywhere}
+table{display:block;overflow:auto;border-collapse:collapse} th,td{padding:.4rem .65rem;border:1px solid #cdd5df;text-align:left}
+mjx-container[display=true]{overflow-x:auto;overflow-y:hidden;padding:.4rem 0}
+</style>
+
+</head>
+<body>
+<main>
+<h1 id="notacao-e-convencoes-de-comparacao">Notação e convenções de comparação</h1>
+<p>Este índice consolida os símbolos usados na referência. A definição completa e suas hipóteses permanecem nos capítulos; não se deve importar uma convenção de outro artigo apenas por igualdade de símbolos.</p>
+<table>
+<thead>
+<tr>
+<th>Símbolo</th>
+<th>Significado</th>
+<th>Cuidado</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>U_L, U_R</td>
+<td>Dados globais de Riemann</td>
+<td>Não são automaticamente os extremos de cada salto intermediário</td>
+</tr>
+<tr>
+<td>U_−(P), U_+(P)</td>
+<td>Estados locais do ponto na variedade</td>
+<td>Um mesmo estado pode ser saída de um salto e entrada de outro</td>
+</tr>
+<tr>
+<td>Ū</td>
+<td>Estado médio</td>
+<td>Não é uma terceira projeção de extremo</td>
+</tr>
+<tr>
+<td>s</td>
+<td>Velocidade de choque; velocidade própria selecionada na característica</td>
+<td>O sinal ± de uma folha não indica o sinal de s</td>
+</tr>
+<tr>
+<td>λ₁, λ₂ ou λ_s, λ_f</td>
+<td>Autovalores reais ordenados</td>
+<td>Rotulagem lenta/rápida exige distinção espectral</td>
+</tr>
+<tr>
+<td>n_L,n_R</td>
+<td>Número de velocidades características estritamente abaixo de s em cada extremo local</td>
+<td>A tabela de nove interiores exige espectros simples e nenhuma igualdade s=λ_i</td>
+</tr>
+<tr>
+<td>R,S,C,K em padrões de cadeia</td>
+<td>Rarefação, choque, contato e bloco composto</td>
+<td>C e K aqui não são os lugares geométricos da variedade; K tem segmentos internos</td>
+</tr>
+<tr>
+<td>W, C, E</td>
+<td>Variedade de Ondas, característica, coincidência levantada</td>
+<td>C não é apenas a diagonal bruta de RH; E guarda a incidência própria</td>
+</tr>
+<tr>
+<td>π_−, π_+</td>
+<td>Projeções de extremo esquerdo/direito</td>
+<td>Não são inversíveis em geral</td>
+</tr>
+<tr>
+<td>P(z), Q(z), R(z)</td>
+<td>Polinômios da equação projetiva</td>
+<td>P também pode denotar um ponto quando usado sem argumento; conferir contexto</td>
+</tr>
+<tr>
+<td>N(z)=P²+Q²</td>
+<td>Denominador da carta finita</td>
+<td>O campo D de algumas funções de cartas representa N</td>
+</tr>
+<tr>
+<td>Δ(U)</td>
+<td>Discriminante espectral</td>
+<td>Não confundir com N nem com ΔU, o vetor salto</td>
+</tr>
+<tr>
+<td>(τ,Y,z)</td>
+<td>Coordenadas da carta finita regular</td>
+<td>Y é amplitude normalizada, não norma do salto; τ não é arco</td>
+</tr>
+<tr>
+<td>(η,Υ,Z)</td>
+<td>Coordenadas recíprocas</td>
+<td>Z=1/z na sobreposição; Υ também é escrito como Ŷ</td>
+</tr>
+<tr>
+<td>(X,Z) em uma representação de salto</td>
+<td>Duas componentes do salto</td>
+<td>Esse Z não é automaticamente a coordenada recíproca</td>
+</tr>
+<tr>
+<td>z_c</td>
+<td>Compactificação de desenho</td>
+<td>Não é uma terceira carta analítica</td>
+</tr>
+<tr>
+<td>σ, α</td>
+<td>Parâmetros de curvas ou campos</td>
+<td>Não são automaticamente t ou ξ</td>
+</tr>
+<tr>
+<td>ξ=x/t</td>
+<td>Coordenada de similaridade, t&gt;0</td>
+<td>Leques ocupam intervalos de ξ; choques ficam em velocidades pontuais</td>
+</tr>
+<tr>
+<td>ζ=(x−st)/ε</td>
+<td>Coordenada de perfil viscoso</td>
+<td>Não confundir com ξ; ε é a escala viscosa</td>
+</tr>
+<tr>
+<td>M, K, Φ_±</td>
+<td>Matriz direcional, escalar misto e fatores sônicos reduzidos</td>
+<td>Determinante completo tem também o fator Y</td>
+</tr>
+<tr>
+<td>S<sup>−, S</sup>+</td>
+<td>Folhas reduzidas sônicas dos extremos − e +</td>
+<td>Σ^± foi usado no capítulo 15 apenas para distinguir os zeros completos</td>
+</tr>
+<tr>
+<td>J</td>
+<td>Lugar algébrico de inflexão</td>
+<td>Equivalência com a definição tradicional requer autovalor simples; pode não ser curva regular</td>
+</tr>
+<tr>
+<td>DS</td>
+<td>Dupla sônica não trivial nos enunciados</td>
+<td>Alguns relatórios usam extensão algébrica que inclui salto nulo</td>
+</tr>
+<tr>
+<td>K_−, K_+</td>
+<td>Construções por saturação orientada e folha sônica</td>
+<td>Não são rótulos universais de família lenta/rápida ou admissibilidade física</td>
+</tr>
+<tr>
+<td>A</td>
+<td>Mudança linear dos estados em capítulos de afins</td>
+<td>Em deduções sônicas também se usa A=DF(Ū)−sI; o contexto é obrigatório</td>
+</tr>
+</tbody>
+</table>
+<p>Na comparação com WM-01, primeiro traduzir a ordem dos estados e o sentido do salto. Depois comparar os estados reconstruídos, as velocidades e as incidências, em vez de exigir igualdade da coordenada longitudinal ou dos desenhos. Fontes e restrições estão em <a href="BIBLIOGRAPHY.html">BIBLIOGRAPHY.html</a>.</p>
+
+</main>
+</body>
+</html>

@@ -1,6 +1,6 @@
 # Guia da referência matemática
 
-O objetivo é documentar as construções de Riemann no espaço de estados, seus levantamentos à Variedade de Ondas e suas realizações físicas. A direção científica está em [Objetivos e escopo](../OBJETIVOS_E_ESCOPO.md).
+O objetivo é documentar as construções de Riemann no espaço de estados, seus levantamentos à Variedade de Ondas e suas realizações físicas. A direção científica está em [Objetivos e escopo](../OBJETIVOS_E_ESCOPO.html).
 
 ## Fontes e leitura
 
@@ -9,36 +9,36 @@ A prioridade de escrita e revisão é agora a [camada tradicional autônoma](../
 | Fonte | Responsabilidade atual |
 |---|---|
 | `main.tex` e seus arquivos incluídos | Referência canônica das fórmulas do núcleo, cartas, sônicas, rarefações, Hugoniot e definições de compostas |
-| `01-problema-de-riemann.md` | Formulação inicial e equação de similaridade exibidas no aplicativo |
-| `02-leis-conservacao.md` | Soluções fracas e dedução de Rankine–Hugoniot exibidas no aplicativo |
-| `03-espectro.md` | Autovalores e classificação espectral exibidos no aplicativo |
-| `04-rarefacoes.md` | Construção local de leques regulares, hipóteses e limites numéricos exibidos no aplicativo |
-| `05-choques-hugoniot-lax.md` | Saltos, fibras orientadas, desigualdades estritas e limites da classificação implementada |
-| `06-entropia-admissibilidade.md` | Compatibilidade entropia–fluxo, produção no salto e distinção entre critérios e evidências |
-| `07-variedade-construcao.md`, `08-deducao-coordenadas.md` | Relação de salto, prolongamento da diagonal e dedução das coordenadas |
-| `09-carta-finita.md`, `13-carta-reciproca.md` | Domínios regulares, velocidade, transições completas e limites das cartas |
-| `10-estados-projecoes.md`, `11-fibras-hugoniot.md`, `12-projecao-hugoniot.md` | Estados locais, fibras orientadas, projeções e cobertura numérica |
-| `14-coincidencia.md` | Levantamentos próprios, multiplicidade, pontos escalares e limites da detecção de raízes |
-| `15-sonicas.md`, `16-inflexao-dupla-sonica.md` | Condições completas/reduzidas, interseções, genuína não linearidade e convenções de dupla sônica |
-| `17-campo-rarefacao.md`, `18-separatrizes.md` | Tangência projetada, parâmetros dos campos, orientação entre cartas e aproximação de separatrizes |
-| `19-ondas-compostas.md` | EDO, saturações, seleção de ramos, condições físicas e limitação do resíduo recíproco |
-| `20-cadeias-riemann.md` | Cadeias, traço inicial, perfis candidatos e compatibilidade entre os três espaços |
-| `21-transformacoes-afins.md` | Transporte de fluxos, dados de Riemann, direções próprias e pares de entropia |
-| `22-classificacao-estados.md` | Espectro local, tipo de cônica, tolerâncias e cortes do espaço de parâmetros |
-| `23-diagnosticos-numericos.md`, `24-auditoria-matematica.md` | Reprodução de experiências, escala de resíduos, critérios e limites de auditoria |
-| `25-ambientes.md`, `26-guia-leitura.md` | Finalidade das vistas, sequência de desenvolvimento, fontes e pendências |
+| `01-problema-de-riemann.html` | Formulação inicial e equação de similaridade exibidas no aplicativo |
+| `02-leis-conservacao.html` | Soluções fracas e dedução de Rankine–Hugoniot exibidas no aplicativo |
+| `03-espectro.html` | Autovalores e classificação espectral exibidos no aplicativo |
+| `04-rarefacoes.html` | Construção local de leques regulares, hipóteses e limites numéricos exibidos no aplicativo |
+| `05-choques-hugoniot-lax.html` | Saltos, fibras orientadas, desigualdades estritas e limites da classificação implementada |
+| `06-entropia-admissibilidade.html` | Compatibilidade entropia–fluxo, produção no salto e distinção entre critérios e evidências |
+| `07-variedade-construcao.html`, `08-deducao-coordenadas.html` | Relação de salto, prolongamento da diagonal e dedução das coordenadas |
+| `09-carta-finita.html`, `13-carta-reciproca.html` | Domínios regulares, velocidade, transições completas e limites das cartas |
+| `10-estados-projecoes.html`, `11-fibras-hugoniot.html`, `12-projecao-hugoniot.html` | Estados locais, fibras orientadas, projeções e cobertura numérica |
+| `14-coincidencia.html` | Levantamentos próprios, multiplicidade, pontos escalares e limites da detecção de raízes |
+| `15-sonicas.html`, `16-inflexao-dupla-sonica.html` | Condições completas/reduzidas, interseções, genuína não linearidade e convenções de dupla sônica |
+| `17-campo-rarefacao.html`, `18-separatrizes.html` | Tangência projetada, parâmetros dos campos, orientação entre cartas e aproximação de separatrizes |
+| `19-ondas-compostas.html` | EDO, saturações, seleção de ramos, condições físicas e limitação do resíduo recíproco |
+| `20-cadeias-riemann.html` | Cadeias, traço inicial, perfis candidatos e compatibilidade entre os três espaços |
+| `21-transformacoes-afins.html` | Transporte de fluxos, dados de Riemann, direções próprias e pares de entropia |
+| `22-classificacao-estados.html` | Espectro local, tipo de cônica, tolerâncias e cortes do espaço de parâmetros |
+| `23-diagnosticos-numericos.html`, `24-auditoria-matematica.html` | Reprodução de experiências, escala de resíduos, critérios e limites de auditoria |
+| `25-ambientes.html`, `26-guia-leitura.html` | Finalidade das vistas, sequência de desenvolvimento, fontes e pendências |
 | `src/components/DocumentationContent.jsx` | Registro das 26 seções: títulos e ordem, sem cópia do texto científico |
-| `../architecture/TRACEABILITY.md` | Correspondência entre definições, implementação e evidências; contém tabelas históricas identificadas |
+| `../architecture/TRACEABILITY.html` | Correspondência entre definições, implementação e evidências; contém tabelas históricas identificadas |
 
-Os 26 arquivos Markdown são consumidos diretamente pela Documentação e pela Ajuda, sem cópia do texto em JSX. A migração da referência exibida não elimina nem substitui automaticamente o LaTeX canônico. Os arquivos LaTeX não incluídos por `main.tex` precisam de revisão de procedência antes de serem tratados como parte da referência compilada.
+Os 26 arquivos HTML são consumidos diretamente pela Documentação e pela Ajuda, sem cópia do texto em JSX. A migração da referência exibida não elimina nem substitui automaticamente o LaTeX canônico. Os arquivos LaTeX não incluídos por `main.tex` precisam de revisão de procedência antes de serem tratados como parte da referência compilada.
 
 ## Critérios editoriais
 
-Aplicar o [contrato de fundamentação e construção](../FUNDAMENTACAO_E_CONSTRUCAO.md) a cada objeto: origem analítica ou geométrica, seleção, operações intrínsecas, correspondência demonstrada, degenerações e implementação. O mapa desse documento cobre os blocos dos 26 capítulos e distingue correspondências locais de pendências globais. A construção por extensão, saturação ou interseção deve ser deduzida depois da definição de origem.
+Aplicar o [contrato de fundamentação e construção](../FUNDAMENTACAO_E_CONSTRUCAO.html) a cada objeto: origem analítica ou geométrica, seleção, operações intrínsecas, correspondência demonstrada, degenerações e implementação. O mapa desse documento cobre os blocos dos 26 capítulos e distingue correspondências locais de pendências globais. A construção por extensão, saturação ou interseção deve ser deduzida depois da definição de origem.
 
 Cada enunciado deve declarar hipóteses e domínio; cada demonstração deve justificar a conclusão nesse domínio. Distinguir um resultado matemático contínuo de seu teste numérico amostrado e registrar a relação entre os três espaços quando houver construção implementada.
 
-Resultados da literatura precisam de referência identificável e localização do resultado utilizado. Resultados próprios precisam de dedução, hipóteses e validação. O primeiro mapa bibliográfico foi criado para o capítulo de fibras de Hugoniot em [BIBLIOGRAPHY.md](../BIBLIOGRAPHY.md); os demais capítulos ainda precisam dessa revisão. A referência atual não representa uma revisão bibliográfica concluída.
+Resultados da literatura precisam de referência identificável e localização do resultado utilizado. Resultados próprios precisam de dedução, hipóteses e validação. O primeiro mapa bibliográfico foi criado para o capítulo de fibras de Hugoniot em [BIBLIOGRAPHY.html](../BIBLIOGRAPHY.html); os demais capítulos ainda precisam dessa revisão. A referência atual não representa uma revisão bibliográfica concluída.
 
 O renderizador aceita títulos, parágrafos, negrito, itálico, links HTTP/HTTPS, figuras locais em /docs/, matemática entre dólares e blocos delimitados por duas linhas de dólares duplos. Enunciados usam títulos como “Definição — Nome”; demonstrações começam com “Demonstração.” em negrito. Listas, tabelas e bibliografia automática ainda não são suportadas no conteúdo exibido. Este guia é um documento do repositório e não é carregado pelo renderizador.
 
@@ -56,7 +56,7 @@ Após cada bloco: conferir as fórmulas e hipóteses, testar interpretação e r
 
 ## Verificação da migração — 20/10/2026
 
-As 26 seções estão em Markdown e são carregadas pelo mesmo registro em Documentação e Ajuda. O teste de renderização importa esse registro completo, verifica a ordem e as fontes, interpreta os textos e renderiza suas expressões matemáticas. Convenções editoriais, procedimentos e critérios de auditoria recebem o mesmo agrupamento semântico dos demais enunciados.
+As 26 seções estão em HTML e são carregadas pelo mesmo registro em Documentação e Ajuda. O teste de renderização importa esse registro completo, verifica a ordem e as fontes, verifica a marcação HTML e as expressões pré-renderizadas. Convenções editoriais, procedimentos e critérios de auditoria recebem o mesmo agrupamento semântico dos demais enunciados.
 
 Nesta etapa, lint, 738 testes e build passaram; o build mantém o aviso de tamanho do pacote JavaScript. Isso valida os checks executados, não todas as afirmações científicas. A inspeção visual permanece pendente: o navegador integrado não apresentou este projeto no endereço local do servidor durante a tentativa de verificação. Não foi declarada aprovação visual.
 
@@ -64,7 +64,7 @@ As próximas frentes são consolidar a bibliografia com localização dos result
 
 ## Primeiro capítulo de referência completo
 
-[11-fibras-hugoniot.md](11-fibras-hugoniot.md) reúne definições, dedução, fontes consultadas com escopo, exemplo triangular exato, figura nos três espaços e testes reproduzíveis. Os [dados e comandos](../examples/README.md) permitem reconstruir o ponto, o ramo e a figura. O exemplo verifica uma solução fraca estritamente Lax 2 nos extremos; não demonstra classificação global ou unicidade.
+[11-fibras-hugoniot.html](11-fibras-hugoniot.html) reúne definições, dedução, fontes consultadas com escopo, exemplo triangular exato, figura nos três espaços e testes reproduzíveis. Os [dados e comandos](../examples/README.md) permitem reconstruir o ponto, o ramo e a figura. O exemplo verifica uma solução fraca estritamente Lax 2 nos extremos; não demonstra classificação global ou unicidade.
 
 A figura exportada foi inspecionada como imagem. Isso não substitui a inspeção visual da página no navegador. A validação automatizada desta etapa cobre as fórmulas do exemplo e os novos links/figuras do renderizador.
 
@@ -72,10 +72,10 @@ A figura exportada foi inspecionada como imagem. Isso não substitui a inspeçã
 
 ### Atlas algébrico dos parâmetros
 
-Os capítulos de pesquisa [27 — dez parâmetros e homogeneização](27-atlas-parametros-variedade-ondas.md), [28 — carta genérica](28-forma-normal-generica.md) e [29 — atlas global dos fluxos](29-atlas-global-fluxos.md) documentam a normalização sob o grupo declarado. O capítulo 29 fornece a cobertura das partes quadráticas, estabilizadores e classes lineares residuais, incluindo os setores excepcionais. São documentos do repositório, separados das 26 seções registradas na interface. O fechamento do atlas de fluxos não fecha a classificação das estruturas globais de ondas.
+Os capítulos de pesquisa [27 — dez parâmetros e homogeneização](27-atlas-parametros-variedade-ondas.html), [28 — carta genérica](28-forma-normal-generica.html) e [29 — atlas global dos fluxos](29-atlas-global-fluxos.html) documentam a normalização sob o grupo declarado. O capítulo 29 fornece a cobertura das partes quadráticas, estabilizadores e classes lineares residuais, incluindo os setores excepcionais. São documentos do repositório, separados das 26 seções registradas na interface. O fechamento do atlas de fluxos não fecha a classificação das estruturas globais de ondas.
 
-O [mapa dos 26 capítulos](../DOCUMENTATION_COVERAGE.md) fornece o estado consolidado de procedência, exemplos e pendências. Os estudos avançados completam os blocos de compostas, separatrizes e classificação com dados reproduzíveis e limites explícitos.
+O [mapa dos 26 capítulos](../DOCUMENTATION_COVERAGE.html) fornece o estado consolidado de procedência, exemplos e pendências. Os estudos avançados completam os blocos de compostas, separatrizes e classificação com dados reproduzíveis e limites explícitos.
 
-[17-campo-rarefacao.md](17-campo-rarefacao.md) inclui um leque rápido exato, sua órbita na característica, orientação nas cartas e comparação com a interpolação do aplicativo. [20-cadeias-riemann.md](20-cadeias-riemann.md) inclui uma cadeia exata de dois choques, seu estado intermediário e uma falha de cobertura da parametrização atual demonstrada explicitamente. Ambos têm figuras, fixtures, comandos de reprodução e testes em `wavePatternsReference.test.js`; o mapa bibliográfico registra as partes consultadas e os exemplos deduzidos no projeto.
+[17-campo-rarefacao.html](17-campo-rarefacao.html) inclui um leque rápido exato, sua órbita na característica, orientação nas cartas e comparação com a interpolação do aplicativo. [20-cadeias-riemann.html](20-cadeias-riemann.html) inclui uma cadeia exata de dois choques, seu estado intermediário e uma falha de cobertura da parametrização atual demonstrada explicitamente. Ambos têm figuras, fixtures, comandos de reprodução e testes em `wavePatternsReference.test.js`; o mapa bibliográfico registra as partes consultadas e os exemplos deduzidos no projeto.
 
-[19-ondas-compostas.md](19-ondas-compostas.md) acrescenta um ramo duplamente sônico, sua junção física e um perfil viscoso exato para o choque isolado. [18-separatrizes.md](18-separatrizes.md) apresenta a fronteira estável exata e a integração de quatro metades; [22-classificacao-estados.md](22-classificacao-estados.md) deriva quatro tipos de cônica; [21-transformacoes-afins.md](21-transformacoes-afins.md) inclui um transporte reproduzível. Esses casos são conferidos por `advancedReference.test.js`.
+[19-ondas-compostas.html](19-ondas-compostas.html) acrescenta um ramo duplamente sônico, sua junção física e um perfil viscoso exato para o choque isolado. [18-separatrizes.html](18-separatrizes.html) apresenta a fronteira estável exata e a integração de quatro metades; [22-classificacao-estados.html](22-classificacao-estados.html) deriva quatro tipos de cônica; [21-transformacoes-afins.html](21-transformacoes-afins.html) inclui um transporte reproduzível. Esses casos são conferidos por `advancedReference.test.js`.

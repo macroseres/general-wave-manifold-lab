@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RIEMANN_WORKSPACE_PLAN</title>
+<style>
+body{margin:2rem auto;padding:0 1rem;max-width:78ch;font:1rem/1.65 system-ui,sans-serif;color:#182230;background:#fff}
+h1,h2,h3,h4{line-height:1.25} a{color:#12568b} img{max-width:100%;height:auto}
+pre,blockquote{padding:1rem;background:#f3f6f8} pre{overflow:auto} code{overflow-wrap:anywhere}
+table{display:block;overflow:auto;border-collapse:collapse} th,td{padding:.4rem .65rem;border:1px solid #cdd5df;text-align:left}
+mjx-container[display=true]{overflow-x:auto;overflow-y:hidden;padding:.4rem 0}
+</style>
+
+</head>
+<body>
+<main>
+<h1 id="riemann-workspace-scientific-scope-and-staged-implementation">Riemann workspace — scientific scope and staged implementation</h1>
+<p>The scientific target is a general quadratic flux F, initial states U_L and U_R, and an explicitly chosen admissibility criterion. Four synchronized views are required: wave manifold in 3D, state plane (u,v), space-time (x,t), and physical profiles u(x,t), v(x,t).</p>
+<h2 id="existing-implementation-and-current-boundary">Existing implementation and current boundary</h2>
+<p>The 3D Scene is the primary viewport. StateSpaceDialog provides a separate state-plane view. PhysicalSpaceDialog constructs a <em>candidate</em> physical rarefaction fan from one selected monotone orbit. This delivery adds a time slider and profiles using the same <code>rarefactionSolutionCandidate</code> and <code>rarefactionStateAtXi</code> functions. These plots are <strong>not</strong> a general Riemann solver: the constant end extensions are visual conventions, not a proof that a selected orbit connects prescribed Riemann data admissibly.</p>
+<h2 id="next-stages">Next stages</h2>
+<ol>
+<li>Build a shared, pure Riemann experiment model containing F, U_L, U_R, admissibility policy, numerical tolerances and wave sequence, with explicit <code>unresolved</code> status.</li>
+<li>Add a dedicated state-plane spectral partition using Delta(U)=tr(DF)^2-4det(DF); Delta=0 is a repeated-eigenvalue boundary, not automatically a parabolic normal form.</li>
+<li>Investigate parameter equivalence under admissible changes of state and flux, rather than transferring the special b1,b2 reduction from the older application without proof.</li>
+<li>Add a pure wave-sequence solver, certify Rankine–Hugoniot and admissibility for shocks, monotonicity for rarefactions, and matching at intermediate states.</li>
+<li>Render synchronized 3D/state/space-time/profiles from <strong>one certified solution object</strong>; use linked selection and a shared time control. Keep unsolved and candidate cases visibly distinct.</li>
+<li>Extend experiment export/import to preserve initial states, numerical policy, view settings, and solution provenance.</li>
+</ol>
+<p>No classification of a general quadratic flux or general Riemann solution is claimed by this delivery.</p>
+
+</main>
+</body>
+</html>

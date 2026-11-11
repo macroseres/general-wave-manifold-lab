@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>FOUNDATION_COMPLETION_AUDIT</title>
+<style>
+body{margin:2rem auto;padding:0 1rem;max-width:78ch;font:1rem/1.65 system-ui,sans-serif;color:#182230;background:#fff}
+h1,h2,h3,h4{line-height:1.25} a{color:#12568b} img{max-width:100%;height:auto}
+pre,blockquote{padding:1rem;background:#f3f6f8} pre{overflow:auto} code{overflow-wrap:anywhere}
+table{display:block;overflow:auto;border-collapse:collapse} th,td{padding:.4rem .65rem;border:1px solid #cdd5df;text-align:left}
+mjx-container[display=true]{overflow-x:auto;overflow-y:hidden;padding:.4rem 0}
+</style>
+
+</head>
+<body>
+<main>
+<h1 id="v0.7.0-foundation-completion-audit">v0.7.0 Foundation Completion Audit</h1>
+<blockquote>
+<p>Historical snapshot. For the current pre-Hugoniot status, see <code>FOUNDATION_VERIFICATION.html</code>.
+Audit baseline: <code>v0.7.0-dev.12</code>.</p>
+</blockquote>
+<h2 id="confirmed-boundaries">Confirmed boundaries</h2>
+<ul>
+<li><code>src/math/</code> has no React, React Three Fiber, or Three.js dependency.</li>
+<li><code>src/geometry/</code> has no React, React Three Fiber, or Three.js dependency.</li>
+<li>The reciprocal local-chart geometry and state-space geometry already follow the intended <code>math -&gt; geometry -&gt; UI</code> direction.</li>
+<li>Mathematical notation is centralized through <code>MathLabel</code> / <code>MathBlock</code> with KaTeX as a presentation engine; KaTeX does not own mathematical definitions.</li>
+</ul>
+<p>These dependency rules are now protected by <code>tests/architecture.test.js</code>.</p>
+<h2 id="numerical-debt-found">Numerical debt found</h2>
+<p>Numerical policy is not yet centralized. Current examples include:</p>
+<ul>
+<li>root tolerances in <code>math/numerics/polynomialRoots.js</code>;</li>
+<li>regularity tolerances in chart, sonic and characteristic modules;</li>
+<li>adaptive RK4 parameters are centralized in <code>math/numerics/policy.js</code>; rarefaction modules consume the shared adaptive integrator;</li>
+<li>finite-difference steps and classification tolerances in <code>math/rarefaction/singularities.js</code>;</li>
+<li>renderer-side thresholds in <code>Scene.jsx</code>.</li>
+</ul>
+<p>This is the target of <code>v0.7.0-dev.14</code>. The goal is not one universal epsilon; it is named numerical policies with explicit ownership and scale-aware criteria.</p>
+<h2 id="geometry-renderer-debt-found">Geometry / renderer debt found</h2>
+<p><code>src/components/Scene.jsx</code> still does more than rendering:</p>
+<ol>
+<li>it samples and triangulates the nontrivial sonic sheets, including pole-avoidance heuristics;</li>
+<li>it contains a second RK4 integration path for finite rarefaction separatrices;</li>
+<li>it owns several clipping, proximity and display thresholds.</li>
+</ol>
+<p>The second item is the most important architectural violation because a React/Three component is integrating a mathematical vector field. It must move downstream of the validated math/numerics layer. Sonic mesh construction belongs in <code>src/geometry/sonic/</code>.</p>
+<p><code>LocalChartDialog.jsx</code> also requests mathematical separatrices directly before passing them to the geometry adapter. This is less severe, but the final UI boundary should preferably receive already prepared geometry from a controller/hook rather than orchestrate mathematics itself.</p>
+<p>These items are targets of <code>v0.7.0-dev.15</code>, after numerical policy is stabilized in dev.14.</p>
+<h2 id="ui-foundation-status">UI foundation status</h2>
+<p>Implemented: shared design tokens, scientific dialogs, KaTeX mathematical typography, state-space and local-chart views, responsive work on the dialogs.</p>
+<p>Still open: complete token adoption, coherent light/dark theme policy, systematic tooltips/interaction states, and a final responsive/accessibility pass. These remain for the final Foundation UI audit rather than being mixed into numerical refactoring.</p>
+<h2 id="reproducibility-status">Reproducibility status</h2>
+<p>Experiment serialization is not implemented. The planned reproducible state must include at least:</p>
+<ul>
+<li>schema version and application version;</li>
+<li>ten flux coefficients;</li>
+<li>mathematical domain;</li>
+<li>active chart and chart-specific settings;</li>
+<li>numerical settings;</li>
+<li>visible mathematical objects;</li>
+<li>visual scales/view settings that affect a published figure.</li>
+</ul>
+<p>This is a separate Foundation milestone. A saved experiment must describe scientific state, not transient React component state.</p>
+<h2 id="decision">Decision</h2>
+<p>Do not start Hugoniot yet. Complete numerical ownership, geometry/renderer separation, reproducible experiment state, and the final UI/Foundation audit first. Hugoniot will then use the same traceability pipeline without creating new architectural exceptions.</p>
+
+</main>
+</body>
+</html>

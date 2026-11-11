@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>25. Organização dos ambientes</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.47/dist/katex.min.css">
+<style>
+body{margin:2rem auto;padding:0 1rem;max-width:80ch;font:1rem/1.65 system-ui,sans-serif;color:#182230}
+img{max-width:100%;height:auto} .mathBlock{overflow-x:auto;padding:.3rem .6rem;background:#f3f6f8}
+.documentationStatement{border:1px solid #cdd5df;padding:1rem;margin:1rem 0}
+</style>
+</head>
+<body>
+<div class="documentationMarkdown"><p>Variedade 3D, Espaço de estados, Espaço físico, Parâmetros e Documentação compartilham a área central e são alternados pelo cabeçalho. Os controles e a inspeção 3D aparecem apenas na Variedade 3D. O ambiente Parâmetros reúne transformações afins e a classificação de <span class="mathLabel" role="math" aria-label="\Delta=0"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord">Δ</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.6444em;"></span><span class="mord">0</span></span></span></span></span>. O Manual do usuário, no menu Preferências, contém as instruções operacionais; esta Documentação reúne definições, equações e limites científicos.</p>
+<div class="documentationStatement documentationMarkdownStatement"><div class="documentationStatementHeading"><strong>Convenção</strong><span> — Finalidade das vistas</span></div><div><p>A Variedade de Ondas é o eixo científico da investigação: nela devem ser identificados os objetos que representam conexões e soluções estudadas nos estados. O espaço de estados permite examinar extremos, curvas e estados intermediários. O espaço físico apresenta realizações candidatas e seus perfis, com as qualificações registradas nos capítulos anteriores.</p>
+<p>Parâmetros permite explorar a família de fluxos e suas classificações numéricas. Documentação e Manual têm funções complementares: a primeira explica as construções e hipóteses; o segundo orienta as operações da interface. A existência de um controle ou de uma vista não implica que a construção exibida tenha validação global.</p>
+</div></div><h4>Relação com a implementação</h4>
+<p>src/App.jsx coordena os ambientes. DocumentationWorkspace.jsx fornece capítulos, busca e glossário; HelpDialog.jsx reutiliza o mesmo registro de seções matemáticas. Os textos científicos das 26 seções são carregados diretamente dos arquivos Markdown em docs/mathematics; o registro em DocumentationContent.jsx preserva a ordem e os títulos usados pela navegação.</p>
+<p>Selecionar um estado, um ponto da variedade ou um candidato físico são operações diferentes. Sua correspondência deve ser verificada pelos dados e projeções compartilhados; não se presume que qualquer mudança de ambiente construa automaticamente todas as soluções associadas ao objeto selecionado.</p>
+</div>
+</body>
+</html>

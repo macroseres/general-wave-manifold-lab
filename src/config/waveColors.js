@@ -57,3 +57,17 @@ export const waveColors = {
   slowShockHPlusIntersection: '#22c55e',
 }
 
+
+export const reflectedFastArcColors = Object.freeze({
+  'local-shock': '#58c8ff',
+  rarefaction: '#45ef81',
+  composite: '#d0a0ff',
+  'nonlocal-shock': '#ff819f',
+})
+
+export const slowWaveArcColors = Object.freeze({
+  localShock: '#ff5a36',
+  rarefaction: '#ff9f0a',
+  composite: '#c084fc',
+  nonlocalShock: '#fbbf24',
+})

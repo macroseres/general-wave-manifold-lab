@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RIEMANN_CHARACTERISTIC_HUGONIOT_SEEDS</title>
+<style>
+body{margin:2rem auto;padding:0 1rem;max-width:78ch;font:1rem/1.65 system-ui,sans-serif;color:#182230;background:#fff}
+h1,h2,h3,h4{line-height:1.25} a{color:#12568b} img{max-width:100%;height:auto}
+pre,blockquote{padding:1rem;background:#f3f6f8} pre{overflow:auto} code{overflow-wrap:anywhere}
+table{display:block;overflow:auto;border-collapse:collapse} th,td{padding:.4rem .65rem;border:1px solid #cdd5df;text-align:left}
+mjx-container[display=true]{overflow-x:auto;overflow-y:hidden;padding:.4rem 0}
+</style>
+
+</head>
+<body>
+<main>
+<h1 id="sementes-caracteristicas-da-hugoniot-forward">Sementes características da Hugoniot forward</h1>
+<p>Para U_L fixo, a incidência escalar H(U)=det(U-U_L,F(U)-F(U_L)) é degenerada em U=U_L. Em hiperbolicidade estrita, os ramos não triviais próximos do estado fixo são tangentes aos autovetores r_s e r_f de DF(U_L). A rotina <code>characteristicForwardHugoniotSeeds</code> cria deslocamentos ±εr_i e os corrige numericamente em H=0, exigindo também o resíduo de Rankine–Hugoniot.</p>
+<p><code>selectCharacteristicForwardSeed</code> compara o primeiro segmento da guia amostrada com essas quatro direções e exige alinhamento suficiente e identificação não ambígua. <code>pseudoArcForwardHugoniot</code> incorpora essa seleção; quando o espectro é coincidente ou não é estritamente hiperbólico, preserva o método guiado anterior sem declarar família. Se uma guia é incompatível com todas as direções, a continuação é inconclusiva.</p>
+<p><strong>Limites:</strong> as sementes não provam existência global nem admissibilidade entrópica; a continuação continua condicionada à guia amostrada. A identificação local não substitui a seleção topológica global de ramos, a condição de Liu contínua nem perfis viscosos.</p>
+
+</main>
+</body>
+</html>

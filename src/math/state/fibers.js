@@ -4,8 +4,8 @@
  * A state U* belongs to state space.  Its inverse image in the wave manifold
  * is generically a curve, not a single wave-manifold point.
  */
-import { fiber, zChartCoefficients } from '../charts/zChart.js'
-import { fiberZ, ZChartCoefficients } from '../charts/reciprocalChart.js'
+import { fiber } from '../charts/zChart.js'
+import { fiberZ } from '../charts/reciprocalChart.js'
 import { quadraticRoots } from '../numerics/polynomialRoots.js'
 import { NUMERICAL_POLICY } from '../numerics/policy.js'
 
@@ -32,15 +32,14 @@ function coefficientValue(c, U) {
  */
 export function stateFiberPoint(U, z, p, side = 'minus', eps = NUMERICAL_POLICY.algebra.regularityTolerance) {
   const sign = sideSign(side)
-  const c = zChartCoefficients(z, p)
-  const L = coefficientValue(c, U)
-  const den = c.P * z + c.Q
+  const f0 = fiber(z, 0, p)
+  const L = coefficientValue(f0, U)
+  const den = f0.P * z + f0.Q
   if (Math.abs(den) <= eps) return { kind: Math.abs(L) <= eps ? 'singular-parameterization' : 'no-finite-point', side, z, L, denominator: den }
 
   const Y = 2 * L / (sign * den)
   const [u, v] = statePair(U)
   const Ubar = [u - sign * Y * z / 2, v - sign * Y / 2]
-  const f0 = fiber(z, 0, p)
   if (f0.kind !== 'regular') return { ...f0, side, z, Y }
   const tau = ((Ubar[0] - f0.base[0]) * f0.tangent[0] + (Ubar[1] - f0.base[1]) * f0.tangent[1]) / f0.D
   return { kind: 'regular', side, z, tau, Y, Ubar, fixedState: [u, v], L, denominator: den }
@@ -55,15 +54,14 @@ export function stateFiberPoint(U, z, p, side = 'minus', eps = NUMERICAL_POLICY.
  */
 export function stateFiberPointReciprocal(U, Z, p, side = 'minus', eps = NUMERICAL_POLICY.algebra.regularityTolerance) {
   const sign = sideSign(side)
-  const c = ZChartCoefficients(Z, p)
-  const L = coefficientValue(c, U)
-  const den = c.P + c.Q * Z
+  const f0 = fiberZ(Z, 0, p)
+  const L = coefficientValue(f0, U)
+  const den = f0.P + f0.Q * Z
   if (Math.abs(den) <= eps) return { kind: Math.abs(L) <= eps ? 'singular-parameterization' : 'no-reciprocal-point', side, Z, L, denominator: den }
 
   const Upsilon = 2 * L / (sign * den)
   const [u, v] = statePair(U)
   const Ubar = [u - sign * Upsilon / 2, v - sign * Upsilon * Z / 2]
-  const f0 = fiberZ(Z, 0, p)
   if (f0.kind !== 'regular') return { ...f0, side, Z, Upsilon }
   const eta = ((Ubar[0] - f0.base[0]) * f0.tangent[0] + (Ubar[1] - f0.base[1]) * f0.tangent[1]) / f0.D
   return { kind: 'regular', side, Z, eta, Upsilon, Ubar, fixedState: [u, v], L, denominator: den }

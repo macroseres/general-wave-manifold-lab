@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RIEMANN_HUGONIOT_POLYNOMIAL_ROOTS</title>
+<style>
+body{margin:2rem auto;padding:0 1rem;max-width:78ch;font:1rem/1.65 system-ui,sans-serif;color:#182230;background:#fff}
+h1,h2,h3,h4{line-height:1.25} a{color:#12568b} img{max-width:100%;height:auto}
+pre,blockquote{padding:1rem;background:#f3f6f8} pre{overflow:auto} code{overflow-wrap:anywhere}
+table{display:block;overflow:auto;border-collapse:collapse} th,td{padding:.4rem .65rem;border:1px solid #cdd5df;text-align:left}
+mjx-container[display=true]{overflow-x:auto;overflow-y:hidden;padding:.4rem 0}
+</style>
+
+</head>
+<body>
+<main>
+<h1 id="raizes-polinomiais-do-determinante-de-rankinehugoniot">Raízes polinomiais do determinante de Rankine–Hugoniot</h1>
+<p>Para o fluxo quadrático <code>F</code>, sobre o segmento <code>q(t)=a+t(b-a)</code> com <code>0&lt;=t&lt;=1</code>,</p>
+<p><code>D(t)=det(q(t)-U_fix, F(q(t))-F(U_fix))</code></p>
+<p>é um polinômio real de grau no máximo 3. Os quatro valores em <code>t=0,1,-1,2</code> determinam seus coeficientes. O algoritmo encontra os pontos estacionários reais da derivada quadrática, particiona <code>[0,1]</code> em intervalos de monotonicidade e usa bisseção onde há mudança de sinal. Testa também cada extremo e ponto estacionário, permitindo encontrar raízes tangenciais com precisão numérica. Quando <code>D</code> é identicamente zero sobre o segmento, escolhe o ponto mais próximo do estado intermediário informado.</p>
+<p>O refinamento só é aceito se o ponto estiver próximo de <code>U_M</code>, tiver salto não trivial, velocidade finita e resíduo relativo de Rankine–Hugoniot abaixo da tolerância. Isso não prova admissibilidade entrópica. Casos mal condicionados podem exigir tolerâncias e análise adicional; o polinômio é reconstruído numericamente, não por aritmética exata.</p>
+
+</main>
+</body>
+</html>

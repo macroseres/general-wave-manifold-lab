@@ -1,15 +1,26 @@
 import {reciprocalSonicImplicit} from '../../math/sonic/reciprocalSonic.js'
 import {jacobian} from '../../math/flux/quadraticFlux.js'
 import {stateFiberPoint,stateFiberPointReciprocal} from '../../math/state/fibers.js'
-import {sonicImplicit} from '../../math/sonic/sonic.js'
-import {waveState} from '../../math/manifold/waveState.js'
+import {sonicData} from '../../math/sonic/sonic.js'
 import {zcFromZ} from '../../math/charts/zChart.js'
 
-const add=(a,b)=>Array.from({length:Math.max(a.length,b.length)},(_,i)=>(a[i]??0)+(b[i]??0))
+function add(a,b){
+  const result=new Array(Math.max(a.length,b.length))
+  for(let i=0;i<result.length;i++)result[i]=(a[i]??0)+(b[i]??0)
+  return result
+}
 const scale=(a,k)=>a.map(x=>x*k)
-const mul=(a,b)=>{const c=Array(a.length+b.length-1).fill(0);a.forEach((x,i)=>b.forEach((y,j)=>{c[i+j]+=x*y}));return c}
+function mul(a,b){
+  const result=new Array(a.length+b.length-1).fill(0)
+  for(let i=0;i<a.length;i++)for(let j=0;j<b.length;j++)result[i+j]+=a[i]*b[j]
+  return result
+}
 const sub=(a,b)=>add(a,scale(b,-1))
-const value=(a,x)=>a.reduceRight((v,c)=>v*x+c,0)
+function value(coefficients,x){
+  let result=0
+  for(let i=coefficients.length-1;i>=0;i--)result=result*x+coefficients[i]
+  return result
+}
 const derivative=a=>a.slice(1).map((x,i)=>x*(i+1))
 
 /** Isolate monotone polynomial intervals using derivative roots. Repeated roots
@@ -27,7 +38,15 @@ export function boundedPolynomialRoots(coefficients){
   for(let i=1;i<cuts.length;i++){
     let lo=cuts[i-1],hi=cuts[i],v=value(a,lo)
     if(v*value(a,hi)>=0)continue
-    for(let j=0;j<70;j++){const mid=(lo+hi)/2,f=value(a,mid);if(v*f<=0)hi=mid;else{lo=mid;v=f}}
+    for(let j=0;j<70;j++){
+      const mid=(lo+hi)/2
+      // Use a relative interval near zero, which maps to infinity in Z=1/z.
+      if(mid===lo||mid===hi||hi-lo<=2e-14*Math.abs(mid))break
+      const f=value(a,mid)
+      if(f===0){lo=mid;hi=mid;break}
+      if(v*f<=0)hi=mid
+      else{lo=mid;v=f}
+    }
     push((lo+hi)/2)
   }
   return roots.sort((a,b)=>a-b)
@@ -49,24 +68,37 @@ export function forwardSonicPolynomial(U,p,sonicSide='minus'){
   return add(mul(Yn,det),scale(K,sonicSide==='plus'?2:-2))
 }
 
-export function forwardSonicIntersections(U,p,sonicSide='minus'){
+// At fixed flux the numerator is affine in the two state coordinates.
+export function prepareForwardSonicIntersections(p){
+  const constant=forwardSonicPolynomial([0,0],p)
+  const u=sub(forwardSonicPolynomial([1,0],p),constant)
+  const v=sub(forwardSonicPolynomial([0,1],p),constant)
+  return U=>forwardSonicIntersections(U,p,'minus',()=>constant.map((c,i)=>c+u[i]*U[0]+v[i]*U[1]))
+}
+
+export function forwardSonicIntersections(U,p,sonicSide='minus',preparedPolynomial){
   if(!Array.isArray(U)||U.length!==2||!U.every(Number.isFinite))return {points:[],status:'missing-state',infinityCount:0,sonicSide}
-  const coefficients=forwardSonicPolynomial(U,p,sonicSide),norm=Math.max(...coefficients.map(Math.abs))
+  const coefficients=preparedPolynomial?.()??forwardSonicPolynomial(U,p,sonicSide),norm=Math.max(...coefficients.map(Math.abs))
   if(norm<1e-13*(1+Math.max(...jacobian(U,p).flat().map(Math.abs))))return {points:[],status:'non-isolated-sonic-set',infinityCount:0,sonicSide}
   const points=[];let infinityCount=0
   for(const reciprocal of [false,true]){
     const polynomial=reciprocal?[...coefficients].reverse():coefficients
+    const slope=derivative(polynomial)
+    const scale=Math.max(1,norm)
     for(const x of boundedPolynomialRoots(polynomial)){
       if(reciprocal&&Math.abs(x)<1e-12){const q=stateFiberPointReciprocal(U,0,p,'minus');if(q.kind==='regular'&&Math.abs(reciprocalSonicImplicit(q.eta,q.Upsilon,0,p,sonicSide))<1e-8)infinityCount++;continue}
       const z=reciprocal?1/x:x,q=stateFiberPoint(U,z,p,'minus')
       if(q.kind!=='regular'||![q.tau,q.Y].every(Number.isFinite))continue
       if(reciprocal&&stateFiberPointReciprocal(U,x,p,'minus').kind!=='regular')continue
-      const residual=Math.abs(sonicImplicit(q.tau,q.Y,z,p,sonicSide)),w=waveState(q.tau,q.Y,z,p)
-      if(!Number.isFinite(residual)||residual>1e-7||w.kind!=='regular'||Math.hypot(...w.Um.map((v,i)=>v-U[i]))>1e-7)continue
+      const w=sonicData(q.tau,z,p)
+      if(w.kind!=='regular')continue
+      const residual=Math.abs(q.Y*w.detM+(sonicSide==='plus'?2:-2)*w.K)
+      if(!Number.isFinite(residual)||residual>1e-7||
+        Math.hypot(w.Ubar[0]-q.Y*z/2-U[0],w.Ubar[1]-q.Y/2-U[1])>1e-7)continue
       const zc=zcFromZ(z)
       if(points.some(r=>Math.hypot(r.tau-q.tau,r.Y-q.Y,r.zc-zc)<1e-6))continue
-      const d=Math.abs(value(derivative(polynomial),x))/Math.max(1,...polynomial.map(Math.abs))
-      points.push({tau:q.tau,Y:q.Y,zc,z,residual,tangency:d<1e-7})
+      const d=Math.abs(value(slope,x))/scale
+      points.push({tau:q.tau,Y:q.Y,zc,z,residual,tangency:d<1e-7,s:w.s,Ubar:w.Ubar})
     }
   }
   points.sort((a,b)=>a.zc-b.zc)

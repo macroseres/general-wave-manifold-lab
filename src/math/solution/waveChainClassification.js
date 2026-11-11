@@ -2,6 +2,10 @@ import {candidateSegments} from '../../geometry/state/candidateStateGeometry.js'
 import {directShockDiagnostic} from './directShockDiagnostic.js'
 import {flux} from '../flux/quadraticFlux.js'
 import {internalCompositeShockLiu} from './internalCompositeShockLiu.js'
+import {continuousForwardLiu} from './continuousForwardLiu.js'
+import {forwardLiuOnFiniteFibre} from './forwardLiuOnFiniteFibre.js'
+import {validatedSS} from './validatedSS.js'
+import {validatedKR} from './validatedKR.js'
 
 const point=U=>Array.isArray(U)&&U.length===2&&U.every(Number.isFinite)
 const admissibility=(status='not-evaluated')=>({status,certified:false})
@@ -51,9 +55,11 @@ const liuStatus=(candidate,index)=>{
 
 /**
  * Read-only, per-element diagnostics for an existing state-space candidate.
- * This function does not select solutions, change constructors, or certify entropy.
+ * Includes validated enclosures when available for the candidate's pattern.
  */
-export function classifyWaveChain(candidate,p){
+export function classifyWaveChain(candidate,p,geometry){
+  const validation=geometry?(candidate?.kind==='two-shock'?validatedSS(candidate,p):
+    candidate?.pattern==='KR'?validatedKR(candidate,p):null):null
   const segments=candidateSegments(candidate)
   const internalKLiu=internalKLiuBySegment(candidate,p)
   const waves=segments.map((segment,index)=>{
@@ -73,17 +79,31 @@ export function classifyWaveChain(candidate,p){
       const conservation={status:relativeResidual!==null&&Number.isFinite(relativeResidual)&&relativeResidual<=1e-8
         ?'numerically-compatible':'unverified',relativeResidual}
       const spectral=rh.kind==='jump'?rh.configuration:null
+      const continuous=segment.type==='shock'&&candidate?.kind==='two-shock'
+        ?forwardLiuOnFiniteFibre(segment,p)
+        :segment.type==='shock'&&segment.sonicSide==='minus'&&
+        candidate?.kind==='composite-chain'&&geometry?.segments[index]?.arc
+        ?continuousForwardLiu(segment,geometry.segments[index].arc,p):null
+      const sampled=internalKLiu.get(index)
       const liu=segment.type==='shock'&&candidate?.kind==='composite-chain'
-        ?internalKLiu.get(index)??'not-evaluated'
+        ?continuous?.status==='continuous-liu-violation'?continuous.status
+          :sampled==='sampled-violation-detected'?sampled
+            :continuous?.status==='continuous-liu-compatible'?continuous.status
+              :sampled??continuous?.status??'not-evaluated'
         :segment.type==='shock'&&candidate?.kind!=='contact-chain'
-          ?liuStatus(candidate,index):'not-evaluated'
+          ?continuous?.status??liuStatus(candidate,index):'not-evaluated'
       return {...base,conservation,spectral,
         incoming:spectral?.kind==='spectral-interior'?spectral.incoming:null,
         admissibility:{
-          lax:admissibility(segment.type==='shock'&&spectral?.kind==='spectral-interior'&&
+          lax:validation?.status==='validated'?{status:validation.pattern==='SS'?
+            'validated-strict-lax':'validated-sonic-endpoints',certified:true}:
+            admissibility(segment.type==='shock'&&spectral?.kind==='spectral-interior'&&
             (spectral.name==='one-shock'||spectral.name==='two-shock')
             ?'strict-endpoint-configuration':'not-established'),
-          liu:admissibility(liu),viscousProfile:admissibility(),
+          liu:validation?.status==='validated'?{status:'validated-liu',certified:true,
+            speedEnclosure:validation.pattern==='SS'?validation.speeds[index]:validation.speed}:
+            {...admissibility(liu),...(continuous?.status===liu?{
+            speed:continuous.speed,tolerance:continuous.tolerance}:{})},viscousProfile:admissibility(),
         }}
     }
     if(segment.type==='rarefaction'){
@@ -133,7 +153,8 @@ export function classifyWaveChain(candidate,p){
     waves.length===0?'inconclusive':'numerical-candidate'
   return {construction:{status:construction},
     weakSolution:{status:conservation,qualification:'Necessary numerical RH checks only; no distributional proof.'},
-    waves,chainGeometry,admissibility:{status:waves.some(w=>w.admissibility.liu.status==='sampled-violation-detected')
-      ?'sampled-violation-detected':'not-certified'},
-    entropyCertified:false}
+    waves,chainGeometry,admissibility:{status:waves.some(w=>w.admissibility.liu.status==='continuous-liu-violation')
+      ?'continuous-liu-violation':waves.some(w=>w.admissibility.liu.status==='sampled-violation-detected')
+        ?'sampled-violation-detected':'not-certified'},
+    validation,entropyCertified:validation?.status==='validated'}
 }

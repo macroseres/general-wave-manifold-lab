@@ -14,8 +14,8 @@ The user manual must not claim an unimplemented feature is available. Planned fe
 
 ## Current chapters
 
-- [01 — Spaces and views](01-spaces-and-views.md)
-- [02 — Rarefaction and local chart](02-rarefaction-local-chart.md)
+- [01 — Spaces and views](01-spaces-and-views.html)
+- [02 — Rarefaction and local chart](02-rarefaction-local-chart.html)
 
 ## Planned chapters
 

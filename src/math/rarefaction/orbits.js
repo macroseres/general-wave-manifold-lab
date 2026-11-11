@@ -1,11 +1,40 @@
-import { zFromZc } from '../charts/zChart.js'
+import { zFromZc, zcFromZ } from '../charts/zChart.js'
 import { characteristicSpectrum } from '../characteristic/spectrum.js'
 import { adaptiveRK4Step, locateBracketedEvent, normalized2 } from '../numerics/integration.js'
 import { NUMERICAL_POLICY } from '../numerics/policy.js'
-import { rarefactionField } from './field.js'
+import { rarefactionField, rarefactionFieldZ } from './field.js'
 
 const N = NUMERICAL_POLICY.rarefaction
 const S = NUMERICAL_POLICY.spectrum
+
+/** Continue a finite-chart endpoint across the projective seam for state projection. */
+export function continueRarefactionAtInfinity(endpoint,previous,p){
+  if(!previous||Math.abs(endpoint.zc)<.99)return []
+  const Z=1/zFromZc(endpoint.zc),previousZ=1/zFromZc(previous.zc)
+  let q={Z,eta:endpoint.tau/(Z*Z)},h=.005
+  const initial=rarefactionFieldZ(q.eta,q.Z,p)
+  const direction=Math.sign(initial.ZDot*(Z-previousZ))
+  if(!direction)return []
+  const field=({eta,Z})=>{
+    const value=rarefactionFieldZ(eta,Z,p)
+    return value.kind==='regular'?normalized2([direction*value.etaDot,direction*value.ZDot],N.normalizedFieldFloor):null
+  }
+  const add=(q,v,step)=>({eta:q.eta+step*v[0],Z:q.Z+step*v[1]})
+  const points=[]
+  for(let i=0;i<N.orbitMaxSteps;i++){
+    const result=adaptiveRK4Step(q,h,field,add,{
+      absoluteTolerance:N.adaptiveAbsoluteTolerance,relativeTolerance:N.adaptiveRelativeTolerance,
+      minStep:N.adaptiveMinStep,maxStep:.005,maxReject:N.adaptiveMaxReject,safety:N.adaptiveSafety,
+      norm:q=>Math.hypot(q.eta,q.Z),distance:(a,b)=>Math.hypot(a.eta-b.eta,a.Z-b.Z),
+    })
+    if(result.kind!=='accepted')break
+    q=result.state
+    h=Math.abs(result.nextStep)
+    if(Math.abs(q.Z)>2)break
+    if(Math.abs(q.Z)>1e-7)points.push({tau:q.eta*q.Z*q.Z,zc:zcFromZ(1/q.Z)})
+  }
+  return points
+}
 
 export function rarefactionOrbits(p, tauMin, tauMax, {
   step=N.orbitStep,

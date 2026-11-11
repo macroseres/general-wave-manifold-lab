@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>HUGONIOT_VERIFICATION</title>
+<style>
+body{margin:2rem auto;padding:0 1rem;max-width:78ch;font:1rem/1.65 system-ui,sans-serif;color:#182230;background:#fff}
+h1,h2,h3,h4{line-height:1.25} a{color:#12568b} img{max-width:100%;height:auto}
+pre,blockquote{padding:1rem;background:#f3f6f8} pre{overflow:auto} code{overflow-wrap:anywhere}
+table{display:block;overflow:auto;border-collapse:collapse} th,td{padding:.4rem .65rem;border:1px solid #cdd5df;text-align:left}
+mjx-container[display=true]{overflow-x:auto;overflow-y:hidden;padding:.4rem 0}
+</style>
+
+</head>
+<body>
+<main>
+<h1 id="hugoniot-block-verification-dev.24.19">Hugoniot block verification — dev.24.19</h1>
+<p>This audit closes the fixed-state Hugoniot block before composite-wave saturation begins.</p>
+<table>
+<thead>
+<tr>
+<th>Requirement</th>
+<th>Evidence</th>
+<th>Status</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Generic fixed state has two inverse images</td>
+<td><code>state/fibers.js</code>, <code>state/stateRoles.js</code>; fixed-endpoint tests</td>
+<td><strong>PASS</strong></td>
+</tr>
+<tr>
+<td>Forward means <code>pi_-^{-1}</code>; backward means <code>pi_+^{-1}</code></td>
+<td>pure state-role helpers + regression tests</td>
+<td><strong>PASS</strong></td>
+</tr>
+<tr>
+<td>Full reciprocal transition includes jump coordinate <code>Upsilon=Y/Z</code></td>
+<td><code>state/fibers.js</code>; overlap tests</td>
+<td><strong>PASS</strong></td>
+</tr>
+<tr>
+<td>Global fibre continuation does not fake a finite segment through infinity</td>
+<td><code>GLOBAL_HUGONIOT_CONTINUATION.html</code>, fibre geometry tests</td>
+<td><strong>PASS</strong></td>
+</tr>
+<tr>
+<td>Common characteristic intersections and finite <code>P_s</code>,<code>P_f</code> are verified</td>
+<td><code>fibreAnalysis.js</code>; characteristic-intersection tests</td>
+<td><strong>PASS</strong></td>
+</tr>
+<tr>
+<td>Regular branches are decomposed projectively</td>
+<td>fibre-analysis branch tests</td>
+<td><strong>PASS</strong></td>
+</tr>
+<tr>
+<td>Spectra at <code>U_-</code>,<code>U_+</code> and characteristic boundaries are computed in math</td>
+<td><code>hugoniotSpectrum.js</code>, <code>hugoniotSpectralRegions.js</code></td>
+<td><strong>PASS</strong></td>
+</tr>
+<tr>
+<td>Spectral signature <code>(n_-,n_+)</code> is explicit</td>
+<td><code>hugoniotSpectralRegions.js</code>; signature tests</td>
+<td><strong>PASS</strong></td>
+</tr>
+<tr>
+<td>Strict Lax 1/2 follows from signatures <code>(0,1)</code> / <code>(1,2)</code></td>
+<td><code>laxClass2x2</code>; Lax tests</td>
+<td><strong>PASS</strong></td>
+</tr>
+<tr>
+<td>Renderer consumes classification; it does not define Lax</td>
+<td><code>geometry/state/hugoniotLaxGeometry.js</code>, architecture boundary</td>
+<td><strong>PASS</strong></td>
+</tr>
+<tr>
+<td>State-space view exposes <code>pi_-</code> / <code>pi_+</code> explicitly</td>
+<td><code>StateSpaceDialog.jsx</code>; projection regression</td>
+<td><strong>PASS</strong></td>
+</tr>
+<tr>
+<td><code>U_*</code>, global <code>U_L,U_R</code>, and moving local <code>U_±(P)</code> have distinct roles</td>
+<td><code>stateRoles.js</code>, Help, canonical mathematics</td>
+<td><strong>PASS</strong></td>
+</tr>
+<tr>
+<td>Saturation formulas are seeded but composite geometry is not claimed</td>
+<td><code>saturation.js</code>; seed tests</td>
+<td><strong>PASS / NEXT BLOCK</strong></td>
+</tr>
+<tr>
+<td>Liu/general shock admissibility</td>
+<td>intentionally not implemented</td>
+<td><strong>DEFERRED</strong></td>
+</tr>
+<tr>
+<td>General Riemann solver</td>
+<td>intentionally not claimed</td>
+<td><strong>DEFERRED</strong></td>
+</tr>
+</tbody>
+</table>
+<h2 id="closure">Closure</h2>
+<p>The fixed-state Hugoniot block has no blocking FAIL.  Composite-wave development may start only through the established pipeline: definition → pure implementation → tests → numerics → geometry → visualization.  Liu admissibility and a general Riemann solver remain outside this closure.</p>
+
+</main>
+</body>
+</html>

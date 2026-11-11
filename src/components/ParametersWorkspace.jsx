@@ -155,7 +155,7 @@ export default function ParametersWorkspace({p,setP}){
     <div className="parametersSidebarHeading workspacePanelHeader"><strong>{{flux:'Fluxo geral',transform:'Transformação afim',diagram:'Diagrama',reference:'Referência'}[activePanel]}</strong><button type="button" className="workspacePanelClose" onClick={()=>setSidebarOpen(false)} aria-label="Fechar controles"><TablerNavIcon name="close"/></button></div>
     <WorkspacePanelBody className="parametersSidebarBody" key={activePanel}>
      {activePanel==='flux'&&<>
-      {['a','b'].map((prefix,i)=><details className="workspaceDisclosure" open key={prefix}><summary><span>Componente {i+1} · <MathLabel>{i===0?'f(u,v)':'g(u,v)'}</MathLabel></span></summary><div className="statePanelSectionBody"><div className="parametersCoefficients">{coefficientKeys.filter(k=>k.startsWith(prefix)).map(k=><label key={k}><MathLabel>{coefficientLatex(k)}</MathLabel><input type="number" aria-label={`Coeficiente ${k}`} step="any" value={p[k]} onChange={e=>setP({...p,[k]:Number(e.target.value)})}/></label>)}</div></div></details>)}
+      {['a','b'].map((prefix,i)=><details className="workspaceDisclosure" open key={prefix}><summary><span>Componente {i+1} · <MathLabel>{i===0?'f(u,v)':'g(u,v)'}</MathLabel></span></summary><div className="statePanelSectionBody"><div className="parametersCoefficients">{coefficientKeys.filter(k=>k.startsWith(prefix)).map(k=><label className="sceneNumericRow" key={k}><MathLabel>{coefficientLatex(k)}</MathLabel><input type="number" aria-label={`Coeficiente ${k}`} step="any" value={p[k]} onChange={e=>setP({...p,[k]:Number(e.target.value)})}/></label>)}</div></div></details>)}
       <p className="parametersSidebarHint">Coeficientes compartilhados entre os ambientes.</p>
       <details className="workspaceDisclosure"><summary>Explorar características</summary><div className="statePanelSectionBody">
        <label>Geometria procurada<select aria-label="Filtrar exemplos por geometria" value={exampleFilter} onChange={e=>{setExampleFilter(e.target.value);setSelectedExampleId('');setExampleMessage('')}}>{parameterFilterOptions.map(option=><option key={option.id} value={option.id}>{option.label}</option>)}</select></label>
@@ -167,7 +167,7 @@ export default function ParametersWorkspace({p,setP}){
         <strong>Prévia: {selectedExample.label}</strong>
         <p>{selectedExample.description}</p>
         <p>Geometria verificada: {selectedExampleDiagnosis.conic.type}. Evidência: classificação algébrica com tolerância numérica, não prova de completude.</p>
-        <dl className="parametersDiagnosticList">{coefficientKeys.map(key=><div key={key}><dt>{coefficientText(key)}</dt><dd>{selectedExample.coefficients[key]}</dd></div>)}</dl>
+        <dl className="parametersDiagnosticList">{coefficientKeys.map(key=><div key={key}><dt><MathLabel>{coefficientLatex(key)}</MathLabel></dt><dd>{selectedExample.coefficients[key]}</dd></div>)}</dl>
         <p>Os dez coeficientes atuais serão substituídos. Esta prévia não altera o fluxo.</p>
         <button type="button" className="parametersPrimaryAction" onClick={applyExample}>Confirmar e aplicar os dez coeficientes</button>
         <button type="button" onClick={()=>setSelectedExampleId('')}>Cancelar</button>
@@ -176,10 +176,10 @@ export default function ParametersWorkspace({p,setP}){
       </div></details>
       <details className="workspaceDisclosure"><summary>Diagnóstico global</summary><div className="statePanelSectionBody">
        <dl className="parametersDiagnosticList">
-        <div><dt>Geometria de Δ = 0</dt><dd>{conic.type} — {conic.realLocus}</dd></div>
-        <div><dt>Existe Δ &gt; 0?</dt><dd>{truth(globalSigns.positive)}</dd></div>
-        <div><dt>Existe Δ = 0?</dt><dd>{truth(globalSigns.zero)}</dd></div>
-        <div><dt>Existe Δ &lt; 0?</dt><dd>{truth(globalSigns.negative)}</dd></div>
+        <div><dt>Geometria de <MathLabel>{String.raw`\Delta=0`}</MathLabel></dt><dd>{conic.type} — {conic.realLocus}</dd></div>
+        <div><dt>Existe <MathLabel>{String.raw`\Delta>0`}</MathLabel>?</dt><dd>{truth(globalSigns.positive)}</dd></div>
+        <div><dt>Existe <MathLabel>{String.raw`\Delta=0`}</MathLabel>?</dt><dd>{truth(globalSigns.zero)}</dd></div>
+        <div><dt>Existe <MathLabel>{String.raw`\Delta<0`}</MathLabel>?</dt><dd>{truth(globalSigns.negative)}</dd></div>
         <div><dt>Hiperbólico em todo ℝ²?</dt><dd>{truth(globalSigns.hyperbolicEverywhere)}</dd></div>
         <div><dt>Estritamente hiperbólico em todo ℝ²?</dt><dd>{truth(globalSigns.strictlyHyperbolicEverywhere)}</dd></div>
        </dl>
@@ -190,9 +190,9 @@ export default function ParametersWorkspace({p,setP}){
       </div></details>
       <details className="workspaceDisclosure"><summary>Diagnóstico local</summary><div className="statePanelSectionBody">
        <dl className="parametersDiagnosticList">
-        <div><dt>Estado (u,v)</dt><dd>({sample.join(', ')})</dd></div>
+        <div><dt>Estado <MathLabel>(u,v)</MathLabel></dt><dd>({sample.join(', ')})</dd></div>
         <div><dt>Regime espectral</dt><dd>{spectralLabel[localSpectral.regime]}</dd></div>
-        <div><dt>Δ(u,v)</dt><dd>{Number.isFinite(localSpectral.discriminant)?localSpectral.discriminant.toPrecision(7):'Não finito'}</dd></div>
+        <div><dt><MathLabel>{String.raw`\Delta(u,v)`}</MathLabel></dt><dd>{Number.isFinite(localSpectral.discriminant)?localSpectral.discriminant.toPrecision(7):'Não finito'}</dd></div>
         <div><dt>Limiar numérico</dt><dd>{localSpectral.threshold.toExponential(2)}</dd></div>
         <div><dt>Multiplicidade algébrica</dt><dd>{localSpectral.eigenvalueMultiplicity==='distinct'?'Autovalores distintos':localSpectral.eigenvalueMultiplicity==='double-computed'?'Duplo no cálculo numérico':'Inconclusiva'}</dd></div>
         <div><dt>Multiplicidade geométrica</dt><dd>{localSpectral.geometricMultiplicity??'Inconclusiva'}</dd></div>
@@ -203,7 +203,7 @@ export default function ParametersWorkspace({p,setP}){
       </div></details>
      </>}
      {activePanel==='transform'&&<>
-      <details className="workspaceDisclosure" open><summary>Transformação afim</summary><div className="statePanelSectionBody"><p><MathLabel>{String.raw`U=AV+U_0,\quad\det A\ne0`}</MathLabel></p><fieldset className="workspaceControlGroup"><legend>Matriz <MathLabel>A</MathLabel> · mudança de base</legend><div className="parametersMatrix">{A.map((row,i)=>row.map((x,j)=><label key={`${i}${j}`}><MathLabel>{`A_{${i+1}${j+1}}`}</MathLabel><input aria-label={`Entrada A ${i+1}, ${j+1}`} type="number" step="any" value={x} onChange={e=>setMatrix(i,j,Number(e.target.value))}/></label>))}</div></fieldset><fieldset className="workspaceControlGroup"><legend>Vetor <MathLabel>{String.raw`U_0`}</MathLabel> · translação</legend><div className="parametersMatrix">{t.map((x,i)=><label key={i}><MathLabel>{`(U_0)_{${i+1}}`}</MathLabel><input aria-label={`Componente ${i+1} da translação`} type="number" step="any" value={x} onChange={e=>setT(old=>old.map((v,j)=>i===j?Number(e.target.value):v))}/></label>)}</div></fieldset><p><MathLabel>{String.raw`\det A`}</MathLabel>: {preview?preview.determinant.toPrecision(6):'não invertível'}</p><p className="parametersSidebarHint">Confira os coeficientes abaixo antes de aplicar ao fluxo compartilhado.</p><button className="parametersPrimaryAction" disabled={!preview} onClick={apply}>Aplicar transformação</button><button onClick={()=>{setA([[1,0],[0,1]]);setT([0,0])}}>Identidade</button>{error&&<p role="status">{error}</p>}</div></details>
+      <details className="workspaceDisclosure" open><summary>Transformação afim</summary><div className="statePanelSectionBody"><p><MathLabel>{String.raw`U=AV+U_0,\quad\det A\ne0`}</MathLabel></p><fieldset className="workspaceControlGroup"><legend>Matriz <MathLabel>A</MathLabel> · mudança de base</legend><div className="parametersMatrix">{A.map((row,i)=>row.map((x,j)=><label className="sceneNumericRow" key={`${i}${j}`}><MathLabel>{`A_{${i+1}${j+1}}`}</MathLabel><input aria-label={`Entrada A ${i+1}, ${j+1}`} type="number" step="any" value={x} onChange={e=>setMatrix(i,j,Number(e.target.value))}/></label>))}</div></fieldset><fieldset className="workspaceControlGroup"><legend>Vetor <MathLabel>{String.raw`U_0`}</MathLabel> · translação</legend><div className="parametersMatrix">{t.map((x,i)=><label className="sceneNumericRow" key={i}><MathLabel>{`(U_0)_{${i+1}}`}</MathLabel><input aria-label={`Componente ${i+1} da translação`} type="number" step="any" value={x} onChange={e=>setT(old=>old.map((v,j)=>i===j?Number(e.target.value):v))}/></label>)}</div></fieldset><p><MathLabel>{String.raw`\det A`}</MathLabel>: {preview?preview.determinant.toPrecision(6):'não invertível'}</p><p className="parametersSidebarHint">Confira os coeficientes abaixo antes de aplicar ao fluxo compartilhado.</p><button className="parametersPrimaryAction" disabled={!preview} onClick={apply}>Aplicar transformação</button><button onClick={()=>{setA([[1,0],[0,1]]);setT([0,0])}}>Identidade</button>{error&&<p role="status">{error}</p>}</div></details>
       <details className="workspaceDisclosure"><summary>Prévia dos coeficientes</summary><div className="statePanelSectionBody">{preview?<div className="parametersCoefficients">{coefficientKeys.map(k=><span key={k}><MathLabel>{coefficientLatex(k)}</MathLabel>: {preview.coefficients[k].toPrecision(6)}</span>)}</div>:<p>Transformação não invertível.</p>}</div></details>
      </>}
      {activePanel==='diagram'&&<>

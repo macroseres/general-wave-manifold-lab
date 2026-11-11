@@ -116,9 +116,17 @@ export function compositeLeafIntersections(P,p,compositeSide,options={}){
   const maxIterations=Math.max(12,Math.floor(options.maxIterations??60))
   const lo=-Math.PI/2+margin, hi=Math.PI/2-margin
   const roots=[]
-  let prev=candidateAtTheta(U,lo,p,side)
-  for(let i=1;i<=n;i++){
-    const theta=lo+(hi-lo)*i/n
+  const knots=Array.from({length:n+1},(_,i)=>lo+(hi-lo)*i/n)
+  for(const center of options.refineTheta??[]){
+    if(!finite(center))continue
+    knots.push(center)
+    for(let width=(hi-lo)/n;width>=1e-7;width/=2){
+      knots.push(center-width,center+width)
+    }
+  }
+  const ordered=[...new Set(knots.filter(theta=>theta>=lo&&theta<=hi))].sort((a,b)=>a-b)
+  let prev=null
+  for(const theta of ordered){
     const cur=candidateAtTheta(U,theta,p,side)
     if(cur&&Math.abs(cur.residual)<=tol)roots.push(cur)
     if(prev&&cur&&prev.residual*cur.residual<0){
@@ -196,16 +204,18 @@ function localTrackingDistance(a,b){
   const aa=Math.atan(fa.z),ab=Math.atan(fb.z),rawAngle=Math.abs(aa-ab),angle=Math.min(rawAngle,Math.PI-rawAngle)
   return angle
 }
-function predictedTrackingDistance(branch,root){
+function predictedTrackingDistance(branch,root,maxMatchDistance){
   const last=branch.points.at(-1)?.Q
+  const local=localTrackingDistance(last,root)
+  if(local>maxMatchDistance)return Infinity
   const previous=branch.points.at(-2)?.Q
-  if(!previous)return localTrackingDistance(last,root)
+  if(!previous)return local
   const a=finiteCompositeCoordinates(previous),b=finiteCompositeCoordinates(last),c=finiteCompositeCoordinates(root)
-  if(!a||!b||!c)return localTrackingDistance(last,root)
+  if(!a||!b||!c)return local
   // Secant predictor in the finite display chart. It is only a tie-breaker;
   // chart-aware local distance remains the primary continuity criterion.
   const pred={tau:2*b.tau-a.tau,Y:2*b.Y-a.Y,z:Math.tan(2*Math.atan(b.z)-Math.atan(a.z))}
-  return 0.65*localTrackingDistance(last,root)+0.35*localTrackingDistance(pred,root)
+  return 0.65*local+0.35*localTrackingDistance(pred,root)
 }
 
 /**
@@ -226,7 +236,7 @@ export function decomposeCompositeBranches(trace,{maxMatchDistance=0.9}={}){
     for(let ai=0;ai<active.length;ai++){
       const branch=branches[active[ai]]
       for(let ri=0;ri<roots.length;ri++){
-        const distance=predictedTrackingDistance(branch,roots[ri])
+        const distance=predictedTrackingDistance(branch,roots[ri],maxMatchDistance)
         if(Number.isFinite(distance)&&distance<=maxMatchDistance)
           candidates.push({ai,ri,distance})
       }

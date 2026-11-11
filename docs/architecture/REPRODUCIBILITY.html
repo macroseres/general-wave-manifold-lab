@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>REPRODUCIBILITY</title>
+<style>
+body{margin:2rem auto;padding:0 1rem;max-width:78ch;font:1rem/1.65 system-ui,sans-serif;color:#182230;background:#fff}
+h1,h2,h3,h4{line-height:1.25} a{color:#12568b} img{max-width:100%;height:auto}
+pre,blockquote{padding:1rem;background:#f3f6f8} pre{overflow:auto} code{overflow-wrap:anywhere}
+table{display:block;overflow:auto;border-collapse:collapse} th,td{padding:.4rem .65rem;border:1px solid #cdd5df;text-align:left}
+mjx-container[display=true]{overflow-x:auto;overflow-y:hidden;padding:.4rem 0}
+</style>
+
+</head>
+<body>
+<main>
+<h1 id="reproducible-experiments">Reproducible experiments</h1>
+<p><code>v0.7.0-dev.16</code> introduces schema <code>general-wave-manifold-lab/experiment</code>, version 1.</p>
+<p>The JSON document deliberately separates two kinds of state.</p>
+<h2 id="scientific-state">Scientific state</h2>
+<ul>
+<li>the ten coefficients of the general quadratic flux;</li>
+<li>the <code>(tau,Y)</code> sampling window (not the mathematical domain of <code>W</code>);</li>
+<li>the selected <code>(tau,Y,zc)</code> point, with the chart convention recorded explicitly;</li>
+<li>a snapshot of the canonical numerical policy;</li>
+<li>producer application and version metadata.</li>
+</ul>
+<p>These fields determine the mathematical/numerical experiment. A saved numerical-policy snapshot is compared with the current application policy on import. A mismatch is reported explicitly; it is never silently presented as exact numerical reproduction.</p>
+<h2 id="presentation-state">Presentation state</h2>
+<ul>
+<li>visibility of sonic and rarefaction objects;</li>
+<li>visual axis scales.</li>
+</ul>
+<p>Presentation state is saved because it is needed to reconstruct a scientific figure, but it is not part of the mathematical definition.</p>
+<p>Camera pose is not yet persisted: the current Three.js camera remains renderer-owned. Persisting it later must not move camera state into the mathematical layer.</p>
+<h2 id="compatibility">Compatibility</h2>
+<p>Schema versions are independent from application versions. Unknown schema versions are rejected rather than guessed. Future changes must add an explicit migration before older files are accepted under a new structure.</p>
+<p>Schema v2 names this field <code>scientific.samplingDomain</code>. Schema v1 files with <code>scientific.domain</code> are migrated on import so the terminology correction does not discard dev.16 experiments.</p>
+
+</main>
+</body>
+</html>

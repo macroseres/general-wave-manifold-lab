@@ -1,0 +1,176 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MATHEMATICS</title>
+<style>
+body{margin:2rem auto;padding:0 1rem;max-width:78ch;font:1rem/1.65 system-ui,sans-serif;color:#182230;background:#fff}
+h1,h2,h3,h4{line-height:1.25} a{color:#12568b} img{max-width:100%;height:auto}
+pre,blockquote{padding:1rem;background:#f3f6f8} pre{overflow:auto} code{overflow-wrap:anywhere}
+table{display:block;overflow:auto;border-collapse:collapse} th,td{padding:.4rem .65rem;border:1px solid #cdd5df;text-align:left}
+mjx-container[display=true]{overflow-x:auto;overflow-y:hidden;padding:.4rem 0}
+</style>
+<script defer src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-chtml.js"></script>
+</head>
+<body>
+<main>
+<h1 id="general-wave-manifold-lab-matematica-v0.4.0">General Wave Manifold Lab — matemática v0.4.0</h1>
+<h2 id="fluxo">Fluxo</h2>
+<p>\[
+f=a_{20}u^2+a_{11}uv+a_{02}v^2+a_{10}u+a_{01}v,
+\qquad
+g=b_{20}u^2+b_{11}uv+b_{02}v^2+b_{10}u+b_{01}v.
+\]</p>
+<h2 id="carta-direcional">Carta direcional</h2>
+<p>A coordenada global experimental <code>theta</code> foi removida. Trabalhamos na carta
+\[
+r=(z,1),\qquad Z=1/z,
+\]
+e usamos apenas para visualização
+\[
+\hat z=\frac2\pi\arctan z.
+\]</p>
+<h2 id="variedade-caracteristica">Variedade característica</h2>
+<p>Para fluxos quadráticos, Rankine–Hugoniot dá
+\[
+[DF(\bar U)-sI](U_+-U_-)=0.
+\]
+Com
+\[
+U_+-U_-=Y(z,1),
+\]
+a eliminação de <code>s</code> produz
+\[
+P(z)\bar u+Q(z)\bar v+R(z)=0,
+\]
+com
+\[
+P=2b_{20}z^2+(b_{11}-2a_{20})z-a_{11},
+\]
+\[
+Q=b_{11}z^2+(2b_{02}-a_{11})z-2a_{02},
+\]
+\[
+R=b_{10}z^2+(b_{01}-a_{10})z-a_{01}.
+\]</p>
+<p>Se <code>D=P^2+Q^2&gt;0</code>, adotamos a seção geral
+\[
+U^0=-\frac{R}{D}(P,Q)
+\]
+e o vetor tangente não normalizado
+\[
+T=(-Q,P).
+\]
+Logo
+\[
+\bar U=U^0+\tau T.
+\]</p>
+<p>Os estados são
+\[
+U_\pm=\bar U\pm\frac{Y}{2}(z,1).
+\]</p>
+<p>A velocidade é calculada por
+\[
+s=\frac{r^TDF(\bar U)r}{r^Tr},\qquad r=(z,1).
+\]</p>
+<h2 id="superficie-caracteristica-e-coincidencia">Superfície característica e coincidência</h2>
+<p>A superfície característica é <code>\mathcal C = {Y=0}</code>. Nela, <code>U_-=U_+=\bar U</code>.</p>
+<p>O locus de coincidência é <code>\mathcal E\subset\mathcal C</code> e satisfaz adicionalmente
+\[
+\Delta(\bar U)=0,
+\qquad
+\Delta=(A-D)^2+4BC,
+\]
+para <code>DF=[[A,B],[C,D]]</code>.</p>
+<h2 id="sonicas">Sônicas</h2>
+<p>As folhas não triviais são
+\[
+\mathcal S^-:\det(DF(U_-)-sI)=0,
+\qquad
+\mathcal S^+:\det(DF(U_+)-sI)=0.
+\]
+Escrevendo <code>M_r=D(DF)[r]</code> e <code>A=DF(\bar U)-sI</code>, temos
+\[
+DF(U_\pm)-sI=A\pm\frac{Y}{2}M_r.
+\]
+Como <code>det A=0</code> sobre a característica,
+\[
+\det(A+tM_r)=tK+t^2\det M_r,
+\]
+onde
+\[
+K=A_{11}(M_r)_{22}+(M_r)_{11}A_{22}-A_{12}(M_r)_{21}-(M_r)_{12}A_{21}.
+\]
+Retirando o fator trivial <code>Y=0</code>, as equações implícitas são
+\[
+\Psi_-=Y\det M_r-2K=0,
+\qquad
+\Psi_+=Y\det M_r+2K=0.
+\]</p>
+<h2 id="preset-do-app-original">Preset do app original</h2>
+<p>Para
+\[
+f=\frac{B_1+1}{2}u^2+\frac12v^2+au,
+\qquad
+g=uv+cu-\frac{B_2}{2}v^2+av,
+\]
+a equação característica reduz-se a
+\[
+B_1z\bar u+(1+B_2z-z^2)\bar v-cz^2=0,
+\]
+que é a carta usada no <code>wave-manifold-app</code>.</p>
+<p>A seção <code>U^0</code> escolhida no app geral é canônica (pé ortogonal). No app particular antigo a origem de <code>t</code> era uma seção especial ligada à coincidência. Portanto <code>tau</code> e o antigo <code>t</code> podem diferir por uma translação dependente de <code>z</code>, embora os estados físicos e as sônicas sejam os mesmos.</p>
+<h2 id="ramos-lento-e-rapido-da-caracteristica">Ramos lento e rápido da característica</h2>
+<p>Em cada ponto regular de <code>\mathcal C</code>, a direção <code>r=(z,1)</code> seleciona a velocidade característica <code>s</code>. A segunda velocidade é</p>
+<p>\[\lambda_{\mathrm{other}}=\operatorname{tr}DF(\bar U)-s.\]</p>
+<p>Fora de <code>\mathcal E</code>, adotamos</p>
+<p>\[\mathcal C_s:\ s&lt;\lambda_{\mathrm{other}},\qquad \mathcal C_f:\ s&gt;\lambda_{\mathrm{other}}.\]</p>
+<p>Em <code>\mathcal E</code> as duas velocidades coincidem, portanto a distinção lento/rápido desaparece. Essa classificação é espectral e não depende do sinal de <code>z</code>.</p>
+<h2 id="campo-de-rarefacao-em-y0">Campo de rarefação em Y=0</h2>
+<p>Na superfície característica, escreva</p>
+<p>\[\bar U(\tau,z)=U^0(z)+\tau T(z),\qquad T=(-Q,P).\]</p>
+<p>As curvas de rarefação no plano de estados são tangentes ao autovetor característico \(r=(z,1)\). Com \(U_\tau=T\) e \(U_z=\partial_z\bar U\), um levantamento dessingularizado é</p>
+<p>\[\boxed{\dot\tau=\det(r,U_z),\qquad \dot z=\det(T,r)=-(Q+zP).}\]</p>
+<p>De fato, pela identidade bidimensional,</p>
+<p>\[D\bar U(\dot\tau,\dot z)=\det(T,U_z)r.\]</p>
+<p>Logo, onde \(\det(T,U_z)\neq0\), as curvas integrais projetam exatamente nas curvas de rarefação, salvo reparametrização. Para a compactificação</p>
+<p>\[\hat z=\frac{2}{\pi}\arctan z,\]</p>
+<p>temos</p>
+<p>\[\boxed{\dot{\hat z}=\frac{2}{\pi(1+z^2)}\dot z.}\]
+\n\n## Singularidades finitas do campo de rarefação\n\nNa carta finita \((\\tau,z)\), as singularidades satisfazem\n\n\\[\\dot\\tau=0,\\qquad \\dot z=0.\\]\n\nComo\n\n\\[\\dot z=-(Q+zP)\\]\n\nnão depende de \\(\\tau\\), o algoritmo localiza primeiro as raízes reais de \\(Q+zP=0\\) e, em cada direção regular, resolve a equação afim \\(\\dot\\tau=0\\).\n\nA classificação é feita no sistema visual \\(\\tau,\\hat z\\) pelo Jacobiano\n\n\\[J_{\\mathcal R}=D(\\dot\\tau,\\dot{\\hat z}).\\]\n\nSe \\(\\det J_{\\mathcal R}&lt;0\\), o ponto é uma sela. As separatrizes finitas são iniciadas nas direções próprias de \\(J_{\\mathcal R}\\) e integradas pelo campo de rarefação.\n\nA fronteira \\(\\hat z=\\pm1\\) <strong>não</strong> é classificada por simples avaliação numérica de \\(z\\to\\infty\\). A análise de singularidades no infinito deve ser feita na carta complementar \\(Z=1/z\\), com a dessingularização correspondente ao campo nessa carta.\n</p>
+<h2 id="carta-complementar-z-e-o-infinito-da-rarefacao">Carta complementar Z e o infinito da rarefação</h2>
+<p>Para estudar <code>z=∞</code> não avaliamos numericamente a carta <code>z</code>. Usamos <code>Z=1/z</code> e a direção <code>r_Z=(1,Z)</code>. Definimos</p>
+<p><code>P_Z(Z)=Z²P(1/Z)</code>, <code>Q_Z(Z)=Z²Q(1/Z)</code>, <code>R_Z(Z)=Z²R(1/Z)</code>.</p>
+<p>A coordenada de fibra regular no infinito é</p>
+<p><code>η = τ/Z² = τ z²</code>,</p>
+<p>pois <code>(-Q(z),P(z)) = Z^{-2}(-Q_Z(Z),P_Z(Z))</code>. Assim</p>
+<p><code>Ubar = U0_Z(Z) + η(-Q_Z,P_Z)</code></p>
+<p>permanece regular em <code>Z=0</code> sempre que <code>P_Z²+Q_Z² != 0</code>.</p>
+<p>O campo de rarefação nesta carta é</p>
+<p><code>ηdot = det((1,Z), ∂_Z Ubar)</code>,</p>
+<p><code>Zdot = det(∂_η Ubar,(1,Z)) = -(P_Z+Z Q_Z)</code>.</p>
+<p>Logo <code>Z=0</code> é uma direção singular do campo projetivo somente quando <code>P_Z(0)=2 b20=0</code>. Quando a singularidade é isolada, o app resolve também <code>ηdot=0</code> e classifica o Jacobiano em <code>(η,Z)</code>. Esta classificação é feita na carta regular e não pela aparência da borda compactificada <code>zhat=±1</code>.
+\n\n## Separatrizes da sela no infinito\nQuando a singularidade em <code>Z=0</code> é uma sela, os autovetores do Jacobiano do campo <code>(etaDot,ZDot)</code> definem quatro ramos locais. Cada ramo é iniciado em <code>(eta_inf,0)+/- eps v_i</code> e integrado na carta Z, nunca diretamente em <code>z=+/-infinito</code>. Para exibição usa-se\n\n<code>tau = eta Z^2</code>, <code>z=1/Z</code>, <code>zc=(2/pi) atan(z)</code>.\n\nAssim, ramos com <code>Z&gt;0</code> chegam ao bordo <code>zc=+1</code> e ramos com <code>Z&lt;0</code> ao bordo <code>zc=-1</code>. Esses dois bordos são cópias do mesmo ponto projetivo criado pelo corte da compactificação. A separação visual não cria singularidades adicionais.\n</p>
+<h2 id="carta-ativa-e-separatrizes-no-infinito">Carta ativa e separatrizes no infinito</h2>
+<p>Para <code>|zc| &gt;= 0.90</code>, a interface identifica <code>Z=1/z</code> como a carta ativa de inspeção. As separatrizes da sela em <code>Z=0</code> são integradas exclusivamente no campo regular <code>(eta,Z)</code>, com <code>eta=tau/Z^2</code>, e transportadas para <code>(tau,zc)</code> apenas para renderização. Os quatro semirramos <code>W^s_±, W^u_±</code> são mantidos separados; setas mostram a orientação. Os dois bordos <code>zc=±1</code> representam o mesmo ponto projetivo.</p>
+<h2 id="organizacao-do-retrato-de-fase-v0.5.5">Organização do retrato de fase (v0.5.5)</h2>
+<p>A visualização separa as curvas integrais genéricas de \(\mathcal R\) das variedades invariantes das selas. Para cada sela finita, os ramos associados a autovalores negativos são mostrados como \(W^s_{\rm fin}\) e os associados a autovalores positivos como \(W^u_{\rm fin}\). Na carta complementar \((\eta,Z)\), a mesma convenção define \(W^s_\infty\) e \(W^u_\infty\).</p>
+<p>As singularidades são selecionáveis. Ao selecionar uma sela finita, a interface destaca somente seus quatro semirramos e mostra a carta, o Jacobiano, autovalores e autovetores. A sela projetiva no infinito pode ser selecionada por qualquer uma de suas duas representações nos bordos \(\hat z=\pm1\); ambas correspondem ao mesmo ponto em \(Z=0\).</p>
+<h2 id="conexoes-heteroclinicas">Conexões heteroclínicas</h2>
+<p>Se um ramo instável de uma sela \(p\) alcança outra sela \(q\) e coincide com seu ramo estável, a órbita é única: \(\gamma\subset W^u(p)\cap W^s(q)\). O renderer detecta a chegada a outra sela, fecha a curva exatamente no ponto singular e suprime a cópia obtida pela integração estável inversa.</p>
+<h2 id="papeis-dos-estados-e-saturacoes-dev.24.15">Papéis dos estados e saturações (dev.24.15)</h2>
+<p>Os símbolos de estado têm papéis distintos e não devem ser identificados globalmente.</p>
+<ul>
+<li><code>U*</code> é um estado genérico de exploração em <code>U</code>; ele não é intrinsecamente esquerdo nem direito. Portanto possui as duas fibras <code>pi_-^{-1}(U*)</code> (forward) e <code>pi_+^{-1}(U*)</code> (backward).</li>
+<li><code>(U_L,U_R)</code> são os dados globais do problema de Riemann. A orientação inicial seleciona <code>pi_-^{-1}(U_L)</code> para ondas que saem de <code>U_L</code> e <code>pi_+^{-1}(U_R)</code> para ondas que chegam a <code>U_R</code>.</li>
+<li><code>(U_-(P),U_+(P))=(pi_-(P),pi_+(P))</code> são estados locais móveis associados a cada ponto <code>P in W</code>. Eles podem tornar-se estados intermediários numa sequência de ondas.</li>
+</ul>
+<p>Para uma curva <code>Gamma subset W</code>, definimos as sementes das saturações por</p>
+<p><code>Sat_forw(Gamma) = union_{P in Gamma} pi_-^{-1}(U_-(P))</code>,</p>
+<p><code>Sat_back(Gamma) = union_{P in Gamma} pi_+^{-1}(U_+(P))</code>.</p>
+<p>O núcleo desta versão formaliza a curva de estados fixos que indexa cada união. A discretização/meshing da superfície saturada não é feita no renderer e será implementada separadamente.</p>
+
+</main>
+</body>
+</html>

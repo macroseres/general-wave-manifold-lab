@@ -89,7 +89,7 @@ test('experiment schema v1 migrates domain to samplingDomain without changing va
   const current=createExperiment({appVersion:'x',coefficients:{a20:1,a11:0,a02:0,a10:0,a01:0,b20:0,b11:1,b02:0,b10:0,b01:0},samplingDomain:{tauMin:-2,tauMax:3,YMin:-4,YMax:5},point:{tau:0,Y:0,zc:0},visibility:{showSMinus:true,showSPlus:true,showRarefaction:true,showRareCurves:true,showFiniteStable:true,showFiniteUnstable:true,showInfinityStable:true,showInfinityUnstable:true},axisScale:{tau:1,Y:1,zc:1}})
   const legacy=structuredClone(current);legacy.schemaVersion=1;legacy.scientific.domain=legacy.scientific.samplingDomain;delete legacy.scientific.samplingDomain
   const migrated=validateExperiment(legacy)
-  assert.equal(migrated.schemaVersion,3)
+  assert.equal(migrated.schemaVersion,4)
   assert.deepEqual(migrated.scientific.samplingDomain,current.scientific.samplingDomain)
   assert.equal('domain' in migrated.scientific,false)
 })
@@ -103,7 +103,7 @@ test('canonical mathematical reference includes the pre-Hugoniot closure chapter
 })
 
 test('traceability reflects resolved renderer debt and completed adaptive numerics',()=>{
-  const trace=fs.readFileSync(path.join(root,'docs','architecture','TRACEABILITY.md'),'utf8')
+  const trace=fs.readFileSync(path.join(root,'docs','architecture','TRACEABILITY.html'),'utf8')
   assert.match(trace,/geometry\/sonic\/surface\.js/)
   assert.match(trace,/math\/rarefaction\/finiteSeparatrices\.js/)
   assert.match(trace,/adaptive RK4 \+ event refinement implemented in dev\.19/i)
@@ -112,10 +112,10 @@ test('traceability reflects resolved renderer debt and completed adaptive numeri
 })
 
 test('foundation verification has no blocking FAIL and covers commitments 1 through 7',()=>{
-  const audit=fs.readFileSync(path.join(root,'docs','architecture','FOUNDATION_VERIFICATION.md'),'utf8')
-  for(let i=1;i<=7;i++) assert.match(audit,new RegExp(`\\| ${i} \\|`))
+  const audit=fs.readFileSync(path.join(root,'docs','architecture','FOUNDATION_VERIFICATION.html'),'utf8')
+  for(let i=1;i<=7;i++) assert.match(audit,new RegExp(`<td>${i}</td>`))
   assert.match(audit,/No blocking FAIL remains/)
-  assert.doesNotMatch(audit,/\| \*\*FAIL\*\* \|/)
+  assert.doesNotMatch(audit,/<td><strong>FAIL<\/strong><\/td>/)
 })
 
 test('canonical LaTeX includes the executable three-space chapter',()=>{
@@ -124,16 +124,16 @@ test('canonical LaTeX includes the executable three-space chapter',()=>{
 })
 
 test('current documentation recognizes dev.20 physical rarefaction view',()=>{
-  const trace=fs.readFileSync(path.join(root,'docs','architecture','TRACEABILITY.md'),'utf8')
-  const manual=fs.readFileSync(path.join(root,'docs','user-manual','01-spaces-and-views.md'),'utf8')
-  assert.match(trace,/Physical rarefaction realization in `\(x,t\)`/)
+  const trace=fs.readFileSync(path.join(root,'docs','architecture','TRACEABILITY.html'),'utf8')
+  const manual=fs.readFileSync(path.join(root,'docs','user-manual','01-spaces-and-views.html'),'utf8')
+  assert.match(trace,/Physical rarefaction realization in <code>\(x,t\)<\/code>/)
   assert.match(trace,/rarefactionSolution\.js/)
   assert.match(manual,/Physical space — implemented rarefaction view/)
   assert.doesNotMatch(manual,/Physical space — planned view/)
 })
 
 test('Hugoniot closure audit has no blocking FAIL and keeps composites/Liu deferred',()=>{
-  const audit=fs.readFileSync(path.join(root,'docs/architecture/HUGONIOT_VERIFICATION.md'),'utf8')
+  const audit=fs.readFileSync(path.join(root,'docs/architecture/HUGONIOT_VERIFICATION.html'),'utf8')
   assert.match(audit,/fixed-state Hugoniot block has no blocking FAIL/i)
   assert.match(audit,/Liu\/general shock admissibility[\s\S]*DEFERRED/)
   assert.match(audit,/General Riemann solver[\s\S]*DEFERRED/)

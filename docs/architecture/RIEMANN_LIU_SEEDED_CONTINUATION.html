@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RIEMANN_LIU_SEEDED_CONTINUATION</title>
+<style>
+body{margin:2rem auto;padding:0 1rem;max-width:78ch;font:1rem/1.65 system-ui,sans-serif;color:#182230;background:#fff}
+h1,h2,h3,h4{line-height:1.25} a{color:#12568b} img{max-width:100%;height:auto}
+pre,blockquote{padding:1rem;background:#f3f6f8} pre{overflow:auto} code{overflow-wrap:anywhere}
+table{display:block;overflow:auto;border-collapse:collapse} th,td{padding:.4rem .65rem;border:1px solid #cdd5df;text-align:left}
+mjx-container[display=true]{overflow-x:auto;overflow-y:hidden;padding:.4rem 0}
+</style>
+
+</head>
+<body>
+<main>
+<h1 id="continuacao-forward-diretamente-das-sementes-caracteristicas">Continuação forward diretamente das sementes características</h1>
+<p><code>traceSeededForwardHugoniot(U_L, target, p)</code> inicializa os quatro ramos locais
+nas duas famílias reais simples, a partir das sementes corrigidas de
+<code>characteristicForwardHugoniotSeeds</code>. Cada passo emprega predição tangente e
+correção de Newton para a incidência de Rankine–Hugoniot, com condição de
+pseudo-comprimento de arco. A construção independe da malha de Hugoniot já
+renderizada.</p>
+<p>O procedimento tenta alcançar uma <strong>vizinhança</strong> do contato indicado. A
+aproximação não prova que a trajetória alcança exatamente o contato nem que
+existe um arco globalmente único. Na ausência de aproximação, ou quando dois
+ramos são igualmente plausíveis, não se declara conexão. A função
+<code>seededLiuAtForwardContact</code> aplica Liu às amostras obtidas, mas sempre devolve
+<code>passes: false</code>, reservando <code>sampledLiuPasses</code> ao diagnóstico exploratório.</p>
+<p>Próximos passos: corrigir o ponto final sobre a mesma componente, controlar
+passos adaptativos e verificar a desigualdade de Liu com garantias entre
+amostras. Nenhuma dessas condições é certificada nesta etapa.</p>
+
+</main>
+</body>
+</html>

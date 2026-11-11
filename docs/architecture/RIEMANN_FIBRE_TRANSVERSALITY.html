@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RIEMANN_FIBRE_TRANSVERSALITY</title>
+<style>
+body{margin:2rem auto;padding:0 1rem;max-width:78ch;font:1rem/1.65 system-ui,sans-serif;color:#182230;background:#fff}
+h1,h2,h3,h4{line-height:1.25} a{color:#12568b} img{max-width:100%;height:auto}
+pre,blockquote{padding:1rem;background:#f3f6f8} pre{overflow:auto} code{overflow-wrap:anywhere}
+table{display:block;overflow:auto;border-collapse:collapse} th,td{padding:.4rem .65rem;border:1px solid #cdd5df;text-align:left}
+mjx-container[display=true]{overflow-x:auto;overflow-y:hidden;padding:.4rem 0}
+</style>
+<script defer src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-chtml.js"></script>
+</head>
+<body>
+<main>
+<h1 id="transversalidade-das-fibras-com-a-caracteristica">Transversalidade das fibras com a característica</h1>
+<p>Na carta finita, a notação canônica é</p>
+<p>\[
+\mathcal F(\bar U,X,Z,s)=X\mathcal G(\bar U,Z,s),\qquad
+\mathcal G(\bar U,Z,s)=(DF(\bar U)-sI)(1,Z)^T.
+\]</p>
+<p>Na carta recíproca, usamos \(z=1/Z\), \(r=(z,1)^T\) e amplitude \(Y=XZ\), de modo que \(\mathcal F=Y\mathcal G_{\rm rec}\). A variedade não trivial prolongada é \(\mathcal G=0\), inclusive em amplitude nula.</p>
+<p>Para a fibra forward, fixa-se \(\pi_-=U_L\); para a backward, fixa-se \(\pi_+=U_R\). Na fronteira de amplitude zero, forma-se a matriz de restrições empilhando \(D\mathcal G\) e \(D\pi_\pm\). Se a matriz tem posto quatro e \(D\mathcal G\) tem posto dois, a fibra é uma curva regular local. Acrescentar \(dA=(0,0,1,0,0)\) aumenta o posto para cinco exatamente quando a fibra cruza transversalmente \(A=0\). Se não aumenta, há contato tangencial em primeira ordem; a ordem do contato não é determinada. Em caso de fibra irregular, o resultado é indeterminado.</p>
+<p>Esse diagnóstico é local, algébrico e depende da tolerância numérica. Não certifica admissibilidade de choques ou rarefações.</p>
+
+</main>
+</body>
+</html>

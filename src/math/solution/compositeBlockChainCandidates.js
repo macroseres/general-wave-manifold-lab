@@ -1,8 +1,10 @@
+import {refineWaveIntersection} from './waveIntersectionCorrector.js'
+import {interpolateCharacteristicSegment} from '../rarefaction/stateIntegralCurves.js'
 import {boundedSearchReport,recordSearchAttempt,finishSearchReport} from './boundedSearchReport.js'
 import {quadraticSonicPartners} from './sonicPartners.js'
 import {sampledRarefactionPrefix} from './rarefactionPairCandidates.js'
 import {intersectWavePolylines} from './mixedWaveChains.js'
-import {constantContactDirections,constantContactConnection} from './contactChainCandidates.js'
+import {constantContactDirections,constantContactConnection,localAxisContactDirections} from './contactChainCandidates.js'
 import {classifyLaxShock} from './twoShockFamilyEvidence.js'
 import {sonicShockAdmissibility} from './sonicShockAdmissibility.js'
 import {correctForwardHugoniotPoint} from './forwardHugoniotContinuation.js'
@@ -14,10 +16,10 @@ const defaults={stateTolerance:1e-6,speedTolerance:1e-7,tangentTolerance:.15,
   maxSourceSamples:64,maxCandidates:24,maxBranchCount:12,maxIterations:12,matchTolerance:.35}
 const interval=s=>s.type==='rarefaction'?[s.speeds[0],s.speeds.at(-1)]:[s.speed,s.speed]
 
-function sourceAt(branch,index){
+function sourceAt(branch,index,p){
   const i=Math.min(branch.points.length-2,Math.max(0,Math.floor(index))),t=index-i
   const a=coords(branch.points[i]),b=coords(branch.points[i+1])
-  return a.map((v,j)=>v+t*(b[j]-v))
+  return p?interpolateCharacteristicSegment(a,b,t,p,branch.family):a.map((v,j)=>v+t*(b[j]-v))
 }
 
 function compositeCurves(branch,p,options,report){
@@ -45,7 +47,7 @@ function compositeCurves(branch,p,options,report){
   return curves.filter(c=>c.nodes.length>=2).map(c=>({...c,points:c.nodes.map(q=>q.point)}))
 }
 
-function pointOn(curve,x,p){
+function pointOn(curve,x,p,refineFans){
   const i=Math.min(curve.points.length-2,Math.max(0,Math.floor(x))),t=x-i
   const a=coords(curve.points[i]),b=coords(curve.points[i+1]),linear=a.map((v,j)=>v+t*(b[j]-v))
   if(curve.type==='S'){
@@ -54,51 +56,22 @@ function pointOn(curve,x,p){
       {maxCorrection:Math.max(1e-8,distance(a,b)/4)/scale,tolerance:1e-12})
     return correction.point?{point:correction.point,index:x}:null
   }
-  if(curve.type!=='K')return {point:linear,index:x}
+  if(curve.type!=='K'){
+    const point=refineFans&&curve.type==='R'?interpolateCharacteristicSegment(a,b,t,p,curve.family):linear
+    return point?{point,index:x}:null
+  }
   const index=curve.nodes[i].index+t*(curve.nodes[i+1].index-curve.nodes[i].index)
-  const sonic=sourceAt(curve.source,index)
+  const sonic=sourceAt(curve.source,index,refineFans?p:null)
+  if(!sonic)return null
   const roots=quadraticSonicPartners(sonic,p,curve.family,curve.side)
   roots.sort((a,b)=>distance(a.point,linear)-distance(b.point,linear))
   return roots.length?{point:roots[0].point,index,sonic,shock:roots[0]}:null
 }
 
-function refineIntersection(a,b,hit,p,options){
-  let x=hit.aIndex,y=hit.bIndex
-  const x0=Math.floor(Math.min(x,a.points.length-1-1e-10)),y0=Math.floor(Math.min(y,b.points.length-1-1e-10))
-  for(let step=0;step<=options.maxIterations;step++){
-    const A=pointOn(a,x,p),B=pointOn(b,y,p)
-    if(!A||!B)return null
-    const f=A.point.map((v,i)=>v-B.point[i])
-    // An ordinary shock is checked against RH at the shared middle state;
-    // its junction needs tighter closure than the geometric fan matching.
-    const junctionTolerance=a.type==='S'||b.type==='S'?Math.min(options.stateTolerance,1e-10):options.stateTolerance
-    if(Math.hypot(...f)<=junctionTolerance)return {A,B,middle:A.point}
-    if(step===options.maxIterations)return null
-    const column=(curve,t,lo)=>{
-      const h=1e-4,l=Math.max(lo,t-h),r=Math.min(lo+1,t+h),L=pointOn(curve,l,p),R=pointOn(curve,r,p)
-      return L&&R&&r>l?R.point.map((v,i)=>(v-L.point[i])/(r-l)):null
-    }
-    const da=column(a,x,x0),db=column(b,y,y0)
-    if(!da||!db)return null
-    const det=da[1]*db[0]-da[0]*db[1]
-    if(Math.abs(det)<1e-12*(1+Math.hypot(...da)*Math.hypot(...db)))return null
-    const dx=(-db[1]*f[0]+db[0]*f[1])/det,dy=(-da[1]*f[0]+da[0]*f[1])/det
-    let accepted=false
-    for(let damping=1;damping>=1/64;damping/=2){
-      const X=x-damping*dx,Y=y-damping*dy
-      if(X<x0||X>x0+1||Y<y0||Y>y0+1)continue
-      const AA=pointOn(a,X,p),BB=pointOn(b,Y,p)
-      if(AA&&BB&&distance(AA.point,BB.point)<Math.hypot(...f)){x=X;y=Y;accepted=true;break}
-    }
-    if(!accepted)return null
-  }
-  return null
-}
-
 function blockAt(curve,evaluation,middle,anchor,p,options,reject=()=>{}){
   const left=curve.side==='left',from=left?anchor:middle,to=left?middle:anchor
   if(curve.type==='C'){
-    const contact=constantContactConnection(from,to,p,curve.family,options)
+    const contact=constantContactConnection(from,to,p,curve.family,options,[curve.model])
     if(!contact)reject('contact-connection-unverified')
     return contact?{type:'C',segments:[contact]}:null
   }
@@ -147,10 +120,15 @@ export function compositeBlockChainCandidates(states,rarefactions,hugoniot,p,opt
   }
   if(![...sides.left,...sides.right].some(q=>q.type==='K')){note('RK, SK, CK, KR, KS, KC, KK','no-sampled-composite-curve');return []}
   const allPoints=[...sides.left,...sides.right].flatMap(q=>q.points.map(coords)).filter(valid)
-  for(const side of ['left','right'])for(const model of constantContactDirections(p)){
-    const anchor=states[side],span=1+Math.max(...allPoints.map(q=>distance(q,anchor)))
-    sides[side].push({type:'C',side,family:side==='left'?'slow':'fast',
-      points:[-span,span].map(t=>anchor.map((v,i)=>v+t*model.direction[i]))})
+  const globalContacts=constantContactDirections(p)
+  for(const side of ['left','right']){
+    const anchor=states[side]
+    const models=[...globalContacts,...localAxisContactDirections(anchor,p)]
+    const span=1+Math.max(...allPoints.map(q=>distance(q,anchor)))
+    for(const model of models){
+      sides[side].push({type:'C',side,family:side==='left'?'slow':'fast',model,
+        points:[-span,span].map(t=>anchor.map((v,i)=>v+t*model.direction[i]))})
+    }
   }
   const result=[]
   for(const a of sides.left)for(const b of sides.right){
@@ -158,7 +136,9 @@ export function compositeBlockChainCandidates(states,rarefactions,hugoniot,p,opt
     const pattern=a.type+b.type,hits=intersectWavePolylines(a.points,b.points)
     if(!hits.length)note(pattern,'no-sampled-intersection')
     for(const hit of hits){
-      const refined=refineIntersection(a,b,hit,p,opts)
+      const refineFans=pattern==='KR'
+      const junctionTolerance=refineFans||a.type==='S'||b.type==='S'?Math.min(opts.stateTolerance,1e-10):opts.stateTolerance
+      const refined=refineWaveIntersection(a,b,hit,(curve,index)=>pointOn(curve,index,p,refineFans),{...opts,junctionTolerance})
       if(!refined){note(pattern,'intersection-refinement-failed',{middle:hit.point});continue}
       const {middle}=refined
       let failure=null

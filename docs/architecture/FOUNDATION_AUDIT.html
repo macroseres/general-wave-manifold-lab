@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>FOUNDATION_AUDIT</title>
+<style>
+body{margin:2rem auto;padding:0 1rem;max-width:78ch;font:1rem/1.65 system-ui,sans-serif;color:#182230;background:#fff}
+h1,h2,h3,h4{line-height:1.25} a{color:#12568b} img{max-width:100%;height:auto}
+pre,blockquote{padding:1rem;background:#f3f6f8} pre{overflow:auto} code{overflow-wrap:anywhere}
+table{display:block;overflow:auto;border-collapse:collapse} th,td{padding:.4rem .65rem;border:1px solid #cdd5df;text-align:left}
+mjx-container[display=true]{overflow-x:auto;overflow-y:hidden;padding:.4rem 0}
+</style>
+
+</head>
+<body>
+<main>
+<h1 id="v0.6.0-foundation-audit">v0.6.0 Foundation audit</h1>
+<blockquote>
+<p>Historical snapshot. For the current pre-Hugoniot status, see <code>FOUNDATION_VERIFICATION.html</code>.
+Date: 2026-10-07</p>
+</blockquote>
+<h2 id="result">Result</h2>
+<p>The Foundation refactor is structurally complete. The original <code>src/math/quadraticFlux.js</code> is now a compatibility facade and the mathematical implementation is split into domain modules.</p>
+<h2 id="verified-structure">Verified structure</h2>
+<ul>
+<li><code>flux/</code>: quadratic flux, Jacobian, presets.</li>
+<li><code>charts/</code>: finite <code>z</code> chart and complementary <code>Z=1/z</code> chart.</li>
+<li><code>manifold/</code>: wave state, Rankine–Hugoniot/eigenvector residuals, coincidence locus.</li>
+<li><code>sonic/</code>: sonic data, implicit conditions, residuals.</li>
+<li><code>rarefaction/</code>: vector fields, singularities, separatrices.</li>
+<li><code>numerics/</code>: polynomial-root helpers.</li>
+</ul>
+<p>The mathematical modules contain no React or Three.js imports. Existing application imports remain valid through the compatibility facade.</p>
+<h2 id="regression-status">Regression status</h2>
+<p>The mathematical test suite contains 17 tests. All 17 pass in the audit environment. The user's Windows baseline also passed <code>npm run check</code> immediately before this audit.</p>
+<h2 id="portability">Portability</h2>
+<p>The complementary chart module is named <code>reciprocalChart.js</code>, not <code>ZChart.js</code>, to avoid a case-only filename collision with <code>zChart.js</code> on Windows. This rule is recorded in ADR-003.</p>
+<h2 id="documentation-findings-addressed">Documentation findings addressed</h2>
+<ul>
+<li>Consolidated the duplicated/inconsistent v0.6.0 changelog entries.</li>
+<li>Updated the roadmap so v0.7.x no longer lists decomposition work already completed in v0.6.0.</li>
+<li>Clarified that the LaTeX reference is still under formula-by-formula verification and is not yet authoritative.</li>
+<li>Added a reusable release checklist.</li>
+</ul>
+<h2 id="deliberately-deferred">Deliberately deferred</h2>
+<p>These are not blockers for v0.6.0 and should not be mixed into the Foundation release:</p>
+<ul>
+<li>formula-by-formula migration from <code>docs/MATHEMATICS.html</code> to LaTeX;</li>
+<li>consolidation of numerical tolerances into named policies/constants;</li>
+<li>creation of the <code>src/geometry</code> layer when geometry extraction begins;</li>
+<li>migration of application imports away from the compatibility facade;</li>
+<li>broader formatting/style cleanup of legacy React source;</li>
+<li>adoption of the scientific design tokens in the UI.</li>
+</ul>
+<p>No mathematical formula or numerical algorithm was intentionally changed during this audit.</p>
+
+</main>
+</body>
+</html>

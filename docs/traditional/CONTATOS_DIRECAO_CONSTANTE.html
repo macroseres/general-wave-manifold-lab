@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CONTATOS_DIRECAO_CONSTANTE</title>
+<style>
+body{margin:2rem auto;padding:0 1rem;max-width:78ch;font:1rem/1.65 system-ui,sans-serif;color:#182230;background:#fff}
+h1,h2,h3,h4{line-height:1.25} a{color:#12568b} img{max-width:100%;height:auto}
+pre,blockquote{padding:1rem;background:#f3f6f8} pre{overflow:auto} code{overflow-wrap:anywhere}
+table{display:block;overflow:auto;border-collapse:collapse} th,td{padding:.4rem .65rem;border:1px solid #cdd5df;text-align:left}
+mjx-container[display=true]{overflow-x:auto;overflow-y:hidden;padding:.4rem 0}
+</style>
+<script defer src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-chtml.js"></script>
+</head>
+<body>
+<main>
+<h1 id="contatos-de-direcao-constante-escopo-do-primeiro-construtor">Contatos de direção constante: escopo do primeiro construtor</h1>
+<p>Este é um caso particular de contato tradicional, não uma redefinição de toda família linearmente degenerada. A implementação não cobre ainda curvas de contato de direção variável.</p>
+<h2 id="criterio-nos-coeficientes">Critério nos coeficientes</h2>
+<p>Para o fluxo quadrático, escreva DF(U)=A₀+uA_u+vA_v. Procuramos um vetor unitário r e uma constante c tais que</p>
+<p>\[
+A_u r=A_v r=0,\qquad A_0r=cr.
+\]</p>
+<p>As matrizes A_u e A_v são calculadas diretamente dos coeficientes de grau dois. O código procura uma direção no núcleo comum de suas linhas e verifica a condição própria de A₀. Se o fluxo é linear, usa as duas direções próprias reais simples de A₀. Os resíduos são comparados com uma tolerância declarada; o relatório numérico não é um certificado simbólico de igualdade.</p>
+<p><strong>Proposição.</strong> Nas igualdades exatas acima, DF(U)r=cr em todos os estados. Ao longo de U(t)=U_a+tr, vale F(U(t))−F(U_a)=ct r. Portanto dois estados distintos nessa reta satisfazem RH com velocidade c. Onde c é um autovalor simples, a família correspondente é linearmente degenerada, pois esse autovalor é constante.</p>
+<p><strong>Demonstração.</strong> Substitua as três igualdades na expressão afim de DF. Integre a identidade dF(U(t))/dt=cr. A derivada da velocidade característica constante é zero.</p>
+<p>O construtor exige a mesma família simples nos dois extremos e rejeita coincidência. O outro autovalor é tr DF−c, afim ao longo da reta. Se sua diferença para c tem o mesmo sinal estrito nos extremos, não há coincidência no segmento entre eles. Essa justificativa é específica da identidade exata e do grau dois; os testes com tolerância mantêm a conclusão numérica qualificada.</p>
+<h2 id="construcao-dos-cinco-padroes">Construção dos cinco padrões</h2>
+<p><strong>CC:</strong> intersectar as retas de contato lenta de U_L e rápida de U_R, verificar o estado intermediário, RH em ambos os saltos e c₁&lt;c₂. Retas paralelas não fornecem um intermediário isolado por esse método. Blocos de amplitude zero ainda não são retornados por este construtor de duas ondas.</p>
+<p><strong>RC e CR:</strong> intersectar uma reta de contato com os trechos amostrados da curva integral da outra família. Verificar ancoragem, tangência, crescimento da velocidade no sentido físico e ordenação entre o contato e o leque. A busca não demonstra completude nem resolve ainda o erro de interseção das poligonais por um corretor conjunto.</p>
+<p><strong>SC e CS:</strong> a incidência de RH sobre a reta de contato pode ser resolvida diretamente nos estados. Fixe o outro extremo U_<em>, ponha M(t)=A+tr, d=A−U_</em> e b=F(A)−F(U_*). Então</p>
+<p>\[
+\det(M(t)-U_*,F(M(t))-F(U_*))=\det(d,b)+t\bigl(c\det(d,r)+\det(r,b)\bigr).
+\]</p>
+<p><strong>Demonstração.</strong> Pela proposição anterior, F(A+tr)=F(A)+ct r. Expandir o determinante dá a expressão, pois o termo quadrático contém det(r,r)=0.</p>
+<p>Quando o coeficiente de t não é nulo, há uma única raiz nessa reta; o código recupera M, verifica o contato e aplica RH e Lax estrito ao choque da outra família. Essa construção não depende de uma carta da variedade. Se o coeficiente se anula, a equação pode ser incompatível ou ter uma família inteira de soluções; não se afirma existência ou unicidade a partir de uma saída vazia. Curvas de Hugoniot já disponíveis também podem fornecer candidatos adicionais, sempre submetidos aos mesmos testes.</p>
+<h2 id="perfil-e-apresentacao">Perfil e apresentação</h2>
+<p>Cada contato permanece uma interface de velocidade pontual, com seu próprio par de traços. O perfil autossimilar usa o traço direito exatamente na velocidade da interface. Os gráficos u(x,t),v(x,t) são interrompidos nos contatos e nos choques; não se interpola através das descontinuidades. No desenho físico, contatos são roxos e choques laranja.</p>
+<p>No plano de estados, a reta de contato é uma curva integral do modelo. Se não houver arco de Hugoniot reconstruído para um choque, não inventar uma curva entre seus extremos. A vista pode exibir os estados e a ligação de contato enquanto o arco de choque permanece indisponível.</p>
+<p>O plano de estados já pode ser aberto a partir dos dados de Riemann, mesmo sem ponto regular da variedade. A janela usa os dados como âncoras e não apresenta uma projeção fictícia da variedade.</p>
+<h2 id="exemplos-e-evidencia">Exemplos e evidência</h2>
+<p>F=(u²/2,3v) fornece RC e SC com contato rápido; F=(u,v²/2+3v) fornece CR e CS com contato lento; F=(u,2v) fornece CC. Os testes incluem uma mudança de direção própria não alinhada aos eixos, falhas de conservação/família, coincidência, leques invertidos e rejeição de um choque duplamente sônico do fluxo triangular como contato.</p>
+<p>Implementação: <code>src/math/solution/contactChainCandidates.js</code>. Verificação: <code>tests/contactChainCandidates.test.js</code> e <code>tests/stateSpaceChainsRendering.test.js</code>. Nenhuma dessas construções declara seleção cinética geral ou certificação entrópica pelo aplicativo.</p>
+
+</main>
+</body>
+</html>

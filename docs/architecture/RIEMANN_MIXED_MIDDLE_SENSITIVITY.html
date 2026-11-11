@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RIEMANN_MIXED_MIDDLE_SENSITIVITY</title>
+<style>
+body{margin:2rem auto;padding:0 1rem;max-width:78ch;font:1rem/1.65 system-ui,sans-serif;color:#182230;background:#fff}
+h1,h2,h3,h4{line-height:1.25} a{color:#12568b} img{max-width:100%;height:auto}
+pre,blockquote{padding:1rem;background:#f3f6f8} pre{overflow:auto} code{overflow-wrap:anywhere}
+table{display:block;overflow:auto;border-collapse:collapse} th,td{padding:.4rem .65rem;border:1px solid #cdd5df;text-align:left}
+mjx-container[display=true]{overflow-x:auto;overflow-y:hidden;padding:.4rem 0}
+</style>
+
+</head>
+<body>
+<main>
+<h1 id="sensibilidade-de-u_m-para-cadeias-mistas">Sensibilidade de U_M para cadeias mistas</h1>
+<p>Para as cadeias rarefação–choque e choque–rarefação, a curva integral característica é reconstruída por integração RK4 adaptativa sob perturbações individuais dos dez coeficientes do fluxo. Mantêm-se fixos U_L, U_R, a família e o sentido inicial do ramo.</p>
+<p>Para cada fluxo perturbado, procura-se uma raiz do determinante de Rankine–Hugoniot sobre os segmentos da curva reintegrada. A raiz só é acompanhada se houver uma única candidata dentro da vizinhança prescrita do U_M original. As derivadas de U_M são diferenças centrais entre as raízes reconstruídas nas perturbações positiva e negativa. O procedimento rejeita ambiguidades e raízes ausentes, sem atribuir derivada zero.</p>
+<h2 id="limitacoes">Limitações</h2>
+<ul>
+<li>O acompanhamento é <strong>local e amostrado</strong>. A reintegração e a busca de raízes por mudança de sinal podem perder raízes tangenciais.</li>
+<li>O teste de proximidade não estabelece a identidade global dos ramos; mudanças topológicas ou de família não são acompanhadas.</li>
+<li>As derivadas são estimativas por diferenças finitas, não derivadas analíticas certificadas.</li>
+<li>Não há certificação de Lax, Liu, entropia ou unicidade da solução de Riemann nesta rotina.</li>
+<li>Em casos quase degenerados, refinar o passo de integração e de perturbação e confrontar com a geometria da variedade de ondas.</li>
+</ul>
+
+</main>
+</body>
+</html>

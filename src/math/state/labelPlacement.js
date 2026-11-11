@@ -1,13 +1,15 @@
 // Layout exclusivamente visual: não modifica os estados matemáticos.
-export function chooseStateLabelPosition(point, neighbours, preferred=0, bounds={width:800,height:600}) {
-  const candidates=[[14,-14],[14,27],[-14,-14],[-14,27],[24,5],[-24,5],[14,-31],[-14,-31]]
+export function chooseStateLabelPosition(point, neighbours, preferred=0, bounds={width:800,height:600}, {occupied=[],labelWidth=50}={}) {
+  const candidates=[[10,-5],[10,20],[-10,-5],[-10,20],[13,7],[-13,7],[10,-18],[-10,-18]]
   const order=candidates.map((_,i)=>(i+preferred)%candidates.length)
   let best=null
   for(const i of order){
     const [dx,dy]=candidates[i]
     const x=point.x+dx, y=point.y+dy
-    const box={left:dx<0?x-50:x,right:dx<0?x:x+50,top:y-15,bottom:y+4}
+    const box={left:dx<0?x-labelWidth:x,right:dx<0?x:x+labelWidth,top:y-17,bottom:y+8}
     let penalty=0
+    if(occupied.some(other=>box.left<other.right+3&&box.right>other.left-3&&
+      box.top<other.bottom+3&&box.bottom>other.top-3))penalty+=2000
     for(const n of neighbours){
       if(Math.hypot(n.x-point.x,n.y-point.y)<0.001)continue
       const nearX=Math.max(box.left,Math.min(n.x,box.right))

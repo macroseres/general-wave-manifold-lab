@@ -52,5 +52,6 @@ export const fittedWindow=(g,fixedState=null,requiredStates=[])=>{
   }
   const uSpan=Math.max(.12,ue[1]-ue[0]),vSpan=Math.max(.12,ve[1]-ve[0]),span=Math.max(uSpan,vSpan)
   const pad=.12, uMid=(ue[0]+ue[1])/2, vMid=(ve[0]+ve[1])/2,half=span*(.5+pad)
-  return {uMin:uMid-half,uMax:uMid+half,vMin:vMid-half,vMax:vMid+half}
+  const uHalf=half+0.08*span
+  return {uMin:uMid-uHalf,uMax:uMid+uHalf,vMin:vMid-half,vMax:vMid+half}
 }

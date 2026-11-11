@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RIEMANN_LIU_ARC_SELECTION</title>
+<style>
+body{margin:2rem auto;padding:0 1rem;max-width:78ch;font:1rem/1.65 system-ui,sans-serif;color:#182230;background:#fff}
+h1,h2,h3,h4{line-height:1.25} a{color:#12568b} img{max-width:100%;height:auto}
+pre,blockquote{padding:1rem;background:#f3f6f8} pre{overflow:auto} code{overflow-wrap:anywhere}
+table{display:block;overflow:auto;border-collapse:collapse} th,td{padding:.4rem .65rem;border:1px solid #cdd5df;text-align:left}
+mjx-container[display=true]{overflow-x:auto;overflow-y:hidden;padding:.4rem 0}
+</style>
+
+</head>
+<body>
+<main>
+<h1 id="selecao-amostrada-do-arco-de-liu-forward">Seleção amostrada do arco de Liu forward</h1>
+<p>A fibra forward fixa U_L e varia U_+. O teste de Liu exige a velocidade s(U_L,U_+) em <strong>todo</strong> o arco conectado, orientado desde U_L até o contato sônico. <code>orientedForwardLiuArc</code> procura apenas um segmento de polilinha cuja extremidade amostrada esteja próxima de U_L e contenha uma amostra próxima ao contato refinado. O segmento pode ser invertido para obter a orientação correta.</p>
+<p>O algoritmo não costura componentes desconexas nem inventa trajetórias ausentes. Se a amostragem não contém um arco ancorado, retorna <code>arc-not-resolved</code>; ambiguidades entre segmentos retornam <code>ambiguous-arc</code>. A aproximação usa o contato refinado como ponto final, mas os pontos internos não são reprojetados na equação exata de Rankine–Hugoniot. O teste <code>liuSpeedAlongFibre</code> exige que cada ponto intermediário satisfaça RH dentro da tolerância; caso contrário rejeita o arco.</p>
+<p>A desigualdade forward amostrada é s(U_L,U_c) &lt;= s(U_L,U) para os estados intermediários. Sua satisfação não é certificação de Liu: podem existir oscilações entre amostras, outra conexão ou falha na orientação topológica. O diagnóstico não classifica automaticamente uma onda composta como admissível.</p>
+
+</main>
+</body>
+</html>

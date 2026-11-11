@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RIEMANN_HUGONIOT_SEGMENT_ENDPOINT</title>
+<style>
+body{margin:2rem auto;padding:0 1rem;max-width:78ch;font:1rem/1.65 system-ui,sans-serif;color:#182230;background:#fff}
+h1,h2,h3,h4{line-height:1.25} a{color:#12568b} img{max-width:100%;height:auto}
+pre,blockquote{padding:1rem;background:#f3f6f8} pre{overflow:auto} code{overflow-wrap:anywhere}
+table{display:block;overflow:auto;border-collapse:collapse} th,td{padding:.4rem .65rem;border:1px solid #cdd5df;text-align:left}
+mjx-container[display=true]{overflow-x:auto;overflow-y:hidden;padding:.4rem 0}
+</style>
+
+</head>
+<body>
+<main>
+<h1 id="extremo-interpolado-no-trecho-de-hugoniot">Extremo interpolado no trecho de Hugoniot</h1>
+<p>A curva de Hugoniot é representada por uma poligonal numérica no Espaço de estados.
+O destaque associado a uma cadeia candidata usa o identificador do ramo e o índice
+original do segmento, quando disponíveis. O extremo visual é a projeção ortogonal
+de U_M sobre o segmento, com parâmetro limitado ao intervalo [0,1].</p>
+<p>Se a distância de U_M ao segmento, ou a distância do estado fixo ao vértice inicial,
+exceder a tolerância de visualização, o destaque é omitido. Sem índice de segmento,
+procura-se o segmento mais próximo dentro da tolerância. A poligonal é orientada
+partindo do estado fixo em direção ao extremo interpolado.</p>
+<p>A interpolação não resolve novamente Rankine–Hugoniot e não certifica
+admissibilidade entrópica. O desvio informado é um erro geométrico de visualização.</p>
+
+</main>
+</body>
+</html>
