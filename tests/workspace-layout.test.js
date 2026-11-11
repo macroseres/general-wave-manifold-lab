@@ -22,7 +22,8 @@ test('legacy state styles do not set workspace grid geometry', () => {
 
 test('the shared layout owns the rail and drawer dimensions', () => {
   assert.match(layout, /--workspace-rail:\s*68px/)
-  assert.match(layout, /--workspace-drawer:\s*232px/)
+  assert.match(layout, /--workspace-drawer:\s*calc\(232px\s*\*\s*4\s*\/\s*3\)/)
+  assert.match(layout, /grid-template-columns:\s*var\(--workspace-rail\)\s+var\(--workspace-drawer\)/)
 })
 
 test('inline States layout is selected by the mounted workspace, not by a missing modal header', () => {

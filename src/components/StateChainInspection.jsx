@@ -141,13 +141,15 @@ export default function StateChainInspection({candidate,geometry,p,label='Ondas 
   const certification=candidate.pattern==='KR'&&classification
     ?riemannCertificationReport(candidate,classification,p):null
   const ssValidation=classification?.validation?.pattern==='SS'?classification.validation:null
+  const assessmentLabel=assessment.status==='validated'?'Solução de Riemann validada · Liu':
+    assessment.status==='incompatible'?'Incompatibilidade detectada':
+    assessment.status==='numerically-compatible'?'Compatibilidade numérica (não certificada)':'Diagnóstico inconclusivo'
   const segments=geometry?.segments??candidateSegments(candidate)
   const segmentColorKeys=chainSegmentColorKeys(candidate,segments)
   return <section className="stateChainInspection" aria-label={label}>
     <CandidateChainSummary candidate={candidate}/>
-    <p className="chainPanelQualification">{ssValidation?'Solução SS validada pelo critério de Liu.':certification?.status==='validated'?
-      'Solução KR validada pelo critério de Liu.':candidate.evidence?.liu==='liu-violation-detected'?
-      'Violação de Liu detectada nas amostras.':'Admissibilidade entrópica inconclusiva.'}</p>
+    <p className="chainPanelQualification">{candidate.pattern??candidate.kind} · {assessmentLabel}
+      {assessment.status!=='validated'&&' · admissibilidade entrópica inconclusiva'}</p>
     {segments.map((s,i)=><details key={i} className="stateChainSegment"
       onMouseEnter={()=>onSegmentFocus?.(i)} onMouseLeave={()=>onSegmentFocus?.(null)}
       onFocus={()=>onSegmentFocus?.(i)} onBlur={event=>{
@@ -170,7 +172,7 @@ export default function StateChainInspection({candidate,geometry,p,label='Ondas 
     </details>)}
     {classification&&<details><summary>Diagnóstico da cadeia</summary>
       <div style={{display:'grid',gap:8,minWidth:0,overflowWrap:'anywhere'}}>
-        <div role="status"><strong>Síntese das verificações</strong><div>{assessment.status==='validated'?'Solução de Riemann validada · Liu':assessment.status==='incompatible'?'Incompatibilidade detectada':assessment.status==='inconclusive'?'Diagnóstico inconclusivo':'Compatibilidade numérica (não certificada)'}</div>{assessment.reasons.map((reason,i)=><div key={i}>{reason}</div>)}</div>
+        <div role="status"><strong>Síntese das verificações</strong><div>{assessmentLabel}</div>{assessment.reasons.map((reason,i)=><div key={i}>{reason}</div>)}</div>
         <div><strong>Conservação</strong><div>{diagnosticLabel(classification.weakSolution.status)}</div></div>
         <div><strong>Continuidade</strong><div>{diagnosticLabel(classification.chainGeometry.continuity.status)}</div></div>
         <div><strong>Velocidades globais</strong><div>{diagnosticLabel(classification.chainGeometry.speedOrdering.status)}</div></div>

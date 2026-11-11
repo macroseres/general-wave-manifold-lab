@@ -41,8 +41,8 @@ The [notation guide](docs/NOTACAO.html) distinguishes state roles, chart coordin
 
 - `docs/mathematics/` — canonical LaTeX mathematical reference for the validated pre-Hugoniot core.
 - `docs/architecture/` — software and numerical architecture.
-- `docs/ROADMAP.html` — planned milestones.
-- `docs/CHANGELOG.html` — version history.
+- [Roadmap](docs/ROADMAP.md) — planned milestones.
+- [Version history](docs/CHANGELOG.html) and [development changelog](docs/CHANGELOG.md).
 - `CONTRIBUTING.html` — Git and contribution workflow.
 
 The existing `docs/MATHEMATICS.html` is retained as legacy/reference material only; canonical pre-Hugoniot formulas live in `docs/mathematics/`.

@@ -33,12 +33,12 @@ test('shock stop reasons have readable labels and unknown reasons are reported',
   assert.equal(shockStopLabel('unexpected'), 'Continuação interrompida: unexpected')
 })
 
-test('fitted window is a padded square around the curve geometry', () => {
+test('fitted window pads the curve geometry with extra horizontal space', () => {
   const geometry = { curves: [{ points: [{ u: 0, v: 0 }, { u: 1, v: 2 }] }], uMin: -9, uMax: 9, vMin: -9, vMax: 9 }
   const window = fittedWindow(geometry)
-  // spans (1, 2) -> square of side 2, padded by 12% on each side: half = 2 * 0.62
-  close(window.uMin, 0.5 - 1.24)
-  close(window.uMax, 0.5 + 1.24)
+  // The largest span is 2. Each side adds 12%, plus another 8% horizontally.
+  close(window.uMin, 0.5 - 1.4)
+  close(window.uMax, 0.5 + 1.4)
   close(window.vMin, 1 - 1.24)
   close(window.vMax, 1 + 1.24)
 })

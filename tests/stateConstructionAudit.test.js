@@ -46,16 +46,38 @@ test('all 13 documented positive patterns are selectable and render complete fin
   }
 })
 
-test('comparison retains separate SR and SK segments and reports an unresolved internal shock',()=>{
+test('comparison case retains SR and rejects the SK fan that starts with decreasing speed',()=>{
   const {p,states}=comparisonAuditCase
   const result=stateConstructionSearch(states,constructionRarefactionBranches(states,p),{},p,true)
-  const sr=result.allProfiles.find(q=>q.pattern==='SR'),sk=result.allProfiles.find(q=>q.pattern==='SK')
-  assert.ok(sr);assert.ok(sk)
+  const sr=result.allProfiles.find(q=>q.pattern==='SR')
+  assert.ok(sr)
+  assert.ok(!result.allProfiles.some(q=>q.pattern==='SK'))
+  assert.ok(result.reports.some(report=>report.attempts?.some(attempt=>
+    attempt.pattern==='SK'&&attempt.status==='fan-prefix-unverified')))
+  const geometry=candidateStateGeometry(sr,p)
+  assert.deepEqual(geometry.segments.map(q=>q.type),['shock','rarefaction'])
+  assert.equal(geometry.complete,true)
+})
+
+test('geometry reports the unresolved internal shock of the historical SK diagnostic',()=>{
+  const {p,states}=comparisonAuditCase
+  const middle=[-.8796202268026633,-.34321571501463377]
+  const sonic=[-.8800024588364027,-.3353219527475871]
+  // Historical sampled segments are retained here to exercise incomplete rendering.
+  const sk={pattern:'SK',status:'sampled-candidate',middle,segments:[
+    {type:'shock',family:'slow',from:states.left,to:middle,speed:-2.6211384704047593},
+    {type:'shock',family:'fast',from:middle,to:sonic,speed:-.9118052905515377},
+    {type:'rarefaction',family:'fast',from:sonic,to:states.right,
+      states:[sonic,states.right],speeds:[-.9118052905515377,-.780900460253048]},
+  ]}
+  const result=stateConstructionSearch(states,constructionRarefactionBranches(states,p),{},p,true)
+  const sr=result.allProfiles.find(q=>q.pattern==='SR')
+  assert.ok(sr)
   const a=candidateStateGeometry(sr,p),b=candidateStateGeometry(sk,p)
   assert.deepEqual(a.segments.map(q=>q.type),['shock','rarefaction'])
   assert.deepEqual(b.segments.map(q=>q.type),['shock','shock','rarefaction'])
   assert.equal(a.complete,true)
   assert.equal(b.complete,false)
-  assert.ok(b.segments.some(q=>q.arc?.status==='continuation-inconclusive'))
+  assert.equal(b.segments[1].arc.status,'continuation-inconclusive')
   assert.ok(compareRiemannCandidates([sr,sk],p).every(q=>q.entropyCertified===false))
 })
