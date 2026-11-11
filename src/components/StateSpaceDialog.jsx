@@ -33,7 +33,7 @@ import {compareHugoniotSensitivity, compareHugoniotCoordinateSensitivity} from '
 import RiemannSensitivityPlot from './RiemannSensitivityPlot.jsx'
 import {selectedCandidateHugoniotArc} from '../math/solution/riemannBranchHighlight.js'
 import RarefactionSearchReport from './RarefactionSearchReport.jsx'
-import {useEffect, useMemo, useRef, useState} from 'react'
+import {useEffect, useEffectEvent, useMemo, useRef, useState} from 'react'
 import {useWorkspacePreference} from '../hooks/useWorkspacePreference.js'
 import {constructionRarefactionBranches} from '../math/solution/stateConstructionSampling.js'
 import {genuineNonlinearityEvents} from '../math/rarefaction/genuineNonlinearity.js'
@@ -420,6 +420,7 @@ function StatePlot({tauMin,tauMax,showRarefactionField,setShowRarefactionField,e
   const commitBound=key=>{const n=finiteNumber(windowText[key]);if(n===null){setWindowText(t=>({...t,[key]:String(window[key])}));return}const next={...window,[key]:n};if(!validWindow(next)){setWindowText(t=>({...t,[key]:String(window[key])}));return}setWindow(next);setWindowText(t=>({...t,[key]:String(n)}))}
   const onBoundKey=(e,key)=>{if(e.key==='Enter'){e.currentTarget.blur()}else if(e.key==='Escape'){setWindowText(t=>({...t,[key]:String(window[key])}));e.currentTarget.blur()}}
   const appliedChainExample=useRef(null)
+  const applyChainExampleWindow=useEffectEvent(next=>applyWindow(next,{record:true}))
   useEffect(()=>{
     if(!chainExample||!constructionRequested||appliedChainExample.current===chainExample)return
     appliedChainExample.current=chainExample
@@ -434,7 +435,7 @@ function StatePlot({tauMin,tauMax,showRarefactionField,setShowRarefactionField,e
       const middle=candidate.middle??candidate.states?.[1]??left
       const [uMin,vMin]=left.map((value,i)=>Math.min(value,middle[i],right[i])-.55)
       const [uMax,vMax]=left.map((value,i)=>Math.max(value,middle[i],right[i])+.55)
-      applyWindow({uMin,uMax,vMin,vMax},{record:true})
+      applyChainExampleWindow({uMin,uMax,vMin,vMax})
     }
   },[chainExample,constructionRequested,allProfiles,onSelectCandidate,setActivity,setActivityPanelOpen,setShowChain])
   const fitGeometry=()=>{const next=fittedWindow(g,fixedState,[...activeStates,...chainGeometry.points,...chainGeometry.junctions]);applyWindow(next,{record:true})}
