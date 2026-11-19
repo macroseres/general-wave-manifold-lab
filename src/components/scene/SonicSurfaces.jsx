@@ -32,10 +32,10 @@ function cacheSonicMesh(key, mesh) {
   }
 }
 
-export function SonicSurfaces({p,tauMin,tauMax,YMin,YMax,showBTMinus=true,showBTPlus=true,showMinus=true,showPlus=true,showSurfaceMinus=true,showSurfacePlus=true,sonicMeshMode='original',btCurveMode='continuation',sonicRenderMode='transparent',surfaceOpacity=0.15,onInspectSonic}){
+export function SonicSurfaces({p,tauMin,tauMax,YMin,YMax,showBTMinus=true,showBTPlus=true,showMinus=true,showPlus=true,showSurfaceMinus=true,showSurfacePlus=true,sonicMeshMode='original',btCurveMode='continuation',sonicRenderMode='transparent',surfaceOpacity=0.15,onInspectSonic,onStatusChange}){
   const key=JSON.stringify([p,tauMin,tauMax,YMin,YMax,sonicMeshMode])
   const [result,setResult]=useState(()=>sonicMeshCache.has(key)?{key,mesh:sonicMeshCache.get(key)}:null)
-  const [,setStatus]=useState('calculando')
+  const [status,setStatus]=useState('calculando')
   const workerRef=useRef(null)
   const currentKeyRef=useRef(key)
   const requestRef=useRef(0)
@@ -116,6 +116,9 @@ export function SonicSurfaces({p,tauMin,tauMax,YMin,YMax,showBTMinus=true,showBT
     workerRef.current.postMessage({id:++requestRef.current,key,p,tauMin,tauMax,YMin,YMax,sonicMeshMode})
   },[key,p,tauMin,tauMax,YMin,YMax,sonicMeshMode])
   const data=result?.key===key?result.mesh:null
+  useEffect(()=>{
+    onStatusChange?.({key,state:data?'ready':status==='erro no cálculo local'?'error':'loading'})
+  },[key,data,status,onStatusChange])
   const splitMinus=useMemo(()=>data&&(showMinus||showPlus)?partitionSonicMesh(data,p,'minus'):null,[data,p,showMinus,showPlus])
   const btPaths=useMemo(()=>{
     if(!splitMinus||( !showBTMinus&&!showBTPlus))return []
@@ -128,6 +131,7 @@ export function SonicSurfaces({p,tauMin,tauMax,YMin,YMax,showBTMinus=true,showBT
   // Dagger is a scene transformation: positive geometry is never remeshed.
   useEffect(()=>()=>{disposeGeometry(minusSlow);disposeGeometry(minusFast)},[minusSlow,minusFast])
   const pickSonic=(side,event)=>{
+    if(event.delta>3)return
     event.stopPropagation()
     // The mesh inherits a nonuniform visual scale. Recover mathematical coordinates
     // from the mesh-local intersection, not the world-space intersection.
@@ -135,11 +139,11 @@ export function SonicSurfaces({p,tauMin,tauMax,YMin,YMax,showBTMinus=true,showBT
     onInspectSonic?.({side,tau:local.x,Y:side==='plus'?-local.y:local.y,zc:local.z})
   }
   return <group>
-    {showSurfaceMinus&&showMinus&&minusSlow&&<mesh onPointerDown={event=>pickSonic('minus',event)} geometry={minusSlow} frustumCulled={false} renderOrder={1}><meshStandardMaterial color={waveColors.sonicLeftSlow} emissive={waveColors.sonicLeftSlow} emissiveIntensity={.26} {...sonicMaterialOptions(sonicRenderMode,surfaceOpacity)}/></mesh>}
-    {showSurfaceMinus&&showMinus&&minusFast&&<mesh onPointerDown={event=>pickSonic('minus',event)} geometry={minusFast} frustumCulled={false} renderOrder={1}><meshStandardMaterial color={waveColors.sonicLeftFast} emissive={waveColors.sonicLeftFast} emissiveIntensity={.24} {...sonicMaterialOptions(sonicRenderMode,surfaceOpacity)}/></mesh>}
+    {showSurfaceMinus&&showMinus&&minusSlow&&<mesh onClick={event=>pickSonic('minus',event)} geometry={minusSlow} frustumCulled={false} renderOrder={1}><meshStandardMaterial color={waveColors.sonicLeftSlow} emissive={waveColors.sonicLeftSlow} emissiveIntensity={.26} {...sonicMaterialOptions(sonicRenderMode,surfaceOpacity)}/></mesh>}
+    {showSurfaceMinus&&showMinus&&minusFast&&<mesh onClick={event=>pickSonic('minus',event)} geometry={minusFast} frustumCulled={false} renderOrder={1}><meshStandardMaterial color={waveColors.sonicLeftFast} emissive={waveColors.sonicLeftFast} emissiveIntensity={.24} {...sonicMaterialOptions(sonicRenderMode,surfaceOpacity)}/></mesh>}
     <group scale={[1,-1,1]}>
-      {showSurfacePlus&&showPlus&&minusSlow&&<mesh onPointerDown={event=>pickSonic('plus',event)} geometry={minusSlow} frustumCulled={false} renderOrder={2}><meshStandardMaterial color={waveColors.sonicRight} emissive={waveColors.sonicRight} emissiveIntensity={.23} {...sonicMaterialOptions(sonicRenderMode,surfaceOpacity)}/></mesh>}
-      {showSurfacePlus&&showPlus&&minusFast&&<mesh onPointerDown={event=>pickSonic('plus',event)} geometry={minusFast} frustumCulled={false} renderOrder={2}><meshStandardMaterial color={waveColors.sonicRightFast} emissive={waveColors.sonicRightFast} emissiveIntensity={.22} {...sonicMaterialOptions(sonicRenderMode,surfaceOpacity)}/></mesh>}
+      {showSurfacePlus&&showPlus&&minusSlow&&<mesh onClick={event=>pickSonic('plus',event)} geometry={minusSlow} frustumCulled={false} renderOrder={2}><meshStandardMaterial color={waveColors.sonicRight} emissive={waveColors.sonicRight} emissiveIntensity={.23} {...sonicMaterialOptions(sonicRenderMode,surfaceOpacity)}/></mesh>}
+      {showSurfacePlus&&showPlus&&minusFast&&<mesh onClick={event=>pickSonic('plus',event)} geometry={minusFast} frustumCulled={false} renderOrder={2}><meshStandardMaterial color={waveColors.sonicRightFast} emissive={waveColors.sonicRightFast} emissiveIntensity={.22} {...sonicMaterialOptions(sonicRenderMode,surfaceOpacity)}/></mesh>}
     </group>
     {showBTMinus&&showMinus&&btPaths.map((seg,i)=><Line key={`bt-minus-${i}`} points={seg} color="#f59e0b" {...scientificCurveStyle('specialLocus','3d')} depthTest={false} renderOrder={11}/>)}
     {showBTPlus&&showPlus&&btPlusPaths.map((seg,i)=><Line key={`bt-plus-${i}`} points={seg} color="#e879f9" {...scientificCurveStyle('specialLocus','3d')} depthTest={false} renderOrder={11}/>)}

@@ -1,5 +1,5 @@
 import SceneVisibilityRow from './SceneVisibilityRow.jsx'
-import {locusPresentation,projectedBtLoci,stateInflectionProjection} from '../geometry/sharedProjectedLoci.js'
+import {locusPresentation,projectedBtLoci,projectedHysteresisLoci,stateInflectionProjection} from '../geometry/sharedProjectedLoci.js'
 import {stateRarefactionGeometry} from '../geometry/state/stateRarefactionGeometry.js'
 import {stateShockBranches} from '../math/solution/stateShockBranches.js'
 import {stateShockGeometry} from '../geometry/state/stateShockGeometry.js'
@@ -164,7 +164,7 @@ function placeGraphLabels(layers, integralCurves, view) {
   return labels
 }
 
-export default function StateSpaceDialog({exploreWaveBranches=false,onChangeExploreWaveBranches,chainExample=null,constructionRevision=0,constructionRequested=true,onBuildCandidates,showJ=false,sharedLoci=[],locusVisibility={},locusWindow,btCurveMode,sonicMeshMode,open,onClose,inline=false,state,p,tauMin,tauMax,fixedState=null,onSelectState,onClearState,riemannStates,onChangeRiemannState,onProfileCandidates,selectedCandidateIndex=-1,onSelectCandidate,projectionRequest=null,onInspectFibres3D,onInspectWavePoint3D,pointVisibility={left:true,right:true,fixed:true,middle:true},onTogglePointVisibility,showLeftRiemannHugoniot=true,setShowLeftRiemannHugoniot,showRightRiemannHugoniot=true,setShowRightRiemannHugoniot,showMinusStateFibre=true,setShowMinusStateFibre,showPlusStateFibre=true,setShowPlusStateFibre}){
+export default function StateSpaceDialog({exploreWaveBranches=false,onChangeExploreWaveBranches,chainExample=null,statePanelRequest=null,constructionRevision=0,constructionRequested=true,onBuildCandidates,showJ=false,sharedLoci=[],locusVisibility={},locusWindow,btCurveMode,sonicMeshMode,open,onClose,inline=false,state,p,tauMin,tauMax,fixedState=null,onSelectState,onClearState,riemannStates,onChangeRiemannState,onProfileCandidates,selectedCandidateIndex=-1,onSelectCandidate,projectionRequest=null,onInspectFibres3D,onInspectWavePoint3D,pointVisibility={left:true,right:true,fixed:true,middle:true},onTogglePointVisibility,showLeftRiemannHugoniot=true,setShowLeftRiemannHugoniot,showRightRiemannHugoniot=true,setShowRightRiemannHugoniot,showMinusStateFibre=true,setShowMinusStateFibre,showPlusStateFibre=true,setShowPlusStateFibre}){
   useEffect(()=>{if(!open||inline)return undefined;const key=e=>{if(e.key==='Escape'&&!e.defaultPrevented)onClose()};window.addEventListener('keydown',key);return()=>window.removeEventListener('keydown',key)},[open,onClose,inline])
   const [showRarefactionField,setShowRarefactionField]=useWorkspacePreference('states.showRarefactionField', false)
   const data=useMemo(()=>{
@@ -189,10 +189,10 @@ export default function StateSpaceDialog({exploreWaveBranches=false,onChangeExpl
     return {left:project(riemannStates?.left,'left'),right:project(riemannStates?.right,'right')}
   },[riemannStates,p])
   if(!open)return null
-  return <div className={inline?"inlineWorkspaceBackdrop":"localChartBackdrop"} onPointerDown={inline?undefined:onClose}><section className={inline?"localChartDialog inlineWorkspaceDialog":"localChartDialog"} onPointerDown={e=>e.stopPropagation()} aria-modal={inline?undefined:"true"} role="dialog" aria-label="Espaço de estados (u, v)">{!inline&&<header><h2 id="state-space-title">Espaço de estados (u, v)</h2><button onClick={onClose}>Fechar</button></header>}{!data?<div className="localChartBody"><p>O ponto atual não possui uma fibra regular para definir a janela do espaço de estados.</p></div>:<StatePlot tauMin={tauMin} tauMax={tauMax} showRarefactionField={showRarefactionField} setShowRarefactionField={setShowRarefactionField} exploreWaveBranches={exploreWaveBranches} onChangeExploreWaveBranches={onChangeExploreWaveBranches} chainExample={chainExample} constructionRevision={constructionRevision} constructionRequested={constructionRequested} onBuildCandidates={onBuildCandidates} showJ={showJ} sharedLoci={sharedLoci} locusVisibility={locusVisibility} locusWindow={locusWindow} btCurveMode={btCurveMode} sonicMeshMode={sonicMeshMode} geometry={data} hugoniot={hugoniot} riemannHugoniot={riemannHugoniot} fixedState={fixedState} onSelectState={onSelectState} onClearState={onClearState} riemannStates={riemannStates} onChangeRiemannState={onChangeRiemannState} onProfileCandidates={onProfileCandidates} selectedCandidateIndex={selectedCandidateIndex} onSelectCandidate={onSelectCandidate} projectionRequest={projectionRequest} onInspectFibres3D={onInspectFibres3D} onInspectWavePoint3D={onInspectWavePoint3D} pointVisibility={pointVisibility} onTogglePointVisibility={onTogglePointVisibility} showLeftRiemannHugoniot={showLeftRiemannHugoniot} setShowLeftRiemannHugoniot={setShowLeftRiemannHugoniot} showRightRiemannHugoniot={showRightRiemannHugoniot} setShowRightRiemannHugoniot={setShowRightRiemannHugoniot} showMinusStateFibre={showMinusStateFibre} setShowMinusStateFibre={setShowMinusStateFibre} showPlusStateFibre={showPlusStateFibre} setShowPlusStateFibre={setShowPlusStateFibre} p={p}/>}</section></div>
+  return <div className={inline?"inlineWorkspaceBackdrop":"localChartBackdrop"} onPointerDown={inline?undefined:onClose}><section className={inline?"localChartDialog inlineWorkspaceDialog":"localChartDialog"} onPointerDown={e=>e.stopPropagation()} aria-modal={inline?undefined:"true"} role="dialog" aria-label="Espaço de estados (u, v)">{!inline&&<header><h2 id="state-space-title">Espaço de estados (u, v)</h2><button onClick={onClose}>Fechar</button></header>}{!data?<div className="localChartBody"><p>O ponto atual não possui uma fibra regular para definir a janela do espaço de estados.</p></div>:<StatePlot tauMin={tauMin} tauMax={tauMax} showRarefactionField={showRarefactionField} setShowRarefactionField={setShowRarefactionField} exploreWaveBranches={exploreWaveBranches} onChangeExploreWaveBranches={onChangeExploreWaveBranches} chainExample={chainExample} statePanelRequest={statePanelRequest} constructionRevision={constructionRevision} constructionRequested={constructionRequested} onBuildCandidates={onBuildCandidates} showJ={showJ} sharedLoci={sharedLoci} locusVisibility={locusVisibility} locusWindow={locusWindow} btCurveMode={btCurveMode} sonicMeshMode={sonicMeshMode} geometry={data} hugoniot={hugoniot} riemannHugoniot={riemannHugoniot} fixedState={fixedState} onSelectState={onSelectState} onClearState={onClearState} riemannStates={riemannStates} onChangeRiemannState={onChangeRiemannState} onProfileCandidates={onProfileCandidates} selectedCandidateIndex={selectedCandidateIndex} onSelectCandidate={onSelectCandidate} projectionRequest={projectionRequest} onInspectFibres3D={onInspectFibres3D} onInspectWavePoint3D={onInspectWavePoint3D} pointVisibility={pointVisibility} onTogglePointVisibility={onTogglePointVisibility} showLeftRiemannHugoniot={showLeftRiemannHugoniot} setShowLeftRiemannHugoniot={setShowLeftRiemannHugoniot} showRightRiemannHugoniot={showRightRiemannHugoniot} setShowRightRiemannHugoniot={setShowRightRiemannHugoniot} showMinusStateFibre={showMinusStateFibre} setShowMinusStateFibre={setShowMinusStateFibre} showPlusStateFibre={showPlusStateFibre} setShowPlusStateFibre={setShowPlusStateFibre} p={p}/>}</section></div>
 }
 
-function StatePlot({tauMin,tauMax,showRarefactionField,setShowRarefactionField,exploreWaveBranches=false,onChangeExploreWaveBranches,chainExample=null,constructionRevision=0,constructionRequested=true,onBuildCandidates,showJ=false,sharedLoci=[],locusVisibility={},locusWindow,btCurveMode,sonicMeshMode,geometry:g,hugoniot,riemannHugoniot,fixedState,onSelectState,onClearState,riemannStates,onChangeRiemannState,onProfileCandidates,p,selectedCandidateIndex=-1,onSelectCandidate,projectionRequest=null,onInspectFibres3D,onInspectWavePoint3D,pointVisibility={left:true,right:true,fixed:true,middle:true},onTogglePointVisibility,showLeftRiemannHugoniot=true,setShowLeftRiemannHugoniot,showRightRiemannHugoniot=true,setShowRightRiemannHugoniot,showMinusStateFibre=true,setShowMinusStateFibre,showPlusStateFibre=true,setShowPlusStateFibre}){
+function StatePlot({tauMin,tauMax,showRarefactionField,setShowRarefactionField,exploreWaveBranches=false,onChangeExploreWaveBranches,chainExample=null,statePanelRequest=null,constructionRevision=0,constructionRequested=true,onBuildCandidates,showJ=false,sharedLoci=[],locusVisibility={},locusWindow,btCurveMode,sonicMeshMode,geometry:g,hugoniot,riemannHugoniot,fixedState,onSelectState,onClearState,riemannStates,onChangeRiemannState,onProfileCandidates,p,selectedCandidateIndex=-1,onSelectCandidate,projectionRequest=null,onInspectFibres3D,onInspectWavePoint3D,pointVisibility={left:true,right:true,fixed:true,middle:true},onTogglePointVisibility,showLeftRiemannHugoniot=true,setShowLeftRiemannHugoniot,showRightRiemannHugoniot=true,setShowRightRiemannHugoniot,showMinusStateFibre=true,setShowMinusStateFibre,showPlusStateFibre=true,setShowPlusStateFibre}){
   const stateRarefactions=useMemo(()=>constructionRarefactionBranches(riemannStates,p).map(branch=>annotateGenuineNonlinearityContact(refineGenuineNonlinearityEvents(genuineNonlinearityEvents(branch,p),p),p)),[riemannStates,p])
   const selectedRarefactions=useMemo(()=>stateRarefactionGeometry(riemannStates,stateRarefactions),[riemannStates,stateRarefactions])
   const directJump=useMemo(()=>directShockDiagnostic(riemannStates?.left,riemannStates?.right,p),[riemannStates,p])
@@ -240,6 +240,11 @@ function StatePlot({tauMin,tauMax,showRarefactionField,setShowRarefactionField,e
   const isStateRarefactionVisible=side=>side==='left'?showLeftStateRarefaction:showRightStateRarefaction
   const [activity,setActivity]=useWorkspacePreference('states.activity', 'states')
   const [activityPanelOpen,setActivityPanelOpen]=useWorkspacePreference('states.activityPanelOpen', true)
+  useEffect(()=>{
+    if(!statePanelRequest)return
+    setActivity(statePanelRequest.panel)
+    setActivityPanelOpen(true)
+  },[statePanelRequest,setActivity,setActivityPanelOpen])
   const dragging=useRef(null)
   const dragPreview=useRef(null)
   // Durante o arrasto, apenas o contorno RH simplificado é recalculado.
@@ -396,8 +401,16 @@ function StatePlot({tauMin,tauMax,showRarefactionField,setShowRarefactionField,e
     [showBt,p,locusWindow,btCurveMode,sonicMeshMode])
   const showBtMinus=locusVisibility['BT-']?.[0]
   const showBtPlus=locusVisibility['BT+']?.[0]
-  const visibleLoci=useMemo(()=>[...sharedLoci,...btLoci.filter(item=>item.id==='BT-'?showBtMinus:showBtPlus)],
-    [sharedLoci,btLoci,showBtMinus,showBtPlus])
+  const showHysMinus=locusVisibility['Hys-']?.[0]
+  const showHysPlus=locusVisibility['Hys+']?.[0]
+  const showHysteresis=showHysMinus||showHysPlus
+  const hysteresisLoci=useMemo(()=>showHysteresis&&locusWindow?projectedHysteresisLoci(p,locusWindow):[],
+    [showHysteresis,locusWindow,p])
+  const visibleLoci=useMemo(()=>[
+    ...sharedLoci,
+    ...btLoci.filter(item=>item.id==='BT-'?showBtMinus:showBtPlus),
+    ...hysteresisLoci.filter(item=>item.id==='Hys-'?showHysMinus:showHysPlus),
+  ],[sharedLoci,btLoci,showBtMinus,showBtPlus,hysteresisLoci,showHysMinus,showHysPlus])
   const projectedInflection=useMemo(()=>showJ?stateInflectionProjection(p,window):[],[showJ,p,window])
   const projectedPair=useMemo(()=>{
     if(!projectionRequest)return null
@@ -827,7 +840,7 @@ function StatePlot({tauMin,tauMax,showRarefactionField,setShowRarefactionField,e
           </label>}
           <div className="chainPanelActions">
             <button type="button" disabled={!riemannStates?.left||!riemannStates?.right}
-              onClick={()=>onBuildCandidates?.()}>Reconstruir candidatos</button>
+              onClick={()=>onBuildCandidates?.()}>{constructionRequested?'Reconstruir candidatos':'Construir candidatos'}</button>
             <small role="status">{!constructionRequested?'Defina os estados e construa a cadeia.':
               allProfiles.length===1?'1 candidato':allProfiles.length?`${allProfiles.length} candidatos`:'Nenhum candidato selecionável'}</small>
           </div>
@@ -1036,6 +1049,8 @@ function StatePlot({tauMin,tauMax,showRarefactionField,setShowRarefactionField,e
       </g>
 </svg>
       <ScientificLegend environment="2d" items={[
+        ...locusLabelLayers.filter(({id,data})=>(id==='Hys-'||id==='Hys+')&&data.length>0)
+          .map(({id,tex,color})=>({id,tex,color,shape:'line'})),
         {id:'left',tex:String.raw`U_L`,color:'#ff9f0a',visible:pointVisibility.left||stateProjection==='minus'&&showLeftRiemannHugoniot},
         {id:'right',tex:String.raw`U_R`,color:'#30d158',shape:'diamond',visible:pointVisibility.right||stateProjection==='plus'&&showRightRiemannHugoniot},
         {id:'fixed',tex:String.raw`U_*`,color:'#8da5b5',shape:'ring',visible:Boolean(fixedState&&pointVisibility.fixed)},

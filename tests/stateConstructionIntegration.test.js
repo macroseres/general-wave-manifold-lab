@@ -2,6 +2,9 @@ import test from 'node:test'
 import assert from 'node:assert/strict'
 import {stateConstructionSearch} from '../src/math/solution/stateConstructionSearch.js'
 import {candidateStateGeometry,stateShockArc} from '../src/geometry/state/candidateStateGeometry.js'
+import {candidateWaveGeometry} from '../src/geometry/state/candidateWaveGeometry.js'
+import {waveState} from '../src/math/manifold/waveState.js'
+import {zFromZc} from '../src/math/charts/zChart.js'
 import {riemannMonotoneRarefactions} from '../src/math/rarefaction/monotoneBranches.js'
 import {directShockDiagnostic} from '../src/math/solution/directShockDiagnostic.js'
 import {oldWavePreset} from '../src/math/flux/quadraticFlux.js'
@@ -55,6 +58,25 @@ test('a composite preserves its internal fan, shock, sonic junction and full fit
   assert.ok(Math.abs(geometry.segments[0].speeds.at(-1)-geometry.segments[1].speed)<1e-6)
   for(const segment of geometry.segments)for(const U of segment.states??segment.arc.points)
     assert.ok(geometry.points.some(q=>q[0]===U[0]&&q[1]===U[1]))
+})
+
+test('the KR candidate for the Q4 example renders all three lifted wave segments',()=>{
+  const p=oldWavePreset()
+  const states={left:[.05,-.99],right:[.3,.625]}
+  const candidate=build(states,p).allProfiles.find(q=>q.pattern==='KR')
+  assert.ok(candidate)
+  const [slow,shock,fast]=candidateWaveGeometry(candidate,p)
+  assert.deepEqual([slow,shock,fast].map(arc=>[arc.type,arc.family,arc.paths.length]),[
+    ['rarefaction','slow',1],['shock','slow',1],['rarefaction','fast',1],
+  ])
+  assert.deepEqual(slow.end,shock.paths[0][0])
+  const project=([tau,Y,zc])=>waveState(tau,Y,zFromZc(zc),p)
+  near(project(slow.paths[0][0]).Um,states.left)
+  const startOfFast=fast.paths[0][0]
+  near(project(shock.end).Up,project(startOfFast).Um)
+  assert.notDeepEqual(shock.end,startOfFast)
+  near(project(fast.end).Up,states.right)
+  for(const point of shock.paths[0])near(project(point).Um,project(slow.end).Um)
 })
 
 test('nonconservative jumps never get a connecting arc; contact model retains separate segments',()=>{

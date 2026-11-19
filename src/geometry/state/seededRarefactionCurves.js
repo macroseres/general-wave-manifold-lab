@@ -5,6 +5,12 @@ import {selectedHugoniotCharacteristicMarkers} from './fibreCharacteristicMarker
 import {rarefactionOrbitThrough} from '../../math/rarefaction/orbits.js'
 import {NUMERICAL_POLICY} from '../../math/numerics/policy.js'
 
+export function slowChainConstruction(slowArc){
+  if(slowArc?.complete||slowArc?.status==='seed-on-inflection')return 'inflection'
+  if(slowArc?.status==='characteristic-boundary')return 'sonic-shock'
+  return 'inconclusive'
+}
+
 export function seededRarefactionCurves(states,p,tauMin,tauMax,{clipTau=false}={}){
   // Surface sampling bounds do not truncate the mathematical wave construction.
   const min=clipTau?tauMin:-Infinity,max=clipTau?tauMax:Infinity
@@ -18,7 +24,7 @@ export function seededRarefactionCurves(states,p,tauMin,tauMax,{clipTau=false}={
       const points=rarefactionOrbitThrough(seed,p,min,max)
       const composite=seededCompositeKs(arc,p)
       const nonlocal=seededNonlocalShock(arc,composite,p,{tauMin:min,tauMax:max})
-      return [...(arc.points.length>1?[{family,seed,...arc}]:[]),...(composite?.points.length>1?[composite]:[]),...(nonlocal?[nonlocal]:[]),...(points.length>1?[{family,kind:'full',seed,points}]:[])]
+      return [...(arc.points.length>1||arc.status==='seed-on-inflection'?[{family,seed,...arc}]:[]),...(composite?.points.length>1?[composite]:[]),...(nonlocal?[nonlocal]:[]),...(points.length>1?[{family,kind:'full',seed,points}]:[])]
     }
     const points=rarefactionOrbitThrough(seed,p,min,max)
     return points.length>1?[{family,seed,points}]:[]

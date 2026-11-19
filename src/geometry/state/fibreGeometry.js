@@ -6,12 +6,64 @@ import { zFromZc, zcFromZ } from '../../math/charts/zChart.js'
 import { characteristicSpectrum } from '../../math/characteristic/spectrum.js'
 import { waveState } from '../../math/manifold/waveState.js'
 import { characteristicLifts, stateFiberPoint, stateFiberPointReciprocal } from '../../math/state/fibers.js'
+import { jacobian } from '../../math/flux/quadraticFlux.js'
+import { regularFibreInterval } from '../../math/solution/forwardLiuOnFiniteFibre.js'
+import { boundedPolynomialRoots } from './forwardSonicIntersections.js'
 
 const finite = Number.isFinite
 
 /** Sample the descending prefix in each direction from a finite lift. */
 export function decreasingForwardShockArcs(U, seed, p) {
   return monotoneShockArcs(U,seed,p,"minus",-1)
+}
+
+/** Extend the displayed SS shock along its descending forward fibre. */
+export function extendSlowShock(U,seed,chainEndpoint,p){
+  if(!chainEndpoint||!seed)return null
+  const direction=Math.sign(chainEndpoint[2]-seed.zc)
+  const points=decreasingForwardShockArcs(U,seed,p).find(arc=>Math.sign(arc[1].zc-seed.zc)===direction)
+  if(!points)return null
+
+  // s(z)=numerator(z)/denominator(z); the sign of s' is the sign of N'D−ND'.
+  const [[A,B],[C,D]]=jacobian(U,p)
+  const numerator=[B*p.b02-D*p.a02,A*p.b02+B*p.b11-C*p.a02-D*p.a11,
+    A*p.b11+B*p.b20-C*p.a11-D*p.a20,A*p.b20-C*p.a20]
+  const denominator=[-p.a02,p.b02-p.a11,p.b11-p.a20,p.b20]
+  const slope=[0,0,0,0,0]
+  numerator.forEach((n,i)=>denominator.forEach((d,j)=>{
+    if(i!==j)slope[i+j-1]+=(i-j)*n*d
+  }))
+  const slopeAt=z=>slope.reduceRight((sum,a)=>sum*z+a,0)
+  const roots=[...boundedPolynomialRoots(slope),
+    ...boundedPolynomialRoots([...slope].reverse()).filter(Z=>Z!==0).map(Z=>1/Z)]
+    .filter(Number.isFinite).sort((a,b)=>direction*(a-b))
+  const startZ=zFromZc(seed.zc)
+  const z=roots.find(root=>{
+    if(direction*(root-startZ)<=0||!regularFibreInterval(startZ,root,p))return false
+    const h=1e-6*(1+Math.abs(root))
+    return slopeAt(root-h)<0&&slopeAt(root+h)>0
+  })
+  if(z===undefined)
+    return direction*(points.at(-1).zc-chainEndpoint[2])>0?{points,minimum:null}:null
+  const zc=zcFromZ(z),q=stateFiberPoint(U,z,p,'minus')
+  if(q.kind!=='regular'||direction*(zc-chainEndpoint[2])<=0)return null
+  const minimum={...q,zc,s:waveState(q.tau,q.Y,z,p).s}
+  const prefix=points.filter(point=>direction*(point.zc-zc)<0)
+  const last=prefix.at(-1)
+  if(!last||Math.abs(last.zc-zc)>.002||!(minimum.s<last.s))return null
+  return {points:[...prefix,minimum],minimum}
+}
+
+/** Trim only the descending branch that actually contains the sonic point. */
+export function trimForwardShockAtSonicPoint(arcs,point) {
+  if (!point) return null
+  for (const arc of arcs) {
+    const direction=Math.sign(arc.at(-1).zc-arc[0].zc)
+    if (direction*(point.zc-arc[0].zc)<=0 || direction*(point.zc-arc.at(-1).zc)>0) continue
+    const prefix=arc.filter(sample=>direction*(point.zc-sample.zc)>0)
+    return [...prefix,point]
+  }
+  return null
 }
 
 export function monotoneShockArcs(U, seed, p, side, speedSign) {

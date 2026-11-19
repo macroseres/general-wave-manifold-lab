@@ -1,5 +1,10 @@
 import {oldWavePreset} from '../math/flux/quadraticFlux.js'
 
+export const sonicShockExamples=[
+  {left:[.16,-.8], sonicIndex:2, description:'Choque rumo ao infinito'},
+  {left:[.05,-.99], sonicIndex:4, description:'Choque com ponto final finito'},
+]
+
 const defaultFlux = oldWavePreset()
 const compositeFlux = oldWavePreset({B2:0})
 const diagonalFlux = {a20:0,a11:0,a02:0,a10:0,a01:0,b20:0,b11:0,b02:0,b10:0,b01:0}

@@ -1,14 +1,32 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
-import {seededRarefactionCurves} from '../src/geometry/state/seededRarefactionCurves.js'
+import {seededRarefactionCurves,slowChainConstruction} from '../src/geometry/state/seededRarefactionCurves.js'
+
 import {rarefactionOrbitThrough} from '../src/math/rarefaction/orbits.js'
 import {rarefactionField,rarefactionDirectionResidual} from '../src/math/rarefaction/field.js'
 import {zFromZc} from '../src/math/charts/zChart.js'
-import {oldWavePreset} from '../src/math/flux/quadraticFlux.js'
+import {characteristicSpectrum} from '../src/math/characteristic/spectrum.js'
+import {defaultCoefficients,oldWavePreset} from '../src/math/flux/quadraticFlux.js'
 import {rhResidual,waveState} from '../src/math/manifold/waveState.js'
 import {rarefactionPhasePoints} from '../src/geometry/state/rarefactionPhaseArrow.js'
 
 const p=oldWavePreset({B2:0}),states={left:[.4895,-.3109],right:[.7063,.7984]}
+
+test('the slow rarefaction selects only the construction supported by its stop condition',()=>{
+  const arc=left=>seededRarefactionCurves({left},defaultCoefficients,-1,1).find(curve=>curve.family==='slow'&&!curve.kind)
+  assert.equal(slowChainConstruction(arc([.217337815581276,-2.0013260572168274])),'inflection')
+  const boundaryArc=arc([.16,-.8])
+  assert.equal(slowChainConstruction(boundaryArc),'sonic-shock')
+  assert.deepEqual(boundaryArc.points[0],boundaryArc.seed)
+  assert.deepEqual(boundaryArc.points.at(-1),boundaryArc.coincidence)
+  const gaps=boundaryArc.points.map(q=>characteristicSpectrum(q.tau,zFromZc(q.zc),defaultCoefficients).gap)
+  assert.ok(gaps.every(gap=>gap<=0))
+  assert.ok(Math.abs(gaps.at(-1))<1e-10)
+  assert.ok(boundaryArc.speeds.every((speed,i)=>i===0||speed>boundaryArc.speeds[i-1]))
+  for(const status of ['window-limit','step-limit','integration-stopped','characteristic-unverified']){
+    assert.equal(slowChainConstruction({status}),'inconclusive')
+  }
+})
 
 test('seeded integral curves pass through the exact slow-forward and fast-backward reference points',()=>{
   const curves=seededRarefactionCurves(states,p,-2,2).filter(q=>!['composite','nonlocal'].includes(q.kind))

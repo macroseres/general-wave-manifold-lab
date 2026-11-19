@@ -143,12 +143,6 @@
 .workspaceLayout--3d .surfaceControlHeading{display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:11px;font-weight:700;color:var(--drawer-control-text)}
 .workspaceLayout--3d .surfaceControlHeading span{font-weight:500;color:var(--muted,#9ca6b2)}
 .workspaceLayout--3d .surfaceControlHint{display:block;line-height:1.4;color:var(--muted,#9ca6b2)}
-.workspaceLayout--3d .surfaceAdvanced{border:0;margin:0}
-.workspaceLayout--3d .surfaceAdvanced>summary{cursor:pointer;padding:12px 10px;font-size:11px;font-weight:650;list-style:none}
-.workspaceLayout--3d .surfaceAdvanced>summary::-webkit-details-marker{display:none}
-.workspaceLayout--3d .surfaceAdvanced>summary::after{content:'⌄';float:right}
-.workspaceLayout--3d .surfaceAdvanced[open]>summary::after{transform:rotate(180deg)}
-.workspaceLayout--3d .surfaceAdvancedBody{display:flex;flex-direction:column;gap:10px;padding:0 10px 12px}
 
 /* Surface list: symbol : name | color swatch | visibility toggle. */
 .workspaceLayout--3d .surfaceObjectRow{display:grid;grid-template-columns:minmax(0,1fr) 22px 32px;align-items:center;column-gap:9px;min-height:34px;margin:0;padding:2px 0;font-size:11px;cursor:pointer}
@@ -525,26 +519,6 @@
 .workspaceLayout--3d #three-d-controls .surfaceObjectName {
   min-width:0;
   overflow-wrap:anywhere;
-}
-.workspaceLayout--3d #three-d-controls .surfaceAdvanced > summary {
-  box-sizing:border-box;
-  min-height:40px;
-  border-bottom:1px solid var(--workspace-stroke);
-  line-height:1.35;
-}
-.workspaceLayout--3d #three-d-controls .surfaceAdvanced > summary:focus-visible {
-  outline:2px solid var(--gwml-accent,#64d2ff);
-  outline-offset:-2px;
-}
-.workspaceLayout--3d #three-d-controls .surfaceAdvancedBody {
-  min-width:0;
-  gap:10px;
-  padding:10px;
-}
-@media (prefers-reduced-motion:reduce) {
-  .workspaceLayout--3d #three-d-controls .surfaceAdvanced > summary::after {
-    transition:none;
-  }
 }
 
 

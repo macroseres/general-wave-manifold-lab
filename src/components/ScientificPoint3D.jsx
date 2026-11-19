@@ -33,12 +33,13 @@ export function ScreenPoint({radius,ringColor,pixelRadius=4.5,interactive=false,
  */
 export default function ScientificPoint3D({
   radius, color, material='standard', depthTest=false,
+  pixelRadius,
   metalness=0, roughness=0.35, emissive=color, emissiveIntensity=0.25,
   widthSegments=28, heightSegments=20, onSelect,
 }) {
   // Draw fully opaque glyphs in the same pass as the scene overlays.
   const overlay = !depthTest
-  return <ScreenPoint radius={radius} ringColor={color} interactive={Boolean(onSelect)}><mesh renderOrder={overlay?62:0} onClick={onSelect&&((event)=>{
+  return <ScreenPoint radius={radius} pixelRadius={pixelRadius} ringColor={color} interactive={Boolean(onSelect)}><mesh renderOrder={overlay?62:0} onClick={onSelect&&((event)=>{
     event.stopPropagation()
     onSelect()
   })}>

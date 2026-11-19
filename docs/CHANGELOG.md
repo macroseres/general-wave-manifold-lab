@@ -1,3 +1,12 @@
+## v0.7.0-dev.24.47.94 — 19/11/2026
+
+- Construções 3D atualizadas com arcos, junções, histereses e controles individuais de visibilidade. Corrigidos recortes dos choques nas junções intermediárias, projeções e padrões de traçado.
+- Experimentos preservam a visibilidade dos arcos e pontos, a origem Q⁺ e a cadeia candidata selecionada, incluindo a restauração diretamente na cena 3D.
+- Menu Experimento inclui os dez casos Schaeffer–Shearer do wave-manifold-app, com seus coeficientes, limites e escalas.
+- Indicador de recálculo das superfícies sônicas acompanha o caso atual e as superfícies visíveis. A mensagem fica fora do canvas para evitar erros de desmontagem ao navegar entre ambientes.
+- Corrigidas coordenadas de seleção na característica com escala visual, triangulação da superfície intermediária perto de polos e exibição das cadeias candidatas na carta 3D regular.
+- Validação: 990 testes aprovados, lint aprovado e build sem avisos. Verificações na aba cobriram os dez casos, importação/exportação, trocas rápidas e visibilidade independente das sônicas. Permanecem os limites científicos de admissibilidade e da carta 3D regular.
+
 ## Integração C01–C05 e coerência do diagnóstico SS - 10/11/2026
 
 - Reunidos à main os 77 commits da branch de diagnósticos C01, sem squash e sem substituir as correções 3D já publicadas. Os dois históricos do changelog foram preservados.

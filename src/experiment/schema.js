@@ -6,6 +6,36 @@ export const EXPERIMENT_SCHEMA_VERSION = 4
 const COEFFICIENT_KEYS=['a20','a11','a02','a10','a01','b20','b11','b02','b10','b01']
 const ADDED_VISIBILITY_KEYS=['showDS','showJ','showKMinus','showKPlus']
 const VISIBILITY_KEYS=[...ADDED_VISIBILITY_KEYS,'showSMinus','showSPlus','showRarefaction','showRareCurves','showFiniteStable','showFiniteUnstable','showInfinityStable','showInfinityUnstable']
+export const WAVE_VISIBILITY_KEYS=[
+  'showCharacteristicSlow','showCharacteristicFast','showCoincidence','showLeftRiemannHugoniot','showRightRiemannHugoniot',
+  'showMinusStateFibre','showPlusStateFibre','showForwardCharacteristicPoint','showBackwardCharacteristicPoint',
+  'showForwardFastCharacteristicPoint','showBackwardSlowCharacteristicPoint','showNonlocalShock','showSlowNonlocalEnd',
+  'showForwardShockArc','showIntermediateSurface','showMiddleFibre','showCompositeForwardArc','showCurveArrows',
+  'showRarefactionJoin','showMiddlePoint','showSlowMiddlePoint','showReflectedFastWave','showSeededKs',
+  'showFullPsRarefaction','showLeftSeededRarefaction','showSlowRarefactionCoincidence','showRightSeededRarefaction',
+  'showFastInflectionJunction','showBackwardMinusJunction','showInflectionJunction','showKsDs','showFastMinus',
+  'showFastPlus','showReflectedMinus','showReflectedPlus','showBTMinus','showBTPlus','showHysteresisMinus',
+  'showHysteresisPlus','showHopfMinus','showHopfPlus',
+]
+const CONSTRUCTION_MAPS=['sonicConstructionVisibility','forwardPlusPointVisibility','forwardSonicPointVisibility',
+  'hiddenReflectedArcs','visibleFastArcs','pointVisibility']
+
+function validateConstruction(value){
+  if(value===undefined)return undefined
+  exactKeys(value,['requested','selectedIndex','selectedPattern','sonicSeedId'],'construction')
+  booleanValue(value.requested,'construction.requested')
+  if(!Number.isInteger(value.selectedIndex)||value.selectedIndex < -1)throw new Error('construction.selectedIndex inválido')
+  for(const key of ['selectedPattern','sonicSeedId'])
+    if(value[key]!==null&&typeof value[key]!=='string')throw new Error(`construction.${key} inválido`)
+  for(const key of CONSTRUCTION_MAPS){
+    if(value[key]===undefined)continue
+    if(!value[key]||typeof value[key]!=='object'||Array.isArray(value[key]))throw new Error(`construction.${key} inválido`)
+    for(const v of Object.values(value[key]))booleanValue(v,`construction.${key}`)
+  }
+  if(value.fixedState!==undefined)validateRiemannState(value.fixedState,'construction.fixedState')
+  if(value.selectedMiddle!==undefined)validateRiemannState(value.selectedMiddle,'construction.selectedMiddle')
+  return copy(value)
+}
 
 function finiteNumber(value,name){
   if(typeof value!=='number'||!Number.isFinite(value))throw new Error(`${name} deve ser um número finito`)
@@ -26,7 +56,7 @@ function validateRiemannState(value,name){
   return value.map((number,index)=>finiteNumber(number,`${name}[${index}]`))
 }
 
-export function createExperiment({appVersion,coefficients,samplingDomain,point,visibility,axisScale,riemannStates={left:null,right:null}}){
+export function createExperiment({appVersion,coefficients,samplingDomain,point,visibility,axisScale,riemannStates={left:null,right:null},construction}){
   return {
     schema:EXPERIMENT_SCHEMA,
     schemaVersion:EXPERIMENT_SCHEMA_VERSION,
@@ -36,11 +66,13 @@ export function createExperiment({appVersion,coefficients,samplingDomain,point,v
       samplingDomain:{tauMin:samplingDomain.tauMin,tauMax:samplingDomain.tauMax,YMin:samplingDomain.YMin,YMax:samplingDomain.YMax},
       point:{tau:point.tau,Y:point.Y,zc:point.zc},
       riemannStates:{left:validateRiemannState(riemannStates.left,'riemannStates.left'),right:validateRiemannState(riemannStates.right,'riemannStates.right')},
+      ...(construction?{construction:validateConstruction(construction)}:{}),
       chartConvention:{finite:'z',reciprocal:'Z=1/z',visual:'zc=(2/pi) arctan(z)'},
       numericalPolicy:numericalPolicySnapshot(),
     },
     presentation:{
-      visibility:Object.fromEntries(VISIBILITY_KEYS.map(key=>[key,key in visibility?visibility[key]:(ADDED_VISIBILITY_KEYS.includes(key)?false:undefined)])),
+      visibility:Object.fromEntries([...VISIBILITY_KEYS,...WAVE_VISIBILITY_KEYS.filter(key=>key in visibility)]
+        .map(key=>[key,key in visibility?visibility[key]:(ADDED_VISIBILITY_KEYS.includes(key)?false:undefined)])),
       axisScale:{tau:axisScale.tau,Y:axisScale.Y,zc:axisScale.zc},
     },
   }
@@ -88,9 +120,12 @@ export function validateExperiment(rawInput){
   if(Math.abs(input.scientific.point.zc)>=1)throw new Error('Ponto inválido: |zc| deve ser menor que 1')
   exactKeys(input.scientific.riemannStates,['left','right'],'scientific.riemannStates')
   for(const side of ['left','right'])validateRiemannState(input.scientific.riemannStates[side],`scientific.riemannStates.${side}`)
+  validateConstruction(input.scientific.construction)
   exactKeys(input.presentation,['visibility','axisScale'],'presentation')
   exactKeys(input.presentation.visibility,VISIBILITY_KEYS,'presentation.visibility')
   for(const key of VISIBILITY_KEYS)booleanValue(input.presentation.visibility[key],`presentation.visibility.${key}`)
+  for(const key of WAVE_VISIBILITY_KEYS)
+    if(key in input.presentation.visibility)booleanValue(input.presentation.visibility[key],`presentation.visibility.${key}`)
   exactKeys(input.presentation.axisScale,['tau','Y','zc'],'presentation.axisScale')
   for(const key of ['tau','Y','zc'])if(finiteNumber(input.presentation.axisScale[key],`presentation.axisScale.${key}`)<=0)throw new Error(`presentation.axisScale.${key} deve ser positiva`)
   if(!input.scientific.numericalPolicy||typeof input.scientific.numericalPolicy!=='object')throw new Error('Política numérica ausente')

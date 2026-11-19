@@ -9,6 +9,8 @@ import { flipSonicEdgesExperimental } from './sonic/edgeFlipExperimental.js'
 import { btMinusPaths, reflectBtPaths } from './sonic/btLocusPaths.js'
 import { waveState } from '../math/manifold/waveState.js'
 import { zFromZc } from '../math/charts/zChart.js'
+import { hysteresisPaths } from './sonic/hysteresis.js'
+import { waveColors } from '../config/waveColors.js'
 
 const finitePoint = q => Array.isArray(q) && q.length === 3 && q.every(Number.isFinite)
 export const locusPresentation = {
@@ -17,6 +19,8 @@ export const locusPresentation = {
   J:{tex:'\\mathcal J',name:'Inflexão',label:'𝒥',color:'#8da5b5'},
   'BT-':{tex:'\\mathcal{BT}^-',name:'Curva BT negativa',label:'BT⁻',color:'#f59e0b'},
   'BT+':{tex:'\\mathcal{BT}^+',name:'Curva BT positiva',label:'BT⁺',color:'#e879f9'},
+  'Hys-':{tex:String.raw`\mathcal{H}\mathrm{ys}^-`,name:'Histerese esquerda',label:'Hys⁻',color:waveColors.hysteresisLeft},
+  'Hys+':{tex:String.raw`\mathcal{H}\mathrm{ys}^+`,name:'Histerese direita',label:'Hys⁺',color:waveColors.hysteresisRight},
 }
 function splitProjection(points, side, p) {
   const result = []
@@ -53,6 +57,11 @@ const projectLocus=(id,paths,p)=>({id,...locusPresentation[id],paths,projected:{
   minus:paths.flatMap(path=>splitProjection(path,'minus',p)),
   plus:paths.flatMap(path=>splitProjection(path,'plus',p)),
 }})
+
+export function projectedHysteresisLoci(p,window){
+  const {minus,plus}=hysteresisPaths(p,window)
+  return [projectLocus('Hys-',minus,p),projectLocus('Hys+',plus,p)]
+}
 
 export function projectedBtLoci(p,window,{btCurveMode='continuation',sonicMeshMode}={}){
   const raw=sonicSurfaceTriangles(p,{...window,side:'minus',diagnostics:false})

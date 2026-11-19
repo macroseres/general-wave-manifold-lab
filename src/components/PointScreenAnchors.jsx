@@ -25,7 +25,8 @@ function separateLabels(labels,size){
       }
     }
     if(position)placed.push({...label,...position,
-      callout:nearby&&(label.callout||Math.hypot(position.x-label.x,position.y-label.y)>8)})
+      callout:Boolean(label.detailPath)||(label.keepOffset&&label.callout)||
+        (nearby&&(label.callout||Math.hypot(position.x-label.x,position.y-label.y)>8))})
   }
   return placed
 }
@@ -36,12 +37,31 @@ export default function PointScreenAnchors({labels,axisScale,onPositions}){
   useFrame(({clock})=>{
     if(clock.elapsedTime-last.current<.05)return
     last.current=clock.elapsedTime
+    const project=(tau,Y,zc)=>new Vector3(tau*axisScale.tau,Y*axisScale.Y,zc*axisScale.zc).project(camera)
     const projected=labels.flatMap(q=>{
-      const v=new Vector3(q.tau*axisScale.tau,(q.Y??0)*axisScale.Y,q.zc*axisScale.zc).project(camera)
+      const v=project(q.tau,q.Y??0,q.zc)
       if(v.z<-1||v.z>1||Math.abs(v.x)>1||Math.abs(v.y)>1)return []
       const anchorX=Math.round((v.x+1)*size.width/2),anchorY=Math.round((1-v.y)*size.height/2)
       const x=anchorX+(q.offsetX??10),y=anchorY+(q.offsetY??-20)
-      return [{anchorX,anchorY,callout:q.callout,keepOffset:q.keepOffset,id:q.id??q.tex,tex:q.tex,color:q.color,x,y}]
+      let detailPath
+      if(q.detailArc){
+        const points=q.detailArc.map(point=>{
+          const position=project(...point)
+          return [position.x*size.width/2,-position.y*size.height/2]
+        })
+        const length=points.slice(1).reduce((sum,[x,y],i)=>sum+Math.hypot(x-points[i][0],y-points[i][1]),0)
+        if(!(length>0&&length<18))return []
+        const [centerX,centerY]=points[Math.floor(points.length/2)]
+        const scale=36/length
+        // Rotate the detail to read from left to right while retaining the projected shape.
+        const [firstX,firstY]=points[0],[lastX,lastY]=points.at(-1)
+        const angle=Math.atan2(lastY-firstY,lastX-firstX),cos=Math.cos(angle),sin=Math.sin(angle)
+        detailPath=points.map(([x,y])=>{
+          const dx=x-centerX,dy=y-centerY
+          return `${(24+(dx*cos+dy*sin)*scale).toFixed(2)},${(8+(-dx*sin+dy*cos)*scale).toFixed(2)}`
+        }).join(' ')
+      }
+      return [{anchorX,anchorY,callout:q.callout,keepOffset:q.keepOffset,id:q.id??q.tex,tex:q.tex,color:q.color,x,y,detailPath}]
     })
     const positions=separateLabels(projected,size)
     const key=JSON.stringify(positions)

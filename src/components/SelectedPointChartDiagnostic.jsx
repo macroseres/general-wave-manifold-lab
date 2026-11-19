@@ -3,7 +3,7 @@ import {selectedPointDiagnostic} from '../math/charts/selectedPointDiagnostic.js
 const fmt=x=>Number.isFinite(x)?Number(x).toPrecision(6):'—'
 export default function SelectedPointChartDiagnostic({point,p}){
   const d=useMemo(()=>selectedPointDiagnostic(point,p),[point,p])
-  return <details className="inspectorSection" open={d.nearInfinity}>
+  return <details className="inspectorSection" data-panel-category="charts" open={d.nearInfinity}>
     <summary>Carta do ponto selecionado</summary>
     <div className="inspectorSectionBody">
       {d.kind==='regular'?<>

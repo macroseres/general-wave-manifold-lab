@@ -13,9 +13,16 @@ export function CharacteristicSurface({tauMin,tauMax,p,_point,setPoint,showSlow=
     return characteristicMesh(p,tauMin,tauMax)
   },[p,tauMin,tauMax])
   return <>
-    {surfaces.leaves.filter(item=>item.branch==='slow'?showSlow:showFast).map(item=><mesh key={item.branch} onPointerDown={e=>{e.stopPropagation();const selected={tau:clamp(e.point.x,tauMin,tauMax),Y:0,zc:clamp(e.point.z,-.999,.999)};setPoint(q=>({...q,...selected}));onInspectPoint?.(selected)}}>
+    {surfaces.leaves.filter(item=>item.branch==='slow'?showSlow:showFast).map(item=><mesh key={item.branch} onClick={e=>{
+      if(e.delta>3)return
+      e.stopPropagation()
+      const local=e.object.worldToLocal(e.point.clone())
+      const selected={tau:clamp(local.x,tauMin,tauMax),Y:0,zc:clamp(local.z,-.999,.999)}
+      setPoint(q=>({...q,...selected}))
+      onInspectPoint?.(selected)
+    }}>
       <bufferGeometry><bufferAttribute attach="attributes-position" args={[item.coords,3]}/></bufferGeometry>
-      <meshStandardMaterial color={CHARACTERISTIC_COLORS[item.branch]} side={THREE.DoubleSide} transparent opacity={surfaceOpacity} depthWrite={false} depthTest={true} roughness={0.55} metalness={0.0}/>
+      <meshStandardMaterial color={CHARACTERISTIC_COLORS[item.branch]} side={THREE.DoubleSide} transparent forceSinglePass opacity={surfaceOpacity} depthWrite={false} depthTest={true} roughness={0.55} metalness={0.0}/>
     </mesh>)}
     {showCoincidence&&sharedLoci.filter(item=>item.id==='E').flatMap(item=>item.paths.map((path,i)=><Line key={i} points={path}  color="#bc9cba" {...scientificCurveStyle('locus','3d')} depthTest={false} renderOrder={5}/>))}
   </>

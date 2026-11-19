@@ -1,9 +1,11 @@
-import {zFromZc} from '../../math/charts/zChart.js'
+import {zFromZc,zcFromZ} from '../../math/charts/zChart.js'
 import {forwardLiuOnFiniteFibre,regularFibreInterval} from '../../math/solution/forwardLiuOnFiniteFibre.js'
 import {waveState} from '../../math/manifold/waveState.js'
 import {increasingInflectionArc} from '../../math/rarefaction/increasingInflectionArc.js'
+import {characteristicSpectrum} from '../../math/characteristic/spectrum.js'
+import {doubleSonicDirections,doubleSonicResidual} from '../../math/sonic/intersections.js'
 import {seededCompositeKs} from './seededCompositeKs.js'
-import {seededNonlocalShock} from './seededNonlocalShock.js'
+import {seededNonlocalShock,continueNonlocalShock} from './seededNonlocalShock.js'
 import {intersectWavePolylines} from '../../math/solution/mixedWaveChains.js'
 import {refineRarefactionMiddleJoint} from '../../math/solution/rarefactionJointCorrector.js'
 import {interpolateCharacteristicSegment,stateCharacteristicDirection} from '../../math/rarefaction/stateIntegralCurves.js'
@@ -12,6 +14,44 @@ import {refineWaveIntersection} from '../../math/solution/waveIntersectionCorrec
 import {liftHugoniotSample} from '../../math/state/hugoniotWaveLift.js'
 import {monotoneShockArcs,stateFibreCharacteristicIntersections} from './fibreGeometry.js'
 import {stateFiberPoint} from '../../math/state/fibers.js'
+import {fibreCharacteristicMarkers} from './fibreCharacteristicMarkers.js'
+
+/** Cut only the reflected nonlocal shock that meets the intermediate fibre. */
+export function trimReflectedNonlocalShock(arcs,matchedArc,hit,{right,p}={}){
+  if(!hit||(matchedArc?.kind!=='nonlocal-shock'&&(!right||!p)))return arcs
+  const [tau,Y,zc]=hit.position
+  return arcs.map(arc=>{
+    if(arc.kind!=='nonlocal-shock')return arc
+    let index=arc===matchedArc?hit.fastSampleIndex:null
+    // An SS candidate can supply a separate sampled shock ending at P_M.
+    // Check whether the displayed nonlocal branch passes through that lift.
+    if(index===null&&right&&p){
+      index=sampleIndexAtZc(arc.points,zc,0)
+      if(index===null)return arc
+      const bracket=arc.points.slice(Math.floor(index),Math.ceil(index)+1)
+      const onFibre=q=>{
+        const expected=stateFiberPoint(right,zFromZc(q.zc),p,'minus')
+        return expected.kind==='regular'&&Math.hypot(q.tau-expected.tau,q.Y-expected.Y)<=1e-6*(1+Math.hypot(q.tau,q.Y))
+      }
+      if(!onFibre({tau,Y,zc})||!bracket.every(onFibre))return arc
+    }
+    if(index===null)return arc
+    const end=Math.max(0,Math.min(Math.ceil(index),arc.points.length-1))
+    return {...arc,points:[...arc.points.slice(0,end),{tau,Y,zc}]}
+  })
+}
+
+const reflectedWaveOrder=['local-shock','rarefaction','composite','nonlocal-shock']
+
+export function trimReflectedAfterMiddle(arcs,matchedArc,hit){
+  if(!hit||!arcs.includes(matchedArc))return arcs
+  const order=reflectedWaveOrder.indexOf(matchedArc.kind)
+  if(order<0)return arcs
+  const [tau,Y,zc]=hit.position
+  const end=Math.max(0,Math.min(Math.ceil(hit.fastSampleIndex),matchedArc.points.length-1))
+  return arcs.filter(arc=>reflectedWaveOrder.indexOf(arc.kind)<=order).map(arc=>
+    arc===matchedArc?{...arc,points:[...arc.points.slice(0,end),{tau,Y,zc}]}:arc)
+}
 
 export function twoShockMiddleLift(candidate,p){
   if(candidate?.kind!=='two-shock'||candidate.status!=='sampled-candidate'||candidate.states?.length!==3)return null
@@ -85,7 +125,7 @@ function orientedRarefaction(points,side,family,p){
   return {points,side,family,sign}
 }
 
-function sampleIndexAtZc(points,zc,seedIndex){
+export function sampleIndexAtZc(points,zc,seedIndex){
   let closest=null
   for(let i=1;i<points.length;i++){
     const start=points[i-1].zc,end=points[i].zc
@@ -96,6 +136,41 @@ function sampleIndexAtZc(points,zc,seedIndex){
     if(closest===null||Math.abs(index-seedIndex)<Math.abs(closest-seedIndex))closest=index
   }
   return closest
+}
+
+export function nonlocalShockRarefactionHits(shock,reflected,p){
+  if(!shock?.sourceState||shock.points.length<2)return []
+  const project=q=>waveState(q.tau,q.Y??0,zFromZc(q.zc),p).Up
+  const slow={family:'slow',points:shock.points.map(project)}
+  return reflected.flatMap((arc,fastIndex)=>{
+    if(arc.kind!=='rarefaction')return []
+    const fast={family:'fast',points:arc.points.map(project)}
+    const evaluate=(curve,index)=>{
+      const i=Math.min(Math.floor(index),curve.points.length-2),fraction=index-i
+      if(curve===fast){
+        const point=interpolateCharacteristicSegment(fast.points[i],fast.points[i+1],fraction,p,'fast')
+        return point?{point,index}:null
+      }
+      const a=shock.points[i],b=shock.points[i+1],zc=a.zc+fraction*(b.zc-a.zc)
+      const q=stateFiberPoint(shock.sourceState,zFromZc(zc),p,'minus')
+      return q.kind==='regular'?{point:project({...q,zc}),index,position:[q.tau,q.Y,zc]}:null
+    }
+    return intersectWavePolylines(slow.points,fast.points).flatMap(hit=>{
+      const result=refineWaveIntersection(slow,fast,hit,evaluate,{maxIterations:16,junctionTolerance:1e-10})
+      if(!result)return []
+      const lift=fibreCharacteristicMarkers(result.middle,p).find(q=>q.branch==='fast')
+      if(!lift)return []
+      return [{middle:result.middle,position:[lift.tau,0,lift.zc],slowPosition:result.A.position,
+        slowBranch:'nonlocal-shock',slowSampleIndex:result.A.index,fastIndex,fastSampleIndex:result.B.index,refined:true}]
+    })
+  })
+}
+
+export function trimSlowNonlocalShockAtMiddle(points,hit){
+  if(!hit?.slowPosition||hit.slowBranch!=='nonlocal-shock')return points
+  const [tau,Y,zc]=hit.slowPosition
+  const end=Math.min(Math.ceil(hit.slowSampleIndex),points.length-1)
+  return [...points.slice(0,end),{tau,Y,zc}]
 }
 
 function refineCompositeRarefactionHit(source,arc,states,fast,hit,p){
@@ -215,6 +290,123 @@ export function slowCompositeForwardArc(hit,p){
 export function middleBackwardArc(hit,p){
   if(!hit?.slowPosition)return []
   return sampleFibreArc(hit.middle,hit.position[2],hit.slowPosition[2],p,'plus')
+}
+
+/** Follow the fixed right projection from a sonic point to the nearest
+ * characteristic lift on the same regular finite branch. */
+export function backwardArcToCharacteristic(point,p){
+  if(!point)return []
+  const z=zFromZc(point.zc)
+  const state=waveState(point.tau,point.Y,z,p)
+  if(state.kind!=='regular')return []
+  const end=stateFibreCharacteristicIntersections(state.Up,p)
+    .filter(q=>q.shared&&q.chart==='z'&&regularFibreInterval(z,q.z,p))
+    .sort((a,b)=>Math.abs(a.zc-point.zc)-Math.abs(b.zc-point.zc))[0]
+  if(!end)return []
+  const arc=sampleFibreArc(state.Up,point.zc,end.zc,p,'plus')
+  if(arc.length>1){
+    arc[0]=[point.tau,point.Y,point.zc]
+    arc[arc.length-1]=[end.tau,0,end.zc]
+  }
+  return arc
+}
+
+export function nonlocalRarefactionToInflection(characteristicPoint,p){
+  const [tau,,zc]=characteristicPoint
+  const {branch:family}=characteristicSpectrum(tau,zFromZc(zc),p)
+  return increasingInflectionArc({tau,zc},p,-Infinity,Infinity,{family,zcLimit:1})
+}
+
+/** Stop at the first verified event in the order of composite continuation. */
+export function nonlocalCompositeArc(rarefaction,characteristicPoint,p){
+  if(!characteristicPoint)return null
+  const composite=seededCompositeKs(rarefaction,p)
+  if(!composite)return null
+  const [tau,Y,zc]=characteristicPoint
+  const seedZ=zFromZc(zc)
+  const seed=waveState(tau,Y,seedZ,p)
+  const doubleSonicPoints=new Set(composite.doubleSonicPoints)
+  const onForwardBranch=point=>{
+    const z=zFromZc(point.zc)
+    const state=waveState(point.tau,point.Y,z,p)
+    return seed.kind==='regular'&&state.kind==='regular'&&
+      Math.hypot(state.Um[0]-seed.Um[0],state.Um[1]-seed.Um[1])<=1e-7&&
+      regularFibreInterval(seedZ,z,p)
+  }
+  let intersection=null
+  const endIndex=composite.points.findIndex((point,index)=>{
+    if(index===0)return false
+    if(doubleSonicPoints.has(point)){
+      intersection='double-sonic'
+      return true
+    }
+    if(!onForwardBranch(point))return false
+    intersection='forward-hugoniot'
+    return true
+  })
+  const end=composite.points[endIndex]
+  const forwardArc=end&&onForwardBranch(end)?sampleFibreArc(seed.Um,zc,end.zc,p,'minus'):[]
+  if(forwardArc.length>1){
+    forwardArc[0]=characteristicPoint
+    forwardArc[forwardArc.length-1]=[end.tau,end.Y,end.zc]
+  }
+  return {points:end?composite.points.slice(0,endIndex+1):composite.points,intersection,forwardArc}
+}
+
+/** The backward fibre fixes the right state of the compound junction. */
+export function backwardArcFromComposite(junction,slowSeed,p){
+  if(!junction)return null
+  const startZ=zFromZc(junction.zc)
+  const start=waveState(junction.tau,junction.Y,startZ,p)
+  if(start.kind!=='regular')return null
+
+  const events=[]
+  for(const z of doubleSonicDirections(p)){
+    const point=stateFiberPoint(start.Up,z,p,'plus')
+    if(point.kind==='regular'&&Math.abs(point.Y)>1e-8&&doubleSonicResidual(point.tau,point.Y,z,p)<=1e-7){
+      events.push({...point,z,zc:zcFromZ(z),intersection:'double-sonic'})
+    }
+  }
+  if(slowSeed){
+    const seedZ=zFromZc(slowSeed.zc)
+    const {Um}=waveState(slowSeed.tau,0,seedZ,p)
+    const lift=liftHugoniotSample(Um,start.Up,p)
+    const candidates=lift.kind==='coincidence'
+      ? stateFibreCharacteristicIntersections(Um,p).filter(point=>point.shared&&point.chart==='z')
+        .map(point=>({...point,Y:0}))
+      : lift.kind==='regular'?[lift]:[]
+    for(const point of candidates){
+      if(regularFibreInterval(seedZ,point.z,p))events.push({...point,intersection:'forward-hugoniot'})
+    }
+  }
+  const end=events.filter(point=>Math.abs(point.zc-junction.zc)>1e-8&&regularFibreInterval(startZ,point.z,p))
+    .sort((a,b)=>Math.abs(a.zc-junction.zc)-Math.abs(b.zc-junction.zc))[0]
+  if(!end)return null
+  const points=sampleFibreArc(start.Up,junction.zc,end.zc,p,'plus')
+  if(!points.length)return null
+  points[0]=[junction.tau,junction.Y,junction.zc]
+  points[points.length-1]=[end.tau,end.Y,end.zc]
+  return {points,end}
+}
+
+export function nonlocalShockFromBackwardIntersection(arc,left,p){
+  if(arc?.end.intersection!=='forward-hugoniot'||!left)return null
+  const {tau,Y,z,zc}=arc.end
+  const {s:speed}=waveState(tau,Y,z,p)
+  const [previousTau,previousY,previousZc]=arc.points.at(-2)
+  return continueNonlocalShock(left,{tau,Y,zc,speed},{tau:previousTau,Y:previousY,zc:previousZc},p)
+}
+
+export function sonicShockConstruction(seed,left,p){
+  const backward=backwardArcToCharacteristic(seed,p)
+  const characteristic=backward.at(-1)
+  const rarefaction=characteristic?nonlocalRarefactionToInflection(characteristic,p):null
+  const composite=nonlocalCompositeArc(rarefaction,characteristic,p)
+  const slowSeed=fibreCharacteristicMarkers(left,p).find(point=>point.branch==='slow')
+  const compositeBackward=composite?.intersection==='forward-hugoniot'
+    ?backwardArcFromComposite(composite.points.at(-1),slowSeed,p):null
+  const nonlocalShock=nonlocalShockFromBackwardIntersection(compositeBackward,left,p)
+  return {backward,characteristic,rarefaction,composite,compositeBackward,nonlocalShock}
 }
 
 function sampleFibreArc(U,startZc,endZc,p,side){

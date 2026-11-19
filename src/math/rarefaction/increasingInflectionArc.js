@@ -7,13 +7,14 @@ import {rarefactionField} from './field.js'
 
 const N=NUMERICAL_POLICY.rarefaction
 
-/** Prefix from the exact seed in the requested characteristic speed direction to first J.
+/** Prefix from the exact seed to the first inflection or coincidence.
  * Events are refined by re-integrating fractional steps, not chord interpolation.
  */
 export function increasingInflectionArc(seed,p,tauMin,tauMax,{step=N.orbitStep,maxSteps=N.orbitMaxSteps,eventTolerance=1e-9,family="slow",speedSign=1,zcLimit=N.orbitZcLimit}={}){
   const points=[],speeds=[]
   let direction=0
-  const finish=status=>({points,speeds,status,timeDirection:direction,complete:status==='inflection-reached'})
+  let coincidence=null
+  const finish=status=>({points,speeds,status,coincidence,timeDirection:direction,complete:status==='inflection-reached'})
   const inside=q=>[q?.tau,q?.zc].every(Number.isFinite)&&q.tau>=tauMin&&q.tau<=tauMax&&Math.abs(q.zc)<Math.min(zcLimit,1)
   const spectrum=q=>characteristicSpectrum(q.tau,zFromZc(q.zc),p)
   const event=q=>sonicData(q.tau,zFromZc(q.zc),p).K
@@ -29,6 +30,11 @@ export function increasingInflectionArc(seed,p,tauMin,tauMax,{step=N.orbitStep,m
   if(!Number.isFinite(derivative)||Math.abs(derivative)<1e-10)return finish('speed-direction-unresolved')
   direction=speedSign*Math.sign(derivative)
   const field=q=>{const w=base(q);return w&&w.map(x=>direction*x)}
+  const atStep=(q,h)=>{
+    const half=rk4Step(q,h/2,field,add)
+    return half&&rk4Step(half,h/2,field,add)
+  }
+  const familySign=family==='slow'?-1:1
   const advance=(q,h)=>adaptiveRK4Step(q,h,field,add,{
     absoluteTolerance:N.adaptiveAbsoluteTolerance,relativeTolerance:N.adaptiveRelativeTolerance,
     minStep:N.adaptiveMinStep,maxStep:step,maxReject:N.adaptiveMaxReject,safety:N.adaptiveSafety,
@@ -43,7 +49,7 @@ export function increasingInflectionArc(seed,p,tauMin,tauMax,{step=N.orbitStep,m
     if(k*nextK<=0||Math.abs(nextK)<=eventTolerance){
       let lo=0,hi=result.stepUsed
       for(let iteration=0;iteration<60;iteration++){
-        const mid=(lo+hi)/2,half=rk4Step(current,mid/2,field,add),trial=half&&rk4Step(half,mid/2,field,add)
+        const mid=(lo+hi)/2,trial=atStep(current,mid)
         if(!trial)return finish('event-refinement-unresolved')
         const value=event(trial)
         if(!Number.isFinite(value))return finish('event-refinement-unresolved')
@@ -54,17 +60,35 @@ export function increasingInflectionArc(seed,p,tauMin,tauMax,{step=N.orbitStep,m
       }
       if(!reached)return finish('event-refinement-unresolved')
     }
-    const samples=reached?Array.from({length:8},(_,i)=>{
-      const h=eventStep*(i+1)/8,half=rk4Step(current,h/2,field,add)
-      return half&&rk4Step(half,h/2,field,add)
-    }):[next]
-    for(const sample of samples){
+    const sampleSteps=reached?Array.from({length:8},(_,i)=>eventStep*(i+1)/8):[result.stepUsed]
+    let previousStep=0
+    for(const sampleStep of sampleSteps){
+      const sample=reached?atStep(current,sampleStep):next
       if(!inside(sample))return finish('window-limit')
       const data=spectrum(sample),last=speeds.at(-1)
-      if(data.kind!=='regular'||data.branch!==family)return finish('characteristic-boundary')
+      if(data.kind!=='regular')return finish('characteristic-unverified')
+      if(familySign*data.gap<=0){
+        let lo=previousStep,hi=sampleStep
+        let endpoint=points.at(-1),endpointData=spectrum(endpoint)
+        for(let iteration=0;iteration<60&&hi-lo>1e-14;iteration++){
+          const mid=(lo+hi)/2,trial=atStep(current,mid)
+          if(!inside(trial))return finish('event-refinement-unresolved')
+          const value=spectrum(trial)
+          if(value.kind!=='regular')return finish('event-refinement-unresolved')
+          if(familySign*value.gap>0){lo=mid;endpoint=trial;endpointData=value}
+          else hi=mid
+        }
+        if(Math.abs(endpointData.gap)>eventTolerance*(1+Math.abs(endpointData.s)+Math.abs(endpointData.other)))
+          return finish('event-refinement-unresolved')
+        if(speedSign*(endpointData.s-last)<-1e-12*(1+Math.abs(last)))return finish('speed-stopped')
+        if(endpoint!==points.at(-1)){points.push(endpoint);speeds.push(endpointData.s)}
+        coincidence=endpoint
+        return finish('characteristic-boundary')
+      }
       if(!(speedSign*(data.s-last)>1e-12*(1+Math.abs(last))))return finish('speed-stopped')
       if(Math.hypot(sample.tau-points.at(-1).tau,sample.zc-points.at(-1).zc)<1e-12)return finish('stagnation')
       points.push(sample);speeds.push(data.s)
+      previousStep=sampleStep
     }
     if(reached)return finish('inflection-reached')
     current=next;k=nextK;h=Math.abs(result.nextStep)

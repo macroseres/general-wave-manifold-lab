@@ -8,6 +8,20 @@ test('Riemann states roundtrip, including absent right state',()=>{
  const experiment=createExperiment({...args,riemannStates:{left:[1.25,-2],right:null}})
  assert.deepEqual(validateExperiment(experiment).scientific.riemannStates,{left:[1.25,-2],right:null})
 })
+
+test('the experiment restores wave visibility, sonic origin and candidate selection',()=>{
+ const construction={requested:true,selectedIndex:1,selectedPattern:'SR',sonicSeedId:'q-plus-4',
+  selectedMiddle:[.1,-.2],fixedState:[.2,-.3],sonicConstructionVisibility:{backwardArc:true,composite:false},
+  forwardPlusPointVisibility:{'q-plus-4':true},forwardSonicPointVisibility:{},
+  hiddenReflectedArcs:{composite:true},visibleFastArcs:{rarefaction:true},pointVisibility:{left:true,right:false}}
+ const waveVisibility={showMiddlePoint:true,showSlowMiddlePoint:false,showForwardShockArc:true,showIntermediateSurface:true}
+ const experiment=createExperiment({...args,construction,visibility:{...visibility,...waveVisibility}})
+ const restored=validateExperiment(JSON.parse(JSON.stringify(experiment)))
+ assert.deepEqual(restored.scientific.construction,construction)
+ for(const [key,value] of Object.entries(waveVisibility))assert.equal(restored.presentation.visibility[key],value)
+ restored.scientific.construction.sonicConstructionVisibility.backwardArc='true'
+ assert.throws(()=>validateExperiment(restored),/booleano/)
+})
 test('legacy v2 experiments migrate with unplaced states',()=>{
  const legacy=createExperiment(args);legacy.schemaVersion=2;delete legacy.scientific.riemannStates
  assert.deepEqual(validateExperiment(legacy).scientific.riemannStates,{left:null,right:null})

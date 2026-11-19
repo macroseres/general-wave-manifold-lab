@@ -11,7 +11,7 @@ export default function HopfReciprocalDiagnostic({p}) {
   const [X,setX]=useState(0)
   const [Z,setZ]=useState(0)
   const result=useMemo(()=>projectReciprocalHopfPoint(free,X,Z,p,side,{view}),[free,X,Z,p,side,view])
-  return <details className="inspectorSection" id="hopf-reciprocal-diagnostic">
+  return <details className="inspectorSection" id="hopf-reciprocal-diagnostic" data-panel-category="charts">
     <summary>Hopf — carta recíproca (diagnóstico)</summary>
     <div className="inspectorSectionBody hopfReciprocalDiagnostic">
       <small>Amostra um ponto da carta Z=1/z, inclusive Z=0. Não altera a cena 3D.</small>

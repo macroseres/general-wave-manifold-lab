@@ -12,7 +12,7 @@ import {Line} from './shared.jsx'
 
 
 export function SeededRarefactions({curves,p,showLeft,showRight,showFull,axisScale}){
-  return <group>{curves.filter(q=>!['composite','nonlocal'].includes(q.kind)).filter(q=>q.kind==='full'?showFull:q.family==='slow'?showLeft:showRight).map(curve=>{
+  return <group>{curves.filter(q=>q.points.length>1&&!['composite','nonlocal'].includes(q.kind)).filter(q=>q.kind==='full'?showFull:q.family==='slow'?showLeft:showRight).map(curve=>{
     const color=curve.kind==='full'?'#ffcf76':curve.family==='slow'?slowWaveArcColors.rarefaction:'#30d158',slow=curve.family==='slow'&&curve.kind!=='full'
     const endpointSpeed=q=>rarefactionEndpointSpeed(q,p)
     const lowAtStart=endpointSpeed(curve.points[0])<=endpointSpeed(curve.points.at(-1))
@@ -22,7 +22,7 @@ export function SeededRarefactions({curves,p,showLeft,showRight,showFull,axisSca
       <Line points={rarefactionPhasePoints(curve.points)} color={color}
         {...scientificCurveStyle(slow?'primary':'integralFast','3d')}
         lineWidth={2.5} transparent opacity={1} depthWrite={false} depthTest={false} renderOrder={slow?51:25}/>
-      {arrow&&Number.isFinite(speedChange)&&speedChange!==0&&<ArrowOnCurve axisScale={axisScale} points={curve.points} {...arrow} color={color} p={p} directionSign={-Math.sign(speedChange)}/>}
+      {arrow&&Number.isFinite(speedChange)&&speedChange!==0&&<ArrowOnCurve axisScale={axisScale} points={curve.points} {...arrow} color={color} p={p} directionSign={slow?1:-Math.sign(speedChange)}/>}
     </group>
   })}</group>
 }
