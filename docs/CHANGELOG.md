@@ -1,3 +1,8 @@
+## v0.7.1 — 19/11/2026
+
+- Simplificado o versionamento para MAJOR.MINOR.PATCH, encerrando a sequência dev.24.47.*. Correções incrementam PATCH, funcionalidades incrementam MINOR e mudanças incompatíveis incrementam MAJOR.
+- Versão do pacote, lockfile e README alinhados em 0.7.1. Esta alteração mantém as correções publicadas na versão anterior e não altera os algoritmos científicos.
+
 ## v0.7.0-dev.24.47.94 — 19/11/2026
 
 - Construções 3D atualizadas com arcos, junções, histereses e controles individuais de visibilidade. Corrigidos recortes dos choques nas junções intermediárias, projeções e padrões de traçado.
